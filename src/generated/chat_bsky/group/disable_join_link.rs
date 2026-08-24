@@ -13,19 +13,16 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DisableJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -34,20 +31,26 @@ pub struct DisableJoinLink<S: jacquard_common::BosStr = jacquard_common::Default
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct DisableJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct DisableJoinLinkOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub join_link: crate::generated::chat_bsky::group::JoinLinkView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -55,6 +58,7 @@ pub struct DisableJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::D
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -64,8 +68,9 @@ pub struct DisableJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::D
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum DisableJoinLinkError {
     #[serde(rename = "InvalidConvo")]
@@ -128,10 +133,12 @@ impl jacquard_common::xrpc::XrpcResp for DisableJoinLinkResponse {
     type Err = DisableJoinLinkError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DisableJoinLink<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for DisableJoinLink<S> {
     const NSID: &'static str = "chat.bsky.group.disableJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DisableJoinLinkResponse;
 }
 
@@ -141,8 +148,9 @@ Path: `/xrpc/chat.bsky.group.disableJoinLink`. The request payload type is `Disa
 pub struct DisableJoinLinkRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DisableJoinLinkRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.disableJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DisableJoinLink<S>;
     type Response = DisableJoinLinkResponse;
 }

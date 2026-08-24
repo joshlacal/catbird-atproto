@@ -13,8 +13,9 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -45,11 +46,7 @@ pub struct QueryRules<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     ///Filter by specific URLs or domains
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub urls: core::option::Option<Vec<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -61,7 +58,9 @@ pub struct QueryRules<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 /// Sort direction
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum QueryRulesSortDirection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum QueryRulesSortDirection<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     Asc,
     Desc,
     Other(S),
@@ -107,8 +106,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for QueryRulesSortDirection<S>
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for QueryRulesSortDirection<S>
-{
+for QueryRulesSortDirection<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -124,7 +122,8 @@ impl<S: jacquard_common::BosStr + Default> Default for QueryRulesSortDirection<S
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryRulesSortDirection<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+for QueryRulesSortDirection<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -134,14 +133,24 @@ where
         match self {
             QueryRulesSortDirection::Asc => QueryRulesSortDirection::Asc,
             QueryRulesSortDirection::Desc => QueryRulesSortDirection::Desc,
-            QueryRulesSortDirection::Other(v) => QueryRulesSortDirection::Other(v.into_static()),
+            QueryRulesSortDirection::Other(v) => {
+                QueryRulesSortDirection::Other(v.into_static())
+            }
         }
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -151,11 +160,7 @@ pub struct QueryRulesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub rules: Vec<crate::generated::tools_ozone::safelink::UrlRule<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -177,8 +182,9 @@ impl jacquard_common::xrpc::XrpcResp for QueryRulesResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for QueryRules<S> {
     const NSID: &'static str = "tools.ozone.safelink.queryRules";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = QueryRulesResponse;
 }
 
@@ -188,8 +194,9 @@ Path: `/xrpc/tools.ozone.safelink.queryRules`. The request payload type is `Quer
 pub struct QueryRulesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for QueryRulesRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.safelink.queryRules";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = QueryRules<S>;
     type Response = QueryRulesResponse;
 }

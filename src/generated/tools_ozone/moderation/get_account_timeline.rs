@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -16,21 +23,28 @@ pub struct GetAccountTimeline<S: jacquard_common::BosStr = jacquard_common::Defa
     pub did: jacquard_common::types::string::Did<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetAccountTimelineOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub timeline:
-        Vec<crate::generated::tools_ozone::moderation::get_account_timeline::TimelineItem<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct GetAccountTimelineOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub timeline: Vec<
+        crate::generated::tools_ozone::moderation::get_account_timeline::TimelineItem<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -38,6 +52,7 @@ pub struct GetAccountTimelineOutput<S: jacquard_common::BosStr = jacquard_common
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -47,8 +62,9 @@ pub struct GetAccountTimelineOutput<S: jacquard_common::BosStr = jacquard_common
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetAccountTimelineError {
     #[serde(rename = "RepoNotFound")]
@@ -82,9 +98,17 @@ impl core::fmt::Display for GetAccountTimelineError {
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -92,13 +116,11 @@ impl core::fmt::Display for GetAccountTimelineError {
 pub struct TimelineItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub day: S,
     pub summary: Vec<
-        crate::generated::tools_ozone::moderation::get_account_timeline::TimelineItemSummary<S>,
+        crate::generated::tools_ozone::moderation::get_account_timeline::TimelineItemSummary<
+            S,
+        >,
     >,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -107,22 +129,28 @@ pub struct TimelineItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct TimelineItemSummary<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct TimelineItemSummary<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub count: i64,
     pub event_subject_type: TimelineItemSummaryEventSubjectType<S>,
     pub event_type: TimelineItemSummaryEventType<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -130,6 +158,7 @@ pub struct TimelineItemSummary<S: jacquard_common::BosStr = jacquard_common::Def
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TimelineItemSummaryEventSubjectType<
@@ -161,7 +190,8 @@ impl<S: jacquard_common::BosStr> TimelineItemSummaryEventSubjectType<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> core::fmt::Display for TimelineItemSummaryEventSubjectType<S> {
+impl<S: jacquard_common::BosStr> core::fmt::Display
+for TimelineItemSummaryEventSubjectType<S> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -173,7 +203,8 @@ impl<S: jacquard_common::BosStr> AsRef<str> for TimelineItemSummaryEventSubjectT
     }
 }
 
-impl<S: jacquard_common::BosStr> serde::Serialize for TimelineItemSummaryEventSubjectType<S> {
+impl<S: jacquard_common::BosStr> serde::Serialize
+for TimelineItemSummaryEventSubjectType<S> {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: serde::Serializer,
@@ -183,8 +214,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for TimelineItemSummaryEventSu
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for TimelineItemSummaryEventSubjectType<S>
-{
+for TimelineItemSummaryEventSubjectType<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -194,14 +224,15 @@ impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deseriali
     }
 }
 
-impl<S: jacquard_common::BosStr + Default> Default for TimelineItemSummaryEventSubjectType<S> {
+impl<S: jacquard_common::BosStr + Default> Default
+for TimelineItemSummaryEventSubjectType<S> {
     fn default() -> Self {
         Self::Other(Default::default())
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-    for TimelineItemSummaryEventSubjectType<S>
+for TimelineItemSummaryEventSubjectType<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -215,7 +246,9 @@ where
             TimelineItemSummaryEventSubjectType::Record => {
                 TimelineItemSummaryEventSubjectType::Record
             }
-            TimelineItemSummaryEventSubjectType::Chat => TimelineItemSummaryEventSubjectType::Chat,
+            TimelineItemSummaryEventSubjectType::Chat => {
+                TimelineItemSummaryEventSubjectType::Chat
+            }
             TimelineItemSummaryEventSubjectType::Other(v) => {
                 TimelineItemSummaryEventSubjectType::Other(v.into_static())
             }
@@ -223,8 +256,11 @@ where
     }
 }
 
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum TimelineItemSummaryEventType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum TimelineItemSummaryEventType<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ModEventTakedown,
     ModEventReverseTakedown,
     ModEventComment,
@@ -263,24 +299,36 @@ impl<S: jacquard_common::BosStr> TimelineItemSummaryEventType<S> {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ModEventTakedown => "tools.ozone.moderation.defs#modEventTakedown",
-            Self::ModEventReverseTakedown => "tools.ozone.moderation.defs#modEventReverseTakedown",
+            Self::ModEventReverseTakedown => {
+                "tools.ozone.moderation.defs#modEventReverseTakedown"
+            }
             Self::ModEventComment => "tools.ozone.moderation.defs#modEventComment",
             Self::ModEventReport => "tools.ozone.moderation.defs#modEventReport",
             Self::ModEventLabel => "tools.ozone.moderation.defs#modEventLabel",
-            Self::ModEventAcknowledge => "tools.ozone.moderation.defs#modEventAcknowledge",
+            Self::ModEventAcknowledge => {
+                "tools.ozone.moderation.defs#modEventAcknowledge"
+            }
             Self::ModEventEscalate => "tools.ozone.moderation.defs#modEventEscalate",
             Self::ModEventMute => "tools.ozone.moderation.defs#modEventMute",
             Self::ModEventUnmute => "tools.ozone.moderation.defs#modEventUnmute",
-            Self::ModEventMuteReporter => "tools.ozone.moderation.defs#modEventMuteReporter",
-            Self::ModEventUnmuteReporter => "tools.ozone.moderation.defs#modEventUnmuteReporter",
+            Self::ModEventMuteReporter => {
+                "tools.ozone.moderation.defs#modEventMuteReporter"
+            }
+            Self::ModEventUnmuteReporter => {
+                "tools.ozone.moderation.defs#modEventUnmuteReporter"
+            }
             Self::ModEventEmail => "tools.ozone.moderation.defs#modEventEmail",
-            Self::ModEventResolveAppeal => "tools.ozone.moderation.defs#modEventResolveAppeal",
+            Self::ModEventResolveAppeal => {
+                "tools.ozone.moderation.defs#modEventResolveAppeal"
+            }
             Self::ModEventDivert => "tools.ozone.moderation.defs#modEventDivert",
             Self::ModEventTag => "tools.ozone.moderation.defs#modEventTag",
             Self::AccountEvent => "tools.ozone.moderation.defs#accountEvent",
             Self::IdentityEvent => "tools.ozone.moderation.defs#identityEvent",
             Self::RecordEvent => "tools.ozone.moderation.defs#recordEvent",
-            Self::ModEventPriorityScore => "tools.ozone.moderation.defs#modEventPriorityScore",
+            Self::ModEventPriorityScore => {
+                "tools.ozone.moderation.defs#modEventPriorityScore"
+            }
             Self::RevokeAccountCredentialsEvent => {
                 "tools.ozone.moderation.defs#revokeAccountCredentialsEvent"
             }
@@ -288,18 +336,28 @@ impl<S: jacquard_common::BosStr> TimelineItemSummaryEventType<S> {
             Self::AgeAssuranceOverrideEvent => {
                 "tools.ozone.moderation.defs#ageAssuranceOverrideEvent"
             }
-            Self::TimelineEventPlcCreate => "tools.ozone.moderation.defs#timelineEventPlcCreate",
+            Self::TimelineEventPlcCreate => {
+                "tools.ozone.moderation.defs#timelineEventPlcCreate"
+            }
             Self::TimelineEventPlcOperation => {
                 "tools.ozone.moderation.defs#timelineEventPlcOperation"
             }
             Self::TimelineEventPlcTombstone => {
                 "tools.ozone.moderation.defs#timelineEventPlcTombstone"
             }
-            Self::AccountCreated => "tools.ozone.hosting.getAccountHistory#accountCreated",
-            Self::EmailConfirmed => "tools.ozone.hosting.getAccountHistory#emailConfirmed",
-            Self::PasswordUpdated => "tools.ozone.hosting.getAccountHistory#passwordUpdated",
+            Self::AccountCreated => {
+                "tools.ozone.hosting.getAccountHistory#accountCreated"
+            }
+            Self::EmailConfirmed => {
+                "tools.ozone.hosting.getAccountHistory#emailConfirmed"
+            }
+            Self::PasswordUpdated => {
+                "tools.ozone.hosting.getAccountHistory#passwordUpdated"
+            }
             Self::HandleUpdated => "tools.ozone.hosting.getAccountHistory#handleUpdated",
-            Self::ScheduleTakedownEvent => "tools.ozone.moderation.defs#scheduleTakedownEvent",
+            Self::ScheduleTakedownEvent => {
+                "tools.ozone.moderation.defs#scheduleTakedownEvent"
+            }
             Self::CancelScheduledTakedownEvent => {
                 "tools.ozone.moderation.defs#cancelScheduledTakedownEvent"
             }
@@ -310,24 +368,36 @@ impl<S: jacquard_common::BosStr> TimelineItemSummaryEventType<S> {
     pub fn from_value(s: S) -> Self {
         match s.as_ref() {
             "tools.ozone.moderation.defs#modEventTakedown" => Self::ModEventTakedown,
-            "tools.ozone.moderation.defs#modEventReverseTakedown" => Self::ModEventReverseTakedown,
+            "tools.ozone.moderation.defs#modEventReverseTakedown" => {
+                Self::ModEventReverseTakedown
+            }
             "tools.ozone.moderation.defs#modEventComment" => Self::ModEventComment,
             "tools.ozone.moderation.defs#modEventReport" => Self::ModEventReport,
             "tools.ozone.moderation.defs#modEventLabel" => Self::ModEventLabel,
-            "tools.ozone.moderation.defs#modEventAcknowledge" => Self::ModEventAcknowledge,
+            "tools.ozone.moderation.defs#modEventAcknowledge" => {
+                Self::ModEventAcknowledge
+            }
             "tools.ozone.moderation.defs#modEventEscalate" => Self::ModEventEscalate,
             "tools.ozone.moderation.defs#modEventMute" => Self::ModEventMute,
             "tools.ozone.moderation.defs#modEventUnmute" => Self::ModEventUnmute,
-            "tools.ozone.moderation.defs#modEventMuteReporter" => Self::ModEventMuteReporter,
-            "tools.ozone.moderation.defs#modEventUnmuteReporter" => Self::ModEventUnmuteReporter,
+            "tools.ozone.moderation.defs#modEventMuteReporter" => {
+                Self::ModEventMuteReporter
+            }
+            "tools.ozone.moderation.defs#modEventUnmuteReporter" => {
+                Self::ModEventUnmuteReporter
+            }
             "tools.ozone.moderation.defs#modEventEmail" => Self::ModEventEmail,
-            "tools.ozone.moderation.defs#modEventResolveAppeal" => Self::ModEventResolveAppeal,
+            "tools.ozone.moderation.defs#modEventResolveAppeal" => {
+                Self::ModEventResolveAppeal
+            }
             "tools.ozone.moderation.defs#modEventDivert" => Self::ModEventDivert,
             "tools.ozone.moderation.defs#modEventTag" => Self::ModEventTag,
             "tools.ozone.moderation.defs#accountEvent" => Self::AccountEvent,
             "tools.ozone.moderation.defs#identityEvent" => Self::IdentityEvent,
             "tools.ozone.moderation.defs#recordEvent" => Self::RecordEvent,
-            "tools.ozone.moderation.defs#modEventPriorityScore" => Self::ModEventPriorityScore,
+            "tools.ozone.moderation.defs#modEventPriorityScore" => {
+                Self::ModEventPriorityScore
+            }
             "tools.ozone.moderation.defs#revokeAccountCredentialsEvent" => {
                 Self::RevokeAccountCredentialsEvent
             }
@@ -335,18 +405,28 @@ impl<S: jacquard_common::BosStr> TimelineItemSummaryEventType<S> {
             "tools.ozone.moderation.defs#ageAssuranceOverrideEvent" => {
                 Self::AgeAssuranceOverrideEvent
             }
-            "tools.ozone.moderation.defs#timelineEventPlcCreate" => Self::TimelineEventPlcCreate,
+            "tools.ozone.moderation.defs#timelineEventPlcCreate" => {
+                Self::TimelineEventPlcCreate
+            }
             "tools.ozone.moderation.defs#timelineEventPlcOperation" => {
                 Self::TimelineEventPlcOperation
             }
             "tools.ozone.moderation.defs#timelineEventPlcTombstone" => {
                 Self::TimelineEventPlcTombstone
             }
-            "tools.ozone.hosting.getAccountHistory#accountCreated" => Self::AccountCreated,
-            "tools.ozone.hosting.getAccountHistory#emailConfirmed" => Self::EmailConfirmed,
-            "tools.ozone.hosting.getAccountHistory#passwordUpdated" => Self::PasswordUpdated,
+            "tools.ozone.hosting.getAccountHistory#accountCreated" => {
+                Self::AccountCreated
+            }
+            "tools.ozone.hosting.getAccountHistory#emailConfirmed" => {
+                Self::EmailConfirmed
+            }
+            "tools.ozone.hosting.getAccountHistory#passwordUpdated" => {
+                Self::PasswordUpdated
+            }
             "tools.ozone.hosting.getAccountHistory#handleUpdated" => Self::HandleUpdated,
-            "tools.ozone.moderation.defs#scheduleTakedownEvent" => Self::ScheduleTakedownEvent,
+            "tools.ozone.moderation.defs#scheduleTakedownEvent" => {
+                Self::ScheduleTakedownEvent
+            }
             "tools.ozone.moderation.defs#cancelScheduledTakedownEvent" => {
                 Self::CancelScheduledTakedownEvent
             }
@@ -377,8 +457,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for TimelineItemSummaryEventTy
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for TimelineItemSummaryEventType<S>
-{
+for TimelineItemSummaryEventType<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -394,7 +473,8 @@ impl<S: jacquard_common::BosStr + Default> Default for TimelineItemSummaryEventT
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for TimelineItemSummaryEventType<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+for TimelineItemSummaryEventType<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -444,14 +524,18 @@ where
             TimelineItemSummaryEventType::ModEventDivert => {
                 TimelineItemSummaryEventType::ModEventDivert
             }
-            TimelineItemSummaryEventType::ModEventTag => TimelineItemSummaryEventType::ModEventTag,
+            TimelineItemSummaryEventType::ModEventTag => {
+                TimelineItemSummaryEventType::ModEventTag
+            }
             TimelineItemSummaryEventType::AccountEvent => {
                 TimelineItemSummaryEventType::AccountEvent
             }
             TimelineItemSummaryEventType::IdentityEvent => {
                 TimelineItemSummaryEventType::IdentityEvent
             }
-            TimelineItemSummaryEventType::RecordEvent => TimelineItemSummaryEventType::RecordEvent,
+            TimelineItemSummaryEventType::RecordEvent => {
+                TimelineItemSummaryEventType::RecordEvent
+            }
             TimelineItemSummaryEventType::ModEventPriorityScore => {
                 TimelineItemSummaryEventType::ModEventPriorityScore
             }
@@ -509,7 +593,8 @@ impl jacquard_common::xrpc::XrpcResp for GetAccountTimelineResponse {
     type Err = GetAccountTimelineError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetAccountTimeline<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetAccountTimeline<S> {
     const NSID: &'static str = "tools.ozone.moderation.getAccountTimeline";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetAccountTimelineResponse;
@@ -526,7 +611,8 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetAccountTimelineRequest {
     type Response = GetAccountTimelineResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TimelineItem<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for TimelineItem<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.getAccountTimeline"
     }
@@ -542,8 +628,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tim
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for TimelineItemSummary<S>
-{
+for TimelineItemSummary<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.getAccountTimeline"
     }
@@ -560,9 +645,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 
 pub mod get_account_timeline_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -602,9 +687,10 @@ pub struct GetAccountTimelineBuilder<
 
 impl GetAccountTimeline<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> GetAccountTimelineBuilder<get_account_timeline_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetAccountTimelineBuilder<
+        get_account_timeline_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetAccountTimelineBuilder::new()
     }
 }
@@ -616,7 +702,10 @@ impl<S: jacquard_common::BosStr> GetAccountTimeline<S> {
     }
 }
 
-impl GetAccountTimelineBuilder<get_account_timeline_state::Empty, jacquard_common::DefaultStr> {
+impl GetAccountTimelineBuilder<
+    get_account_timeline_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetAccountTimelineBuilder {
@@ -627,7 +716,9 @@ impl GetAccountTimelineBuilder<get_account_timeline_state::Empty, jacquard_commo
     }
 }
 
-impl<S: jacquard_common::BosStr> GetAccountTimelineBuilder<get_account_timeline_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> GetAccountTimelineBuilder<get_account_timeline_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetAccountTimelineBuilder {
@@ -672,9 +763,9 @@ where
 
 pub mod timeline_item_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -735,7 +826,10 @@ pub struct TimelineItemBuilder<
 
 impl TimelineItem<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> TimelineItemBuilder<timeline_item_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> TimelineItemBuilder<
+        timeline_item_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         TimelineItemBuilder::new()
     }
 }
@@ -843,11 +937,14 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_moderation_getAccountTimeline(
-) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_moderation_getAccountTimeline() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("tools.ozone.moderation.getAccountTimeline"),
+        id: ::jacquard_common::CowStr::new_static(
+            "tools.ozone.moderation.getAccountTimeline",
+        ),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
@@ -884,90 +981,86 @@ fn lexicon_doc_tools_ozone_moderation_getAccountTimeline(
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("timelineItem"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("day"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("summary"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("day"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("summary"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "#timelineItemSummary",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("summary")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "day",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "summary",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "#timelineItemSummary",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("timelineItemSummary"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "timelineItemSummary",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("eventSubjectType"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("eventType"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("count")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "count",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "eventSubjectType",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("eventType"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("count"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("count"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "eventSubjectType",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("eventType"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "eventType",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map
         },
@@ -977,9 +1070,9 @@ fn lexicon_doc_tools_ozone_moderation_getAccountTimeline(
 
 pub mod timeline_item_summary_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1049,21 +1142,28 @@ pub struct TimelineItemSummaryBuilder<
 
 impl TimelineItemSummary<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> TimelineItemSummaryBuilder<timeline_item_summary_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> TimelineItemSummaryBuilder<
+        timeline_item_summary_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         TimelineItemSummaryBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> TimelineItemSummary<S> {
     /// Create a new builder for this type
-    pub fn builder() -> TimelineItemSummaryBuilder<timeline_item_summary_state::Empty, S> {
+    pub fn builder() -> TimelineItemSummaryBuilder<
+        timeline_item_summary_state::Empty,
+        S,
+    > {
         TimelineItemSummaryBuilder::builder()
     }
 }
 
-impl TimelineItemSummaryBuilder<timeline_item_summary_state::Empty, jacquard_common::DefaultStr> {
+impl TimelineItemSummaryBuilder<
+    timeline_item_summary_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TimelineItemSummaryBuilder {
@@ -1074,7 +1174,9 @@ impl TimelineItemSummaryBuilder<timeline_item_summary_state::Empty, jacquard_com
     }
 }
 
-impl<S: jacquard_common::BosStr> TimelineItemSummaryBuilder<timeline_item_summary_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> TimelineItemSummaryBuilder<timeline_item_summary_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         TimelineItemSummaryBuilder {
@@ -1113,7 +1215,10 @@ where
     pub fn event_subject_type(
         mut self,
         value: impl Into<TimelineItemSummaryEventSubjectType<S>>,
-    ) -> TimelineItemSummaryBuilder<timeline_item_summary_state::SetEventSubjectType<St>, S> {
+    ) -> TimelineItemSummaryBuilder<
+        timeline_item_summary_state::SetEventSubjectType<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         TimelineItemSummaryBuilder {
             _state: ::core::marker::PhantomData,

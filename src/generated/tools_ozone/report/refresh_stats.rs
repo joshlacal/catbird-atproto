@@ -13,8 +13,9 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -27,11 +28,7 @@ pub struct RefreshStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub queue_ids: core::option::Option<Vec<i64>>,
     ///Start date for recomputation, inclusive (YYYY-MM-DD).
     pub start_date: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -39,6 +36,7 @@ pub struct RefreshStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -48,18 +46,15 @@ pub struct RefreshStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RefreshStatsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -81,8 +76,9 @@ impl jacquard_common::xrpc::XrpcResp for RefreshStatsResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RefreshStats<S> {
     const NSID: &'static str = "tools.ozone.report.refreshStats";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = RefreshStatsResponse;
 }
 
@@ -92,8 +88,9 @@ Path: `/xrpc/tools.ozone.report.refreshStats`. The request payload type is `Refr
 pub struct RefreshStatsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RefreshStatsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.report.refreshStats";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = RefreshStats<S>;
     type Response = RefreshStatsResponse;
 }

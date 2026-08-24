@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -25,9 +32,17 @@ pub struct SearchActors<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub term: core::option::Option<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -36,11 +51,7 @@ pub struct SearchActorsOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -83,9 +94,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod search_actors_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -117,7 +128,10 @@ pub struct SearchActorsBuilder<
 
 impl SearchActors<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SearchActorsBuilder<search_actors_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SearchActorsBuilder<
+        search_actors_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SearchActorsBuilder::new()
     }
 }
@@ -151,7 +165,10 @@ impl<S: jacquard_common::BosStr> SearchActorsBuilder<search_actors_state::Empty,
     }
 }
 
-impl<St: search_actors_state::State, S: jacquard_common::BosStr> SearchActorsBuilder<St, S> {
+impl<
+    St: search_actors_state::State,
+    S: jacquard_common::BosStr,
+> SearchActorsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -164,7 +181,10 @@ impl<St: search_actors_state::State, S: jacquard_common::BosStr> SearchActorsBui
     }
 }
 
-impl<St: search_actors_state::State, S: jacquard_common::BosStr> SearchActorsBuilder<St, S> {
+impl<
+    St: search_actors_state::State,
+    S: jacquard_common::BosStr,
+> SearchActorsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
@@ -177,7 +197,10 @@ impl<St: search_actors_state::State, S: jacquard_common::BosStr> SearchActorsBui
     }
 }
 
-impl<St: search_actors_state::State, S: jacquard_common::BosStr> SearchActorsBuilder<St, S> {
+impl<
+    St: search_actors_state::State,
+    S: jacquard_common::BosStr,
+> SearchActorsBuilder<St, S> {
     /// Set the `q` field (optional)
     pub fn q(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -190,7 +213,10 @@ impl<St: search_actors_state::State, S: jacquard_common::BosStr> SearchActorsBui
     }
 }
 
-impl<St: search_actors_state::State, S: jacquard_common::BosStr> SearchActorsBuilder<St, S> {
+impl<
+    St: search_actors_state::State,
+    S: jacquard_common::BosStr,
+> SearchActorsBuilder<St, S> {
     /// Set the `term` field (optional)
     pub fn term(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();

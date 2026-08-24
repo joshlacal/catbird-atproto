@@ -6,16 +6,31 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetReport {
     pub id: i64,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,11 +38,7 @@ pub struct GetReport {
 pub struct GetReportOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::report::ReportView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,6 +46,7 @@ pub struct GetReportOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -44,8 +56,9 @@ pub struct GetReportOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetReportError {
     /// No report found.
@@ -110,9 +123,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetReportRequest {
 
 pub mod get_report_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -179,7 +192,10 @@ where
     St::Id: get_report_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<i64>) -> GetReportBuilder<get_report_state::SetId<St>> {
+    pub fn id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> GetReportBuilder<get_report_state::SetId<St>> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         GetReportBuilder {
             _state: ::core::marker::PhantomData,

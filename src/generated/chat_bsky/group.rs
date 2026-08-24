@@ -33,19 +33,18 @@ pub mod withdraw_join_request;
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct DisabledJoinLinkPreviewView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct DisabledJoinLinkPreviewView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub code: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -64,19 +63,18 @@ pub struct DisabledJoinLinkPreviewView<S: jacquard_common::BosStr = jacquard_com
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct InvalidJoinLinkPreviewView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct InvalidJoinLinkPreviewView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub code: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -88,13 +86,22 @@ pub struct InvalidJoinLinkPreviewView<S: jacquard_common::BosStr = jacquard_comm
 /// Preview that can be shown in feeds, including to unauthenticated viewers.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct JoinLinkPreviewView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct JoinLinkPreviewView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub code: S,
     ///Present only if the request is authenticated and the user is a member of the group.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -107,12 +114,10 @@ pub struct JoinLinkPreviewView<S: jacquard_common::BosStr = jacquard_common::Def
     pub owner: crate::generated::chat_bsky::actor::ProfileViewBasic<S>,
     pub require_approval: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub viewer: core::option::Option<crate::generated::chat_bsky::group::JoinLinkViewerState<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub viewer: core::option::Option<
+        crate::generated::chat_bsky::group::JoinLinkViewerState<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -124,8 +129,15 @@ pub struct JoinLinkPreviewView<S: jacquard_common::BosStr = jacquard_common::Def
 /// Join link view to be used within a group view, so the convo is surrounding, not specified inside this view.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -136,11 +148,7 @@ pub struct JoinLinkView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub enabled_status: crate::generated::chat_bsky::group::LinkEnabledStatus<S>,
     pub join_rule: crate::generated::chat_bsky::group::JoinRule<S>,
     pub require_approval: bool,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -148,6 +156,7 @@ pub struct JoinLinkView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -157,20 +166,19 @@ pub struct JoinLinkView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct JoinLinkViewerState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct JoinLinkViewerState<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub requested_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -182,24 +190,29 @@ pub struct JoinLinkViewerState<S: jacquard_common::BosStr = jacquard_common::Def
 /// A join request from the perspective of the requester, including enough group context to render the request in a list (e.g. group name, owner, member count).
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct JoinRequestConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct JoinRequestConvoView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     pub member_count: i64,
     pub member_limit: i64,
     pub name: S,
     pub owner: crate::generated::chat_bsky::actor::ProfileViewBasic<S>,
     pub viewer: crate::generated::chat_bsky::group::JoinLinkViewerState<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -211,8 +224,15 @@ pub struct JoinRequestConvoView<S: jacquard_common::BosStr = jacquard_common::De
 /// A join request from the perspective of the group owner.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -221,11 +241,7 @@ pub struct JoinRequestView<S: jacquard_common::BosStr = jacquard_common::Default
     pub convo_id: S,
     pub requested_at: jacquard_common::types::string::Datetime,
     pub requested_by: crate::generated::chat_bsky::actor::ProfileViewBasic<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -233,6 +249,7 @@ pub struct JoinRequestView<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum JoinRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -281,8 +298,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for JoinRule<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for JoinRule<S>
-{
+for JoinRule<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -306,6 +322,7 @@ where
         }
     }
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum LinkEnabledStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -354,8 +371,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for LinkEnabledStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for LinkEnabledStatus<S>
-{
+for LinkEnabledStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -381,8 +397,7 @@ where
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for DisabledJoinLinkPreviewView<S>
-{
+for DisabledJoinLinkPreviewView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.group.defs"
     }
@@ -398,8 +413,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for InvalidJoinLinkPreviewView<S>
-{
+for InvalidJoinLinkPreviewView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.group.defs"
     }
@@ -415,8 +429,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for JoinLinkPreviewView<S>
-{
+for JoinLinkPreviewView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.group.defs"
     }
@@ -431,7 +444,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for JoinLinkView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for JoinLinkView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.group.defs"
     }
@@ -447,8 +461,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Joi
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for JoinLinkViewerState<S>
-{
+for JoinLinkViewerState<S> {
     fn nsid() -> &'static str {
         "chat.bsky.group.defs"
     }
@@ -464,8 +477,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for JoinRequestConvoView<S>
-{
+for JoinRequestConvoView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.group.defs"
     }
@@ -480,7 +492,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for JoinRequestView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for JoinRequestView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.group.defs"
     }
@@ -756,30 +769,28 @@ fn lexicon_doc_chat_bsky_group_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("joinLinkViewerState"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "requestedAt",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "joinLinkViewerState",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "requestedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -864,75 +875,73 @@ fn lexicon_doc_chat_bsky_group_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("joinRequestView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "joinRequestView",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "A join request from the perspective of the group owner.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("requestedBy"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("requestedAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("requestedAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "requestedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "requestedAt",
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "requestedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "chat.bsky.actor.defs#profileViewBasic",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "requestedBy",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "chat.bsky.actor.defs#profileViewBasic",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("joinRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("linkEnabledStatus"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "linkEnabledStatus",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
+                    ..Default::default()
+                }),
             );
             map
         },
@@ -942,9 +951,9 @@ fn lexicon_doc_chat_bsky_group_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
 
 pub mod join_link_preview_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1121,21 +1130,28 @@ pub struct JoinLinkPreviewViewBuilder<
 
 impl JoinLinkPreviewView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> JoinLinkPreviewViewBuilder<join_link_preview_view_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> JoinLinkPreviewViewBuilder<
+        join_link_preview_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         JoinLinkPreviewViewBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> JoinLinkPreviewView<S> {
     /// Create a new builder for this type
-    pub fn builder() -> JoinLinkPreviewViewBuilder<join_link_preview_view_state::Empty, S> {
+    pub fn builder() -> JoinLinkPreviewViewBuilder<
+        join_link_preview_view_state::Empty,
+        S,
+    > {
         JoinLinkPreviewViewBuilder::builder()
     }
 }
 
-impl JoinLinkPreviewViewBuilder<join_link_preview_view_state::Empty, jacquard_common::DefaultStr> {
+impl JoinLinkPreviewViewBuilder<
+    join_link_preview_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         JoinLinkPreviewViewBuilder {
@@ -1146,9 +1162,9 @@ impl JoinLinkPreviewViewBuilder<join_link_preview_view_state::Empty, jacquard_co
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    JoinLinkPreviewViewBuilder<join_link_preview_view_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> JoinLinkPreviewViewBuilder<join_link_preview_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         JoinLinkPreviewViewBuilder {
@@ -1178,9 +1194,10 @@ where
     }
 }
 
-impl<St: join_link_preview_view_state::State, S: jacquard_common::BosStr>
-    JoinLinkPreviewViewBuilder<St, S>
-{
+impl<
+    St: join_link_preview_view_state::State,
+    S: jacquard_common::BosStr,
+> JoinLinkPreviewViewBuilder<St, S> {
     /// Set the `convo` field (optional)
     pub fn convo(
         mut self,
@@ -1246,7 +1263,10 @@ where
     pub fn member_count(
         mut self,
         value: impl Into<i64>,
-    ) -> JoinLinkPreviewViewBuilder<join_link_preview_view_state::SetMemberCount<St>, S> {
+    ) -> JoinLinkPreviewViewBuilder<
+        join_link_preview_view_state::SetMemberCount<St>,
+        S,
+    > {
         self._fields.4 = ::core::option::Option::Some(value.into());
         JoinLinkPreviewViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -1265,7 +1285,10 @@ where
     pub fn member_limit(
         mut self,
         value: impl Into<i64>,
-    ) -> JoinLinkPreviewViewBuilder<join_link_preview_view_state::SetMemberLimit<St>, S> {
+    ) -> JoinLinkPreviewViewBuilder<
+        join_link_preview_view_state::SetMemberLimit<St>,
+        S,
+    > {
         self._fields.5 = ::core::option::Option::Some(value.into());
         JoinLinkPreviewViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -1322,7 +1345,10 @@ where
     pub fn require_approval(
         mut self,
         value: impl Into<bool>,
-    ) -> JoinLinkPreviewViewBuilder<join_link_preview_view_state::SetRequireApproval<St>, S> {
+    ) -> JoinLinkPreviewViewBuilder<
+        join_link_preview_view_state::SetRequireApproval<St>,
+        S,
+    > {
         self._fields.8 = ::core::option::Option::Some(value.into());
         JoinLinkPreviewViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -1332,13 +1358,16 @@ where
     }
 }
 
-impl<St: join_link_preview_view_state::State, S: jacquard_common::BosStr>
-    JoinLinkPreviewViewBuilder<St, S>
-{
+impl<
+    St: join_link_preview_view_state::State,
+    S: jacquard_common::BosStr,
+> JoinLinkPreviewViewBuilder<St, S> {
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<crate::generated::chat_bsky::group::JoinLinkViewerState<S>>>,
+        value: impl Into<
+            Option<crate::generated::chat_bsky::group::JoinLinkViewerState<S>>,
+        >,
     ) -> Self {
         self._fields.9 = value.into();
         self
@@ -1407,9 +1436,9 @@ where
 
 pub mod join_link_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1515,7 +1544,10 @@ pub struct JoinLinkViewBuilder<
 
 impl JoinLinkView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> JoinLinkViewBuilder<join_link_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> JoinLinkViewBuilder<
+        join_link_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         JoinLinkViewBuilder::new()
     }
 }
@@ -1685,9 +1717,9 @@ where
 
 pub mod join_request_convo_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1824,14 +1856,18 @@ impl JoinRequestConvoView<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> JoinRequestConvoView<S> {
     /// Create a new builder for this type
-    pub fn builder() -> JoinRequestConvoViewBuilder<join_request_convo_view_state::Empty, S> {
+    pub fn builder() -> JoinRequestConvoViewBuilder<
+        join_request_convo_view_state::Empty,
+        S,
+    > {
         JoinRequestConvoViewBuilder::builder()
     }
 }
 
-impl
-    JoinRequestConvoViewBuilder<join_request_convo_view_state::Empty, jacquard_common::DefaultStr>
-{
+impl JoinRequestConvoViewBuilder<
+    join_request_convo_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         JoinRequestConvoViewBuilder {
@@ -1842,9 +1878,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    JoinRequestConvoViewBuilder<join_request_convo_view_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> JoinRequestConvoViewBuilder<join_request_convo_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         JoinRequestConvoViewBuilder {
@@ -1883,7 +1919,10 @@ where
     pub fn member_count(
         mut self,
         value: impl Into<i64>,
-    ) -> JoinRequestConvoViewBuilder<join_request_convo_view_state::SetMemberCount<St>, S> {
+    ) -> JoinRequestConvoViewBuilder<
+        join_request_convo_view_state::SetMemberCount<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         JoinRequestConvoViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -1902,7 +1941,10 @@ where
     pub fn member_limit(
         mut self,
         value: impl Into<i64>,
-    ) -> JoinRequestConvoViewBuilder<join_request_convo_view_state::SetMemberLimit<St>, S> {
+    ) -> JoinRequestConvoViewBuilder<
+        join_request_convo_view_state::SetMemberLimit<St>,
+        S,
+    > {
         self._fields.2 = ::core::option::Option::Some(value.into());
         JoinRequestConvoViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -2013,9 +2055,9 @@ where
 
 pub mod join_request_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2085,8 +2127,10 @@ pub struct JoinRequestViewBuilder<
 
 impl JoinRequestView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> JoinRequestViewBuilder<join_request_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> JoinRequestViewBuilder<
+        join_request_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         JoinRequestViewBuilder::new()
     }
 }
@@ -2098,7 +2142,10 @@ impl<S: jacquard_common::BosStr> JoinRequestView<S> {
     }
 }
 
-impl JoinRequestViewBuilder<join_request_view_state::Empty, jacquard_common::DefaultStr> {
+impl JoinRequestViewBuilder<
+    join_request_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         JoinRequestViewBuilder {
@@ -2109,7 +2156,9 @@ impl JoinRequestViewBuilder<join_request_view_state::Empty, jacquard_common::Def
     }
 }
 
-impl<S: jacquard_common::BosStr> JoinRequestViewBuilder<join_request_view_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> JoinRequestViewBuilder<join_request_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         JoinRequestViewBuilder {

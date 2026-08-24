@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -26,17 +33,27 @@ pub struct QueryStatuses<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub exclude_tags: core::option::Option<Vec<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_deleted_after: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_deleted_after: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_deleted_before: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_deleted_before: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub hosting_statuses: core::option::Option<Vec<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_updated_after: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_updated_after: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_updated_before: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_updated_before: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub ignore_subjects: core::option::Option<Vec<jacquard_common::types::string::UriValue<S>>>,
+    pub ignore_subjects: core::option::Option<
+        Vec<jacquard_common::types::string::UriValue<S>>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub include_all_user_records: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -95,22 +112,30 @@ pub struct QueryStatuses<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub takendown: core::option::Option<bool>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct QueryStatusesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct QueryStatusesOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub subject_statuses: Vec<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub subject_statuses: Vec<
+        crate::generated::tools_ozone::moderation::SubjectStatusView<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -130,7 +155,8 @@ impl jacquard_common::xrpc::XrpcResp for QueryStatusesResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for QueryStatuses<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for QueryStatuses<S> {
     const NSID: &'static str = "tools.ozone.moderation.queryStatuses";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = QueryStatusesResponse;
@@ -161,9 +187,9 @@ fn _default_sort_field<S: jacquard_common::FromStaticStr>() -> Option<S> {
 
 pub mod query_statuses_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -227,7 +253,10 @@ pub struct QueryStatusesBuilder<
 
 impl QueryStatuses<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> QueryStatusesBuilder<query_statuses_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> QueryStatusesBuilder<
+        query_statuses_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         QueryStatusesBuilder::new()
     }
 }
@@ -245,9 +274,42 @@ impl QueryStatusesBuilder<query_statuses_state::Empty, jacquard_common::DefaultS
         QueryStatusesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -260,16 +322,52 @@ impl<S: jacquard_common::BosStr> QueryStatusesBuilder<query_statuses_state::Empt
         QueryStatusesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `ageAssuranceState` field (optional)
     pub fn age_assurance_state(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -282,7 +380,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `appealed` field (optional)
     pub fn appealed(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.1 = value.into();
@@ -295,7 +396,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `collections` field (optional)
     pub fn collections(
         mut self,
@@ -314,7 +418,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();
@@ -327,7 +434,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();
@@ -340,7 +450,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `excludeTags` field (optional)
     pub fn exclude_tags(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.5 = value.into();
@@ -353,7 +466,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `hostingDeletedAfter` field (optional)
     pub fn hosting_deleted_after(
         mut self,
@@ -372,7 +488,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `hostingDeletedBefore` field (optional)
     pub fn hosting_deleted_before(
         mut self,
@@ -391,7 +510,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `hostingStatuses` field (optional)
     pub fn hosting_statuses(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.8 = value.into();
@@ -404,7 +526,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `hostingUpdatedAfter` field (optional)
     pub fn hosting_updated_after(
         mut self,
@@ -423,7 +548,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `hostingUpdatedBefore` field (optional)
     pub fn hosting_updated_before(
         mut self,
@@ -442,7 +570,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `ignoreSubjects` field (optional)
     pub fn ignore_subjects(
         mut self,
@@ -461,7 +592,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `includeAllUserRecords` field (optional)
     pub fn include_all_user_records(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.12 = value.into();
@@ -474,7 +608,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `includeMuted` field (optional)
     pub fn include_muted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.13 = value.into();
@@ -487,7 +624,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `lastReviewedBy` field (optional)
     pub fn last_reviewed_by(
         mut self,
@@ -506,7 +646,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.15 = value.into();
@@ -519,7 +662,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `minAccountSuspendCount` field (optional)
     pub fn min_account_suspend_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.16 = value.into();
@@ -532,7 +678,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `minPriorityScore` field (optional)
     pub fn min_priority_score(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.17 = value.into();
@@ -545,7 +694,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `minReportedRecordsCount` field (optional)
     pub fn min_reported_records_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.18 = value.into();
@@ -558,7 +710,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `minStrikeCount` field (optional)
     pub fn min_strike_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.19 = value.into();
@@ -571,7 +726,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `minTakendownRecordsCount` field (optional)
     pub fn min_takendown_records_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.20 = value.into();
@@ -584,7 +742,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `onlyMuted` field (optional)
     pub fn only_muted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.21 = value.into();
@@ -597,7 +758,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `queueCount` field (optional)
     pub fn queue_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.22 = value.into();
@@ -610,7 +774,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `queueIndex` field (optional)
     pub fn queue_index(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.23 = value.into();
@@ -623,7 +790,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `queueSeed` field (optional)
     pub fn queue_seed(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.24 = value.into();
@@ -636,7 +806,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `reportedAfter` field (optional)
     pub fn reported_after(
         mut self,
@@ -655,7 +828,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `reportedBefore` field (optional)
     pub fn reported_before(
         mut self,
@@ -674,7 +850,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `reviewState` field (optional)
     pub fn review_state(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.27 = value.into();
@@ -687,7 +866,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `reviewedAfter` field (optional)
     pub fn reviewed_after(
         mut self,
@@ -706,7 +888,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `reviewedBefore` field (optional)
     pub fn reviewed_before(
         mut self,
@@ -725,7 +910,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `sortDirection` field (optional)
     pub fn sort_direction(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.30 = value.into();
@@ -738,7 +926,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `sortField` field (optional)
     pub fn sort_field(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.31 = value.into();
@@ -751,7 +942,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `subject` field (optional)
     pub fn subject(
         mut self,
@@ -770,7 +964,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `subjectType` field (optional)
     pub fn subject_type(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.33 = value.into();
@@ -783,7 +980,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `tags` field (optional)
     pub fn tags(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.34 = value.into();
@@ -796,7 +996,10 @@ impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesB
     }
 }
 
-impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
+impl<
+    St: query_statuses_state::State,
+    S: jacquard_common::BosStr,
+> QueryStatusesBuilder<St, S> {
     /// Set the `takendown` field (optional)
     pub fn takendown(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.35 = value.into();

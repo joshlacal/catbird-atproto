@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,11 +24,7 @@ pub struct FailedScheduling<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub error_code: core::option::Option<S>,
     pub subject: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,9 +33,17 @@ pub struct FailedScheduling<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -42,15 +53,15 @@ pub struct ScheduleAction<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub created_by: jacquard_common::types::string::Did<S>,
     ///This will be propagated to the moderation event when it is applied
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub mod_tool: core::option::Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
-    pub scheduling: crate::generated::tools_ozone::moderation::schedule_action::SchedulingConfig<S>,
+    pub mod_tool: core::option::Option<
+        crate::generated::tools_ozone::moderation::ModTool<S>,
+    >,
+    pub scheduling: crate::generated::tools_ozone::moderation::schedule_action::SchedulingConfig<
+        S,
+    >,
     ///Array of DID subjects to schedule the action for
     pub subjects: Vec<jacquard_common::types::string::Did<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -59,21 +70,27 @@ pub struct ScheduleAction<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ScheduleActionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ScheduleActionOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(flatten)]
     pub value: jacquard_common::types::value::Data<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -82,22 +99,29 @@ pub struct ScheduleActionOutput<S: jacquard_common::BosStr = jacquard_common::De
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ScheduledActionResults<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub failed:
-        Vec<crate::generated::tools_ozone::moderation::schedule_action::FailedScheduling<S>>,
+pub struct ScheduledActionResults<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub failed: Vec<
+        crate::generated::tools_ozone::moderation::schedule_action::FailedScheduling<S>,
+    >,
     pub succeeded: Vec<jacquard_common::types::string::Did<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -116,8 +140,9 @@ pub struct ScheduledActionResults<S: jacquard_common::BosStr = jacquard_common::
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -132,11 +157,7 @@ pub struct SchedulingConfig<S: jacquard_common::BosStr = jacquard_common::Defaul
     ///Latest time to execute the action (for randomized scheduling)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub execute_until: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -155,8 +176,9 @@ pub struct SchedulingConfig<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -187,12 +209,10 @@ pub struct Takedown<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub strike_count: core::option::Option<i64>,
     ///When the strike should expire. If not provided, the strike never expires.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub strike_expires_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub strike_expires_at: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -201,7 +221,8 @@ pub struct Takedown<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for FailedScheduling<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for FailedScheduling<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.scheduleAction"
     }
@@ -227,10 +248,12 @@ impl jacquard_common::xrpc::XrpcResp for ScheduleActionResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ScheduleAction<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for ScheduleAction<S> {
     const NSID: &'static str = "tools.ozone.moderation.scheduleAction";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = ScheduleActionResponse;
 }
 
@@ -240,15 +263,15 @@ Path: `/xrpc/tools.ozone.moderation.scheduleAction`. The request payload type is
 pub struct ScheduleActionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ScheduleActionRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.moderation.scheduleAction";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = ScheduleAction<S>;
     type Response = ScheduleActionResponse;
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ScheduledActionResults<S>
-{
+for ScheduledActionResults<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.scheduleAction"
     }
@@ -263,7 +286,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SchedulingConfig<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for SchedulingConfig<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.scheduleAction"
     }
@@ -278,7 +302,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sch
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Takedown<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for Takedown<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.scheduleAction"
     }
@@ -293,7 +318,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tak
             #[allow(unused_comparisons)]
             if value.len() > 5usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("policies"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "policies",
+                    ),
                     max: 5usize,
                     actual: value.len(),
                 });
@@ -305,9 +332,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tak
 
 pub mod failed_scheduling_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -363,8 +390,10 @@ pub struct FailedSchedulingBuilder<
 
 impl FailedScheduling<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> FailedSchedulingBuilder<failed_scheduling_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> FailedSchedulingBuilder<
+        failed_scheduling_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         FailedSchedulingBuilder::new()
     }
 }
@@ -376,7 +405,10 @@ impl<S: jacquard_common::BosStr> FailedScheduling<S> {
     }
 }
 
-impl FailedSchedulingBuilder<failed_scheduling_state::Empty, jacquard_common::DefaultStr> {
+impl FailedSchedulingBuilder<
+    failed_scheduling_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FailedSchedulingBuilder {
@@ -387,7 +419,9 @@ impl FailedSchedulingBuilder<failed_scheduling_state::Empty, jacquard_common::De
     }
 }
 
-impl<S: jacquard_common::BosStr> FailedSchedulingBuilder<failed_scheduling_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> FailedSchedulingBuilder<failed_scheduling_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         FailedSchedulingBuilder {
@@ -417,9 +451,10 @@ where
     }
 }
 
-impl<St: failed_scheduling_state::State, S: jacquard_common::BosStr>
-    FailedSchedulingBuilder<St, S>
-{
+impl<
+    St: failed_scheduling_state::State,
+    S: jacquard_common::BosStr,
+> FailedSchedulingBuilder<St, S> {
     /// Set the `errorCode` field (optional)
     pub fn error_code(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -483,56 +518,61 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_moderation_scheduleAction(
-) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_moderation_scheduleAction() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("tools.ozone.moderation.scheduleAction"),
+        id: ::jacquard_common::CowStr::new_static(
+            "tools.ozone.moderation.scheduleAction",
+        ),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("failedScheduling"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("errorCode"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "failedScheduling",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("error")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "error",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "errorCode",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subject",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -869,9 +909,9 @@ fn lexicon_doc_tools_ozone_moderation_scheduleAction(
 
 pub mod schedule_action_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -954,7 +994,9 @@ pub struct ScheduleActionBuilder<
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
         core::option::Option<
-            crate::generated::tools_ozone::moderation::schedule_action::SchedulingConfig<S>,
+            crate::generated::tools_ozone::moderation::schedule_action::SchedulingConfig<
+                S,
+            >,
         >,
         core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
     ),
@@ -963,8 +1005,10 @@ pub struct ScheduleActionBuilder<
 
 impl ScheduleAction<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ScheduleActionBuilder<schedule_action_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ScheduleActionBuilder<
+        schedule_action_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ScheduleActionBuilder::new()
     }
 }
@@ -1006,7 +1050,9 @@ where
     /// Set the `action` field (required)
     pub fn action(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::moderation::schedule_action::Takedown<S>>,
+        value: impl Into<
+            crate::generated::tools_ozone::moderation::schedule_action::Takedown<S>,
+        >,
     ) -> ScheduleActionBuilder<schedule_action_state::SetAction<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ScheduleActionBuilder {
@@ -1036,7 +1082,10 @@ where
     }
 }
 
-impl<St: schedule_action_state::State, S: jacquard_common::BosStr> ScheduleActionBuilder<St, S> {
+impl<
+    St: schedule_action_state::State,
+    S: jacquard_common::BosStr,
+> ScheduleActionBuilder<St, S> {
     /// Set the `modTool` field (optional)
     pub fn mod_tool(
         mut self,
@@ -1064,7 +1113,9 @@ where
     pub fn scheduling(
         mut self,
         value: impl Into<
-            crate::generated::tools_ozone::moderation::schedule_action::SchedulingConfig<S>,
+            crate::generated::tools_ozone::moderation::schedule_action::SchedulingConfig<
+                S,
+            >,
         >,
     ) -> ScheduleActionBuilder<schedule_action_state::SetScheduling<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
@@ -1135,9 +1186,9 @@ where
 
 pub mod scheduled_action_results_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1185,7 +1236,11 @@ pub struct ScheduledActionResultsBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<
-            Vec<crate::generated::tools_ozone::moderation::schedule_action::FailedScheduling<S>>,
+            Vec<
+                crate::generated::tools_ozone::moderation::schedule_action::FailedScheduling<
+                    S,
+                >,
+            >,
         >,
         core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
     ),
@@ -1204,17 +1259,18 @@ impl ScheduledActionResults<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> ScheduledActionResults<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ScheduledActionResultsBuilder<scheduled_action_results_state::Empty, S> {
+    pub fn builder() -> ScheduledActionResultsBuilder<
+        scheduled_action_results_state::Empty,
+        S,
+    > {
         ScheduledActionResultsBuilder::builder()
     }
 }
 
-impl
-    ScheduledActionResultsBuilder<
-        scheduled_action_results_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl ScheduledActionResultsBuilder<
+    scheduled_action_results_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ScheduledActionResultsBuilder {
@@ -1225,9 +1281,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    ScheduledActionResultsBuilder<scheduled_action_results_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> ScheduledActionResultsBuilder<scheduled_action_results_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ScheduledActionResultsBuilder {
@@ -1247,9 +1303,16 @@ where
     pub fn failed(
         mut self,
         value: impl Into<
-            Vec<crate::generated::tools_ozone::moderation::schedule_action::FailedScheduling<S>>,
+            Vec<
+                crate::generated::tools_ozone::moderation::schedule_action::FailedScheduling<
+                    S,
+                >,
+            >,
         >,
-    ) -> ScheduledActionResultsBuilder<scheduled_action_results_state::SetFailed<St>, S> {
+    ) -> ScheduledActionResultsBuilder<
+        scheduled_action_results_state::SetFailed<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ScheduledActionResultsBuilder {
             _state: ::core::marker::PhantomData,
@@ -1268,7 +1331,10 @@ where
     pub fn succeeded(
         mut self,
         value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
-    ) -> ScheduledActionResultsBuilder<scheduled_action_results_state::SetSucceeded<St>, S> {
+    ) -> ScheduledActionResultsBuilder<
+        scheduled_action_results_state::SetSucceeded<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         ScheduledActionResultsBuilder {
             _state: ::core::marker::PhantomData,

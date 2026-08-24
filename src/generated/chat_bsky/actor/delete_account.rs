@@ -13,18 +13,17 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct DeleteAccountOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct DeleteAccountOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -45,7 +44,7 @@ This endpoint has no request parameters or input body; send this marker with `ja
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Copy,
+    Copy
 )]
 pub struct DeleteAccount;
 /** Response marker for the `chat.bsky.actor.deleteAccount` procedure.
@@ -61,8 +60,9 @@ impl jacquard_common::xrpc::XrpcResp for DeleteAccountResponse {
 
 impl jacquard_common::xrpc::XrpcRequest for DeleteAccount {
     const NSID: &'static str = "chat.bsky.actor.deleteAccount";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeleteAccountResponse;
 }
 
@@ -72,8 +72,9 @@ Path: `/xrpc/chat.bsky.actor.deleteAccount`. The request payload type is `Delete
 pub struct DeleteAccountRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteAccountRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.actor.deleteAccount";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DeleteAccount;
     type Response = DeleteAccountResponse;
 }

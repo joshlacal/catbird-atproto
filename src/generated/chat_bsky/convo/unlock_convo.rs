@@ -13,19 +13,16 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UnlockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -34,20 +31,24 @@ pub struct UnlockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UnlockConvoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -55,6 +56,7 @@ pub struct UnlockConvoOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -64,8 +66,9 @@ pub struct UnlockConvoOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum UnlockConvoError {
     #[serde(rename = "InvalidConvo")]
@@ -73,7 +76,9 @@ pub enum UnlockConvoError {
     #[serde(rename = "InsufficientRole")]
     InsufficientRole(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ConvoLockedByModeration")]
-    ConvoLockedByModeration(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConvoLockedByModeration(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -130,8 +135,9 @@ impl jacquard_common::xrpc::XrpcResp for UnlockConvoResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UnlockConvo<S> {
     const NSID: &'static str = "chat.bsky.convo.unlockConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UnlockConvoResponse;
 }
 
@@ -141,8 +147,9 @@ Path: `/xrpc/chat.bsky.convo.unlockConvo`. The request payload type is `UnlockCo
 pub struct UnlockConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UnlockConvoRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.unlockConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = UnlockConvo<S>;
     type Response = UnlockConvoResponse;
 }

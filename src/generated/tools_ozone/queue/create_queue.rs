@@ -13,8 +13,9 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -37,11 +38,7 @@ pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     ///Subject types this queue accepts
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject_types: core::option::Option<Vec<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,20 +47,24 @@ pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub queue: crate::generated::tools_ozone::queue::QueueView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -71,6 +72,7 @@ pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -80,13 +82,16 @@ pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CreateQueueError {
     /// One or more recommended policy keys do not exist in the configured policy list
     #[serde(rename = "InvalidRecommendedPolicies")]
-    InvalidRecommendedPolicies(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRecommendedPolicies(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The queue configuration conflicts with an existing queue
     #[serde(rename = "ConflictingQueue")]
     ConflictingQueue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
@@ -139,8 +144,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateQueueResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateQueue<S> {
     const NSID: &'static str = "tools.ozone.queue.createQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateQueueResponse;
 }
 
@@ -150,8 +156,9 @@ Path: `/xrpc/tools.ozone.queue.createQueue`. The request payload type is `Create
 pub struct CreateQueueRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateQueueRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.queue.createQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CreateQueue<S>;
     type Response = CreateQueueResponse;
 }

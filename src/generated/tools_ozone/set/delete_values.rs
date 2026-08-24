@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,11 +24,7 @@ pub struct DeleteValues<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub name: S,
     ///Array of string values to delete from the set
     pub values: Vec<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -29,6 +32,7 @@ pub struct DeleteValues<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -38,8 +42,9 @@ pub struct DeleteValues<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum DeleteValuesError {
     /// set with the given name does not exist
@@ -87,8 +92,9 @@ impl jacquard_common::xrpc::XrpcResp for DeleteValuesResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteValues<S> {
     const NSID: &'static str = "tools.ozone.set.deleteValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeleteValuesResponse;
 }
 
@@ -98,17 +104,18 @@ Path: `/xrpc/tools.ozone.set.deleteValues`. The request payload type is `DeleteV
 pub struct DeleteValuesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteValuesRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.set.deleteValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DeleteValues<S>;
     type Response = DeleteValuesResponse;
 }
 
 pub mod delete_values_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -160,7 +167,10 @@ pub struct DeleteValuesBuilder<
 
 impl DeleteValues<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeleteValuesBuilder<delete_values_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> DeleteValuesBuilder<
+        delete_values_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         DeleteValuesBuilder::new()
     }
 }

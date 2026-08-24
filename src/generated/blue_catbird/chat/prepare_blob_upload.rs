@@ -6,24 +6,19 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct PrepareBlobUpload<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub signed_request: crate::generated::blue_catbird::chat::SignedBlobUploadPreparation<
-        S,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub signed_request: crate::generated::blue_catbird::chat::SignedBlobUploadPreparation<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -32,26 +27,20 @@ pub struct PrepareBlobUpload<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct PrepareBlobUploadOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct PrepareBlobUploadOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub upload: crate::generated::blue_catbird::chat::BlobUploadView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -59,7 +48,6 @@ pub struct PrepareBlobUploadOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -69,9 +57,8 @@ pub struct PrepareBlobUploadOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum PrepareBlobUploadError {
     #[serde(rename = "BlobAlreadyExists")]
@@ -99,17 +86,11 @@ pub enum PrepareBlobUploadError {
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -257,12 +238,10 @@ impl jacquard_common::xrpc::XrpcResp for PrepareBlobUploadResponse {
     type Err = PrepareBlobUploadError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for PrepareBlobUpload<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for PrepareBlobUpload<S> {
     const NSID: &'static str = "blue.catbird.chat.prepareBlobUpload";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = PrepareBlobUploadResponse;
 }
 
@@ -272,16 +251,15 @@ Path: `/xrpc/blue.catbird.chat.prepareBlobUpload`. The request payload type is `
 pub struct PrepareBlobUploadRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PrepareBlobUploadRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.prepareBlobUpload";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = PrepareBlobUpload<S>;
     type Response = PrepareBlobUploadResponse;
 }
 
 pub mod prepare_blob_upload_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -318,19 +296,16 @@ pub struct PrepareBlobUploadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<
-            crate::generated::blue_catbird::chat::SignedBlobUploadPreparation<S>,
-        >,
+        core::option::Option<crate::generated::blue_catbird::chat::SignedBlobUploadPreparation<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl PrepareBlobUpload<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> PrepareBlobUploadBuilder<
-        prepare_blob_upload_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> PrepareBlobUploadBuilder<prepare_blob_upload_state::Empty, jacquard_common::DefaultStr>
+    {
         PrepareBlobUploadBuilder::new()
     }
 }
@@ -342,10 +317,7 @@ impl<S: jacquard_common::BosStr> PrepareBlobUpload<S> {
     }
 }
 
-impl PrepareBlobUploadBuilder<
-    prepare_blob_upload_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl PrepareBlobUploadBuilder<prepare_blob_upload_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PrepareBlobUploadBuilder {
@@ -356,9 +328,7 @@ impl PrepareBlobUploadBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> PrepareBlobUploadBuilder<prepare_blob_upload_state::Empty, S> {
+impl<S: jacquard_common::BosStr> PrepareBlobUploadBuilder<prepare_blob_upload_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         PrepareBlobUploadBuilder {
@@ -377,9 +347,7 @@ where
     /// Set the `signedRequest` field (required)
     pub fn signed_request(
         mut self,
-        value: impl Into<
-            crate::generated::blue_catbird::chat::SignedBlobUploadPreparation<S>,
-        >,
+        value: impl Into<crate::generated::blue_catbird::chat::SignedBlobUploadPreparation<S>>,
     ) -> PrepareBlobUploadBuilder<prepare_blob_upload_state::SetSignedRequest<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         PrepareBlobUploadBuilder {

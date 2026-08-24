@@ -13,19 +13,18 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct WithdrawJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct WithdrawJoinRequest<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,6 +32,7 @@ pub struct WithdrawJoinRequest<S: jacquard_common::BosStr = jacquard_common::Def
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -42,18 +42,17 @@ pub struct WithdrawJoinRequest<S: jacquard_common::BosStr = jacquard_common::Def
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct WithdrawJoinRequestOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct WithdrawJoinRequestOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -61,6 +60,7 @@ pub struct WithdrawJoinRequestOutput<S: jacquard_common::BosStr = jacquard_commo
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -70,8 +70,9 @@ pub struct WithdrawJoinRequestOutput<S: jacquard_common::BosStr = jacquard_commo
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum WithdrawJoinRequestError {
     #[serde(rename = "InvalidJoinRequest")]
@@ -116,10 +117,12 @@ impl jacquard_common::xrpc::XrpcResp for WithdrawJoinRequestResponse {
     type Err = WithdrawJoinRequestError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for WithdrawJoinRequest<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for WithdrawJoinRequest<S> {
     const NSID: &'static str = "chat.bsky.group.withdrawJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = WithdrawJoinRequestResponse;
 }
 
@@ -129,8 +132,9 @@ Path: `/xrpc/chat.bsky.group.withdrawJoinRequest`. The request payload type is `
 pub struct WithdrawJoinRequestRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for WithdrawJoinRequestRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.withdrawJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = WithdrawJoinRequest<S>;
     type Response = WithdrawJoinRequestResponse;
 }

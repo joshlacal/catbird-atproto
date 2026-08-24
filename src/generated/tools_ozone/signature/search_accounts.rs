@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -22,22 +29,28 @@ pub struct SearchAccounts<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub values: Vec<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SearchAccountsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SearchAccountsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub accounts: Vec<crate::generated::com_atproto::admin::AccountView<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,7 +70,8 @@ impl jacquard_common::xrpc::XrpcResp for SearchAccountsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchAccounts<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for SearchAccounts<S> {
     const NSID: &'static str = "tools.ozone.signature.searchAccounts";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = SearchAccountsResponse;
@@ -80,9 +94,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod search_accounts_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -126,8 +140,10 @@ pub struct SearchAccountsBuilder<
 
 impl SearchAccounts<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SearchAccountsBuilder<search_accounts_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> SearchAccountsBuilder<
+        search_accounts_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SearchAccountsBuilder::new()
     }
 }
@@ -161,7 +177,10 @@ impl<S: jacquard_common::BosStr> SearchAccountsBuilder<search_accounts_state::Em
     }
 }
 
-impl<St: search_accounts_state::State, S: jacquard_common::BosStr> SearchAccountsBuilder<St, S> {
+impl<
+    St: search_accounts_state::State,
+    S: jacquard_common::BosStr,
+> SearchAccountsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -174,7 +193,10 @@ impl<St: search_accounts_state::State, S: jacquard_common::BosStr> SearchAccount
     }
 }
 
-impl<St: search_accounts_state::State, S: jacquard_common::BosStr> SearchAccountsBuilder<St, S> {
+impl<
+    St: search_accounts_state::State,
+    S: jacquard_common::BosStr,
+> SearchAccountsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

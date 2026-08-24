@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,11 +24,7 @@ pub struct AssignModerator<S: jacquard_common::BosStr = jacquard_common::Default
     pub did: S,
     ///The ID of the queue to assign the user to.
     pub queue_id: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,21 +33,27 @@ pub struct AssignModerator<S: jacquard_common::BosStr = jacquard_common::Default
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct AssignModeratorOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct AssignModeratorOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::queue::AssignmentView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -52,6 +61,7 @@ pub struct AssignModeratorOutput<S: jacquard_common::BosStr = jacquard_common::D
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -61,8 +71,9 @@ pub struct AssignModeratorOutput<S: jacquard_common::BosStr = jacquard_common::D
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum AssignModeratorError {
     /// The specified queue does not exist or is not enabled.
@@ -108,10 +119,12 @@ impl jacquard_common::xrpc::XrpcResp for AssignModeratorResponse {
     type Err = AssignModeratorError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AssignModerator<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for AssignModerator<S> {
     const NSID: &'static str = "tools.ozone.queue.assignModerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = AssignModeratorResponse;
 }
 
@@ -121,17 +134,18 @@ Path: `/xrpc/tools.ozone.queue.assignModerator`. The request payload type is `As
 pub struct AssignModeratorRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AssignModeratorRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.queue.assignModerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = AssignModerator<S>;
     type Response = AssignModeratorResponse;
 }
 
 pub mod assign_moderator_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -183,8 +197,10 @@ pub struct AssignModeratorBuilder<
 
 impl AssignModerator<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> AssignModeratorBuilder<assign_moderator_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> AssignModeratorBuilder<
+        assign_moderator_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         AssignModeratorBuilder::new()
     }
 }
@@ -207,7 +223,9 @@ impl AssignModeratorBuilder<assign_moderator_state::Empty, jacquard_common::Defa
     }
 }
 
-impl<S: jacquard_common::BosStr> AssignModeratorBuilder<assign_moderator_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> AssignModeratorBuilder<assign_moderator_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         AssignModeratorBuilder {

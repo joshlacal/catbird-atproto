@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -15,11 +22,7 @@
 pub struct RemoveMembers<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub members: Vec<jacquard_common::types::string::Did<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -28,20 +31,26 @@ pub struct RemoveMembers<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RemoveMembersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct RemoveMembersOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -49,6 +58,7 @@ pub struct RemoveMembersOutput<S: jacquard_common::BosStr = jacquard_common::Def
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -58,8 +68,9 @@ pub struct RemoveMembersOutput<S: jacquard_common::BosStr = jacquard_common::Def
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum RemoveMembersError {
     #[serde(rename = "InvalidConvo")]
@@ -113,10 +124,12 @@ impl jacquard_common::xrpc::XrpcResp for RemoveMembersResponse {
     type Err = RemoveMembersError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RemoveMembers<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for RemoveMembers<S> {
     const NSID: &'static str = "chat.bsky.group.removeMembers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = RemoveMembersResponse;
 }
 
@@ -126,17 +139,18 @@ Path: `/xrpc/chat.bsky.group.removeMembers`. The request payload type is `Remove
 pub struct RemoveMembersRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveMembersRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.removeMembers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = RemoveMembers<S>;
     type Response = RemoveMembersResponse;
 }
 
 pub mod remove_members_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -191,7 +205,10 @@ pub struct RemoveMembersBuilder<
 
 impl RemoveMembers<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RemoveMembersBuilder<remove_members_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> RemoveMembersBuilder<
+        remove_members_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RemoveMembersBuilder::new()
     }
 }

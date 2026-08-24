@@ -6,26 +6,19 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RequestLeafRecovery<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    pub signed_request: crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<
-        S,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+pub struct RequestLeafRecovery<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub signed_request: crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,27 +26,21 @@ pub struct RequestLeafRecovery<
         >,
     >,
 }
-
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RequestLeafRecoveryOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct RequestLeafRecoveryOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub recovery: crate::generated::blue_catbird::chat::LeafRecoveryView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -61,7 +48,6 @@ pub struct RequestLeafRecoveryOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -71,9 +57,8 @@ pub struct RequestLeafRecoveryOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum RequestLeafRecoveryError {
     #[serde(rename = "BlockedRelationship")]
@@ -93,35 +78,23 @@ pub enum RequestLeafRecoveryError {
     #[serde(rename = "InvalidSignature")]
     InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "KeyPackageUnavailable")]
-    KeyPackageUnavailable(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    KeyPackageUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "LeafRecoveryAlreadyOpen")]
-    LeafRecoveryAlreadyOpen(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    LeafRecoveryAlreadyOpen(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotParticipant")]
     NotParticipant(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RelationshipPolicyUnavailable")]
-    RelationshipPolicyUnavailable(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -283,12 +256,10 @@ impl jacquard_common::xrpc::XrpcResp for RequestLeafRecoveryResponse {
     type Err = RequestLeafRecoveryError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for RequestLeafRecovery<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RequestLeafRecovery<S> {
     const NSID: &'static str = "blue.catbird.chat.requestLeafRecovery";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RequestLeafRecoveryResponse;
 }
 
@@ -298,16 +269,15 @@ Path: `/xrpc/blue.catbird.chat.requestLeafRecovery`. The request payload type is
 pub struct RequestLeafRecoveryRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestLeafRecoveryRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.requestLeafRecovery";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = RequestLeafRecovery<S>;
     type Response = RequestLeafRecoveryResponse;
 }
 
 pub mod request_leaf_recovery_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -344,37 +314,28 @@ pub struct RequestLeafRecoveryBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<
-            crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>,
-        >,
+        core::option::Option<crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl RequestLeafRecovery<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RequestLeafRecoveryBuilder<
-        request_leaf_recovery_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> RequestLeafRecoveryBuilder<request_leaf_recovery_state::Empty, jacquard_common::DefaultStr>
+    {
         RequestLeafRecoveryBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> RequestLeafRecovery<S> {
     /// Create a new builder for this type
-    pub fn builder() -> RequestLeafRecoveryBuilder<
-        request_leaf_recovery_state::Empty,
-        S,
-    > {
+    pub fn builder() -> RequestLeafRecoveryBuilder<request_leaf_recovery_state::Empty, S> {
         RequestLeafRecoveryBuilder::builder()
     }
 }
 
-impl RequestLeafRecoveryBuilder<
-    request_leaf_recovery_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl RequestLeafRecoveryBuilder<request_leaf_recovery_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RequestLeafRecoveryBuilder {
@@ -385,9 +346,7 @@ impl RequestLeafRecoveryBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> RequestLeafRecoveryBuilder<request_leaf_recovery_state::Empty, S> {
+impl<S: jacquard_common::BosStr> RequestLeafRecoveryBuilder<request_leaf_recovery_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         RequestLeafRecoveryBuilder {
@@ -406,13 +365,8 @@ where
     /// Set the `signedRequest` field (required)
     pub fn signed_request(
         mut self,
-        value: impl Into<
-            crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>,
-        >,
-    ) -> RequestLeafRecoveryBuilder<
-        request_leaf_recovery_state::SetSignedRequest<St>,
-        S,
-    > {
+        value: impl Into<crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>>,
+    ) -> RequestLeafRecoveryBuilder<request_leaf_recovery_state::SetSignedRequest<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         RequestLeafRecoveryBuilder {
             _state: ::core::marker::PhantomData,

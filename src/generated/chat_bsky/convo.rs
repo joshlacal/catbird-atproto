@@ -29,6 +29,7 @@ pub mod unmute_convo;
 pub mod update_all_read;
 pub mod update_read;
 
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ConvoKind<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Direct,
@@ -76,8 +77,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for ConvoKind<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for ConvoKind<S>
-{
+for ConvoKind<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -101,6 +101,7 @@ where
         }
     }
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ConvoLockStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -152,8 +153,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for ConvoLockStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for ConvoLockStatus<S>
-{
+for ConvoLockStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -179,9 +179,17 @@ where
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -189,11 +197,7 @@ where
 pub struct ConvoRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub did: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -201,6 +205,7 @@ pub struct ConvoRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ConvoStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -249,8 +254,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for ConvoStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for ConvoStatus<S>
-{
+for ConvoStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -275,9 +279,17 @@ where
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -290,8 +302,9 @@ pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub last_message: core::option::Option<ConvoViewLastMessage<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub last_reaction:
-        core::option::Option<crate::generated::chat_bsky::convo::MessageAndReactionView<S>>,
+    pub last_reaction: core::option::Option<
+        crate::generated::chat_bsky::convo::MessageAndReactionView<S>,
+    >,
     ///Members of this conversation. For direct convos, it will be an immutable list of the 2 members. For group convos, it will a list of important members (the first few members, the viewer, the member who added the viewer, the member who sent the last message, the member who sent the last reaction), but will not contain the full list of members. Use chat.bsky.convo.getConvoMembers to list all members.
     pub members: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub muted: bool,
@@ -300,11 +313,7 @@ pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub status: core::option::Option<crate::generated::chat_bsky::convo::ConvoStatus<S>>,
     pub unread_count: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -313,10 +322,18 @@ pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -328,10 +345,18 @@ pub enum ConvoViewKind<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     GroupConvo(Box<crate::generated::chat_bsky::convo::GroupConvo<S>>),
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -345,9 +370,17 @@ pub enum ConvoViewLastMessage<S: jacquard_common::BosStr = jacquard_common::Defa
     SystemMessageView(Box<crate::generated::chat_bsky::convo::SystemMessageView<S>>),
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -357,11 +390,7 @@ pub struct DeletedMessageView<S: jacquard_common::BosStr = jacquard_common::Defa
     pub rev: S,
     pub sender: crate::generated::chat_bsky::convo::MessageViewSender<S>,
     pub sent_at: jacquard_common::types::string::Datetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -369,6 +398,7 @@ pub struct DeletedMessageView<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -378,18 +408,15 @@ pub struct DeletedMessageView<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -398,9 +425,17 @@ pub struct DirectConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -408,7 +443,9 @@ pub struct DirectConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 pub struct GroupConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub join_link: core::option::Option<crate::generated::chat_bsky::group::JoinLinkView<S>>,
+    pub join_link: core::option::Option<
+        crate::generated::chat_bsky::group::JoinLinkView<S>,
+    >,
     ///The total number of pending join requests for the group conversation. Only present for the owner. Capped at 21.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub join_request_count: core::option::Option<i64>,
@@ -425,11 +462,7 @@ pub struct GroupConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     ///The number of unread join requests for the group conversation. Only present for the owner.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub unread_join_request_count: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -448,8 +481,9 @@ pub struct GroupConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -457,11 +491,7 @@ pub struct GroupConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 pub struct LogAcceptConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -473,8 +503,15 @@ pub struct LogAcceptConvo<S: jacquard_common::BosStr = jacquard_common::DefaultS
 /// Event indicating a member was added to a group convo. The member who was added gets a logBeginConvo (to create the convo) but also a logAddMember (to show the system message as the first message the user sees).
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -486,11 +523,7 @@ pub struct LogAddMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     ///Profiles referred in the system message.
     pub related_profiles: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -502,8 +535,15 @@ pub struct LogAddMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 /// Event indicating a reaction was added to a message.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -514,14 +554,11 @@ pub struct LogAddReaction<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub reaction: crate::generated::chat_bsky::convo::ReactionView<S>,
     ///Profiles referred in the message and reaction views. This isn't required for compatibility, because it was added later, but should generally be present.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub related_profiles:
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+    pub related_profiles: core::option::Option<
+        Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+    >,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -530,15 +567,25 @@ pub struct LogAddReaction<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum LogAddReactionMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum LogAddReactionMessage<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
     MessageView(Box<crate::generated::chat_bsky::convo::MessageView<S>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
@@ -548,22 +595,27 @@ pub enum LogAddReactionMessage<S: jacquard_common::BosStr = jacquard_common::Def
 /// Event indicating a join request was approved by the viewer. Only the owner gets this. The approved member gets a logBeginConvo.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogApproveJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct LogApproveJoinRequest<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     ///Prospective member who requested to join.
     pub member: crate::generated::chat_bsky::actor::ProfileViewBasic<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -582,8 +634,9 @@ pub struct LogApproveJoinRequest<S: jacquard_common::BosStr = jacquard_common::D
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -591,11 +644,7 @@ pub struct LogApproveJoinRequest<S: jacquard_common::BosStr = jacquard_common::D
 pub struct LogBeginConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -607,8 +656,15 @@ pub struct LogBeginConvo<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 /// Event indicating a join link was created for a group convo.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -618,11 +674,7 @@ pub struct LogCreateJoinLink<S: jacquard_common::BosStr = jacquard_common::Defau
     ///A system message with data of type #systemMessageDataCreateJoinLink
     pub message: crate::generated::chat_bsky::convo::SystemMessageView<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -634,8 +686,15 @@ pub struct LogCreateJoinLink<S: jacquard_common::BosStr = jacquard_common::Defau
 /// Event indicating a user-originated message was created. Is not emitted for system messages.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -645,14 +704,11 @@ pub struct LogCreateMessage<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub message: LogCreateMessageMessage<S>,
     ///Profiles referred to in the message view. This isn't required for compatibility, because it was added later, but should generally be present.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub related_profiles:
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+    pub related_profiles: core::option::Option<
+        Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+    >,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -661,15 +717,25 @@ pub struct LogCreateMessage<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum LogCreateMessageMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum LogCreateMessageMessage<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
     MessageView(Box<crate::generated::chat_bsky::convo::MessageView<S>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
@@ -679,8 +745,15 @@ pub enum LogCreateMessageMessage<S: jacquard_common::BosStr = jacquard_common::D
 /// Event indicating a user-originated message was deleted. Is not emitted for system messages.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -689,11 +762,7 @@ pub struct LogDeleteMessage<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub convo_id: S,
     pub message: LogDeleteMessageMessage<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -702,15 +771,25 @@ pub struct LogDeleteMessage<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum LogDeleteMessageMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum LogDeleteMessageMessage<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
     MessageView(Box<crate::generated::chat_bsky::convo::MessageView<S>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
@@ -720,8 +799,15 @@ pub enum LogDeleteMessageMessage<S: jacquard_common::BosStr = jacquard_common::D
 /// Event indicating a join link was disabled for a group convo.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -731,11 +817,7 @@ pub struct LogDisableJoinLink<S: jacquard_common::BosStr = jacquard_common::Defa
     ///A system message with data of type #systemMessageDataDisableJoinLink
     pub message: crate::generated::chat_bsky::convo::SystemMessageView<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -747,8 +829,15 @@ pub struct LogDisableJoinLink<S: jacquard_common::BosStr = jacquard_common::Defa
 /// Event indicating info about group convo was edited.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -758,11 +847,7 @@ pub struct LogEditGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     ///A system message with data of type #systemMessageDataEditGroup
     pub message: crate::generated::chat_bsky::convo::SystemMessageView<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -774,8 +859,15 @@ pub struct LogEditGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 /// Event indicating a settings about a join link for a group convo were edited.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -785,11 +877,7 @@ pub struct LogEditJoinLink<S: jacquard_common::BosStr = jacquard_common::Default
     ///A system message with data of type #systemMessageDataEditJoinLink
     pub message: crate::generated::chat_bsky::convo::SystemMessageView<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -801,8 +889,15 @@ pub struct LogEditJoinLink<S: jacquard_common::BosStr = jacquard_common::Default
 /// Event indicating a join link was enabled for a group convo.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -812,11 +907,7 @@ pub struct LogEnableJoinLink<S: jacquard_common::BosStr = jacquard_common::Defau
     ///A system message with data of type #systemMessageDataEnableJoinLink
     pub message: crate::generated::chat_bsky::convo::SystemMessageView<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -828,22 +919,27 @@ pub struct LogEnableJoinLink<S: jacquard_common::BosStr = jacquard_common::Defau
 /// Event indicating a join request was made to a group the viewer owns. Only the owner gets this.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogIncomingJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct LogIncomingJoinRequest<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     ///Prospective member who requested to join.
     pub member: crate::generated::chat_bsky::actor::ProfileViewBasic<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -862,8 +958,9 @@ pub struct LogIncomingJoinRequest<S: jacquard_common::BosStr = jacquard_common::
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -871,11 +968,7 @@ pub struct LogIncomingJoinRequest<S: jacquard_common::BosStr = jacquard_common::
 pub struct LogLeaveConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -887,8 +980,15 @@ pub struct LogLeaveConvo<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 /// Event indicating a group convo was locked.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -900,11 +1000,7 @@ pub struct LogLockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     ///Profiles referred in the system message.
     pub related_profiles: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -916,24 +1012,29 @@ pub struct LogLockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 /// Event indicating a group convo was locked permanently.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogLockConvoPermanently<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct LogLockConvoPermanently<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     ///A system message with data of type #systemMessageDataLockConvoPermanently
     pub message: crate::generated::chat_bsky::convo::SystemMessageView<S>,
     ///Profiles referred in the system message.
     pub related_profiles: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -945,8 +1046,15 @@ pub struct LogLockConvoPermanently<S: jacquard_common::BosStr = jacquard_common:
 /// Event indicating a member joined a group convo via join link. The member who was added gets a logBeginConvo (to create the convo) but also a logMemberJoin (to show the system message as the first message the user sees).
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -958,11 +1066,7 @@ pub struct LogMemberJoin<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     ///Profiles referred in the system message.
     pub related_profiles: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -974,8 +1078,15 @@ pub struct LogMemberJoin<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 /// Event indicating a member voluntarily left a group convo. The member who was removed gets a logLeaveConvo (to leave the convo) but not a logMemberLeave (because they already left, so can't see the system message).
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -987,11 +1098,7 @@ pub struct LogMemberLeave<S: jacquard_common::BosStr = jacquard_common::DefaultS
     ///Profiles referred in the system message.
     pub related_profiles: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1010,8 +1117,9 @@ pub struct LogMemberLeave<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1019,11 +1127,7 @@ pub struct LogMemberLeave<S: jacquard_common::BosStr = jacquard_common::DefaultS
 pub struct LogMuteConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1042,20 +1146,19 @@ pub struct LogMuteConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogOutgoingJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct LogOutgoingJoinRequest<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1067,8 +1170,15 @@ pub struct LogOutgoingJoinRequest<S: jacquard_common::BosStr = jacquard_common::
 /// Event indicating a convo was read up to a certain message.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1077,11 +1187,7 @@ pub struct LogReadConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub convo_id: S,
     pub message: LogReadConvoMessage<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1090,10 +1196,18 @@ pub struct LogReadConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1117,20 +1231,19 @@ pub enum LogReadConvoMessage<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogReadJoinRequests<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct LogReadJoinRequests<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1142,8 +1255,15 @@ pub struct LogReadJoinRequests<S: jacquard_common::BosStr = jacquard_common::Def
 /// DEPRECATED: use logReadConvo instead. Event indicating a convo was read up to a certain message.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1152,11 +1272,7 @@ pub struct LogReadMessage<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub convo_id: S,
     pub message: LogReadMessageMessage<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1165,15 +1281,25 @@ pub struct LogReadMessage<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum LogReadMessageMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum LogReadMessageMessage<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
     MessageView(Box<crate::generated::chat_bsky::convo::MessageView<S>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
@@ -1185,22 +1311,27 @@ pub enum LogReadMessageMessage<S: jacquard_common::BosStr = jacquard_common::Def
 /// Event indicating a join request was rejected by the viewer. Only the owner gets this.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogRejectJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct LogRejectJoinRequest<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     ///Prospective member who requested to join.
     pub member: crate::generated::chat_bsky::actor::ProfileViewBasic<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1212,8 +1343,15 @@ pub struct LogRejectJoinRequest<S: jacquard_common::BosStr = jacquard_common::De
 /// Event indicating a member was removed from a group convo. The member who was removed gets a logLeaveConvo (to leave the convo) but not a logRemoveMember (because they already left, so can't see the system message).
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1225,11 +1363,7 @@ pub struct LogRemoveMember<S: jacquard_common::BosStr = jacquard_common::Default
     ///Profiles referred in the system message.
     pub related_profiles: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1241,8 +1375,15 @@ pub struct LogRemoveMember<S: jacquard_common::BosStr = jacquard_common::Default
 /// Event indicating a reaction was removed from a message.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1253,14 +1394,11 @@ pub struct LogRemoveReaction<S: jacquard_common::BosStr = jacquard_common::Defau
     pub reaction: crate::generated::chat_bsky::convo::ReactionView<S>,
     ///Profiles referred in the message and reaction views. This isn't required for compatibility, because it was added later, but should generally be present.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub related_profiles:
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+    pub related_profiles: core::option::Option<
+        Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+    >,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1269,15 +1407,25 @@ pub struct LogRemoveReaction<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum LogRemoveReactionMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum LogRemoveReactionMessage<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
     MessageView(Box<crate::generated::chat_bsky::convo::MessageView<S>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
@@ -1287,8 +1435,15 @@ pub enum LogRemoveReactionMessage<S: jacquard_common::BosStr = jacquard_common::
 /// Event indicating a group convo was unlocked.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1300,11 +1455,7 @@ pub struct LogUnlockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultS
     ///Profiles referred in the system message.
     pub related_profiles: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1323,8 +1474,9 @@ pub struct LogUnlockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1332,11 +1484,7 @@ pub struct LogUnlockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultS
 pub struct LogUnmuteConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1348,23 +1496,27 @@ pub struct LogUnmuteConvo<S: jacquard_common::BosStr = jacquard_common::DefaultS
 /// Event indicating a prospective member withdrew their join request. Only the owner gets this.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogWithdrawIncomingJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
-{
+pub struct LogWithdrawIncomingJoinRequest<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     ///Prospective member who withdrew their join request.
     pub member: crate::generated::chat_bsky::actor::ProfileViewBasic<S>,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1383,21 +1535,19 @@ pub struct LogWithdrawIncomingJoinRequest<S: jacquard_common::BosStr = jacquard_
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LogWithdrawOutgoingJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
-{
+pub struct LogWithdrawOutgoingJoinRequest<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1406,21 +1556,27 @@ pub struct LogWithdrawOutgoingJoinRequest<S: jacquard_common::BosStr = jacquard_
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct MessageAndReactionView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct MessageAndReactionView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub message: crate::generated::chat_bsky::convo::MessageView<S>,
     pub reaction: crate::generated::chat_bsky::convo::ReactionView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1439,8 +1595,9 @@ pub struct MessageAndReactionView<S: jacquard_common::BosStr = jacquard_common::
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1448,11 +1605,7 @@ pub struct MessageAndReactionView<S: jacquard_common::BosStr = jacquard_common::
 pub struct MessageBeforeUserJoinedGroupView<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1460,6 +1613,7 @@ pub struct MessageBeforeUserJoinedGroupView<
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -1469,8 +1623,9 @@ pub struct MessageBeforeUserJoinedGroupView<
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1480,16 +1635,14 @@ pub struct MessageInput<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub embed: core::option::Option<MessageInputEmbed<S>>,
     ///Annotations of text (mentions, URLs, hashtags, etc)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub facets: core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+    pub facets: core::option::Option<
+        Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>,
+    >,
     ///If set, the message this message is replying to. The referenced message must be in the same convo.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reply_to: core::option::Option<crate::generated::chat_bsky::convo::ReplyRef<S>>,
     pub text: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1498,10 +1651,18 @@ pub struct MessageInput<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1513,9 +1674,17 @@ pub enum MessageInputEmbed<S: jacquard_common::BosStr = jacquard_common::Default
     JoinLink(Box<crate::generated::chat_bsky::embed::join_link::JoinLink<S>>),
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1524,11 +1693,7 @@ pub struct MessageRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub convo_id: S,
     pub did: jacquard_common::types::string::Did<S>,
     pub message_id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1537,9 +1702,17 @@ pub struct MessageRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1549,11 +1722,15 @@ pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub embed: core::option::Option<MessageViewEmbed<S>>,
     ///Annotations of text (mentions, URLs, hashtags, etc)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub facets: core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+    pub facets: core::option::Option<
+        Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>,
+    >,
     pub id: S,
     ///Reactions to this message, in ascending order of creation time.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub reactions: core::option::Option<Vec<crate::generated::chat_bsky::convo::ReactionView<S>>>,
+    pub reactions: core::option::Option<
+        Vec<crate::generated::chat_bsky::convo::ReactionView<S>>,
+    >,
     ///If set, the message this message is replying to. The full view of the referenced message is embedded so the client can render it inline. Only a single level is embedded: the embedded message will not itself have a populated 'replyTo' field even if it was also a reply.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reply_to: core::option::Option<MessageViewReplyTo<S>>,
@@ -1561,11 +1738,7 @@ pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub sender: crate::generated::chat_bsky::convo::MessageViewSender<S>,
     pub sent_at: jacquard_common::types::string::Datetime,
     pub text: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1574,10 +1747,18 @@ pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1589,10 +1770,18 @@ pub enum MessageViewEmbed<S: jacquard_common::BosStr = jacquard_common::DefaultS
     JoinLinkView(Box<crate::generated::chat_bsky::embed::join_link::View<S>>),
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1608,20 +1797,24 @@ pub enum MessageViewReplyTo<S: jacquard_common::BosStr = jacquard_common::Defaul
     ),
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MessageViewSender<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1630,9 +1823,17 @@ pub struct MessageViewSender<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1641,11 +1842,7 @@ pub struct ReactionView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub created_at: jacquard_common::types::string::Datetime,
     pub sender: crate::generated::chat_bsky::convo::ReactionViewSender<S>,
     pub value: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1654,20 +1851,24 @@ pub struct ReactionView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReactionViewSender<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1686,19 +1887,16 @@ pub struct ReactionViewSender<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReplyRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub message_id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1710,23 +1908,28 @@ pub struct ReplyRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// System message indicating a user was added to the group convo.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataAddMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageDataAddMember<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub added_by: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
     ///Current view of the member who was added.
     pub member: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
     ///Role the user was added to the group with. The role from 'member' will reflect the current data, not historical.
     pub role: crate::generated::chat_bsky::actor::MemberRole<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1745,19 +1948,17 @@ pub struct SystemMessageDataAddMember<S: jacquard_common::BosStr = jacquard_comm
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataCreateJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
-{
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct SystemMessageDataCreateJoinLink<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1776,8 +1977,9 @@ pub struct SystemMessageDataCreateJoinLink<S: jacquard_common::BosStr = jacquard
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1785,11 +1987,7 @@ pub struct SystemMessageDataCreateJoinLink<S: jacquard_common::BosStr = jacquard
 pub struct SystemMessageDataDisableJoinLink<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1808,24 +2006,23 @@ pub struct SystemMessageDataDisableJoinLink<
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataEditGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageDataEditGroup<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Group name that replaced the old.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub new_name: core::option::Option<S>,
     ///Group name that was replaced.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub old_name: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1844,18 +2041,17 @@ pub struct SystemMessageDataEditGroup<S: jacquard_common::BosStr = jacquard_comm
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataEditJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct SystemMessageDataEditJoinLink<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1874,19 +2070,17 @@ pub struct SystemMessageDataEditJoinLink<S: jacquard_common::BosStr = jacquard_c
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataEnableJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
-{
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct SystemMessageDataEnableJoinLink<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1898,20 +2092,25 @@ pub struct SystemMessageDataEnableJoinLink<S: jacquard_common::BosStr = jacquard
 /// System message indicating the group convo was locked.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataLockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageDataLockConvo<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Current view of the member who locked the group.
     pub locked_by: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1923,8 +2122,15 @@ pub struct SystemMessageDataLockConvo<S: jacquard_common::BosStr = jacquard_comm
 /// System message indicating the group convo was locked permanently.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1934,11 +2140,7 @@ pub struct SystemMessageDataLockConvoPermanently<
 > {
     ///Current view of the member who locked the group.
     pub locked_by: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1950,26 +2152,32 @@ pub struct SystemMessageDataLockConvoPermanently<
 /// System message indicating a user joined the group convo via join link.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataMemberJoin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageDataMemberJoin<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///If join link was configured to require approval, this will be set to who approved the request. Undefined if approval was not required.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub approved_by:
-        core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+    pub approved_by: core::option::Option<
+        crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+    >,
     ///Current view of the member who joined.
     pub member: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
     ///Role the user was added to the group with. The role from 'member' will reflect the current data, not historical.
     pub role: crate::generated::chat_bsky::actor::MemberRole<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1981,20 +2189,25 @@ pub struct SystemMessageDataMemberJoin<S: jacquard_common::BosStr = jacquard_com
 /// System message indicating a user voluntarily left the group convo.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataMemberLeave<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageDataMemberLeave<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Current view of the member who left the group.
     pub member: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2006,21 +2219,26 @@ pub struct SystemMessageDataMemberLeave<S: jacquard_common::BosStr = jacquard_co
 /// System message indicating a user was removed from the group convo.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataRemoveMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageDataRemoveMember<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Current view of the member who was removed.
     pub member: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
     pub removed_by: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2032,20 +2250,25 @@ pub struct SystemMessageDataRemoveMember<S: jacquard_common::BosStr = jacquard_c
 /// System message indicating the group convo was unlocked.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageDataUnlockConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageDataUnlockConvo<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Current view of the member who unlocked the group.
     pub unlocked_by: crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2054,20 +2277,26 @@ pub struct SystemMessageDataUnlockConvo<S: jacquard_common::BosStr = jacquard_co
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SystemMessageReferredUser<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SystemMessageReferredUser<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub did: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2076,9 +2305,17 @@ pub struct SystemMessageReferredUser<S: jacquard_common::BosStr = jacquard_commo
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -2088,11 +2325,7 @@ pub struct SystemMessageView<S: jacquard_common::BosStr = jacquard_common::Defau
     pub id: S,
     pub rev: S,
     pub sent_at: jacquard_common::types::string::Datetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2101,15 +2334,25 @@ pub struct SystemMessageView<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum SystemMessageViewData<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum SystemMessageViewData<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataAddMember")]
     SystemMessageDataAddMember(
         Box<crate::generated::chat_bsky::convo::SystemMessageDataAddMember<S>>,
@@ -2160,7 +2403,8 @@ pub enum SystemMessageViewData<S: jacquard_common::BosStr = jacquard_common::Def
     ),
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ConvoRef<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ConvoRef<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2175,7 +2419,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Con
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ConvoView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ConvoView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2190,7 +2435,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Con
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DeletedMessageView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for DeletedMessageView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2205,7 +2451,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Del
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DirectConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for DirectConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2220,7 +2467,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dir
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for GroupConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for GroupConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2236,7 +2484,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Gro
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 500usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "name",
+                    ),
                     max: 500usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -2251,13 +2501,13 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Gro
                     )
                     .count();
                 if count > 50usize {
-                    return Err(
-                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
-                            max: 50usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: jacquard_lexicon::validation::ValidationPath::from_field(
+                            "name",
+                        ),
+                        max: 50usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -2265,7 +2515,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Gro
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogAcceptConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogAcceptConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2280,7 +2531,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogAddMember<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogAddMember<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2295,7 +2547,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogAddReaction<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogAddReaction<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2311,8 +2564,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogApproveJoinRequest<S>
-{
+for LogApproveJoinRequest<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2327,7 +2579,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogBeginConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogBeginConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2342,7 +2595,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogCreateJoinLink<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogCreateJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2357,7 +2611,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogCreateMessage<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogCreateMessage<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2372,7 +2627,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogDeleteMessage<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogDeleteMessage<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2387,7 +2643,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogDisableJoinLink<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogDisableJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2402,7 +2659,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogEditGroup<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogEditGroup<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2417,7 +2675,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogEditJoinLink<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogEditJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2432,7 +2691,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogEnableJoinLink<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogEnableJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2448,8 +2708,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogIncomingJoinRequest<S>
-{
+for LogIncomingJoinRequest<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2464,7 +2723,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogLeaveConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogLeaveConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2479,7 +2739,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogLockConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogLockConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2495,8 +2756,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogLockConvoPermanently<S>
-{
+for LogLockConvoPermanently<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2511,7 +2771,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogMemberJoin<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogMemberJoin<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2526,7 +2787,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogMemberLeave<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogMemberLeave<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2541,7 +2803,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogMuteConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogMuteConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2557,8 +2820,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogOutgoingJoinRequest<S>
-{
+for LogOutgoingJoinRequest<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2573,7 +2835,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogReadConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogReadConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2589,8 +2852,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogReadJoinRequests<S>
-{
+for LogReadJoinRequests<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2605,7 +2867,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogReadMessage<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogReadMessage<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2621,8 +2884,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogRejectJoinRequest<S>
-{
+for LogRejectJoinRequest<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2637,7 +2899,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogRemoveMember<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogRemoveMember<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2652,7 +2915,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogRemoveReaction<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogRemoveReaction<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2667,7 +2931,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogUnlockConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogUnlockConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2682,7 +2947,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LogUnmuteConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LogUnmuteConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2698,8 +2964,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Log
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogWithdrawIncomingJoinRequest<S>
-{
+for LogWithdrawIncomingJoinRequest<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2715,8 +2980,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LogWithdrawOutgoingJoinRequest<S>
-{
+for LogWithdrawOutgoingJoinRequest<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2732,8 +2996,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for MessageAndReactionView<S>
-{
+for MessageAndReactionView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2749,8 +3012,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for MessageBeforeUserJoinedGroupView<S>
-{
+for MessageBeforeUserJoinedGroupView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2765,7 +3027,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageInput<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for MessageInput<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2781,7 +3044,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 10000usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "text",
+                    ),
                     max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -2796,13 +3061,13 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
                     )
                     .count();
                 if count > 1000usize {
-                    return Err(
-                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
-                            max: 1000usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: jacquard_lexicon::validation::ValidationPath::from_field(
+                            "text",
+                        ),
+                        max: 1000usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -2810,7 +3075,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageRef<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for MessageRef<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2825,7 +3091,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for MessageView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2841,7 +3108,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 10000usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "text",
+                    ),
                     max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -2856,13 +3125,13 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
                     )
                     .count();
                 if count > 1000usize {
-                    return Err(
-                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
-                            max: 1000usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: jacquard_lexicon::validation::ValidationPath::from_field(
+                            "text",
+                        ),
+                        max: 1000usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -2870,7 +3139,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageViewSender<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for MessageViewSender<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2885,7 +3155,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReactionView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ReactionView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2900,7 +3171,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rea
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReactionViewSender<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ReactionViewSender<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2915,7 +3187,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rea
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReplyRef<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ReplyRef<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2931,8 +3204,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataAddMember<S>
-{
+for SystemMessageDataAddMember<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2948,8 +3220,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataCreateJoinLink<S>
-{
+for SystemMessageDataCreateJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2965,8 +3236,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataDisableJoinLink<S>
-{
+for SystemMessageDataDisableJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2982,8 +3252,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataEditGroup<S>
-{
+for SystemMessageDataEditGroup<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -2999,8 +3268,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataEditJoinLink<S>
-{
+for SystemMessageDataEditJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3016,8 +3284,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataEnableJoinLink<S>
-{
+for SystemMessageDataEnableJoinLink<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3033,8 +3300,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataLockConvo<S>
-{
+for SystemMessageDataLockConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3050,8 +3316,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataLockConvoPermanently<S>
-{
+for SystemMessageDataLockConvoPermanently<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3067,8 +3332,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataMemberJoin<S>
-{
+for SystemMessageDataMemberJoin<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3084,8 +3348,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataMemberLeave<S>
-{
+for SystemMessageDataMemberLeave<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3101,8 +3364,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataRemoveMember<S>
-{
+for SystemMessageDataRemoveMember<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3118,8 +3380,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageDataUnlockConvo<S>
-{
+for SystemMessageDataUnlockConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3135,8 +3396,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for SystemMessageReferredUser<S>
-{
+for SystemMessageReferredUser<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3151,7 +3411,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SystemMessageView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for SystemMessageView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -3168,9 +3429,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sys
 
 pub mod convo_ref_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -3225,7 +3486,10 @@ pub struct ConvoRefBuilder<
 
 impl ConvoRef<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ConvoRefBuilder<convo_ref_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ConvoRefBuilder<
+        convo_ref_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ConvoRefBuilder::new()
     }
 }
@@ -3335,63 +3599,59 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("convoKind"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoLockStatus"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "convoLockStatus",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("convoRef"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("convoStatus"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("convoView"),
@@ -3515,195 +3775,181 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("deletedMessageView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "deletedMessageView",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sender"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sentAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sentAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sender",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#messageViewSender",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sentAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("sender"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#messageViewSender",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("sentAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("directConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map
-                        },
-                        ..Default::default()
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("groupConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("lockStatus"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lockStatusModerationOverride"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("memberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("memberLimit"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "joinLink",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "chat.bsky.group.defs#joinLinkView",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "joinRequestCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "lockStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#convoLockStatus",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "lockStatusModerationOverride",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("memberCount"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("memberLimit"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "memberCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "memberLimit",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "name",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The display name of the group conversation.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("joinLink"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "chat.bsky.group.defs#joinLinkView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "joinRequestCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "lockStatus",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#convoLockStatus",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "lockStatusModerationOverride",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "memberCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "memberLimit",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "The display name of the group conversation.",
-                                        )),
-                                        max_length: Some(500usize),
-                                        max_graphemes: Some(50usize),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "unreadJoinRequestCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                max_length: Some(500usize),
+                                max_graphemes: Some(50usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "unreadJoinRequestCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logAcceptConvo"),
@@ -3986,52 +4232,56 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("logCreateJoinLink"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "logCreateJoinLink",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating a join link was created for a group convo.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageView",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -4159,100 +4409,106 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("logDisableJoinLink"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "logDisableJoinLink",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating a join link was disabled for a group convo.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageView",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logEditGroup"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating info about group convo was edited.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageView",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -4307,52 +4563,56 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("logEnableJoinLink"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "logEnableJoinLink",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating a join link was enabled for a group convo.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageView",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -4408,183 +4668,183 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logLeaveConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating the viewer left a convo. Can be direct or group.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logLockConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating a group convo was locked.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("relatedProfiles")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageView",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "relatedProfiles",
                             ),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Profiles referred in the system message.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "relatedProfiles",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Profiles referred in the system message.",
-                                        )),
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "chat.bsky.actor.defs#profileViewBasic",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "chat.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("logLockConvoPermanently"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "logLockConvoPermanently",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating a group convo was locked permanently.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("relatedProfiles")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageView",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "relatedProfiles",
                             ),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Profiles referred in the system message.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "relatedProfiles",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Profiles referred in the system message.",
-                                        )),
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "chat.bsky.actor.defs#profileViewBasic",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "chat.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logMemberJoin"),
@@ -4728,39 +4988,41 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logMuteConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating the viewer muted a convo. Can be direct or group.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -4804,57 +5066,55 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logReadConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating a convo was read up to a certain message.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static("#messageView"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#deletedMessageView",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageView",
-                                            ),
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#messageView"),
+                                    ::jacquard_common::CowStr::new_static("#deletedMessageView"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageView")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -5158,111 +5418,111 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logUnlockConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating a group convo was unlocked.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("relatedProfiles")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageView",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "relatedProfiles",
                             ),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Profiles referred in the system message.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "relatedProfiles",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Profiles referred in the system message.",
-                                        )),
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "chat.bsky.actor.defs#profileViewBasic",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "chat.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("logUnmuteConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Event indicating the viewer unmuted a convo. Can be direct or group.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -5357,43 +5617,45 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("messageAndReactionView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reaction"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#messageView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("reaction"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#reactionView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "messageAndReactionView",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reaction")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#messageView",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reaction",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#reactionView",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -5415,118 +5677,114 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("messageInput"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("text"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("embed"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static(
-                                                "app.bsky.embed.record",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "chat.bsky.embed.joinLink",
-                                            ),
-                                        ],
-                                        ..Default::default()
-                                    },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("text")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "embed",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.record"),
+                                    ::jacquard_common::CowStr::new_static("chat.bsky.embed.joinLink")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "facets",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Annotations of text (mentions, URLs, hashtags, etc)",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("facets"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Annotations of text (mentions, URLs, hashtags, etc)",
-                                        )),
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "app.bsky.richtext.facet",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("replyTo"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#replyRef"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("text"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        max_length: Some(10000usize),
-                                        max_graphemes: Some(1000usize),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.richtext.facet",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "replyTo",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#replyRef"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "text",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                max_length: Some(10000usize),
+                                max_graphemes: Some(1000usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("messageRef"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "messageId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("messageView"),
@@ -5663,106 +5921,110 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("messageViewSender"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "messageViewSender",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("reactionView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("value"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sender"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("sender"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#reactionViewSender",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sender",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#reactionViewSender",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("value"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "value",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("reactionViewSender"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "reactionViewSender",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("replyRef"),
@@ -5797,233 +6059,243 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataAddMember",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating a user was added to the group convo.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("addedBy"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("addedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("addedBy")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "addedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "member",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "chat.bsky.actor.defs#memberRole",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "role",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "chat.bsky.actor.defs#memberRole",
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataCreateJoinLink",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group join link was created.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataDisableJoinLink",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group join link was disabled.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataEditGroup",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group info was edited.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("newName"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Group name that replaced the old.",
-                                        )),
-                                        ..Default::default()
-                                    },
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "newName",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Group name that replaced the old.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("oldName"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Group name that was replaced.",
-                                        )),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "oldName",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Group name that was replaced.",
+                                    ),
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataEditJoinLink",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group join link was edited.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataEnableJoinLink",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group join link was enabled.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataLockConvo",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group convo was locked.",
-                        )),
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lockedBy"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("lockedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lockedBy")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "lockedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataLockConvoPermanently",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group convo was locked permanently.",
-                        )),
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lockedBy"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("lockedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lockedBy")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "lockedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -6086,230 +6358,212 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataMemberLeave",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating a user voluntarily left the group convo.",
-                        )),
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("member")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "member",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataRemoveMember",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating a user was removed from the group convo.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("removedBy"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("removedBy")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "member",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("removedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "removedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "systemMessageDataUnlockConvo",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "System message indicating the group convo was unlocked.",
-                        )),
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("unlockedBy"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "unlockedBy",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("unlockedBy")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "unlockedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#systemMessageReferredUser",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#systemMessageReferredUser",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("systemMessageReferredUser"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "systemMessageReferredUser",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("systemMessageView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "systemMessageView",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sentAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("data"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("data"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataAddMember",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataRemoveMember",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataMemberJoin",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataMemberLeave",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataLockConvo",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataUnlockConvo",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataLockConvoPermanently",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataEditGroup",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataCreateJoinLink",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataEditJoinLink",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataEnableJoinLink",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#systemMessageDataDisableJoinLink",
-                                            ),
-                                        ],
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("data")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "data",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataAddMember"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataRemoveMember"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataMemberJoin"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataMemberLeave"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataLockConvo"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataUnlockConvo"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataLockConvoPermanently"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataEditGroup"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataCreateJoinLink"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataEditJoinLink"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataEnableJoinLink"),
+                                    ::jacquard_common::CowStr::new_static("#systemMessageDataDisableJoinLink")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sentAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("sentAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map
         },
@@ -6319,9 +6573,9 @@ fn lexicon_doc_chat_bsky_convo_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'
 
 pub mod convo_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6419,8 +6673,12 @@ pub struct ConvoViewBuilder<
         core::option::Option<S>,
         core::option::Option<ConvoViewKind<S>>,
         core::option::Option<ConvoViewLastMessage<S>>,
-        core::option::Option<crate::generated::chat_bsky::convo::MessageAndReactionView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            crate::generated::chat_bsky::convo::MessageAndReactionView<S>,
+        >,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<bool>,
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::ConvoStatus<S>>,
@@ -6431,7 +6689,10 @@ pub struct ConvoViewBuilder<
 
 impl ConvoView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ConvoViewBuilder<convo_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ConvoViewBuilder<
+        convo_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ConvoViewBuilder::new()
     }
 }
@@ -6471,7 +6732,10 @@ where
     St::Id: convo_view_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<S>) -> ConvoViewBuilder<convo_view_state::SetId<St>, S> {
+    pub fn id(
+        mut self,
+        value: impl Into<S>,
+    ) -> ConvoViewBuilder<convo_view_state::SetId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ConvoViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -6496,7 +6760,10 @@ impl<St: convo_view_state::State, S: jacquard_common::BosStr> ConvoViewBuilder<S
 
 impl<St: convo_view_state::State, S: jacquard_common::BosStr> ConvoViewBuilder<St, S> {
     /// Set the `lastMessage` field (optional)
-    pub fn last_message(mut self, value: impl Into<Option<ConvoViewLastMessage<S>>>) -> Self {
+    pub fn last_message(
+        mut self,
+        value: impl Into<Option<ConvoViewLastMessage<S>>>,
+    ) -> Self {
         self._fields.2 = value.into();
         self
     }
@@ -6511,7 +6778,9 @@ impl<St: convo_view_state::State, S: jacquard_common::BosStr> ConvoViewBuilder<S
     /// Set the `lastReaction` field (optional)
     pub fn last_reaction(
         mut self,
-        value: impl Into<Option<crate::generated::chat_bsky::convo::MessageAndReactionView<S>>>,
+        value: impl Into<
+            Option<crate::generated::chat_bsky::convo::MessageAndReactionView<S>>,
+        >,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -6570,7 +6839,10 @@ where
     St::Rev: convo_view_state::IsUnset,
 {
     /// Set the `rev` field (required)
-    pub fn rev(mut self, value: impl Into<S>) -> ConvoViewBuilder<convo_view_state::SetRev<St>, S> {
+    pub fn rev(
+        mut self,
+        value: impl Into<S>,
+    ) -> ConvoViewBuilder<convo_view_state::SetRev<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         ConvoViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -6667,9 +6939,9 @@ where
 
 pub mod deleted_message_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6756,9 +7028,10 @@ pub struct DeletedMessageViewBuilder<
 
 impl DeletedMessageView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> DeletedMessageViewBuilder<deleted_message_view_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> DeletedMessageViewBuilder<
+        deleted_message_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         DeletedMessageViewBuilder::new()
     }
 }
@@ -6770,7 +7043,10 @@ impl<S: jacquard_common::BosStr> DeletedMessageView<S> {
     }
 }
 
-impl DeletedMessageViewBuilder<deleted_message_view_state::Empty, jacquard_common::DefaultStr> {
+impl DeletedMessageViewBuilder<
+    deleted_message_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeletedMessageViewBuilder {
@@ -6781,7 +7057,9 @@ impl DeletedMessageViewBuilder<deleted_message_view_state::Empty, jacquard_commo
     }
 }
 
-impl<S: jacquard_common::BosStr> DeletedMessageViewBuilder<deleted_message_view_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> DeletedMessageViewBuilder<deleted_message_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         DeletedMessageViewBuilder {
@@ -6906,9 +7184,9 @@ where
 
 pub mod group_convo_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6955,12 +7233,16 @@ pub mod group_convo_state {
         type Name = St::Name;
     }
     ///State transition - sets the `lock_status_moderation_override` field to Set
-    pub struct SetLockStatusModerationOverride<St: State = Empty>(PhantomData<fn() -> St>);
+    pub struct SetLockStatusModerationOverride<St: State = Empty>(
+        PhantomData<fn() -> St>,
+    );
     impl<St: State> sealed::Sealed for SetLockStatusModerationOverride<St> {}
     impl<St: State> State for SetLockStatusModerationOverride<St> {
         type CreatedAt = St::CreatedAt;
         type LockStatus = St::LockStatus;
-        type LockStatusModerationOverride = Set<members::lock_status_moderation_override>;
+        type LockStatusModerationOverride = Set<
+            members::lock_status_moderation_override,
+        >;
         type MemberCount = St::MemberCount;
         type MemberLimit = St::MemberLimit;
         type Name = St::Name;
@@ -7038,7 +7320,10 @@ pub struct GroupConvoBuilder<
 
 impl GroupConvo<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GroupConvoBuilder<group_convo_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GroupConvoBuilder<
+        group_convo_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GroupConvoBuilder::new()
     }
 }
@@ -7281,9 +7566,9 @@ where
 
 pub mod log_add_member_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7362,7 +7647,9 @@ pub struct LogAddMemberBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -7370,7 +7657,10 @@ pub struct LogAddMemberBuilder<
 
 impl LogAddMember<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogAddMemberBuilder<log_add_member_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogAddMemberBuilder<
+        log_add_member_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogAddMemberBuilder::new()
     }
 }
@@ -7518,9 +7808,9 @@ where
 
 pub mod log_add_reaction_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7600,7 +7890,9 @@ pub struct LogAddReactionBuilder<
         core::option::Option<S>,
         core::option::Option<LogAddReactionMessage<S>>,
         core::option::Option<crate::generated::chat_bsky::convo::ReactionView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -7608,8 +7900,10 @@ pub struct LogAddReactionBuilder<
 
 impl LogAddReaction<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogAddReactionBuilder<log_add_reaction_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogAddReactionBuilder<
+        log_add_reaction_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogAddReactionBuilder::new()
     }
 }
@@ -7632,7 +7926,9 @@ impl LogAddReactionBuilder<log_add_reaction_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> LogAddReactionBuilder<log_add_reaction_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogAddReactionBuilder<log_add_reaction_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogAddReactionBuilder {
@@ -7700,11 +7996,16 @@ where
     }
 }
 
-impl<St: log_add_reaction_state::State, S: jacquard_common::BosStr> LogAddReactionBuilder<St, S> {
+impl<
+    St: log_add_reaction_state::State,
+    S: jacquard_common::BosStr,
+> LogAddReactionBuilder<St, S> {
     /// Set the `relatedProfiles` field (optional)
     pub fn related_profiles(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        >,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -7778,9 +8079,9 @@ where
 
 pub mod log_approve_join_request_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7860,14 +8161,18 @@ impl LogApproveJoinRequest<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> LogApproveJoinRequest<S> {
     /// Create a new builder for this type
-    pub fn builder() -> LogApproveJoinRequestBuilder<log_approve_join_request_state::Empty, S> {
+    pub fn builder() -> LogApproveJoinRequestBuilder<
+        log_approve_join_request_state::Empty,
+        S,
+    > {
         LogApproveJoinRequestBuilder::builder()
     }
 }
 
-impl
-    LogApproveJoinRequestBuilder<log_approve_join_request_state::Empty, jacquard_common::DefaultStr>
-{
+impl LogApproveJoinRequestBuilder<
+    log_approve_join_request_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogApproveJoinRequestBuilder {
@@ -7878,9 +8183,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    LogApproveJoinRequestBuilder<log_approve_join_request_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> LogApproveJoinRequestBuilder<log_approve_join_request_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogApproveJoinRequestBuilder {
@@ -7900,7 +8205,10 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> LogApproveJoinRequestBuilder<log_approve_join_request_state::SetConvoId<St>, S> {
+    ) -> LogApproveJoinRequestBuilder<
+        log_approve_join_request_state::SetConvoId<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         LogApproveJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -7983,9 +8291,9 @@ where
 
 pub mod log_create_join_link_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8055,9 +8363,10 @@ pub struct LogCreateJoinLinkBuilder<
 
 impl LogCreateJoinLink<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogCreateJoinLinkBuilder<log_create_join_link_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogCreateJoinLinkBuilder<
+        log_create_join_link_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogCreateJoinLinkBuilder::new()
     }
 }
@@ -8069,7 +8378,10 @@ impl<S: jacquard_common::BosStr> LogCreateJoinLink<S> {
     }
 }
 
-impl LogCreateJoinLinkBuilder<log_create_join_link_state::Empty, jacquard_common::DefaultStr> {
+impl LogCreateJoinLinkBuilder<
+    log_create_join_link_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogCreateJoinLinkBuilder {
@@ -8080,7 +8392,9 @@ impl LogCreateJoinLinkBuilder<log_create_join_link_state::Empty, jacquard_common
     }
 }
 
-impl<S: jacquard_common::BosStr> LogCreateJoinLinkBuilder<log_create_join_link_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogCreateJoinLinkBuilder<log_create_join_link_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogCreateJoinLinkBuilder {
@@ -8183,9 +8497,9 @@ where
 
 pub mod log_create_message_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8248,7 +8562,9 @@ pub struct LogCreateMessageBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<LogCreateMessageMessage<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -8256,8 +8572,10 @@ pub struct LogCreateMessageBuilder<
 
 impl LogCreateMessage<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogCreateMessageBuilder<log_create_message_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogCreateMessageBuilder<
+        log_create_message_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogCreateMessageBuilder::new()
     }
 }
@@ -8269,7 +8587,10 @@ impl<S: jacquard_common::BosStr> LogCreateMessage<S> {
     }
 }
 
-impl LogCreateMessageBuilder<log_create_message_state::Empty, jacquard_common::DefaultStr> {
+impl LogCreateMessageBuilder<
+    log_create_message_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogCreateMessageBuilder {
@@ -8280,7 +8601,9 @@ impl LogCreateMessageBuilder<log_create_message_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> LogCreateMessageBuilder<log_create_message_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogCreateMessageBuilder<log_create_message_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogCreateMessageBuilder {
@@ -8329,13 +8652,16 @@ where
     }
 }
 
-impl<St: log_create_message_state::State, S: jacquard_common::BosStr>
-    LogCreateMessageBuilder<St, S>
-{
+impl<
+    St: log_create_message_state::State,
+    S: jacquard_common::BosStr,
+> LogCreateMessageBuilder<St, S> {
     /// Set the `relatedProfiles` field (optional)
     pub fn related_profiles(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        >,
     ) -> Self {
         self._fields.2 = value.into();
         self
@@ -8406,9 +8732,9 @@ where
 
 pub mod log_delete_message_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8478,8 +8804,10 @@ pub struct LogDeleteMessageBuilder<
 
 impl LogDeleteMessage<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogDeleteMessageBuilder<log_delete_message_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogDeleteMessageBuilder<
+        log_delete_message_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogDeleteMessageBuilder::new()
     }
 }
@@ -8491,7 +8819,10 @@ impl<S: jacquard_common::BosStr> LogDeleteMessage<S> {
     }
 }
 
-impl LogDeleteMessageBuilder<log_delete_message_state::Empty, jacquard_common::DefaultStr> {
+impl LogDeleteMessageBuilder<
+    log_delete_message_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogDeleteMessageBuilder {
@@ -8502,7 +8833,9 @@ impl LogDeleteMessageBuilder<log_delete_message_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> LogDeleteMessageBuilder<log_delete_message_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogDeleteMessageBuilder<log_delete_message_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogDeleteMessageBuilder {
@@ -8605,9 +8938,9 @@ where
 
 pub mod log_disable_join_link_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8677,21 +9010,28 @@ pub struct LogDisableJoinLinkBuilder<
 
 impl LogDisableJoinLink<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogDisableJoinLinkBuilder<log_disable_join_link_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogDisableJoinLinkBuilder<
+        log_disable_join_link_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogDisableJoinLinkBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> LogDisableJoinLink<S> {
     /// Create a new builder for this type
-    pub fn builder() -> LogDisableJoinLinkBuilder<log_disable_join_link_state::Empty, S> {
+    pub fn builder() -> LogDisableJoinLinkBuilder<
+        log_disable_join_link_state::Empty,
+        S,
+    > {
         LogDisableJoinLinkBuilder::builder()
     }
 }
 
-impl LogDisableJoinLinkBuilder<log_disable_join_link_state::Empty, jacquard_common::DefaultStr> {
+impl LogDisableJoinLinkBuilder<
+    log_disable_join_link_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogDisableJoinLinkBuilder {
@@ -8702,7 +9042,9 @@ impl LogDisableJoinLinkBuilder<log_disable_join_link_state::Empty, jacquard_comm
     }
 }
 
-impl<S: jacquard_common::BosStr> LogDisableJoinLinkBuilder<log_disable_join_link_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogDisableJoinLinkBuilder<log_disable_join_link_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogDisableJoinLinkBuilder {
@@ -8805,9 +9147,9 @@ where
 
 pub mod log_edit_group_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8877,7 +9219,10 @@ pub struct LogEditGroupBuilder<
 
 impl LogEditGroup<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogEditGroupBuilder<log_edit_group_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogEditGroupBuilder<
+        log_edit_group_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogEditGroupBuilder::new()
     }
 }
@@ -9003,9 +9348,9 @@ where
 
 pub mod log_edit_join_link_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9075,8 +9420,10 @@ pub struct LogEditJoinLinkBuilder<
 
 impl LogEditJoinLink<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogEditJoinLinkBuilder<log_edit_join_link_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogEditJoinLinkBuilder<
+        log_edit_join_link_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogEditJoinLinkBuilder::new()
     }
 }
@@ -9088,7 +9435,10 @@ impl<S: jacquard_common::BosStr> LogEditJoinLink<S> {
     }
 }
 
-impl LogEditJoinLinkBuilder<log_edit_join_link_state::Empty, jacquard_common::DefaultStr> {
+impl LogEditJoinLinkBuilder<
+    log_edit_join_link_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogEditJoinLinkBuilder {
@@ -9099,7 +9449,9 @@ impl LogEditJoinLinkBuilder<log_edit_join_link_state::Empty, jacquard_common::De
     }
 }
 
-impl<S: jacquard_common::BosStr> LogEditJoinLinkBuilder<log_edit_join_link_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogEditJoinLinkBuilder<log_edit_join_link_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogEditJoinLinkBuilder {
@@ -9202,9 +9554,9 @@ where
 
 pub mod log_enable_join_link_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9274,9 +9626,10 @@ pub struct LogEnableJoinLinkBuilder<
 
 impl LogEnableJoinLink<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogEnableJoinLinkBuilder<log_enable_join_link_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogEnableJoinLinkBuilder<
+        log_enable_join_link_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogEnableJoinLinkBuilder::new()
     }
 }
@@ -9288,7 +9641,10 @@ impl<S: jacquard_common::BosStr> LogEnableJoinLink<S> {
     }
 }
 
-impl LogEnableJoinLinkBuilder<log_enable_join_link_state::Empty, jacquard_common::DefaultStr> {
+impl LogEnableJoinLinkBuilder<
+    log_enable_join_link_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogEnableJoinLinkBuilder {
@@ -9299,7 +9655,9 @@ impl LogEnableJoinLinkBuilder<log_enable_join_link_state::Empty, jacquard_common
     }
 }
 
-impl<S: jacquard_common::BosStr> LogEnableJoinLinkBuilder<log_enable_join_link_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogEnableJoinLinkBuilder<log_enable_join_link_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogEnableJoinLinkBuilder {
@@ -9402,9 +9760,9 @@ where
 
 pub mod log_incoming_join_request_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9484,17 +9842,18 @@ impl LogIncomingJoinRequest<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> LogIncomingJoinRequest<S> {
     /// Create a new builder for this type
-    pub fn builder() -> LogIncomingJoinRequestBuilder<log_incoming_join_request_state::Empty, S> {
+    pub fn builder() -> LogIncomingJoinRequestBuilder<
+        log_incoming_join_request_state::Empty,
+        S,
+    > {
         LogIncomingJoinRequestBuilder::builder()
     }
 }
 
-impl
-    LogIncomingJoinRequestBuilder<
-        log_incoming_join_request_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl LogIncomingJoinRequestBuilder<
+    log_incoming_join_request_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogIncomingJoinRequestBuilder {
@@ -9505,9 +9864,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    LogIncomingJoinRequestBuilder<log_incoming_join_request_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> LogIncomingJoinRequestBuilder<log_incoming_join_request_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogIncomingJoinRequestBuilder {
@@ -9527,7 +9886,10 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> LogIncomingJoinRequestBuilder<log_incoming_join_request_state::SetConvoId<St>, S> {
+    ) -> LogIncomingJoinRequestBuilder<
+        log_incoming_join_request_state::SetConvoId<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         LogIncomingJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -9546,7 +9908,10 @@ where
     pub fn member(
         mut self,
         value: impl Into<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
-    ) -> LogIncomingJoinRequestBuilder<log_incoming_join_request_state::SetMember<St>, S> {
+    ) -> LogIncomingJoinRequestBuilder<
+        log_incoming_join_request_state::SetMember<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         LogIncomingJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -9610,9 +9975,9 @@ where
 
 pub mod log_lock_convo_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9691,7 +10056,9 @@ pub struct LogLockConvoBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -9699,7 +10066,10 @@ pub struct LogLockConvoBuilder<
 
 impl LogLockConvo<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogLockConvoBuilder<log_lock_convo_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogLockConvoBuilder<
+        log_lock_convo_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogLockConvoBuilder::new()
     }
 }
@@ -9847,9 +10217,9 @@ where
 
 pub mod log_lock_convo_permanently_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9928,7 +10298,9 @@ pub struct LogLockConvoPermanentlyBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -9946,17 +10318,18 @@ impl LogLockConvoPermanently<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> LogLockConvoPermanently<S> {
     /// Create a new builder for this type
-    pub fn builder() -> LogLockConvoPermanentlyBuilder<log_lock_convo_permanently_state::Empty, S> {
+    pub fn builder() -> LogLockConvoPermanentlyBuilder<
+        log_lock_convo_permanently_state::Empty,
+        S,
+    > {
         LogLockConvoPermanentlyBuilder::builder()
     }
 }
 
-impl
-    LogLockConvoPermanentlyBuilder<
-        log_lock_convo_permanently_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl LogLockConvoPermanentlyBuilder<
+    log_lock_convo_permanently_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogLockConvoPermanentlyBuilder {
@@ -9967,9 +10340,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    LogLockConvoPermanentlyBuilder<log_lock_convo_permanently_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> LogLockConvoPermanentlyBuilder<log_lock_convo_permanently_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogLockConvoPermanentlyBuilder {
@@ -9989,7 +10362,10 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> LogLockConvoPermanentlyBuilder<log_lock_convo_permanently_state::SetConvoId<St>, S> {
+    ) -> LogLockConvoPermanentlyBuilder<
+        log_lock_convo_permanently_state::SetConvoId<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _state: ::core::marker::PhantomData,
@@ -10008,7 +10384,10 @@ where
     pub fn message(
         mut self,
         value: impl Into<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-    ) -> LogLockConvoPermanentlyBuilder<log_lock_convo_permanently_state::SetMessage<St>, S> {
+    ) -> LogLockConvoPermanentlyBuilder<
+        log_lock_convo_permanently_state::SetMessage<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _state: ::core::marker::PhantomData,
@@ -10027,8 +10406,10 @@ where
     pub fn related_profiles(
         mut self,
         value: impl Into<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
-    ) -> LogLockConvoPermanentlyBuilder<log_lock_convo_permanently_state::SetRelatedProfiles<St>, S>
-    {
+    ) -> LogLockConvoPermanentlyBuilder<
+        log_lock_convo_permanently_state::SetRelatedProfiles<St>,
+        S,
+    > {
         self._fields.2 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _state: ::core::marker::PhantomData,
@@ -10047,7 +10428,10 @@ where
     pub fn rev(
         mut self,
         value: impl Into<S>,
-    ) -> LogLockConvoPermanentlyBuilder<log_lock_convo_permanently_state::SetRev<St>, S> {
+    ) -> LogLockConvoPermanentlyBuilder<
+        log_lock_convo_permanently_state::SetRev<St>,
+        S,
+    > {
         self._fields.3 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _state: ::core::marker::PhantomData,
@@ -10095,9 +10479,9 @@ where
 
 pub mod log_member_join_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10176,7 +10560,9 @@ pub struct LogMemberJoinBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -10184,8 +10570,10 @@ pub struct LogMemberJoinBuilder<
 
 impl LogMemberJoin<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogMemberJoinBuilder<log_member_join_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogMemberJoinBuilder<
+        log_member_join_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogMemberJoinBuilder::new()
     }
 }
@@ -10333,9 +10721,9 @@ where
 
 pub mod log_member_leave_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10414,7 +10802,9 @@ pub struct LogMemberLeaveBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -10422,8 +10812,10 @@ pub struct LogMemberLeaveBuilder<
 
 impl LogMemberLeave<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogMemberLeaveBuilder<log_member_leave_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogMemberLeaveBuilder<
+        log_member_leave_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogMemberLeaveBuilder::new()
     }
 }
@@ -10446,7 +10838,9 @@ impl LogMemberLeaveBuilder<log_member_leave_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> LogMemberLeaveBuilder<log_member_leave_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogMemberLeaveBuilder<log_member_leave_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogMemberLeaveBuilder {
@@ -10571,9 +10965,9 @@ where
 
 pub mod log_read_convo_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10643,7 +11037,10 @@ pub struct LogReadConvoBuilder<
 
 impl LogReadConvo<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogReadConvoBuilder<log_read_convo_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogReadConvoBuilder<
+        log_read_convo_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogReadConvoBuilder::new()
     }
 }
@@ -10769,9 +11166,9 @@ where
 
 pub mod log_read_message_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10841,8 +11238,10 @@ pub struct LogReadMessageBuilder<
 
 impl LogReadMessage<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogReadMessageBuilder<log_read_message_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogReadMessageBuilder<
+        log_read_message_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogReadMessageBuilder::new()
     }
 }
@@ -10865,7 +11264,9 @@ impl LogReadMessageBuilder<log_read_message_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> LogReadMessageBuilder<log_read_message_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogReadMessageBuilder<log_read_message_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogReadMessageBuilder {
@@ -10968,9 +11369,9 @@ where
 
 pub mod log_reject_join_request_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11050,14 +11451,18 @@ impl LogRejectJoinRequest<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> LogRejectJoinRequest<S> {
     /// Create a new builder for this type
-    pub fn builder() -> LogRejectJoinRequestBuilder<log_reject_join_request_state::Empty, S> {
+    pub fn builder() -> LogRejectJoinRequestBuilder<
+        log_reject_join_request_state::Empty,
+        S,
+    > {
         LogRejectJoinRequestBuilder::builder()
     }
 }
 
-impl
-    LogRejectJoinRequestBuilder<log_reject_join_request_state::Empty, jacquard_common::DefaultStr>
-{
+impl LogRejectJoinRequestBuilder<
+    log_reject_join_request_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogRejectJoinRequestBuilder {
@@ -11068,9 +11473,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    LogRejectJoinRequestBuilder<log_reject_join_request_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> LogRejectJoinRequestBuilder<log_reject_join_request_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogRejectJoinRequestBuilder {
@@ -11173,9 +11578,9 @@ where
 
 pub mod log_remove_member_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11254,7 +11659,9 @@ pub struct LogRemoveMemberBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -11262,8 +11669,10 @@ pub struct LogRemoveMemberBuilder<
 
 impl LogRemoveMember<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogRemoveMemberBuilder<log_remove_member_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> LogRemoveMemberBuilder<
+        log_remove_member_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogRemoveMemberBuilder::new()
     }
 }
@@ -11275,7 +11684,10 @@ impl<S: jacquard_common::BosStr> LogRemoveMember<S> {
     }
 }
 
-impl LogRemoveMemberBuilder<log_remove_member_state::Empty, jacquard_common::DefaultStr> {
+impl LogRemoveMemberBuilder<
+    log_remove_member_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogRemoveMemberBuilder {
@@ -11286,7 +11698,9 @@ impl LogRemoveMemberBuilder<log_remove_member_state::Empty, jacquard_common::Def
     }
 }
 
-impl<S: jacquard_common::BosStr> LogRemoveMemberBuilder<log_remove_member_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogRemoveMemberBuilder<log_remove_member_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogRemoveMemberBuilder {
@@ -11411,9 +11825,9 @@ where
 
 pub mod log_remove_reaction_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11493,7 +11907,9 @@ pub struct LogRemoveReactionBuilder<
         core::option::Option<S>,
         core::option::Option<LogRemoveReactionMessage<S>>,
         core::option::Option<crate::generated::chat_bsky::convo::ReactionView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -11501,9 +11917,10 @@ pub struct LogRemoveReactionBuilder<
 
 impl LogRemoveReaction<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> LogRemoveReactionBuilder<log_remove_reaction_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogRemoveReactionBuilder<
+        log_remove_reaction_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogRemoveReactionBuilder::new()
     }
 }
@@ -11515,7 +11932,10 @@ impl<S: jacquard_common::BosStr> LogRemoveReaction<S> {
     }
 }
 
-impl LogRemoveReactionBuilder<log_remove_reaction_state::Empty, jacquard_common::DefaultStr> {
+impl LogRemoveReactionBuilder<
+    log_remove_reaction_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogRemoveReactionBuilder {
@@ -11526,7 +11946,9 @@ impl LogRemoveReactionBuilder<log_remove_reaction_state::Empty, jacquard_common:
     }
 }
 
-impl<S: jacquard_common::BosStr> LogRemoveReactionBuilder<log_remove_reaction_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogRemoveReactionBuilder<log_remove_reaction_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogRemoveReactionBuilder {
@@ -11594,13 +12016,16 @@ where
     }
 }
 
-impl<St: log_remove_reaction_state::State, S: jacquard_common::BosStr>
-    LogRemoveReactionBuilder<St, S>
-{
+impl<
+    St: log_remove_reaction_state::State,
+    S: jacquard_common::BosStr,
+> LogRemoveReactionBuilder<St, S> {
     /// Set the `relatedProfiles` field (optional)
     pub fn related_profiles(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        >,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -11674,9 +12099,9 @@ where
 
 pub mod log_unlock_convo_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11755,7 +12180,9 @@ pub struct LogUnlockConvoBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<crate::generated::chat_bsky::convo::SystemMessageView<S>>,
-        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        >,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -11763,8 +12190,10 @@ pub struct LogUnlockConvoBuilder<
 
 impl LogUnlockConvo<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LogUnlockConvoBuilder<log_unlock_convo_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> LogUnlockConvoBuilder<
+        log_unlock_convo_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         LogUnlockConvoBuilder::new()
     }
 }
@@ -11787,7 +12216,9 @@ impl LogUnlockConvoBuilder<log_unlock_convo_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> LogUnlockConvoBuilder<log_unlock_convo_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> LogUnlockConvoBuilder<log_unlock_convo_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogUnlockConvoBuilder {
@@ -11912,9 +12343,9 @@ where
 
 pub mod log_withdraw_incoming_join_request_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11994,19 +12425,18 @@ impl LogWithdrawIncomingJoinRequest<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> LogWithdrawIncomingJoinRequest<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> LogWithdrawIncomingJoinRequestBuilder<log_withdraw_incoming_join_request_state::Empty, S>
-    {
+    pub fn builder() -> LogWithdrawIncomingJoinRequestBuilder<
+        log_withdraw_incoming_join_request_state::Empty,
+        S,
+    > {
         LogWithdrawIncomingJoinRequestBuilder::builder()
     }
 }
 
-impl
-    LogWithdrawIncomingJoinRequestBuilder<
-        log_withdraw_incoming_join_request_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl LogWithdrawIncomingJoinRequestBuilder<
+    log_withdraw_incoming_join_request_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LogWithdrawIncomingJoinRequestBuilder {
@@ -12017,9 +12447,12 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    LogWithdrawIncomingJoinRequestBuilder<log_withdraw_incoming_join_request_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> LogWithdrawIncomingJoinRequestBuilder<
+    log_withdraw_incoming_join_request_state::Empty,
+    S,
+> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LogWithdrawIncomingJoinRequestBuilder {
@@ -12131,9 +12564,9 @@ where
 
 pub mod message_and_reaction_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12198,17 +12631,18 @@ impl MessageAndReactionView<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> MessageAndReactionView<S> {
     /// Create a new builder for this type
-    pub fn builder() -> MessageAndReactionViewBuilder<message_and_reaction_view_state::Empty, S> {
+    pub fn builder() -> MessageAndReactionViewBuilder<
+        message_and_reaction_view_state::Empty,
+        S,
+    > {
         MessageAndReactionViewBuilder::builder()
     }
 }
 
-impl
-    MessageAndReactionViewBuilder<
-        message_and_reaction_view_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl MessageAndReactionViewBuilder<
+    message_and_reaction_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MessageAndReactionViewBuilder {
@@ -12219,9 +12653,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    MessageAndReactionViewBuilder<message_and_reaction_view_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> MessageAndReactionViewBuilder<message_and_reaction_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         MessageAndReactionViewBuilder {
@@ -12241,7 +12675,10 @@ where
     pub fn message(
         mut self,
         value: impl Into<crate::generated::chat_bsky::convo::MessageView<S>>,
-    ) -> MessageAndReactionViewBuilder<message_and_reaction_view_state::SetMessage<St>, S> {
+    ) -> MessageAndReactionViewBuilder<
+        message_and_reaction_view_state::SetMessage<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         MessageAndReactionViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -12260,7 +12697,10 @@ where
     pub fn reaction(
         mut self,
         value: impl Into<crate::generated::chat_bsky::convo::ReactionView<S>>,
-    ) -> MessageAndReactionViewBuilder<message_and_reaction_view_state::SetReaction<St>, S> {
+    ) -> MessageAndReactionViewBuilder<
+        message_and_reaction_view_state::SetReaction<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         MessageAndReactionViewBuilder {
             _state: ::core::marker::PhantomData,
@@ -12302,9 +12742,9 @@ where
 
 pub mod message_ref_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12374,7 +12814,10 @@ pub struct MessageRefBuilder<
 
 impl MessageRef<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> MessageRefBuilder<message_ref_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> MessageRefBuilder<
+        message_ref_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         MessageRefBuilder::new()
     }
 }
@@ -12500,9 +12943,9 @@ where
 
 pub mod message_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12612,7 +13055,10 @@ pub struct MessageViewBuilder<
 
 impl MessageView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> MessageViewBuilder<message_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> MessageViewBuilder<
+        message_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         MessageViewBuilder::new()
     }
 }
@@ -12646,7 +13092,10 @@ impl<S: jacquard_common::BosStr> MessageViewBuilder<message_view_state::Empty, S
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `embed` field (optional)
     pub fn embed(mut self, value: impl Into<Option<MessageViewEmbed<S>>>) -> Self {
         self._fields.0 = value.into();
@@ -12659,11 +13108,16 @@ impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuild
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `facets` field (optional)
     pub fn facets(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+        >,
     ) -> Self {
         self._fields.1 = value.into();
         self
@@ -12697,11 +13151,16 @@ where
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `reactions` field (optional)
     pub fn reactions(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::chat_bsky::convo::ReactionView<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::chat_bsky::convo::ReactionView<S>>>,
+        >,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -12716,7 +13175,10 @@ impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuild
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `replyTo` field (optional)
     pub fn reply_to(mut self, value: impl Into<Option<MessageViewReplyTo<S>>>) -> Self {
         self._fields.4 = value.into();
@@ -12854,9 +13316,9 @@ where
 
 pub mod message_view_sender_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12896,9 +13358,10 @@ pub struct MessageViewSenderBuilder<
 
 impl MessageViewSender<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> MessageViewSenderBuilder<message_view_sender_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> MessageViewSenderBuilder<
+        message_view_sender_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         MessageViewSenderBuilder::new()
     }
 }
@@ -12910,7 +13373,10 @@ impl<S: jacquard_common::BosStr> MessageViewSender<S> {
     }
 }
 
-impl MessageViewSenderBuilder<message_view_sender_state::Empty, jacquard_common::DefaultStr> {
+impl MessageViewSenderBuilder<
+    message_view_sender_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MessageViewSenderBuilder {
@@ -12921,7 +13387,9 @@ impl MessageViewSenderBuilder<message_view_sender_state::Empty, jacquard_common:
     }
 }
 
-impl<S: jacquard_common::BosStr> MessageViewSenderBuilder<message_view_sender_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> MessageViewSenderBuilder<message_view_sender_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         MessageViewSenderBuilder {
@@ -12980,9 +13448,9 @@ where
 
 pub mod reaction_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13052,7 +13520,10 @@ pub struct ReactionViewBuilder<
 
 impl ReactionView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ReactionViewBuilder<reaction_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ReactionViewBuilder<
+        reaction_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ReactionViewBuilder::new()
     }
 }
@@ -13178,9 +13649,9 @@ where
 
 pub mod reaction_view_sender_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13220,9 +13691,10 @@ pub struct ReactionViewSenderBuilder<
 
 impl ReactionViewSender<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> ReactionViewSenderBuilder<reaction_view_sender_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ReactionViewSenderBuilder<
+        reaction_view_sender_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ReactionViewSenderBuilder::new()
     }
 }
@@ -13234,7 +13706,10 @@ impl<S: jacquard_common::BosStr> ReactionViewSender<S> {
     }
 }
 
-impl ReactionViewSenderBuilder<reaction_view_sender_state::Empty, jacquard_common::DefaultStr> {
+impl ReactionViewSenderBuilder<
+    reaction_view_sender_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ReactionViewSenderBuilder {
@@ -13245,7 +13720,9 @@ impl ReactionViewSenderBuilder<reaction_view_sender_state::Empty, jacquard_commo
     }
 }
 
-impl<S: jacquard_common::BosStr> ReactionViewSenderBuilder<reaction_view_sender_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> ReactionViewSenderBuilder<reaction_view_sender_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ReactionViewSenderBuilder {
@@ -13304,9 +13781,9 @@ where
 
 pub mod system_message_data_add_member_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13367,8 +13844,12 @@ pub struct SystemMessageDataAddMemberBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-        core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
         core::option::Option<crate::generated::chat_bsky::actor::MemberRole<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -13386,18 +13867,18 @@ impl SystemMessageDataAddMember<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SystemMessageDataAddMember<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> SystemMessageDataAddMemberBuilder<system_message_data_add_member_state::Empty, S> {
+    pub fn builder() -> SystemMessageDataAddMemberBuilder<
+        system_message_data_add_member_state::Empty,
+        S,
+    > {
         SystemMessageDataAddMemberBuilder::builder()
     }
 }
 
-impl
-    SystemMessageDataAddMemberBuilder<
-        system_message_data_add_member_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageDataAddMemberBuilder<
+    system_message_data_add_member_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageDataAddMemberBuilder {
@@ -13408,9 +13889,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageDataAddMemberBuilder<system_message_data_add_member_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageDataAddMemberBuilder<system_message_data_add_member_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageDataAddMemberBuilder {
@@ -13429,9 +13910,13 @@ where
     /// Set the `addedBy` field (required)
     pub fn added_by(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-    ) -> SystemMessageDataAddMemberBuilder<system_message_data_add_member_state::SetAddedBy<St>, S>
-    {
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ) -> SystemMessageDataAddMemberBuilder<
+        system_message_data_add_member_state::SetAddedBy<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         SystemMessageDataAddMemberBuilder {
             _state: ::core::marker::PhantomData,
@@ -13449,9 +13934,13 @@ where
     /// Set the `member` field (required)
     pub fn member(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-    ) -> SystemMessageDataAddMemberBuilder<system_message_data_add_member_state::SetMember<St>, S>
-    {
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ) -> SystemMessageDataAddMemberBuilder<
+        system_message_data_add_member_state::SetMember<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         SystemMessageDataAddMemberBuilder {
             _state: ::core::marker::PhantomData,
@@ -13470,8 +13959,10 @@ where
     pub fn role(
         mut self,
         value: impl Into<crate::generated::chat_bsky::actor::MemberRole<S>>,
-    ) -> SystemMessageDataAddMemberBuilder<system_message_data_add_member_state::SetRole<St>, S>
-    {
+    ) -> SystemMessageDataAddMemberBuilder<
+        system_message_data_add_member_state::SetRole<St>,
+        S,
+    > {
         self._fields.2 = ::core::option::Option::Some(value.into());
         SystemMessageDataAddMemberBuilder {
             _state: ::core::marker::PhantomData,
@@ -13516,9 +14007,9 @@ where
 
 pub mod system_message_data_lock_convo_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13552,8 +14043,11 @@ pub struct SystemMessageDataLockConvoBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields:
-        (core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -13569,18 +14063,18 @@ impl SystemMessageDataLockConvo<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SystemMessageDataLockConvo<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> SystemMessageDataLockConvoBuilder<system_message_data_lock_convo_state::Empty, S> {
+    pub fn builder() -> SystemMessageDataLockConvoBuilder<
+        system_message_data_lock_convo_state::Empty,
+        S,
+    > {
         SystemMessageDataLockConvoBuilder::builder()
     }
 }
 
-impl
-    SystemMessageDataLockConvoBuilder<
-        system_message_data_lock_convo_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageDataLockConvoBuilder<
+    system_message_data_lock_convo_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageDataLockConvoBuilder {
@@ -13591,9 +14085,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageDataLockConvoBuilder<system_message_data_lock_convo_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageDataLockConvoBuilder<system_message_data_lock_convo_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageDataLockConvoBuilder {
@@ -13612,9 +14106,13 @@ where
     /// Set the `lockedBy` field (required)
     pub fn locked_by(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-    ) -> SystemMessageDataLockConvoBuilder<system_message_data_lock_convo_state::SetLockedBy<St>, S>
-    {
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ) -> SystemMessageDataLockConvoBuilder<
+        system_message_data_lock_convo_state::SetLockedBy<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         SystemMessageDataLockConvoBuilder {
             _state: ::core::marker::PhantomData,
@@ -13653,9 +14151,9 @@ where
 
 pub mod system_message_data_lock_convo_permanently_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13689,8 +14187,11 @@ pub struct SystemMessageDataLockConvoPermanentlyBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields:
-        (core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -13714,12 +14215,10 @@ impl<S: jacquard_common::BosStr> SystemMessageDataLockConvoPermanently<S> {
     }
 }
 
-impl
-    SystemMessageDataLockConvoPermanentlyBuilder<
-        system_message_data_lock_convo_permanently_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageDataLockConvoPermanentlyBuilder<
+    system_message_data_lock_convo_permanently_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageDataLockConvoPermanentlyBuilder {
@@ -13730,12 +14229,12 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageDataLockConvoPermanentlyBuilder<
-        system_message_data_lock_convo_permanently_state::Empty,
-        S,
-    >
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageDataLockConvoPermanentlyBuilder<
+    system_message_data_lock_convo_permanently_state::Empty,
+    S,
+> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageDataLockConvoPermanentlyBuilder {
@@ -13754,7 +14253,9 @@ where
     /// Set the `lockedBy` field (required)
     pub fn locked_by(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
     ) -> SystemMessageDataLockConvoPermanentlyBuilder<
         system_message_data_lock_convo_permanently_state::SetLockedBy<St>,
         S,
@@ -13797,9 +14298,9 @@ where
 
 pub mod system_message_data_member_join_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13846,8 +14347,12 @@ pub struct SystemMessageDataMemberJoinBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-        core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
         core::option::Option<crate::generated::chat_bsky::actor::MemberRole<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -13865,18 +14370,18 @@ impl SystemMessageDataMemberJoin<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SystemMessageDataMemberJoin<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> SystemMessageDataMemberJoinBuilder<system_message_data_member_join_state::Empty, S> {
+    pub fn builder() -> SystemMessageDataMemberJoinBuilder<
+        system_message_data_member_join_state::Empty,
+        S,
+    > {
         SystemMessageDataMemberJoinBuilder::builder()
     }
 }
 
-impl
-    SystemMessageDataMemberJoinBuilder<
-        system_message_data_member_join_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageDataMemberJoinBuilder<
+    system_message_data_member_join_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageDataMemberJoinBuilder {
@@ -13887,9 +14392,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageDataMemberJoinBuilder<system_message_data_member_join_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageDataMemberJoinBuilder<system_message_data_member_join_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageDataMemberJoinBuilder {
@@ -13900,13 +14405,16 @@ impl<S: jacquard_common::BosStr>
     }
 }
 
-impl<St: system_message_data_member_join_state::State, S: jacquard_common::BosStr>
-    SystemMessageDataMemberJoinBuilder<St, S>
-{
+impl<
+    St: system_message_data_member_join_state::State,
+    S: jacquard_common::BosStr,
+> SystemMessageDataMemberJoinBuilder<St, S> {
     /// Set the `approvedBy` field (optional)
     pub fn approved_by(
         mut self,
-        value: impl Into<Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>>,
+        value: impl Into<
+            Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        >,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -13929,9 +14437,13 @@ where
     /// Set the `member` field (required)
     pub fn member(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-    ) -> SystemMessageDataMemberJoinBuilder<system_message_data_member_join_state::SetMember<St>, S>
-    {
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ) -> SystemMessageDataMemberJoinBuilder<
+        system_message_data_member_join_state::SetMember<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         SystemMessageDataMemberJoinBuilder {
             _state: ::core::marker::PhantomData,
@@ -13950,8 +14462,10 @@ where
     pub fn role(
         mut self,
         value: impl Into<crate::generated::chat_bsky::actor::MemberRole<S>>,
-    ) -> SystemMessageDataMemberJoinBuilder<system_message_data_member_join_state::SetRole<St>, S>
-    {
+    ) -> SystemMessageDataMemberJoinBuilder<
+        system_message_data_member_join_state::SetRole<St>,
+        S,
+    > {
         self._fields.2 = ::core::option::Option::Some(value.into());
         SystemMessageDataMemberJoinBuilder {
             _state: ::core::marker::PhantomData,
@@ -13995,9 +14509,9 @@ where
 
 pub mod system_message_data_member_leave_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -14031,8 +14545,11 @@ pub struct SystemMessageDataMemberLeaveBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields:
-        (core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -14048,18 +14565,18 @@ impl SystemMessageDataMemberLeave<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SystemMessageDataMemberLeave<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> SystemMessageDataMemberLeaveBuilder<system_message_data_member_leave_state::Empty, S> {
+    pub fn builder() -> SystemMessageDataMemberLeaveBuilder<
+        system_message_data_member_leave_state::Empty,
+        S,
+    > {
         SystemMessageDataMemberLeaveBuilder::builder()
     }
 }
 
-impl
-    SystemMessageDataMemberLeaveBuilder<
-        system_message_data_member_leave_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageDataMemberLeaveBuilder<
+    system_message_data_member_leave_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageDataMemberLeaveBuilder {
@@ -14070,9 +14587,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageDataMemberLeaveBuilder<system_message_data_member_leave_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageDataMemberLeaveBuilder<system_message_data_member_leave_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageDataMemberLeaveBuilder {
@@ -14091,9 +14608,13 @@ where
     /// Set the `member` field (required)
     pub fn member(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-    ) -> SystemMessageDataMemberLeaveBuilder<system_message_data_member_leave_state::SetMember<St>, S>
-    {
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ) -> SystemMessageDataMemberLeaveBuilder<
+        system_message_data_member_leave_state::SetMember<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         SystemMessageDataMemberLeaveBuilder {
             _state: ::core::marker::PhantomData,
@@ -14132,9 +14653,9 @@ where
 
 pub mod system_message_data_remove_member_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -14181,8 +14702,12 @@ pub struct SystemMessageDataRemoveMemberBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
-        core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -14199,19 +14724,18 @@ impl SystemMessageDataRemoveMember<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SystemMessageDataRemoveMember<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> SystemMessageDataRemoveMemberBuilder<system_message_data_remove_member_state::Empty, S>
-    {
+    pub fn builder() -> SystemMessageDataRemoveMemberBuilder<
+        system_message_data_remove_member_state::Empty,
+        S,
+    > {
         SystemMessageDataRemoveMemberBuilder::builder()
     }
 }
 
-impl
-    SystemMessageDataRemoveMemberBuilder<
-        system_message_data_remove_member_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageDataRemoveMemberBuilder<
+    system_message_data_remove_member_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageDataRemoveMemberBuilder {
@@ -14222,9 +14746,12 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageDataRemoveMemberBuilder<system_message_data_remove_member_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageDataRemoveMemberBuilder<
+    system_message_data_remove_member_state::Empty,
+    S,
+> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageDataRemoveMemberBuilder {
@@ -14243,7 +14770,9 @@ where
     /// Set the `member` field (required)
     pub fn member(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
     ) -> SystemMessageDataRemoveMemberBuilder<
         system_message_data_remove_member_state::SetMember<St>,
         S,
@@ -14265,7 +14794,9 @@ where
     /// Set the `removedBy` field (required)
     pub fn removed_by(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
     ) -> SystemMessageDataRemoveMemberBuilder<
         system_message_data_remove_member_state::SetRemovedBy<St>,
         S,
@@ -14311,9 +14842,9 @@ where
 
 pub mod system_message_data_unlock_convo_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -14347,8 +14878,11 @@ pub struct SystemMessageDataUnlockConvoBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields:
-        (core::option::Option<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -14364,18 +14898,18 @@ impl SystemMessageDataUnlockConvo<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SystemMessageDataUnlockConvo<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> SystemMessageDataUnlockConvoBuilder<system_message_data_unlock_convo_state::Empty, S> {
+    pub fn builder() -> SystemMessageDataUnlockConvoBuilder<
+        system_message_data_unlock_convo_state::Empty,
+        S,
+    > {
         SystemMessageDataUnlockConvoBuilder::builder()
     }
 }
 
-impl
-    SystemMessageDataUnlockConvoBuilder<
-        system_message_data_unlock_convo_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageDataUnlockConvoBuilder<
+    system_message_data_unlock_convo_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageDataUnlockConvoBuilder {
@@ -14386,9 +14920,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageDataUnlockConvoBuilder<system_message_data_unlock_convo_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageDataUnlockConvoBuilder<system_message_data_unlock_convo_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageDataUnlockConvoBuilder {
@@ -14407,7 +14941,9 @@ where
     /// Set the `unlockedBy` field (required)
     pub fn unlocked_by(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>>,
+        value: impl Into<
+            crate::generated::chat_bsky::convo::SystemMessageReferredUser<S>,
+        >,
     ) -> SystemMessageDataUnlockConvoBuilder<
         system_message_data_unlock_convo_state::SetUnlockedBy<St>,
         S,
@@ -14450,9 +14986,9 @@ where
 
 pub mod system_message_referred_user_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -14502,18 +15038,18 @@ impl SystemMessageReferredUser<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SystemMessageReferredUser<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> SystemMessageReferredUserBuilder<system_message_referred_user_state::Empty, S> {
+    pub fn builder() -> SystemMessageReferredUserBuilder<
+        system_message_referred_user_state::Empty,
+        S,
+    > {
         SystemMessageReferredUserBuilder::builder()
     }
 }
 
-impl
-    SystemMessageReferredUserBuilder<
-        system_message_referred_user_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl SystemMessageReferredUserBuilder<
+    system_message_referred_user_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageReferredUserBuilder {
@@ -14524,9 +15060,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    SystemMessageReferredUserBuilder<system_message_referred_user_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageReferredUserBuilder<system_message_referred_user_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageReferredUserBuilder {
@@ -14546,7 +15082,10 @@ where
     pub fn did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> SystemMessageReferredUserBuilder<system_message_referred_user_state::SetDid<St>, S> {
+    ) -> SystemMessageReferredUserBuilder<
+        system_message_referred_user_state::SetDid<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         SystemMessageReferredUserBuilder {
             _state: ::core::marker::PhantomData,
@@ -14585,9 +15124,9 @@ where
 
 pub mod system_message_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -14674,9 +15213,10 @@ pub struct SystemMessageViewBuilder<
 
 impl SystemMessageView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SystemMessageViewBuilder<system_message_view_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> SystemMessageViewBuilder<
+        system_message_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SystemMessageViewBuilder::new()
     }
 }
@@ -14688,7 +15228,10 @@ impl<S: jacquard_common::BosStr> SystemMessageView<S> {
     }
 }
 
-impl SystemMessageViewBuilder<system_message_view_state::Empty, jacquard_common::DefaultStr> {
+impl SystemMessageViewBuilder<
+    system_message_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SystemMessageViewBuilder {
@@ -14699,7 +15242,9 @@ impl SystemMessageViewBuilder<system_message_view_state::Empty, jacquard_common:
     }
 }
 
-impl<S: jacquard_common::BosStr> SystemMessageViewBuilder<system_message_view_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SystemMessageViewBuilder<system_message_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SystemMessageViewBuilder {

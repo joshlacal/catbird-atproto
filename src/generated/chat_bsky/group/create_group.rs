@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -16,11 +23,7 @@ pub struct CreateGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     ///The members to add to the group. The owner is automatically added. Implementations may enforce a lower maximum than the 10,000-item schema limit; Bluesky currently supports up to 100 total members. If the owner is included in this list, the list may contain up to the implementation's total member limit. Otherwise, it may contain one fewer.
     pub members: Vec<jacquard_common::types::string::Did<S>>,
     pub name: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -29,20 +32,24 @@ pub struct CreateGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateGroupOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,6 +57,7 @@ pub struct CreateGroupOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -59,8 +67,9 @@ pub struct CreateGroupOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CreateGroupError {
     #[serde(rename = "AccountSuspended")]
@@ -70,7 +79,9 @@ pub enum CreateGroupError {
     #[serde(rename = "BlockedSubject")]
     BlockedSubject(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NewAccountCannotCreateGroup")]
-    NewAccountCannotCreateGroup(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NewAccountCannotCreateGroup(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotFollowedBySender")]
     NotFollowedBySender(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RecipientNotFound")]
@@ -161,8 +172,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateGroupResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateGroup<S> {
     const NSID: &'static str = "chat.bsky.group.createGroup";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateGroupResponse;
 }
 
@@ -172,17 +184,18 @@ Path: `/xrpc/chat.bsky.group.createGroup`. The request payload type is `CreateGr
 pub struct CreateGroupRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateGroupRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.createGroup";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CreateGroup<S>;
     type Response = CreateGroupResponse;
 }
 
 pub mod create_group_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -237,7 +250,10 @@ pub struct CreateGroupBuilder<
 
 impl CreateGroup<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreateGroupBuilder<create_group_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> CreateGroupBuilder<
+        create_group_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CreateGroupBuilder::new()
     }
 }

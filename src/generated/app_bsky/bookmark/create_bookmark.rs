@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -15,11 +22,7 @@
 pub struct CreateBookmark<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cid: jacquard_common::types::string::Cid<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,6 +30,7 @@ pub struct CreateBookmark<S: jacquard_common::BosStr = jacquard_common::DefaultS
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -36,13 +40,16 @@ pub struct CreateBookmark<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CreateBookmarkError {
     /// The URI to be bookmarked is for an unsupported collection.
     #[serde(rename = "UnsupportedCollection")]
-    UnsupportedCollection(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedCollection(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -83,10 +90,12 @@ impl jacquard_common::xrpc::XrpcResp for CreateBookmarkResponse {
     type Err = CreateBookmarkError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateBookmark<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for CreateBookmark<S> {
     const NSID: &'static str = "app.bsky.bookmark.createBookmark";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateBookmarkResponse;
 }
 
@@ -96,17 +105,18 @@ Path: `/xrpc/app.bsky.bookmark.createBookmark`. The request payload type is `Cre
 pub struct CreateBookmarkRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateBookmarkRequest {
     const PATH: &'static str = "/xrpc/app.bsky.bookmark.createBookmark";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CreateBookmark<S>;
     type Response = CreateBookmarkResponse;
 }
 
 pub mod create_bookmark_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -161,8 +171,10 @@ pub struct CreateBookmarkBuilder<
 
 impl CreateBookmark<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreateBookmarkBuilder<create_bookmark_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> CreateBookmarkBuilder<
+        create_bookmark_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CreateBookmarkBuilder::new()
     }
 }

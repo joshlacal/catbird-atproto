@@ -8,8 +8,15 @@
 /// Record representing a 'repost' of an existing Bluesky post.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.feed.repost",
@@ -20,12 +27,10 @@ pub struct Repost<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
     pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub via: core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub via: core::option::Option<
+        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -37,10 +42,19 @@ pub struct Repost<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct RepostGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct RepostGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -77,7 +91,8 @@ impl<S: jacquard_common::BosStr> From<RepostGetRecordOutput<S>> for Repost<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Repost<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+for Repost<S> {
     const NSID: &'static str = "app.bsky.feed.repost";
     type Record = RepostRecord;
 }
@@ -104,9 +119,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
 
 pub mod repost_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -154,8 +169,12 @@ pub struct RepostBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        core::option::Option<
+            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+        >,
+        core::option::Option<
+            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+        >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -238,7 +257,9 @@ impl<St: repost_state::State, S: jacquard_common::BosStr> RepostBuilder<St, S> {
     /// Set the `via` field (optional)
     pub fn via(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        value: impl Into<
+            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        >,
     ) -> Self {
         self._fields.2 = value.into();
         self

@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -15,11 +22,7 @@
 pub struct BatchItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub message: crate::generated::chat_bsky::convo::MessageInput<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -28,20 +31,24 @@ pub struct BatchItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SendMessageBatch<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub items: Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,20 +57,26 @@ pub struct SendMessageBatch<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SendMessageBatchOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SendMessageBatchOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub items: Vec<crate::generated::chat_bsky::convo::MessageView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -71,6 +84,7 @@ pub struct SendMessageBatchOutput<S: jacquard_common::BosStr = jacquard_common::
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -80,8 +94,9 @@ pub struct SendMessageBatchOutput<S: jacquard_common::BosStr = jacquard_common::
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum SendMessageBatchError {
     #[serde(rename = "ConvoLocked")]
@@ -133,7 +148,8 @@ impl core::fmt::Display for SendMessageBatchError {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for BatchItem<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for BatchItem<S> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.sendMessageBatch"
     }
@@ -159,10 +175,12 @@ impl jacquard_common::xrpc::XrpcResp for SendMessageBatchResponse {
     type Err = SendMessageBatchError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SendMessageBatch<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for SendMessageBatch<S> {
     const NSID: &'static str = "chat.bsky.convo.sendMessageBatch";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = SendMessageBatchResponse;
 }
 
@@ -172,17 +190,18 @@ Path: `/xrpc/chat.bsky.convo.sendMessageBatch`. The request payload type is `Sen
 pub struct SendMessageBatchRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendMessageBatchRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.sendMessageBatch";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = SendMessageBatch<S>;
     type Response = SendMessageBatchResponse;
 }
 
 pub mod batch_item_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -237,7 +256,10 @@ pub struct BatchItemBuilder<
 
 impl BatchItem<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> BatchItemBuilder<batch_item_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> BatchItemBuilder<
+        batch_item_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         BatchItemBuilder::new()
     }
 }
@@ -339,8 +361,9 @@ where
     }
 }
 
-fn lexicon_doc_chat_bsky_convo_sendMessageBatch() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_chat_bsky_convo_sendMessageBatch() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.convo.sendMessageBatch"),
@@ -348,39 +371,39 @@ fn lexicon_doc_chat_bsky_convo_sendMessageBatch() -> jacquard_lexicon::lexicon::
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("batchItem"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "chat.bsky.convo.defs#messageInput",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "chat.bsky.convo.defs#messageInput",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -430,9 +453,9 @@ fn lexicon_doc_chat_bsky_convo_sendMessageBatch() -> jacquard_lexicon::lexicon::
 
 pub mod send_message_batch_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -476,8 +499,10 @@ pub struct SendMessageBatchBuilder<
 
 impl SendMessageBatch<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SendMessageBatchBuilder<send_message_batch_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SendMessageBatchBuilder<
+        send_message_batch_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SendMessageBatchBuilder::new()
     }
 }
@@ -489,7 +514,10 @@ impl<S: jacquard_common::BosStr> SendMessageBatch<S> {
     }
 }
 
-impl SendMessageBatchBuilder<send_message_batch_state::Empty, jacquard_common::DefaultStr> {
+impl SendMessageBatchBuilder<
+    send_message_batch_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SendMessageBatchBuilder {
@@ -500,7 +528,9 @@ impl SendMessageBatchBuilder<send_message_batch_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> SendMessageBatchBuilder<send_message_batch_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SendMessageBatchBuilder<send_message_batch_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SendMessageBatchBuilder {
@@ -519,7 +549,9 @@ where
     /// Set the `items` field (required)
     pub fn items(
         mut self,
-        value: impl Into<Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<S>>>,
+        value: impl Into<
+            Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<S>>,
+        >,
     ) -> SendMessageBatchBuilder<send_message_batch_state::SetItems<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         SendMessageBatchBuilder {

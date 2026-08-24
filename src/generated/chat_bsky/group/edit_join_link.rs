@@ -13,8 +13,9 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -25,11 +26,7 @@ pub struct EditJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub join_rule: core::option::Option<crate::generated::chat_bsky::group::JoinRule<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub require_approval: core::option::Option<bool>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -38,20 +35,24 @@ pub struct EditJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct EditJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub join_link: crate::generated::chat_bsky::group::JoinLinkView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -59,6 +60,7 @@ pub struct EditJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -68,8 +70,9 @@ pub struct EditJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum EditJoinLinkError {
     #[serde(rename = "InvalidConvo")]
@@ -134,8 +137,9 @@ impl jacquard_common::xrpc::XrpcResp for EditJoinLinkResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for EditJoinLink<S> {
     const NSID: &'static str = "chat.bsky.group.editJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = EditJoinLinkResponse;
 }
 
@@ -145,8 +149,9 @@ Path: `/xrpc/chat.bsky.group.editJoinLink`. The request payload type is `EditJoi
 pub struct EditJoinLinkRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for EditJoinLinkRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.editJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = EditJoinLink<S>;
     type Response = EditJoinLinkResponse;
 }

@@ -28,7 +28,7 @@ pub mod syndication;
 pub struct BroadcastOriginView<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    pub author: jacquard_common::types::value::Data<S>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
     pub cid: jacquard_common::types::string::Cid<S>,
     pub record: jacquard_common::types::value::Data<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -138,7 +138,7 @@ pub struct BroadcastOriginViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
         core::option::Option<jacquard_common::types::value::Data<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
@@ -201,7 +201,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
     ) -> BroadcastOriginViewBuilder<broadcast_origin_view_state::SetAuthor<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         BroadcastOriginViewBuilder {

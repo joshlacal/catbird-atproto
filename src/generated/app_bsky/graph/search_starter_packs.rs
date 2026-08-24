@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -22,22 +29,28 @@ pub struct SearchStarterPacks<S: jacquard_common::BosStr = jacquard_common::Defa
     pub q: S,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SearchStarterPacksOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SearchStarterPacksOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,7 +70,8 @@ impl jacquard_common::xrpc::XrpcResp for SearchStarterPacksResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchStarterPacks<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for SearchStarterPacks<S> {
     const NSID: &'static str = "app.bsky.graph.searchStarterPacks";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = SearchStarterPacksResponse;
@@ -80,9 +94,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod search_starter_packs_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -126,9 +140,10 @@ pub struct SearchStarterPacksBuilder<
 
 impl SearchStarterPacks<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SearchStarterPacksBuilder<search_starter_packs_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> SearchStarterPacksBuilder<
+        search_starter_packs_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SearchStarterPacksBuilder::new()
     }
 }
@@ -140,7 +155,10 @@ impl<S: jacquard_common::BosStr> SearchStarterPacks<S> {
     }
 }
 
-impl SearchStarterPacksBuilder<search_starter_packs_state::Empty, jacquard_common::DefaultStr> {
+impl SearchStarterPacksBuilder<
+    search_starter_packs_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchStarterPacksBuilder {
@@ -151,7 +169,9 @@ impl SearchStarterPacksBuilder<search_starter_packs_state::Empty, jacquard_commo
     }
 }
 
-impl<S: jacquard_common::BosStr> SearchStarterPacksBuilder<search_starter_packs_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SearchStarterPacksBuilder<search_starter_packs_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SearchStarterPacksBuilder {
@@ -162,9 +182,10 @@ impl<S: jacquard_common::BosStr> SearchStarterPacksBuilder<search_starter_packs_
     }
 }
 
-impl<St: search_starter_packs_state::State, S: jacquard_common::BosStr>
-    SearchStarterPacksBuilder<St, S>
-{
+impl<
+    St: search_starter_packs_state::State,
+    S: jacquard_common::BosStr,
+> SearchStarterPacksBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -177,9 +198,10 @@ impl<St: search_starter_packs_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_starter_packs_state::State, S: jacquard_common::BosStr>
-    SearchStarterPacksBuilder<St, S>
-{
+impl<
+    St: search_starter_packs_state::State,
+    S: jacquard_common::BosStr,
+> SearchStarterPacksBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

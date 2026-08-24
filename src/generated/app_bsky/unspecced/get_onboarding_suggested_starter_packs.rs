@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetOnboardingSuggestedStarterPacks {
     /// Defaults to `10`. Min: 1. Max: 25.
@@ -16,9 +23,17 @@ pub struct GetOnboardingSuggestedStarterPacks {
     pub limit: core::option::Option<i64>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -27,11 +42,7 @@ pub struct GetOnboardingSuggestedStarterPacksOutput<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,7 +58,9 @@ pub struct GetOnboardingSuggestedStarterPacksResponse;
 impl jacquard_common::xrpc::XrpcResp for GetOnboardingSuggestedStarterPacksResponse {
     const NSID: &'static str = "app.bsky.unspecced.getOnboardingSuggestedStarterPacks";
     const ENCODING: &'static str = "application/json";
-    type Output<S: jacquard_common::BosStr> = GetOnboardingSuggestedStarterPacksOutput<S>;
+    type Output<S: jacquard_common::BosStr> = GetOnboardingSuggestedStarterPacksOutput<
+        S,
+    >;
     type Err = jacquard_common::xrpc::GenericError;
 }
 
@@ -74,9 +87,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_onboarding_suggested_starter_packs_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -108,9 +121,9 @@ impl GetOnboardingSuggestedStarterPacks {
     }
 }
 
-impl
-    GetOnboardingSuggestedStarterPacksBuilder<get_onboarding_suggested_starter_packs_state::Empty>
-{
+impl GetOnboardingSuggestedStarterPacksBuilder<
+    get_onboarding_suggested_starter_packs_state::Empty,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetOnboardingSuggestedStarterPacksBuilder {
@@ -120,9 +133,9 @@ impl
     }
 }
 
-impl
-    GetOnboardingSuggestedStarterPacksBuilder<get_onboarding_suggested_starter_packs_state::Empty>
-{
+impl GetOnboardingSuggestedStarterPacksBuilder<
+    get_onboarding_suggested_starter_packs_state::Empty,
+> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetOnboardingSuggestedStarterPacksBuilder {
@@ -132,9 +145,9 @@ impl
     }
 }
 
-impl<St: get_onboarding_suggested_starter_packs_state::State>
-    GetOnboardingSuggestedStarterPacksBuilder<St>
-{
+impl<
+    St: get_onboarding_suggested_starter_packs_state::State,
+> GetOnboardingSuggestedStarterPacksBuilder<St> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();

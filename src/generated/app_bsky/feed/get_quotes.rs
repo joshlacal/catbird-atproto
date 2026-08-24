@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,9 +31,17 @@ pub struct GetQuotes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub uri: jacquard_common::types::string::AtUri<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -38,11 +53,7 @@ pub struct GetQuotesOutput<S: jacquard_common::BosStr = jacquard_common::Default
     pub cursor: core::option::Option<S>,
     pub posts: Vec<crate::generated::app_bsky::feed::PostView<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -85,9 +96,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_quotes_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -132,7 +143,10 @@ pub struct GetQuotesBuilder<
 
 impl GetQuotes<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetQuotesBuilder<get_quotes_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GetQuotesBuilder<
+        get_quotes_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetQuotesBuilder::new()
     }
 }
@@ -168,12 +182,18 @@ impl<S: jacquard_common::BosStr> GetQuotesBuilder<get_quotes_state::Empty, S> {
 
 impl<St: get_quotes_state::State, S: jacquard_common::BosStr> GetQuotesBuilder<St, S> {
     /// Set the `cid` field (optional)
-    pub fn cid(mut self, value: impl Into<Option<jacquard_common::types::string::Cid<S>>>) -> Self {
+    pub fn cid(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Cid<S>>>,
+    ) -> Self {
         self._fields.0 = value.into();
         self
     }
     /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<S>>) -> Self {
+    pub fn maybe_cid(
+        mut self,
+        value: Option<jacquard_common::types::string::Cid<S>>,
+    ) -> Self {
         self._fields.0 = value;
         self
     }

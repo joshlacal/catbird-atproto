@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -15,11 +22,7 @@
 pub struct RemoveOptions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub keys: Vec<jacquard_common::types::string::Nsid<S>>,
     pub scope: RemoveOptionsScope<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,6 +30,7 @@ pub struct RemoveOptions<S: jacquard_common::BosStr = jacquard_common::DefaultSt
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RemoveOptionsScope<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -75,8 +79,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for RemoveOptionsScope<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for RemoveOptionsScope<S>
-{
+for RemoveOptionsScope<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -107,6 +110,7 @@ where
     }
 }
 
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -115,18 +119,17 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RemoveOptionsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct RemoveOptionsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -146,10 +149,12 @@ impl jacquard_common::xrpc::XrpcResp for RemoveOptionsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RemoveOptions<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for RemoveOptions<S> {
     const NSID: &'static str = "tools.ozone.setting.removeOptions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = RemoveOptionsResponse;
 }
 
@@ -159,17 +164,18 @@ Path: `/xrpc/tools.ozone.setting.removeOptions`. The request payload type is `Re
 pub struct RemoveOptionsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveOptionsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.setting.removeOptions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = RemoveOptions<S>;
     type Response = RemoveOptionsResponse;
 }
 
 pub mod remove_options_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -224,7 +230,10 @@ pub struct RemoveOptionsBuilder<
 
 impl RemoveOptions<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RemoveOptionsBuilder<remove_options_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> RemoveOptionsBuilder<
+        remove_options_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RemoveOptionsBuilder::new()
     }
 }

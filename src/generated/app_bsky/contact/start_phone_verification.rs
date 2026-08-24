@@ -13,20 +13,19 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct StartPhoneVerification<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct StartPhoneVerification<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///The phone number to receive the code via SMS.
     pub phone: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -34,6 +33,7 @@ pub struct StartPhoneVerification<S: jacquard_common::BosStr = jacquard_common::
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -43,18 +43,17 @@ pub struct StartPhoneVerification<S: jacquard_common::BosStr = jacquard_common::
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct StartPhoneVerificationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+pub struct StartPhoneVerificationOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -62,6 +61,7 @@ pub struct StartPhoneVerificationOutput<S: jacquard_common::BosStr = jacquard_co
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -71,8 +71,9 @@ pub struct StartPhoneVerificationOutput<S: jacquard_common::BosStr = jacquard_co
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum StartPhoneVerificationError {
     #[serde(rename = "RateLimitExceeded")]
@@ -144,10 +145,12 @@ impl jacquard_common::xrpc::XrpcResp for StartPhoneVerificationResponse {
     type Err = StartPhoneVerificationError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for StartPhoneVerification<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for StartPhoneVerification<S> {
     const NSID: &'static str = "app.bsky.contact.startPhoneVerification";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = StartPhoneVerificationResponse;
 }
 
@@ -157,8 +160,9 @@ Path: `/xrpc/app.bsky.contact.startPhoneVerification`. The request payload type 
 pub struct StartPhoneVerificationRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for StartPhoneVerificationRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.startPhoneVerification";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = StartPhoneVerification<S>;
     type Response = StartPhoneVerificationResponse;
 }

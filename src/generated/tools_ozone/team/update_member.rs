@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -18,11 +25,7 @@ pub struct UpdateMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub disabled: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub role: core::option::Option<UpdateMemberRole<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,6 +33,7 @@ pub struct UpdateMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpdateMemberRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -84,8 +88,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for UpdateMemberRole<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for UpdateMemberRole<S>
-{
+for UpdateMemberRole<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -118,9 +121,17 @@ where
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -128,11 +139,7 @@ where
 pub struct UpdateMemberOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::team::Member<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -140,6 +147,7 @@ pub struct UpdateMemberOutput<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -149,8 +157,9 @@ pub struct UpdateMemberOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum UpdateMemberError {
     /// The member being updated does not exist in the team
@@ -198,8 +207,9 @@ impl jacquard_common::xrpc::XrpcResp for UpdateMemberResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateMember<S> {
     const NSID: &'static str = "tools.ozone.team.updateMember";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateMemberResponse;
 }
 
@@ -209,17 +219,18 @@ Path: `/xrpc/tools.ozone.team.updateMember`. The request payload type is `Update
 pub struct UpdateMemberRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateMemberRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.team.updateMember";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = UpdateMember<S>;
     type Response = UpdateMemberResponse;
 }
 
 pub mod update_member_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -263,7 +274,10 @@ pub struct UpdateMemberBuilder<
 
 impl UpdateMember<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UpdateMemberBuilder<update_member_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> UpdateMemberBuilder<
+        update_member_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         UpdateMemberBuilder::new()
     }
 }
@@ -316,7 +330,10 @@ where
     }
 }
 
-impl<St: update_member_state::State, S: jacquard_common::BosStr> UpdateMemberBuilder<St, S> {
+impl<
+    St: update_member_state::State,
+    S: jacquard_common::BosStr,
+> UpdateMemberBuilder<St, S> {
     /// Set the `disabled` field (optional)
     pub fn disabled(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.1 = value.into();
@@ -329,7 +346,10 @@ impl<St: update_member_state::State, S: jacquard_common::BosStr> UpdateMemberBui
     }
 }
 
-impl<St: update_member_state::State, S: jacquard_common::BosStr> UpdateMemberBuilder<St, S> {
+impl<
+    St: update_member_state::State,
+    S: jacquard_common::BosStr,
+> UpdateMemberBuilder<St, S> {
     /// Set the `role` field (optional)
     pub fn role(mut self, value: impl Into<Option<UpdateMemberRole<S>>>) -> Self {
         self._fields.2 = value.into();

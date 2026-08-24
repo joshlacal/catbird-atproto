@@ -44,7 +44,9 @@ pub struct GetFollowingUserOutput<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub follow: core::option::Option<jacquard_common::types::value::Data<S>>,
+    pub follow: core::option::Option<
+        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    >,
     #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<

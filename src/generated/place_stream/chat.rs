@@ -27,7 +27,7 @@ pub mod profile;
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub author: jacquard_common::types::value::Data<S>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
     ///Up to 3 badge tokens to display with the message. First badge is server-controlled, remaining badges are user-settable. Tokens are looked up in badges.json for display info.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub badges: core::option::Option<
@@ -257,7 +257,7 @@ pub struct MessageViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
         core::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>,
         core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
@@ -317,7 +317,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
     ) -> MessageViewBuilder<message_view_state::SetAuthor<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {

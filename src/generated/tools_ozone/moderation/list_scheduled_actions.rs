@@ -6,13 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListScheduledActions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ListScheduledActions<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Cursor for pagination
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
@@ -31,11 +40,7 @@ pub struct ListScheduledActions<S: jacquard_common::BosStr = jacquard_common::De
     ///Filter actions for specific DID subjects
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subjects: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -44,23 +49,29 @@ pub struct ListScheduledActions<S: jacquard_common::BosStr = jacquard_common::De
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListScheduledActionsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ListScheduledActionsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub actions: Vec<crate::generated::tools_ozone::moderation::ScheduledActionView<S>>,
     ///Cursor for next page of results
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -80,10 +91,12 @@ impl jacquard_common::xrpc::XrpcResp for ListScheduledActionsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListScheduledActions<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for ListScheduledActions<S> {
     const NSID: &'static str = "tools.ozone.moderation.listScheduledActions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = ListScheduledActionsResponse;
 }
 
@@ -93,8 +106,9 @@ Path: `/xrpc/tools.ozone.moderation.listScheduledActions`. The request payload t
 pub struct ListScheduledActionsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ListScheduledActionsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.moderation.listScheduledActions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = ListScheduledActions<S>;
     type Response = ListScheduledActionsResponse;
 }
@@ -105,9 +119,9 @@ fn _default_list_scheduled_actions_limit() -> core::option::Option<i64> {
 
 pub mod list_scheduled_actions_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -154,21 +168,28 @@ pub struct ListScheduledActionsBuilder<
 
 impl ListScheduledActions<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> ListScheduledActionsBuilder<list_scheduled_actions_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ListScheduledActionsBuilder<
+        list_scheduled_actions_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ListScheduledActionsBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> ListScheduledActions<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ListScheduledActionsBuilder<list_scheduled_actions_state::Empty, S> {
+    pub fn builder() -> ListScheduledActionsBuilder<
+        list_scheduled_actions_state::Empty,
+        S,
+    > {
         ListScheduledActionsBuilder::builder()
     }
 }
 
-impl ListScheduledActionsBuilder<list_scheduled_actions_state::Empty, jacquard_common::DefaultStr> {
+impl ListScheduledActionsBuilder<
+    list_scheduled_actions_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListScheduledActionsBuilder {
@@ -179,9 +200,9 @@ impl ListScheduledActionsBuilder<list_scheduled_actions_state::Empty, jacquard_c
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    ListScheduledActionsBuilder<list_scheduled_actions_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> ListScheduledActionsBuilder<list_scheduled_actions_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ListScheduledActionsBuilder {
@@ -192,9 +213,10 @@ impl<S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
-    ListScheduledActionsBuilder<St, S>
-{
+impl<
+    St: list_scheduled_actions_state::State,
+    S: jacquard_common::BosStr,
+> ListScheduledActionsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -207,9 +229,10 @@ impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
-    ListScheduledActionsBuilder<St, S>
-{
+impl<
+    St: list_scheduled_actions_state::State,
+    S: jacquard_common::BosStr,
+> ListScheduledActionsBuilder<St, S> {
     /// Set the `endsBefore` field (optional)
     pub fn ends_before(
         mut self,
@@ -228,9 +251,10 @@ impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
-    ListScheduledActionsBuilder<St, S>
-{
+impl<
+    St: list_scheduled_actions_state::State,
+    S: jacquard_common::BosStr,
+> ListScheduledActionsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();
@@ -243,9 +267,10 @@ impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
-    ListScheduledActionsBuilder<St, S>
-{
+impl<
+    St: list_scheduled_actions_state::State,
+    S: jacquard_common::BosStr,
+> ListScheduledActionsBuilder<St, S> {
     /// Set the `startsAfter` field (optional)
     pub fn starts_after(
         mut self,
@@ -283,9 +308,10 @@ where
     }
 }
 
-impl<St: list_scheduled_actions_state::State, S: jacquard_common::BosStr>
-    ListScheduledActionsBuilder<St, S>
-{
+impl<
+    St: list_scheduled_actions_state::State,
+    S: jacquard_common::BosStr,
+> ListScheduledActionsBuilder<St, S> {
     /// Set the `subjects` field (optional)
     pub fn subjects(
         mut self,

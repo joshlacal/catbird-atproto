@@ -6,13 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SearchPostsSkeleton<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SearchPostsSkeleton<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub author: core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -44,25 +53,31 @@ pub struct SearchPostsSkeleton<S: jacquard_common::BosStr = jacquard_common::Def
     pub viewer: core::option::Option<jacquard_common::types::string::Did<S>>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SearchPostsSkeletonOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SearchPostsSkeletonOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     ///Count of search hits. Optional, may be rounded/truncated, and may not be possible to paginate through all hits.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub hits_total: core::option::Option<i64>,
     pub posts: Vec<crate::generated::app_bsky::unspecced::SkeletonSearchPost<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,6 +85,7 @@ pub struct SearchPostsSkeletonOutput<S: jacquard_common::BosStr = jacquard_commo
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -79,8 +95,9 @@ pub struct SearchPostsSkeletonOutput<S: jacquard_common::BosStr = jacquard_commo
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum SearchPostsSkeletonError {
     #[serde(rename = "BadQueryString")]
@@ -125,7 +142,8 @@ impl jacquard_common::xrpc::XrpcResp for SearchPostsSkeletonResponse {
     type Err = SearchPostsSkeletonError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchPostsSkeleton<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for SearchPostsSkeleton<S> {
     const NSID: &'static str = "app.bsky.unspecced.searchPostsSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = SearchPostsSkeletonResponse;
@@ -152,9 +170,9 @@ fn _default_sort<S: jacquard_common::FromStaticStr>() -> Option<S> {
 
 pub mod search_posts_skeleton_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -208,49 +226,83 @@ pub struct SearchPostsSkeletonBuilder<
 
 impl SearchPostsSkeleton<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SearchPostsSkeletonBuilder<search_posts_skeleton_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> SearchPostsSkeletonBuilder<
+        search_posts_skeleton_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SearchPostsSkeletonBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> SearchPostsSkeleton<S> {
     /// Create a new builder for this type
-    pub fn builder() -> SearchPostsSkeletonBuilder<search_posts_skeleton_state::Empty, S> {
+    pub fn builder() -> SearchPostsSkeletonBuilder<
+        search_posts_skeleton_state::Empty,
+        S,
+    > {
         SearchPostsSkeletonBuilder::builder()
     }
 }
 
-impl SearchPostsSkeletonBuilder<search_posts_skeleton_state::Empty, jacquard_common::DefaultStr> {
+impl SearchPostsSkeletonBuilder<
+    search_posts_skeleton_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchPostsSkeletonBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<S: jacquard_common::BosStr> SearchPostsSkeletonBuilder<search_posts_skeleton_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<search_posts_skeleton_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SearchPostsSkeletonBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `author` field (optional)
     pub fn author(
         mut self,
@@ -269,9 +321,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -284,9 +337,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `domain` field (optional)
     pub fn domain(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -299,9 +353,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `lang` field (optional)
     pub fn lang(
         mut self,
@@ -311,15 +366,19 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
         self
     }
     /// Set the `lang` field to an Option value (optional)
-    pub fn maybe_lang(mut self, value: Option<jacquard_common::types::string::Language>) -> Self {
+    pub fn maybe_lang(
+        mut self,
+        value: Option<jacquard_common::types::string::Language>,
+    ) -> Self {
         self._fields.3 = value;
         self
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.4 = value.into();
@@ -332,9 +391,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `mentions` field (optional)
     pub fn mentions(
         mut self,
@@ -372,9 +432,10 @@ where
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `since` field (optional)
     pub fn since(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.7 = value.into();
@@ -387,9 +448,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `sort` field (optional)
     pub fn sort(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.8 = value.into();
@@ -402,9 +464,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `tag` field (optional)
     pub fn tag(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.9 = value.into();
@@ -417,9 +480,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `until` field (optional)
     pub fn until(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.10 = value.into();
@@ -432,9 +496,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `url` field (optional)
     pub fn url(
         mut self,
@@ -444,15 +509,19 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
         self
     }
     /// Set the `url` field to an Option value (optional)
-    pub fn maybe_url(mut self, value: Option<jacquard_common::types::string::UriValue<S>>) -> Self {
+    pub fn maybe_url(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
         self._fields.11 = value;
         self
     }
 }
 
-impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
-    SearchPostsSkeletonBuilder<St, S>
-{
+impl<
+    St: search_posts_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsSkeletonBuilder<St, S> {
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
@@ -462,7 +531,10 @@ impl<St: search_posts_skeleton_state::State, S: jacquard_common::BosStr>
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
+    pub fn maybe_viewer(
+        mut self,
+        value: Option<jacquard_common::types::string::Did<S>>,
+    ) -> Self {
         self._fields.12 = value;
         self
     }

@@ -6,19 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteDraft<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub id: jacquard_common::types::string::Tid,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -40,8 +43,9 @@ impl jacquard_common::xrpc::XrpcResp for DeleteDraftResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteDraft<S> {
     const NSID: &'static str = "app.bsky.draft.deleteDraft";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeleteDraftResponse;
 }
 
@@ -51,17 +55,18 @@ Path: `/xrpc/app.bsky.draft.deleteDraft`. The request payload type is `DeleteDra
 pub struct DeleteDraftRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteDraftRequest {
     const PATH: &'static str = "/xrpc/app.bsky.draft.deleteDraft";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DeleteDraft<S>;
     type Response = DeleteDraftResponse;
 }
 
 pub mod delete_draft_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -101,7 +106,10 @@ pub struct DeleteDraftBuilder<
 
 impl DeleteDraft<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeleteDraftBuilder<delete_draft_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> DeleteDraftBuilder<
+        delete_draft_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         DeleteDraftBuilder::new()
     }
 }

@@ -25,8 +25,15 @@ pub mod search_repos;
 /// Logs account status related events on a repo subject. Normally captured by automod from the firehose and emitted to ozone for historical tracking.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -39,11 +46,7 @@ pub struct AccountEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub status: core::option::Option<AccountEventStatus<S>>,
     pub timestamp: jacquard_common::types::string::Datetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -51,6 +54,7 @@ pub struct AccountEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AccountEventStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -111,8 +115,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for AccountEventStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for AccountEventStatus<S>
-{
+for AccountEventStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -147,6 +150,7 @@ where
     }
 }
 
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -155,8 +159,9 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -173,11 +178,7 @@ pub struct AccountHosting<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub status: AccountHostingStatus<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -185,6 +186,7 @@ pub struct AccountHosting<S: jacquard_common::BosStr = jacquard_common::DefaultS
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AccountHostingStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -242,8 +244,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for AccountHostingStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for AccountHostingStatus<S>
-{
+for AccountHostingStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -272,7 +273,9 @@ where
             AccountHostingStatus::Deleted => AccountHostingStatus::Deleted,
             AccountHostingStatus::Deactivated => AccountHostingStatus::Deactivated,
             AccountHostingStatus::Unknown => AccountHostingStatus::Unknown,
-            AccountHostingStatus::Other(v) => AccountHostingStatus::Other(v.into_static()),
+            AccountHostingStatus::Other(v) => {
+                AccountHostingStatus::Other(v.into_static())
+            }
         }
     }
 }
@@ -287,8 +290,9 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -309,11 +313,7 @@ pub struct AccountStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     ///Number of times the account was taken down
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub takedown_count: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -332,8 +332,9 @@ pub struct AccountStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -351,11 +352,7 @@ pub struct AccountStrike<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     ///Total number of strikes ever received (including expired strikes)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub total_strike_count: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -367,15 +364,24 @@ pub struct AccountStrike<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 /// Age assurance info coming directly from users. Only works on DID subjects.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AgeAssuranceEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub access: core::option::Option<crate::generated::app_bsky::ageassurance::Access<S>>,
+    pub access: core::option::Option<
+        crate::generated::app_bsky::ageassurance::Access<S>,
+    >,
     ///The unique identifier for this instance of the age assurance flow, in UUID format.
     pub attempt_id: S,
     ///The IP address used when completing the AA flow.
@@ -400,11 +406,7 @@ pub struct AgeAssuranceEvent<S: jacquard_common::BosStr = jacquard_common::Defau
     pub region_code: core::option::Option<S>,
     ///The status of the Age Assurance process.
     pub status: AgeAssuranceEventStatus<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -416,7 +418,9 @@ pub struct AgeAssuranceEvent<S: jacquard_common::BosStr = jacquard_common::Defau
 /// The status of the Age Assurance process.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum AgeAssuranceEventStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum AgeAssuranceEventStatus<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     Unknown,
     Pending,
     Assured,
@@ -465,8 +469,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for AgeAssuranceEventStatus<S>
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for AgeAssuranceEventStatus<S>
-{
+for AgeAssuranceEventStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -482,7 +485,8 @@ impl<S: jacquard_common::BosStr + Default> Default for AgeAssuranceEventStatus<S
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for AgeAssuranceEventStatus<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+for AgeAssuranceEventStatus<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -493,7 +497,9 @@ where
             AgeAssuranceEventStatus::Unknown => AgeAssuranceEventStatus::Unknown,
             AgeAssuranceEventStatus::Pending => AgeAssuranceEventStatus::Pending,
             AgeAssuranceEventStatus::Assured => AgeAssuranceEventStatus::Assured,
-            AgeAssuranceEventStatus::Other(v) => AgeAssuranceEventStatus::Other(v.into_static()),
+            AgeAssuranceEventStatus::Other(v) => {
+                AgeAssuranceEventStatus::Other(v.into_static())
+            }
         }
     }
 }
@@ -508,24 +514,25 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct AgeAssuranceOverrideEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct AgeAssuranceOverrideEvent<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub access: core::option::Option<crate::generated::app_bsky::ageassurance::Access<S>>,
+    pub access: core::option::Option<
+        crate::generated::app_bsky::ageassurance::Access<S>,
+    >,
     ///Comment describing the reason for the override.
     pub comment: S,
     ///The status to be set for the user decided by a moderator, overriding whatever value the user had previously. Use reset to default to original state.
     pub status: AgeAssuranceOverrideEventStatus<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -537,7 +544,9 @@ pub struct AgeAssuranceOverrideEvent<S: jacquard_common::BosStr = jacquard_commo
 /// The status to be set for the user decided by a moderator, overriding whatever value the user had previously. Use reset to default to original state.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum AgeAssuranceOverrideEventStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum AgeAssuranceOverrideEventStatus<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     Assured,
     Reset,
     Blocked,
@@ -564,7 +573,8 @@ impl<S: jacquard_common::BosStr> AgeAssuranceOverrideEventStatus<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> core::fmt::Display for AgeAssuranceOverrideEventStatus<S> {
+impl<S: jacquard_common::BosStr> core::fmt::Display
+for AgeAssuranceOverrideEventStatus<S> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -576,7 +586,8 @@ impl<S: jacquard_common::BosStr> AsRef<str> for AgeAssuranceOverrideEventStatus<
     }
 }
 
-impl<S: jacquard_common::BosStr> serde::Serialize for AgeAssuranceOverrideEventStatus<S> {
+impl<S: jacquard_common::BosStr> serde::Serialize
+for AgeAssuranceOverrideEventStatus<S> {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: serde::Serializer,
@@ -586,8 +597,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for AgeAssuranceOverrideEventS
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for AgeAssuranceOverrideEventStatus<S>
-{
+for AgeAssuranceOverrideEventStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -597,13 +607,15 @@ impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deseriali
     }
 }
 
-impl<S: jacquard_common::BosStr + Default> Default for AgeAssuranceOverrideEventStatus<S> {
+impl<S: jacquard_common::BosStr + Default> Default
+for AgeAssuranceOverrideEventStatus<S> {
     fn default() -> Self {
         Self::Other(Default::default())
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for AgeAssuranceOverrideEventStatus<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+for AgeAssuranceOverrideEventStatus<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -611,9 +623,15 @@ where
     type Output = AgeAssuranceOverrideEventStatus<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
-            AgeAssuranceOverrideEventStatus::Assured => AgeAssuranceOverrideEventStatus::Assured,
-            AgeAssuranceOverrideEventStatus::Reset => AgeAssuranceOverrideEventStatus::Reset,
-            AgeAssuranceOverrideEventStatus::Blocked => AgeAssuranceOverrideEventStatus::Blocked,
+            AgeAssuranceOverrideEventStatus::Assured => {
+                AgeAssuranceOverrideEventStatus::Assured
+            }
+            AgeAssuranceOverrideEventStatus::Reset => {
+                AgeAssuranceOverrideEventStatus::Reset
+            }
+            AgeAssuranceOverrideEventStatus::Blocked => {
+                AgeAssuranceOverrideEventStatus::Blocked
+            }
             AgeAssuranceOverrideEventStatus::Other(v) => {
                 AgeAssuranceOverrideEventStatus::Other(v.into_static())
             }
@@ -631,20 +649,19 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct AgeAssurancePurgeEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct AgeAssurancePurgeEvent<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Comment describing the reason for the purge.
     pub comment: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -653,9 +670,17 @@ pub struct AgeAssurancePurgeEvent<S: jacquard_common::BosStr = jacquard_common::
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -667,13 +692,11 @@ pub struct BlobView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub details: core::option::Option<BlobViewDetails<S>>,
     pub mime_type: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub moderation: core::option::Option<crate::generated::tools_ozone::moderation::Moderation<S>>,
+    pub moderation: core::option::Option<
+        crate::generated::tools_ozone::moderation::Moderation<S>,
+    >,
     pub size: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -682,10 +705,18 @@ pub struct BlobView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -707,20 +738,19 @@ pub enum BlobViewDetails<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CancelScheduledTakedownEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct CancelScheduledTakedownEvent<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -729,9 +759,17 @@ pub struct CancelScheduledTakedownEvent<S: jacquard_common::BosStr = jacquard_co
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -739,11 +777,7 @@ pub struct CancelScheduledTakedownEvent<S: jacquard_common::BosStr = jacquard_co
 pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub did: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -755,8 +789,15 @@ pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Logs identity related events on a repo subject. Normally captured by automod from the firehose and emitted to ozone for historical tracking.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -771,11 +812,7 @@ pub struct IdentityEvent<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub timestamp: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub tombstone: core::option::Option<bool>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -784,9 +821,17 @@ pub struct IdentityEvent<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -794,11 +839,7 @@ pub struct IdentityEvent<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 pub struct ImageDetails<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub height: i64,
     pub width: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -806,6 +847,7 @@ pub struct ImageDetails<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -815,23 +857,22 @@ pub struct ImageDetails<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ModEventAcknowledge<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ModEventAcknowledge<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///If true, all other reports on content authored by this account will be resolved (acknowledged).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub acknowledge_account_subjects: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -850,8 +891,9 @@ pub struct ModEventAcknowledge<S: jacquard_common::BosStr = jacquard_common::Def
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -862,11 +904,7 @@ pub struct ModEventComment<S: jacquard_common::BosStr = jacquard_common::Default
     ///Make the comment persistent on the subject
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub sticky: core::option::Option<bool>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -885,8 +923,9 @@ pub struct ModEventComment<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -894,11 +933,7 @@ pub struct ModEventComment<S: jacquard_common::BosStr = jacquard_common::Default
 pub struct ModEventDivert<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -917,8 +952,9 @@ pub struct ModEventDivert<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -944,14 +980,12 @@ pub struct ModEventEmail<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub strike_count: core::option::Option<i64>,
     ///When the strike should expire. If not provided, the strike never expires.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub strike_expires_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub strike_expires_at: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     ///The subject line of the email sent to the user.
     pub subject_line: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -959,6 +993,7 @@ pub struct ModEventEmail<S: jacquard_common::BosStr = jacquard_common::DefaultSt
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -968,8 +1003,9 @@ pub struct ModEventEmail<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -977,11 +1013,7 @@ pub struct ModEventEmail<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 pub struct ModEventEscalate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -993,8 +1025,15 @@ pub struct ModEventEscalate<S: jacquard_common::BosStr = jacquard_common::Defaul
 /// Apply/Negate labels on a subject
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1007,11 +1046,7 @@ pub struct ModEventLabel<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub duration_in_hours: core::option::Option<i64>,
     pub negate_label_vals: Vec<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1023,8 +1058,15 @@ pub struct ModEventLabel<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 /// Mute incoming reports on a subject
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1034,11 +1076,7 @@ pub struct ModEventMute<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub comment: core::option::Option<S>,
     ///Indicates how long the subject should remain muted.
     pub duration_in_hours: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1057,23 +1095,22 @@ pub struct ModEventMute<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ModEventMuteReporter<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ModEventMuteReporter<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
     ///Indicates how long the account should remain muted. Falsy value here means a permanent mute.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub duration_in_hours: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1085,21 +1122,26 @@ pub struct ModEventMuteReporter<S: jacquard_common::BosStr = jacquard_common::De
 /// Set priority score of the subject. Higher score means higher priority.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ModEventPriorityScore<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ModEventPriorityScore<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
     pub score: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1111,8 +1153,15 @@ pub struct ModEventPriorityScore<S: jacquard_common::BosStr = jacquard_common::D
 /// Report a subject
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1124,11 +1173,7 @@ pub struct ModEventReport<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub is_reporter_muted: core::option::Option<bool>,
     pub report_type: crate::generated::com_atproto::moderation::ReasonType<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1147,21 +1192,20 @@ pub struct ModEventReport<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ModEventResolveAppeal<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ModEventResolveAppeal<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Describe resolution.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1180,13 +1224,16 @@ pub struct ModEventResolveAppeal<S: jacquard_common::BosStr = jacquard_common::D
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ModEventReverseTakedown<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ModEventReverseTakedown<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Describe reasoning behind the reversal.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
@@ -1199,11 +1246,7 @@ pub struct ModEventReverseTakedown<S: jacquard_common::BosStr = jacquard_common:
     ///Number of strikes to subtract from the user's strike count. Usually set from the last policy infraction's severity.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub strike_count: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1215,8 +1258,15 @@ pub struct ModEventReverseTakedown<S: jacquard_common::BosStr = jacquard_common:
 /// Add/Remove a tag on a subject
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1232,11 +1282,7 @@ pub struct ModEventTag<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub duration_in_hours: core::option::Option<i64>,
     ///Tags to be removed to the subject. Ignores a tag If it doesn't exist, won't be duplicated.
     pub remove: Vec<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1255,8 +1301,9 @@ pub struct ModEventTag<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1281,15 +1328,13 @@ pub struct ModEventTakedown<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub strike_count: core::option::Option<i64>,
     ///When the strike should expire. If not provided, the strike never expires.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub strike_expires_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub strike_expires_at: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     ///List of services where the takedown should be applied. If empty or not provided, takedown is applied on all configured services.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub target_services: core::option::Option<Vec<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1308,8 +1353,9 @@ pub struct ModEventTakedown<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1318,11 +1364,7 @@ pub struct ModEventUnmute<S: jacquard_common::BosStr = jacquard_common::DefaultS
     ///Describe reasoning behind the reversal.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1341,21 +1383,20 @@ pub struct ModEventUnmute<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ModEventUnmuteReporter<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ModEventUnmuteReporter<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Describe reasoning behind the reversal.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1364,9 +1405,17 @@ pub struct ModEventUnmuteReporter<S: jacquard_common::BosStr = jacquard_common::
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1379,16 +1428,14 @@ pub struct ModEventView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub event: ModEventViewEvent<S>,
     pub id: i64,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub mod_tool: core::option::Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
+    pub mod_tool: core::option::Option<
+        crate::generated::tools_ozone::moderation::ModTool<S>,
+    >,
     pub subject: ModEventViewSubject<S>,
     pub subject_blob_cids: Vec<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject_handle: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1397,17 +1444,27 @@ pub struct ModEventView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub enum ModEventViewEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.moderation.defs#modEventTakedown")]
-    ModEventTakedown(Box<crate::generated::tools_ozone::moderation::ModEventTakedown<S>>),
+    ModEventTakedown(
+        Box<crate::generated::tools_ozone::moderation::ModEventTakedown<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventReverseTakedown")]
     ModEventReverseTakedown(
         Box<crate::generated::tools_ozone::moderation::ModEventReverseTakedown<S>>,
@@ -1419,15 +1476,21 @@ pub enum ModEventViewEvent<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(rename = "tools.ozone.moderation.defs#modEventLabel")]
     ModEventLabel(Box<crate::generated::tools_ozone::moderation::ModEventLabel<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventAcknowledge")]
-    ModEventAcknowledge(Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<S>>),
+    ModEventAcknowledge(
+        Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEscalate")]
-    ModEventEscalate(Box<crate::generated::tools_ozone::moderation::ModEventEscalate<S>>),
+    ModEventEscalate(
+        Box<crate::generated::tools_ozone::moderation::ModEventEscalate<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMute")]
     ModEventMute(Box<crate::generated::tools_ozone::moderation::ModEventMute<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmute")]
     ModEventUnmute(Box<crate::generated::tools_ozone::moderation::ModEventUnmute<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMuteReporter")]
-    ModEventMuteReporter(Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<S>>),
+    ModEventMuteReporter(
+        Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmuteReporter")]
     ModEventUnmuteReporter(
         Box<crate::generated::tools_ozone::moderation::ModEventUnmuteReporter<S>>,
@@ -1435,7 +1498,9 @@ pub enum ModEventViewEvent<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(rename = "tools.ozone.moderation.defs#modEventEmail")]
     ModEventEmail(Box<crate::generated::tools_ozone::moderation::ModEventEmail<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventResolveAppeal")]
-    ModEventResolveAppeal(Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<S>>),
+    ModEventResolveAppeal(
+        Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventDivert")]
     ModEventDivert(Box<crate::generated::tools_ozone::moderation::ModEventDivert<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventTag")]
@@ -1447,9 +1512,13 @@ pub enum ModEventViewEvent<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(rename = "tools.ozone.moderation.defs#recordEvent")]
     RecordEvent(Box<crate::generated::tools_ozone::moderation::RecordEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventPriorityScore")]
-    ModEventPriorityScore(Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<S>>),
+    ModEventPriorityScore(
+        Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceEvent")]
-    AgeAssuranceEvent(Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<S>>),
+    AgeAssuranceEvent(
+        Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceOverrideEvent")]
     AgeAssuranceOverrideEvent(
         Box<crate::generated::tools_ozone::moderation::AgeAssuranceOverrideEvent<S>>,
@@ -1463,17 +1532,27 @@ pub enum ModEventViewEvent<S: jacquard_common::BosStr = jacquard_common::Default
         Box<crate::generated::tools_ozone::moderation::RevokeAccountCredentialsEvent<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#scheduleTakedownEvent")]
-    ScheduleTakedownEvent(Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<S>>),
+    ScheduleTakedownEvent(
+        Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#cancelScheduledTakedownEvent")]
     CancelScheduledTakedownEvent(
         Box<crate::generated::tools_ozone::moderation::CancelScheduledTakedownEvent<S>>,
     ),
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1489,9 +1568,17 @@ pub enum ModEventViewSubject<S: jacquard_common::BosStr = jacquard_common::Defau
     ConvoRef(Box<crate::generated::chat_bsky::convo::ConvoRef<S>>),
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1502,14 +1589,12 @@ pub struct ModEventViewDetail<S: jacquard_common::BosStr = jacquard_common::Defa
     pub event: ModEventViewDetailEvent<S>,
     pub id: i64,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub mod_tool: core::option::Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
+    pub mod_tool: core::option::Option<
+        crate::generated::tools_ozone::moderation::ModTool<S>,
+    >,
     pub subject: ModEventViewDetailSubject<S>,
     pub subject_blobs: Vec<crate::generated::tools_ozone::moderation::BlobView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1518,17 +1603,29 @@ pub struct ModEventViewDetail<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum ModEventViewDetailEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum ModEventViewDetailEvent<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "tools.ozone.moderation.defs#modEventTakedown")]
-    ModEventTakedown(Box<crate::generated::tools_ozone::moderation::ModEventTakedown<S>>),
+    ModEventTakedown(
+        Box<crate::generated::tools_ozone::moderation::ModEventTakedown<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventReverseTakedown")]
     ModEventReverseTakedown(
         Box<crate::generated::tools_ozone::moderation::ModEventReverseTakedown<S>>,
@@ -1540,15 +1637,21 @@ pub enum ModEventViewDetailEvent<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(rename = "tools.ozone.moderation.defs#modEventLabel")]
     ModEventLabel(Box<crate::generated::tools_ozone::moderation::ModEventLabel<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventAcknowledge")]
-    ModEventAcknowledge(Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<S>>),
+    ModEventAcknowledge(
+        Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEscalate")]
-    ModEventEscalate(Box<crate::generated::tools_ozone::moderation::ModEventEscalate<S>>),
+    ModEventEscalate(
+        Box<crate::generated::tools_ozone::moderation::ModEventEscalate<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMute")]
     ModEventMute(Box<crate::generated::tools_ozone::moderation::ModEventMute<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmute")]
     ModEventUnmute(Box<crate::generated::tools_ozone::moderation::ModEventUnmute<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMuteReporter")]
-    ModEventMuteReporter(Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<S>>),
+    ModEventMuteReporter(
+        Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmuteReporter")]
     ModEventUnmuteReporter(
         Box<crate::generated::tools_ozone::moderation::ModEventUnmuteReporter<S>>,
@@ -1556,7 +1659,9 @@ pub enum ModEventViewDetailEvent<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(rename = "tools.ozone.moderation.defs#modEventEmail")]
     ModEventEmail(Box<crate::generated::tools_ozone::moderation::ModEventEmail<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventResolveAppeal")]
-    ModEventResolveAppeal(Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<S>>),
+    ModEventResolveAppeal(
+        Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventDivert")]
     ModEventDivert(Box<crate::generated::tools_ozone::moderation::ModEventDivert<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventTag")]
@@ -1568,9 +1673,13 @@ pub enum ModEventViewDetailEvent<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(rename = "tools.ozone.moderation.defs#recordEvent")]
     RecordEvent(Box<crate::generated::tools_ozone::moderation::RecordEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventPriorityScore")]
-    ModEventPriorityScore(Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<S>>),
+    ModEventPriorityScore(
+        Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceEvent")]
-    AgeAssuranceEvent(Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<S>>),
+    AgeAssuranceEvent(
+        Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceOverrideEvent")]
     AgeAssuranceOverrideEvent(
         Box<crate::generated::tools_ozone::moderation::AgeAssuranceOverrideEvent<S>>,
@@ -1584,30 +1693,46 @@ pub enum ModEventViewDetailEvent<S: jacquard_common::BosStr = jacquard_common::D
         Box<crate::generated::tools_ozone::moderation::RevokeAccountCredentialsEvent<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#scheduleTakedownEvent")]
-    ScheduleTakedownEvent(Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<S>>),
+    ScheduleTakedownEvent(
+        Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#cancelScheduledTakedownEvent")]
     CancelScheduledTakedownEvent(
         Box<crate::generated::tools_ozone::moderation::CancelScheduledTakedownEvent<S>>,
     ),
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum ModEventViewDetailSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum ModEventViewDetailSubject<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "tools.ozone.moderation.defs#repoView")]
     RepoView(Box<crate::generated::tools_ozone::moderation::RepoView<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>),
+    RepoViewNotFound(
+        Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#recordView")]
     RecordView(Box<crate::generated::tools_ozone::moderation::RecordView<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#recordViewNotFound")]
-    RecordViewNotFound(Box<crate::generated::tools_ozone::moderation::RecordViewNotFound<S>>),
+    RecordViewNotFound(
+        Box<crate::generated::tools_ozone::moderation::RecordViewNotFound<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#convoView")]
     ConvoView(Box<crate::generated::tools_ozone::moderation::ConvoView<S>>),
 }
@@ -1622,8 +1747,9 @@ pub enum ModEventViewDetailSubject<S: jacquard_common::BosStr = jacquard_common:
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1634,11 +1760,7 @@ pub struct ModTool<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub meta: core::option::Option<jacquard_common::types::value::Data<S>>,
     ///Name/identifier of the source (e.g., 'automod', 'ozone/workspace')
     pub name: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1646,6 +1768,7 @@ pub struct ModTool<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -1655,21 +1778,19 @@ pub struct ModTool<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Moderation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_status:
-        core::option::Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub subject_status: core::option::Option<
+        crate::generated::tools_ozone::moderation::SubjectStatusView<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1677,6 +1798,7 @@ pub struct Moderation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -1686,21 +1808,19 @@ pub struct Moderation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ModerationDetail<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_status:
-        core::option::Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub subject_status: core::option::Option<
+        crate::generated::tools_ozone::moderation::SubjectStatusView<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1712,8 +1832,15 @@ pub struct ModerationDetail<S: jacquard_common::BosStr = jacquard_common::Defaul
 /// Logs lifecycle event on a record subject. Normally captured by automod from the firehose and emitted to ozone for historical tracking.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1725,11 +1852,7 @@ pub struct RecordEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub comment: core::option::Option<S>,
     pub op: RecordEventOp<S>,
     pub timestamp: jacquard_common::types::string::Datetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1737,6 +1860,7 @@ pub struct RecordEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RecordEventOp<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -1788,8 +1912,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for RecordEventOp<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for RecordEventOp<S>
-{
+for RecordEventOp<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -1821,6 +1944,7 @@ where
     }
 }
 
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -1829,8 +1953,9 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1843,11 +1968,7 @@ pub struct RecordHosting<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub status: RecordHostingStatus<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1855,6 +1976,7 @@ pub struct RecordHosting<S: jacquard_common::BosStr = jacquard_common::DefaultSt
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RecordHostingStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -1903,8 +2025,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for RecordHostingStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for RecordHostingStatus<S>
-{
+for RecordHostingStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -1935,9 +2056,17 @@ where
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1950,11 +2079,7 @@ pub struct RecordView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub repo: crate::generated::tools_ozone::moderation::RepoView<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     pub value: jacquard_common::types::value::Data<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1963,9 +2088,17 @@ pub struct RecordView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -1975,16 +2108,14 @@ pub struct RecordViewDetail<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub cid: jacquard_common::types::string::Cid<S>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    pub labels: core::option::Option<
+        Vec<crate::generated::com_atproto::label::Label<S>>,
+    >,
     pub moderation: crate::generated::tools_ozone::moderation::ModerationDetail<S>,
     pub repo: crate::generated::tools_ozone::moderation::RepoView<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     pub value: jacquard_common::types::value::Data<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -1993,20 +2124,24 @@ pub struct RecordViewDetail<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RecordViewNotFound<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2025,8 +2160,9 @@ pub struct RecordViewNotFound<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -2056,11 +2192,7 @@ pub struct RecordsStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     ///Cumulative sum of the number of reports on the items in the set
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub total_reports: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2069,9 +2201,17 @@ pub struct RecordsStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -2087,19 +2227,18 @@ pub struct RepoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invite_note: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub invited_by: core::option::Option<crate::generated::com_atproto::server::InviteCode<S>>,
+    pub invited_by: core::option::Option<
+        crate::generated::com_atproto::server::InviteCode<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invites_disabled: core::option::Option<bool>,
     pub moderation: crate::generated::tools_ozone::moderation::Moderation<S>,
     pub related_records: Vec<jacquard_common::types::value::Data<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub threat_signatures:
-        core::option::Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub threat_signatures: core::option::Option<
+        Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2108,9 +2247,17 @@ pub struct RepoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -2122,29 +2269,34 @@ pub struct RepoViewDetail<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub email: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub email_confirmed_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub email_confirmed_at: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     pub handle: jacquard_common::types::string::Handle<S>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invite_note: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub invited_by: core::option::Option<crate::generated::com_atproto::server::InviteCode<S>>,
+    pub invited_by: core::option::Option<
+        crate::generated::com_atproto::server::InviteCode<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub invites: core::option::Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>,
+    pub invites: core::option::Option<
+        Vec<crate::generated::com_atproto::server::InviteCode<S>>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invites_disabled: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    pub labels: core::option::Option<
+        Vec<crate::generated::com_atproto::label::Label<S>>,
+    >,
     pub moderation: crate::generated::tools_ozone::moderation::ModerationDetail<S>,
     pub related_records: Vec<jacquard_common::types::value::Data<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub threat_signatures:
-        core::option::Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub threat_signatures: core::option::Option<
+        Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2153,20 +2305,24 @@ pub struct RepoViewDetail<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RepoViewNotFound<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2175,9 +2331,17 @@ pub struct RepoViewNotFound<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -2200,11 +2364,7 @@ pub struct ReporterStats<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub takendown_account_count: i64,
     ///The total number of records taken down as a result of the user's reports.
     pub takendown_record_count: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2223,7 +2383,7 @@ pub struct ReporterStats<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct ReviewClosed;
 impl core::fmt::Display for ReviewClosed {
@@ -2242,7 +2402,7 @@ impl core::fmt::Display for ReviewClosed {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct ReviewEscalated;
 impl core::fmt::Display for ReviewEscalated {
@@ -2261,7 +2421,7 @@ impl core::fmt::Display for ReviewEscalated {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct ReviewNone;
 impl core::fmt::Display for ReviewNone {
@@ -2280,7 +2440,7 @@ impl core::fmt::Display for ReviewNone {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct ReviewOpen;
 impl core::fmt::Display for ReviewOpen {
@@ -2299,20 +2459,19 @@ impl core::fmt::Display for ReviewOpen {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RevokeAccountCredentialsEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct RevokeAccountCredentialsEvent<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Comment describing the reason for the revocation.
     pub comment: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2331,13 +2490,16 @@ pub struct RevokeAccountCredentialsEvent<S: jacquard_common::BosStr = jacquard_c
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ScheduleTakedownEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ScheduleTakedownEvent<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -2346,11 +2508,7 @@ pub struct ScheduleTakedownEvent<S: jacquard_common::BosStr = jacquard_common::D
     pub execute_at: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub execute_until: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2362,13 +2520,22 @@ pub struct ScheduleTakedownEvent<S: jacquard_common::BosStr = jacquard_common::D
 /// View of a scheduled moderation action
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ScheduledActionView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ScheduledActionView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Type of action to be executed
     pub action: ScheduledActionViewAction<S>,
     ///When the scheduled action was created
@@ -2408,11 +2575,7 @@ pub struct ScheduledActionView<S: jacquard_common::BosStr = jacquard_common::Def
     ///When the scheduled action was last updated
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2424,7 +2587,9 @@ pub struct ScheduledActionView<S: jacquard_common::BosStr = jacquard_common::Def
 /// Type of action to be executed
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum ScheduledActionViewAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum ScheduledActionViewAction<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     Takedown,
     Other(S),
 }
@@ -2467,8 +2632,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for ScheduledActionViewAction<
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for ScheduledActionViewAction<S>
-{
+for ScheduledActionViewAction<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -2484,7 +2648,8 @@ impl<S: jacquard_common::BosStr + Default> Default for ScheduledActionViewAction
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ScheduledActionViewAction<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+for ScheduledActionViewAction<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -2503,7 +2668,9 @@ where
 /// Current status of the scheduled action
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum ScheduledActionViewStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum ScheduledActionViewStatus<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     Pending,
     Executed,
     Cancelled,
@@ -2555,8 +2722,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for ScheduledActionViewStatus<
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for ScheduledActionViewStatus<S>
-{
+for ScheduledActionViewStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -2572,7 +2738,8 @@ impl<S: jacquard_common::BosStr + Default> Default for ScheduledActionViewStatus
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ScheduledActionViewStatus<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+for ScheduledActionViewStatus<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -2591,6 +2758,7 @@ where
     }
 }
 
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum SubjectReviewState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ToolsOzoneModerationDefsReviewOpen,
@@ -2603,28 +2771,36 @@ pub enum SubjectReviewState<S: jacquard_common::BosStr = jacquard_common::Defaul
 impl<S: jacquard_common::BosStr> SubjectReviewState<S> {
     pub fn as_str(&self) -> &str {
         match self {
-            Self::ToolsOzoneModerationDefsReviewOpen => "tools.ozone.moderation.defs#reviewOpen",
+            Self::ToolsOzoneModerationDefsReviewOpen => {
+                "tools.ozone.moderation.defs#reviewOpen"
+            }
             Self::ToolsOzoneModerationDefsReviewEscalated => {
                 "tools.ozone.moderation.defs#reviewEscalated"
             }
             Self::ToolsOzoneModerationDefsReviewClosed => {
                 "tools.ozone.moderation.defs#reviewClosed"
             }
-            Self::ToolsOzoneModerationDefsReviewNone => "tools.ozone.moderation.defs#reviewNone",
+            Self::ToolsOzoneModerationDefsReviewNone => {
+                "tools.ozone.moderation.defs#reviewNone"
+            }
             Self::Other(s) => s.as_ref(),
         }
     }
     /// Construct from a string-like value, matching known values.
     pub fn from_value(s: S) -> Self {
         match s.as_ref() {
-            "tools.ozone.moderation.defs#reviewOpen" => Self::ToolsOzoneModerationDefsReviewOpen,
+            "tools.ozone.moderation.defs#reviewOpen" => {
+                Self::ToolsOzoneModerationDefsReviewOpen
+            }
             "tools.ozone.moderation.defs#reviewEscalated" => {
                 Self::ToolsOzoneModerationDefsReviewEscalated
             }
             "tools.ozone.moderation.defs#reviewClosed" => {
                 Self::ToolsOzoneModerationDefsReviewClosed
             }
-            "tools.ozone.moderation.defs#reviewNone" => Self::ToolsOzoneModerationDefsReviewNone,
+            "tools.ozone.moderation.defs#reviewNone" => {
+                Self::ToolsOzoneModerationDefsReviewNone
+            }
             _ => Self::Other(s),
         }
     }
@@ -2652,8 +2828,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for SubjectReviewState<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for SubjectReviewState<S>
-{
+for SubjectReviewState<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -2688,9 +2863,17 @@ where
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -2698,18 +2881,22 @@ where
 pub struct SubjectStatusView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///Statistics related to the account subject
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub account_stats:
-        core::option::Option<crate::generated::tools_ozone::moderation::AccountStats<S>>,
+    pub account_stats: core::option::Option<
+        crate::generated::tools_ozone::moderation::AccountStats<S>,
+    >,
     ///Strike information for the account (account-level only)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub account_strike:
-        core::option::Option<crate::generated::tools_ozone::moderation::AccountStrike<S>>,
+    pub account_strike: core::option::Option<
+        crate::generated::tools_ozone::moderation::AccountStrike<S>,
+    >,
     ///Current age assurance state of the subject.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub age_assurance_state: core::option::Option<SubjectStatusViewAgeAssuranceState<S>>,
     ///Whether or not the last successful update to age assurance was made by the user or admin.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub age_assurance_updated_by: core::option::Option<SubjectStatusViewAgeAssuranceUpdatedBy<S>>,
+    pub age_assurance_updated_by: core::option::Option<
+        SubjectStatusViewAgeAssuranceUpdatedBy<S>,
+    >,
     ///True indicates that the a previously taken moderator action was appealed against, by the author of the content. False indicates last appeal was resolved by moderators.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub appealed: core::option::Option<bool>,
@@ -2731,7 +2918,9 @@ pub struct SubjectStatusView<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub last_reviewed_by: core::option::Option<jacquard_common::types::string::Did<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub mute_reporting_until: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub mute_reporting_until: core::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub mute_until: core::option::Option<jacquard_common::types::string::Datetime>,
     ///Numeric value representing the level of priority. Higher score means higher priority.
@@ -2739,12 +2928,15 @@ pub struct SubjectStatusView<S: jacquard_common::BosStr = jacquard_common::Defau
     pub priority_score: core::option::Option<i64>,
     ///Statistics related to the record subjects authored by the subject's account
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub records_stats:
-        core::option::Option<crate::generated::tools_ozone::moderation::RecordsStats<S>>,
+    pub records_stats: core::option::Option<
+        crate::generated::tools_ozone::moderation::RecordsStats<S>,
+    >,
     pub review_state: crate::generated::tools_ozone::moderation::SubjectReviewState<S>,
     pub subject: SubjectStatusViewSubject<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_blob_cids: core::option::Option<Vec<jacquard_common::types::string::Cid<S>>>,
+    pub subject_blob_cids: core::option::Option<
+        Vec<jacquard_common::types::string::Cid<S>>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject_repo_handle: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -2755,11 +2947,7 @@ pub struct SubjectStatusView<S: jacquard_common::BosStr = jacquard_common::Defau
     pub takendown: core::option::Option<bool>,
     ///Timestamp referencing when the last update was made to the moderation status of the subject
     pub updated_at: jacquard_common::types::string::Datetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -2806,7 +2994,8 @@ impl<S: jacquard_common::BosStr> SubjectStatusViewAgeAssuranceState<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> core::fmt::Display for SubjectStatusViewAgeAssuranceState<S> {
+impl<S: jacquard_common::BosStr> core::fmt::Display
+for SubjectStatusViewAgeAssuranceState<S> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -2818,7 +3007,8 @@ impl<S: jacquard_common::BosStr> AsRef<str> for SubjectStatusViewAgeAssuranceSta
     }
 }
 
-impl<S: jacquard_common::BosStr> serde::Serialize for SubjectStatusViewAgeAssuranceState<S> {
+impl<S: jacquard_common::BosStr> serde::Serialize
+for SubjectStatusViewAgeAssuranceState<S> {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: serde::Serializer,
@@ -2828,8 +3018,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for SubjectStatusViewAgeAssura
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for SubjectStatusViewAgeAssuranceState<S>
-{
+for SubjectStatusViewAgeAssuranceState<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -2839,14 +3028,15 @@ impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deseriali
     }
 }
 
-impl<S: jacquard_common::BosStr + Default> Default for SubjectStatusViewAgeAssuranceState<S> {
+impl<S: jacquard_common::BosStr + Default> Default
+for SubjectStatusViewAgeAssuranceState<S> {
     fn default() -> Self {
         Self::Other(Default::default())
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-    for SubjectStatusViewAgeAssuranceState<S>
+for SubjectStatusViewAgeAssuranceState<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -2863,7 +3053,9 @@ where
             SubjectStatusViewAgeAssuranceState::Unknown => {
                 SubjectStatusViewAgeAssuranceState::Unknown
             }
-            SubjectStatusViewAgeAssuranceState::Reset => SubjectStatusViewAgeAssuranceState::Reset,
+            SubjectStatusViewAgeAssuranceState::Reset => {
+                SubjectStatusViewAgeAssuranceState::Reset
+            }
             SubjectStatusViewAgeAssuranceState::Blocked => {
                 SubjectStatusViewAgeAssuranceState::Blocked
             }
@@ -2903,19 +3095,22 @@ impl<S: jacquard_common::BosStr> SubjectStatusViewAgeAssuranceUpdatedBy<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> core::fmt::Display for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
+impl<S: jacquard_common::BosStr> core::fmt::Display
+for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.as_str())
     }
 }
 
-impl<S: jacquard_common::BosStr> AsRef<str> for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
+impl<S: jacquard_common::BosStr> AsRef<str>
+for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl<S: jacquard_common::BosStr> serde::Serialize for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
+impl<S: jacquard_common::BosStr> serde::Serialize
+for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: serde::Serializer,
@@ -2925,8 +3120,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for SubjectStatusViewAgeAssura
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for SubjectStatusViewAgeAssuranceUpdatedBy<S>
-{
+for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -2936,14 +3130,15 @@ impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deseriali
     }
 }
 
-impl<S: jacquard_common::BosStr + Default> Default for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
+impl<S: jacquard_common::BosStr + Default> Default
+for SubjectStatusViewAgeAssuranceUpdatedBy<S> {
     fn default() -> Self {
         Self::Other(Default::default())
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-    for SubjectStatusViewAgeAssuranceUpdatedBy<S>
+for SubjectStatusViewAgeAssuranceUpdatedBy<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -2964,30 +3159,50 @@ where
     }
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum SubjectStatusViewHosting<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum SubjectStatusViewHosting<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "tools.ozone.moderation.defs#accountHosting")]
     AccountHosting(Box<crate::generated::tools_ozone::moderation::AccountHosting<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#recordHosting")]
     RecordHosting(Box<crate::generated::tools_ozone::moderation::RecordHosting<S>>),
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum SubjectStatusViewSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum SubjectStatusViewSubject<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
     RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
@@ -3001,8 +3216,15 @@ pub enum SubjectStatusViewSubject<S: jacquard_common::BosStr = jacquard_common::
 /// Detailed view of a subject. For record subjects, the author's repo and profile will be returned.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -3011,20 +3233,20 @@ pub struct SubjectView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub profile: core::option::Option<jacquard_common::types::value::Data<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub record:
-        core::option::Option<crate::generated::tools_ozone::moderation::RecordViewDetail<S>>,
+    pub record: core::option::Option<
+        crate::generated::tools_ozone::moderation::RecordViewDetail<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub repo: core::option::Option<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>,
+    pub repo: core::option::Option<
+        crate::generated::tools_ozone::moderation::RepoViewDetail<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub status:
-        core::option::Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
+    pub status: core::option::Option<
+        crate::generated::tools_ozone::moderation::SubjectStatusView<S>,
+    >,
     pub subject: S,
     pub r#type: crate::generated::com_atproto::moderation::SubjectType<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -3043,7 +3265,7 @@ pub struct SubjectView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct TimelineEventPlcCreate;
 impl core::fmt::Display for TimelineEventPlcCreate {
@@ -3062,7 +3284,7 @@ impl core::fmt::Display for TimelineEventPlcCreate {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct TimelineEventPlcOperation;
 impl core::fmt::Display for TimelineEventPlcOperation {
@@ -3081,7 +3303,7 @@ impl core::fmt::Display for TimelineEventPlcOperation {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct TimelineEventPlcTombstone;
 impl core::fmt::Display for TimelineEventPlcTombstone {
@@ -3090,9 +3312,17 @@ impl core::fmt::Display for TimelineEventPlcTombstone {
     }
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -3101,11 +3331,7 @@ pub struct VideoDetails<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub height: i64,
     pub length: i64,
     pub width: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -3114,7 +3340,8 @@ pub struct VideoDetails<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AccountEvent<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for AccountEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3129,7 +3356,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Acc
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AccountHosting<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for AccountHosting<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3144,7 +3372,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Acc
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AccountStats<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for AccountStats<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3159,7 +3388,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Acc
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AccountStrike<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for AccountStrike<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3174,7 +3404,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Acc
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AgeAssuranceEvent<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for AgeAssuranceEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3190,8 +3421,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Age
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for AgeAssuranceOverrideEvent<S>
-{
+for AgeAssuranceOverrideEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3207,7 +3437,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 1usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("comment"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "comment",
+                    ),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -3218,8 +3450,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for AgeAssurancePurgeEvent<S>
-{
+for AgeAssurancePurgeEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3235,7 +3466,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 1usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("comment"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "comment",
+                    ),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -3245,7 +3478,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for BlobView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for BlobView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3261,8 +3495,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Blo
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for CancelScheduledTakedownEvent<S>
-{
+for CancelScheduledTakedownEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3277,7 +3510,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ConvoView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ConvoView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3292,7 +3526,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Con
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for IdentityEvent<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for IdentityEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3307,7 +3542,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ide
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ImageDetails<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ImageDetails<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3323,8 +3559,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ima
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ModEventAcknowledge<S>
-{
+for ModEventAcknowledge<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3339,7 +3574,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventComment<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventComment<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3354,7 +3590,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventDivert<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventDivert<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3369,7 +3606,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventEmail<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventEmail<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3384,7 +3622,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
             #[allow(unused_comparisons)]
             if value.len() > 5usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("policies"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "policies",
+                    ),
                     max: 5usize,
                     actual: value.len(),
                 });
@@ -3394,7 +3634,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventEscalate<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventEscalate<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3409,7 +3650,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventLabel<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventLabel<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3424,7 +3666,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventMute<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventMute<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3440,8 +3683,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ModEventMuteReporter<S>
-{
+for ModEventMuteReporter<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3457,8 +3699,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ModEventPriorityScore<S>
-{
+for ModEventPriorityScore<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3473,7 +3714,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             let value = &self.score;
             if *value > 100i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("score"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "score",
+                    ),
                     max: 100i64,
                     actual: *value,
                 });
@@ -3483,7 +3726,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             let value = &self.score;
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("score"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "score",
+                    ),
                     min: 0i64,
                     actual: *value,
                 });
@@ -3493,7 +3738,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventReport<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventReport<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3509,8 +3755,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ModEventResolveAppeal<S>
-{
+for ModEventResolveAppeal<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3526,8 +3771,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ModEventReverseTakedown<S>
-{
+for ModEventReverseTakedown<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3542,7 +3786,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             #[allow(unused_comparisons)]
             if value.len() > 5usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("policies"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "policies",
+                    ),
                     max: 5usize,
                     actual: value.len(),
                 });
@@ -3552,7 +3798,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventTag<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventTag<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3567,7 +3814,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventTakedown<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventTakedown<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3582,7 +3830,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
             #[allow(unused_comparisons)]
             if value.len() > 5usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("policies"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "policies",
+                    ),
                     max: 5usize,
                     actual: value.len(),
                 });
@@ -3592,7 +3842,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventUnmute<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventUnmute<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3608,8 +3859,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ModEventUnmuteReporter<S>
-{
+for ModEventUnmuteReporter<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3624,7 +3874,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3639,7 +3890,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModEventViewDetail<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModEventViewDetail<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3669,7 +3921,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Moderation<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for Moderation<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3684,7 +3937,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModerationDetail<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ModerationDetail<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3699,7 +3953,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mod
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordEvent<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RecordEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3714,7 +3969,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordHosting<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RecordHosting<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3729,7 +3985,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RecordView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3744,7 +4001,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordViewDetail<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RecordViewDetail<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3759,7 +4017,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordViewNotFound<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RecordViewNotFound<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3774,7 +4033,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordsStats<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RecordsStats<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3789,7 +4049,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RepoView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RepoView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3804,7 +4065,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RepoViewDetail<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RepoViewDetail<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3819,7 +4081,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RepoViewNotFound<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for RepoViewNotFound<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3834,7 +4097,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReporterStats<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ReporterStats<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3850,8 +4114,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for RevokeAccountCredentialsEvent<S>
-{
+for RevokeAccountCredentialsEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3867,7 +4130,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 1usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("comment"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "comment",
+                    ),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -3878,8 +4143,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ScheduleTakedownEvent<S>
-{
+for ScheduleTakedownEvent<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3895,8 +4159,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for ScheduledActionView<S>
-{
+for ScheduledActionView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3911,7 +4174,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SubjectStatusView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for SubjectStatusView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3948,7 +4212,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sub
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SubjectView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for SubjectView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3963,7 +4228,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sub
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for VideoDetails<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for VideoDetails<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.defs"
     }
@@ -3980,9 +4246,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
 
 pub mod account_event_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -4039,7 +4305,10 @@ pub struct AccountEventBuilder<
 
 impl AccountEvent<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> AccountEventBuilder<account_event_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> AccountEventBuilder<
+        account_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         AccountEventBuilder::new()
     }
 }
@@ -4092,7 +4361,10 @@ where
     }
 }
 
-impl<St: account_event_state::State, S: jacquard_common::BosStr> AccountEventBuilder<St, S> {
+impl<
+    St: account_event_state::State,
+    S: jacquard_common::BosStr,
+> AccountEventBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -4105,7 +4377,10 @@ impl<St: account_event_state::State, S: jacquard_common::BosStr> AccountEventBui
     }
 }
 
-impl<St: account_event_state::State, S: jacquard_common::BosStr> AccountEventBuilder<St, S> {
+impl<
+    St: account_event_state::State,
+    S: jacquard_common::BosStr,
+> AccountEventBuilder<St, S> {
     /// Set the `status` field (optional)
     pub fn status(mut self, value: impl Into<Option<AccountEventStatus<S>>>) -> Self {
         self._fields.2 = value.into();
@@ -4171,7 +4446,9 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs"),
@@ -4236,220 +4513,202 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("accountHosting"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("status")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "deactivatedAt",
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deactivatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deletedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("deletedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reactivatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "reactivatedAt",
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "status",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "updatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("accountStats"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Statistics about a particular account subject",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "appealCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "escalateCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "reportCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "suspendCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "takedownCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "appealCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "escalateCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reportCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "suspendCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "takedownCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("accountStrike"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Strike information for an account",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "activeStrikeCount",
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "activeStrikeCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "firstStrikeAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Timestamp of the first strike received",
+                                    ),
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "firstStrikeAt",
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "lastStrikeAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Timestamp of the most recent strike received",
+                                    ),
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Timestamp of the first strike received",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "lastStrikeAt",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Timestamp of the most recent strike received",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "totalStrikeCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "totalStrikeCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -4708,145 +4967,143 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("blobView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("mimeType"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("size"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("details"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static("#imageDetails"),
-                                            ::jacquard_common::CowStr::new_static("#videoDetails"),
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("mimeType"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "moderation",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#moderation"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("size"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "details",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#imageDetails"),
+                                    ::jacquard_common::CowStr::new_static("#videoDetails")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "mimeType",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "moderation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#moderation"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "size",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "cancelScheduledTakedownEvent",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Logs cancellation of a scheduled takedown action for an account.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("convoView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("identityEvent"),
@@ -4920,67 +5177,65 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("imageDetails"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("width"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("height"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("height"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("width"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("height")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "height",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "width",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventAcknowledge"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "acknowledgeAccountSubjects",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "modEventAcknowledge",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "acknowledgeAccountSubjects",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -5163,170 +5418,156 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventEscalate"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "modEventEscalate",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventLabel"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Apply/Negate labels on a subject",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createLabelVals"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("negateLabelVals")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createLabelVals",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "negateLabelVals",
-                            ),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "createLabelVals",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::String(
-                                            ::jacquard_lexicon::lexicon::LexString {
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "durationInHours",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "negateLabelVals",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::String(
-                                            ::jacquard_lexicon::lexicon::LexString {
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventMute"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
-                            "Mute incoming reports on a subject",
-                        )),
-                        required: Some(vec![
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "durationInHours",
                             ),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "durationInHours",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "negateLabelVals",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventMuteReporter"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
-                            "Mute incoming reports from an account",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "durationInHours",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventMute"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Mute incoming reports on a subject",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("durationInHours")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "durationInHours",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "modEventMuteReporter",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Mute incoming reports from an account",
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "durationInHours",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -5371,80 +5612,80 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventReport"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
-                            "Report a subject",
-                        )),
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reportType"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static("Report a subject"),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reportType")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "isReporterMuted",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reportType",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "com.atproto.moderation.defs#reasonType",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "isReporterMuted",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "reportType",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "com.atproto.moderation.defs#reasonType",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventResolveAppeal"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
-                            "Resolve appeal on a subject",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Describe resolution.",
-                                        )),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "modEventResolveAppeal",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Resolve appeal on a subject",
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Describe resolution.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -5704,415 +5945,319 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventUnmute"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Unmute action on a subject",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Describe reasoning behind the reversal.",
-                                        )),
-                                        ..Default::default()
-                                    },
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Describe reasoning behind the reversal.",
+                                    ),
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventUnmuteReporter"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
-                            "Unmute incoming reports from an account",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Describe reasoning behind the reversal.",
-                                        )),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "modEventUnmuteReporter",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Unmute incoming reports from an account",
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Describe reasoning behind the reversal.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("event"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectBlobCids"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "creatorHandle",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "event",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#modEventTakedown"),
+                                    ::jacquard_common::CowStr::new_static("#modEventReverseTakedown"),
+                                    ::jacquard_common::CowStr::new_static("#modEventComment"),
+                                    ::jacquard_common::CowStr::new_static("#modEventReport"),
+                                    ::jacquard_common::CowStr::new_static("#modEventLabel"),
+                                    ::jacquard_common::CowStr::new_static("#modEventAcknowledge"),
+                                    ::jacquard_common::CowStr::new_static("#modEventEscalate"),
+                                    ::jacquard_common::CowStr::new_static("#modEventMute"),
+                                    ::jacquard_common::CowStr::new_static("#modEventUnmute"),
+                                    ::jacquard_common::CowStr::new_static("#modEventMuteReporter"),
+                                    ::jacquard_common::CowStr::new_static("#modEventUnmuteReporter"),
+                                    ::jacquard_common::CowStr::new_static("#modEventEmail"),
+                                    ::jacquard_common::CowStr::new_static("#modEventResolveAppeal"),
+                                    ::jacquard_common::CowStr::new_static("#modEventDivert"),
+                                    ::jacquard_common::CowStr::new_static("#modEventTag"),
+                                    ::jacquard_common::CowStr::new_static("#accountEvent"),
+                                    ::jacquard_common::CowStr::new_static("#identityEvent"),
+                                    ::jacquard_common::CowStr::new_static("#recordEvent"),
+                                    ::jacquard_common::CowStr::new_static("#modEventPriorityScore"),
+                                    ::jacquard_common::CowStr::new_static("#ageAssuranceEvent"),
+                                    ::jacquard_common::CowStr::new_static("#ageAssuranceOverrideEvent"),
+                                    ::jacquard_common::CowStr::new_static("#ageAssurancePurgeEvent"),
+                                    ::jacquard_common::CowStr::new_static("#revokeAccountCredentialsEvent"),
+                                    ::jacquard_common::CowStr::new_static("#scheduleTakedownEvent"),
+                                    ::jacquard_common::CowStr::new_static("#cancelScheduledTakedownEvent")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "modTool",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#modTool"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subject",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("com.atproto.admin.defs#repoRef"),
+                                    ::jacquard_common::CowStr::new_static("com.atproto.repo.strongRef"),
+                                    ::jacquard_common::CowStr::new_static("chat.bsky.convo.defs#messageRef"),
+                                    ::jacquard_common::CowStr::new_static("chat.bsky.convo.defs#convoRef")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectBlobCids",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "creatorHandle",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("event"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventTakedown",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventReverseTakedown",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventComment",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventReport",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventLabel"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventAcknowledge",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventEscalate",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventMute"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventUnmute",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventMuteReporter",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventUnmuteReporter",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventEmail"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventResolveAppeal",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventDivert",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventTag"),
-                                            ::jacquard_common::CowStr::new_static("#accountEvent"),
-                                            ::jacquard_common::CowStr::new_static("#identityEvent"),
-                                            ::jacquard_common::CowStr::new_static("#recordEvent"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventPriorityScore",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#ageAssuranceEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#ageAssuranceOverrideEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#ageAssurancePurgeEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#revokeAccountCredentialsEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#scheduleTakedownEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#cancelScheduledTakedownEvent",
-                                            ),
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("modTool"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#modTool"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static(
-                                                "com.atproto.admin.defs#repoRef",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "com.atproto.repo.strongRef",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "chat.bsky.convo.defs#messageRef",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "chat.bsky.convo.defs#convoRef",
-                                            ),
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "subjectBlobCids",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::String(
-                                            ::jacquard_lexicon::lexicon::LexString {
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "subjectHandle",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subjectHandle",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("modEventViewDetail"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "modEventViewDetail",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("event"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectBlobs"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("event"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventTakedown",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventReverseTakedown",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventComment",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventReport",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventLabel"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventAcknowledge",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventEscalate",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventMute"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventUnmute",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventMuteReporter",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventUnmuteReporter",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventEmail"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventResolveAppeal",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventDivert",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#modEventTag"),
-                                            ::jacquard_common::CowStr::new_static("#accountEvent"),
-                                            ::jacquard_common::CowStr::new_static("#identityEvent"),
-                                            ::jacquard_common::CowStr::new_static("#recordEvent"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#modEventPriorityScore",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#ageAssuranceEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#ageAssuranceOverrideEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#ageAssurancePurgeEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#revokeAccountCredentialsEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#scheduleTakedownEvent",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#cancelScheduledTakedownEvent",
-                                            ),
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("modTool"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#modTool"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static("#repoView"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#repoViewNotFound",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#recordView"),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "#recordViewNotFound",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static("#convoView"),
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "subjectBlobs",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "#blobView",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "event",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#modEventTakedown"),
+                                    ::jacquard_common::CowStr::new_static("#modEventReverseTakedown"),
+                                    ::jacquard_common::CowStr::new_static("#modEventComment"),
+                                    ::jacquard_common::CowStr::new_static("#modEventReport"),
+                                    ::jacquard_common::CowStr::new_static("#modEventLabel"),
+                                    ::jacquard_common::CowStr::new_static("#modEventAcknowledge"),
+                                    ::jacquard_common::CowStr::new_static("#modEventEscalate"),
+                                    ::jacquard_common::CowStr::new_static("#modEventMute"),
+                                    ::jacquard_common::CowStr::new_static("#modEventUnmute"),
+                                    ::jacquard_common::CowStr::new_static("#modEventMuteReporter"),
+                                    ::jacquard_common::CowStr::new_static("#modEventUnmuteReporter"),
+                                    ::jacquard_common::CowStr::new_static("#modEventEmail"),
+                                    ::jacquard_common::CowStr::new_static("#modEventResolveAppeal"),
+                                    ::jacquard_common::CowStr::new_static("#modEventDivert"),
+                                    ::jacquard_common::CowStr::new_static("#modEventTag"),
+                                    ::jacquard_common::CowStr::new_static("#accountEvent"),
+                                    ::jacquard_common::CowStr::new_static("#identityEvent"),
+                                    ::jacquard_common::CowStr::new_static("#recordEvent"),
+                                    ::jacquard_common::CowStr::new_static("#modEventPriorityScore"),
+                                    ::jacquard_common::CowStr::new_static("#ageAssuranceEvent"),
+                                    ::jacquard_common::CowStr::new_static("#ageAssuranceOverrideEvent"),
+                                    ::jacquard_common::CowStr::new_static("#ageAssurancePurgeEvent"),
+                                    ::jacquard_common::CowStr::new_static("#revokeAccountCredentialsEvent"),
+                                    ::jacquard_common::CowStr::new_static("#scheduleTakedownEvent"),
+                                    ::jacquard_common::CowStr::new_static("#cancelScheduledTakedownEvent")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "modTool",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#modTool"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subject",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#repoView"),
+                                    ::jacquard_common::CowStr::new_static("#repoViewNotFound"),
+                                    ::jacquard_common::CowStr::new_static("#recordView"),
+                                    ::jacquard_common::CowStr::new_static("#recordViewNotFound"),
+                                    ::jacquard_common::CowStr::new_static("#convoView")
+                                ],
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subjectBlobs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static("#blobView"),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("modTool"),
@@ -6158,55 +6303,49 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("moderation"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "subjectStatus",
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subjectStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#subjectStatusView",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#subjectStatusView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("moderationDetail"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "subjectStatus",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#subjectStatusView",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "moderationDetail",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subjectStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#subjectStatusView",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("recordEvent"),
@@ -6268,60 +6407,60 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("recordHosting"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("status")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("deletedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deletedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "status",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "updatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("recordView"),
@@ -6419,783 +6558,685 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("recordViewDetail"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "recordViewDetail",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("value"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("blobs"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("moderation"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repo"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("blobs"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "#blobView",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repo")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "blobs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static("#blobView"),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "indexedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.label.defs#label",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "moderation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#moderationDetail",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("labels"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "com.atproto.label.defs#label",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "repo",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#repoView"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "moderation",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#moderationDetail",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("repo"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#repoView"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("value"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(
-                                    ::jacquard_lexicon::lexicon::LexUnknown {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "value",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("recordViewNotFound"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "recordViewNotFound",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("recordsStats"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Statistics about a set of record subject items",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "appealedCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "escalatedCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "pendingCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "processedCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "reportedCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "subjectCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "takendownCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "totalReports",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "appealedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "escalatedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "pendingCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "processedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reportedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subjectCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "takendownCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "totalReports",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("repoView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("relatedRecords"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("moderation")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deactivatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "email",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "handle",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "indexedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "inviteNote",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "invitedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "com.atproto.server.defs#inviteCode",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "invitesDisabled",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "moderation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#moderation"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "relatedRecords",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("moderation"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "deactivatedAt",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("email"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "inviteNote",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("invitedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "com.atproto.server.defs#inviteCode",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "invitesDisabled",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "moderation",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#moderation"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "relatedRecords",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Unknown(
-                                            ::jacquard_lexicon::lexicon::LexUnknown {
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "threatSignatures",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "com.atproto.admin.defs#threatSignature",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "threatSignatures",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.admin.defs#threatSignature",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("repoViewDetail"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("relatedRecords"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("moderation")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deactivatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "email",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "emailConfirmedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "handle",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "indexedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "inviteNote",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "invitedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "com.atproto.server.defs#inviteCode",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "invites",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.server.defs#inviteCode",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "invitesDisabled",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.label.defs#label",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "moderation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#moderationDetail",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "relatedRecords",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("moderation"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "deactivatedAt",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("email"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "emailConfirmedAt",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "inviteNote",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("invitedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "com.atproto.server.defs#inviteCode",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("invites"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "com.atproto.server.defs#inviteCode",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "invitesDisabled",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("labels"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "com.atproto.label.defs#label",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "moderation",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#moderationDetail",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "relatedRecords",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Unknown(
-                                            ::jacquard_lexicon::lexicon::LexUnknown {
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "threatSignatures",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "com.atproto.admin.defs#threatSignature",
-                                                ),
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "threatSignatures",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.admin.defs#threatSignature",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("repoViewNotFound"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "repoViewNotFound",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("reporterStats"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("accountReportCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("recordReportCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reportedAccountCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reportedRecordCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("takendownAccountCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("takendownRecordCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("labeledAccountCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("labeledRecordCount")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "accountReportCount",
                             ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "recordReportCount",
+                                "did",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "reportedAccountCount",
-                            ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "reportedRecordCount",
-                            ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "takendownAccountCount",
-                            ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "takendownRecordCount",
-                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "labeledAccountCount",
                             ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "labeledRecordCount",
                             ),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "accountReportCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "labeledAccountCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "labeledRecordCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "recordReportCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "reportedAccountCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "reportedRecordCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "takendownAccountCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "takendownRecordCount",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "recordReportCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reportedAccountCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reportedRecordCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "takendownAccountCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "takendownRecordCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("reviewClosed"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("reviewEscalated"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "reviewEscalated",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("reviewNone"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("reviewOpen"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -7235,65 +7276,63 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("scheduleTakedownEvent"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
-                            "Logs a scheduled takedown action for an account.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("comment"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "executeAfter",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("executeAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "executeUntil",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "scheduleTakedownEvent",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Logs a scheduled takedown action for an account.",
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "comment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "executeAfter",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "executeAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "executeUntil",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -7521,12 +7560,12 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectReviewState"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "subjectReviewState",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -7922,70 +7961,70 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("timelineEventPlcCreate"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "timelineEventPlcCreate",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("timelineEventPlcOperation"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "timelineEventPlcOperation",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("timelineEventPlcTombstone"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "timelineEventPlcTombstone",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("videoDetails"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("width"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("height"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("length"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("height"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("length"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("width"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("length")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "height",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "length",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "width",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map
         },
@@ -7995,9 +8034,9 @@ fn lexicon_doc_tools_ozone_moderation_defs() -> jacquard_lexicon::lexicon::Lexic
 
 pub mod age_assurance_event_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8074,9 +8113,10 @@ pub struct AgeAssuranceEventBuilder<
 
 impl AgeAssuranceEvent<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> AgeAssuranceEventBuilder<age_assurance_event_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> AgeAssuranceEventBuilder<
+        age_assurance_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         AgeAssuranceEventBuilder::new()
     }
 }
@@ -8088,7 +8128,10 @@ impl<S: jacquard_common::BosStr> AgeAssuranceEvent<S> {
     }
 }
 
-impl AgeAssuranceEventBuilder<age_assurance_event_state::Empty, jacquard_common::DefaultStr> {
+impl AgeAssuranceEventBuilder<
+    age_assurance_event_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         AgeAssuranceEventBuilder {
@@ -8099,7 +8142,9 @@ impl AgeAssuranceEventBuilder<age_assurance_event_state::Empty, jacquard_common:
     }
 }
 
-impl<S: jacquard_common::BosStr> AgeAssuranceEventBuilder<age_assurance_event_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<age_assurance_event_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         AgeAssuranceEventBuilder {
@@ -8110,9 +8155,10 @@ impl<S: jacquard_common::BosStr> AgeAssuranceEventBuilder<age_assurance_event_st
     }
 }
 
-impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
-    AgeAssuranceEventBuilder<St, S>
-{
+impl<
+    St: age_assurance_event_state::State,
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<St, S> {
     /// Set the `access` field (optional)
     pub fn access(
         mut self,
@@ -8150,9 +8196,10 @@ where
     }
 }
 
-impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
-    AgeAssuranceEventBuilder<St, S>
-{
+impl<
+    St: age_assurance_event_state::State,
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<St, S> {
     /// Set the `completeIp` field (optional)
     pub fn complete_ip(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -8165,9 +8212,10 @@ impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
-    AgeAssuranceEventBuilder<St, S>
-{
+impl<
+    St: age_assurance_event_state::State,
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<St, S> {
     /// Set the `completeUa` field (optional)
     pub fn complete_ua(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();
@@ -8180,9 +8228,10 @@ impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
-    AgeAssuranceEventBuilder<St, S>
-{
+impl<
+    St: age_assurance_event_state::State,
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<St, S> {
     /// Set the `countryCode` field (optional)
     pub fn country_code(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();
@@ -8214,9 +8263,10 @@ where
     }
 }
 
-impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
-    AgeAssuranceEventBuilder<St, S>
-{
+impl<
+    St: age_assurance_event_state::State,
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<St, S> {
     /// Set the `initIp` field (optional)
     pub fn init_ip(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.6 = value.into();
@@ -8229,9 +8279,10 @@ impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
-    AgeAssuranceEventBuilder<St, S>
-{
+impl<
+    St: age_assurance_event_state::State,
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<St, S> {
     /// Set the `initUa` field (optional)
     pub fn init_ua(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.7 = value.into();
@@ -8244,9 +8295,10 @@ impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: age_assurance_event_state::State, S: jacquard_common::BosStr>
-    AgeAssuranceEventBuilder<St, S>
-{
+impl<
+    St: age_assurance_event_state::State,
+    S: jacquard_common::BosStr,
+> AgeAssuranceEventBuilder<St, S> {
     /// Set the `regionCode` field (optional)
     pub fn region_code(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.8 = value.into();
@@ -8327,9 +8379,9 @@ where
 
 pub mod blob_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8418,7 +8470,10 @@ pub struct BlobViewBuilder<
 
 impl BlobView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> BlobViewBuilder<blob_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> BlobViewBuilder<
+        blob_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         BlobViewBuilder::new()
     }
 }
@@ -8526,7 +8581,9 @@ impl<St: blob_view_state::State, S: jacquard_common::BosStr> BlobViewBuilder<St,
     /// Set the `moderation` field (optional)
     pub fn moderation(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::Moderation<S>>>,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::Moderation<S>>,
+        >,
     ) -> Self {
         self._fields.4 = value.into();
         self
@@ -8602,9 +8659,9 @@ where
 
 pub mod convo_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8659,7 +8716,10 @@ pub struct ConvoViewBuilder<
 
 impl ConvoView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ConvoViewBuilder<convo_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ConvoViewBuilder<
+        convo_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ConvoViewBuilder::new()
     }
 }
@@ -8763,9 +8823,9 @@ where
 
 pub mod identity_event_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8811,7 +8871,10 @@ pub struct IdentityEventBuilder<
 
 impl IdentityEvent<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> IdentityEventBuilder<identity_event_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> IdentityEventBuilder<
+        identity_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         IdentityEventBuilder::new()
     }
 }
@@ -8845,7 +8908,10 @@ impl<S: jacquard_common::BosStr> IdentityEventBuilder<identity_event_state::Empt
     }
 }
 
-impl<St: identity_event_state::State, S: jacquard_common::BosStr> IdentityEventBuilder<St, S> {
+impl<
+    St: identity_event_state::State,
+    S: jacquard_common::BosStr,
+> IdentityEventBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -8858,7 +8924,10 @@ impl<St: identity_event_state::State, S: jacquard_common::BosStr> IdentityEventB
     }
 }
 
-impl<St: identity_event_state::State, S: jacquard_common::BosStr> IdentityEventBuilder<St, S> {
+impl<
+    St: identity_event_state::State,
+    S: jacquard_common::BosStr,
+> IdentityEventBuilder<St, S> {
     /// Set the `handle` field (optional)
     pub fn handle(
         mut self,
@@ -8877,7 +8946,10 @@ impl<St: identity_event_state::State, S: jacquard_common::BosStr> IdentityEventB
     }
 }
 
-impl<St: identity_event_state::State, S: jacquard_common::BosStr> IdentityEventBuilder<St, S> {
+impl<
+    St: identity_event_state::State,
+    S: jacquard_common::BosStr,
+> IdentityEventBuilder<St, S> {
     /// Set the `pdsHost` field (optional)
     pub fn pds_host(
         mut self,
@@ -8915,7 +8987,10 @@ where
     }
 }
 
-impl<St: identity_event_state::State, S: jacquard_common::BosStr> IdentityEventBuilder<St, S> {
+impl<
+    St: identity_event_state::State,
+    S: jacquard_common::BosStr,
+> IdentityEventBuilder<St, S> {
     /// Set the `tombstone` field (optional)
     pub fn tombstone(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.4 = value.into();
@@ -8965,9 +9040,9 @@ where
 
 pub mod image_details_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9019,7 +9094,10 @@ pub struct ImageDetailsBuilder<
 
 impl ImageDetails<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ImageDetailsBuilder<image_details_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ImageDetailsBuilder<
+        image_details_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ImageDetailsBuilder::new()
     }
 }
@@ -9123,9 +9201,9 @@ where
 
 pub mod mod_event_label_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9182,8 +9260,10 @@ pub struct ModEventLabelBuilder<
 
 impl ModEventLabel<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ModEventLabelBuilder<mod_event_label_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ModEventLabelBuilder<
+        mod_event_label_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ModEventLabelBuilder::new()
     }
 }
@@ -9217,7 +9297,10 @@ impl<S: jacquard_common::BosStr> ModEventLabelBuilder<mod_event_label_state::Emp
     }
 }
 
-impl<St: mod_event_label_state::State, S: jacquard_common::BosStr> ModEventLabelBuilder<St, S> {
+impl<
+    St: mod_event_label_state::State,
+    S: jacquard_common::BosStr,
+> ModEventLabelBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -9249,7 +9332,10 @@ where
     }
 }
 
-impl<St: mod_event_label_state::State, S: jacquard_common::BosStr> ModEventLabelBuilder<St, S> {
+impl<
+    St: mod_event_label_state::State,
+    S: jacquard_common::BosStr,
+> ModEventLabelBuilder<St, S> {
     /// Set the `durationInHours` field (optional)
     pub fn duration_in_hours(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();
@@ -9317,9 +9403,9 @@ where
 
 pub mod mod_event_mute_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9359,7 +9445,10 @@ pub struct ModEventMuteBuilder<
 
 impl ModEventMute<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ModEventMuteBuilder<mod_event_mute_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ModEventMuteBuilder<
+        mod_event_mute_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ModEventMuteBuilder::new()
     }
 }
@@ -9393,7 +9482,10 @@ impl<S: jacquard_common::BosStr> ModEventMuteBuilder<mod_event_mute_state::Empty
     }
 }
 
-impl<St: mod_event_mute_state::State, S: jacquard_common::BosStr> ModEventMuteBuilder<St, S> {
+impl<
+    St: mod_event_mute_state::State,
+    S: jacquard_common::BosStr,
+> ModEventMuteBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -9456,9 +9548,9 @@ where
 
 pub mod mod_event_priority_score_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9508,14 +9600,18 @@ impl ModEventPriorityScore<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> ModEventPriorityScore<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ModEventPriorityScoreBuilder<mod_event_priority_score_state::Empty, S> {
+    pub fn builder() -> ModEventPriorityScoreBuilder<
+        mod_event_priority_score_state::Empty,
+        S,
+    > {
         ModEventPriorityScoreBuilder::builder()
     }
 }
 
-impl
-    ModEventPriorityScoreBuilder<mod_event_priority_score_state::Empty, jacquard_common::DefaultStr>
-{
+impl ModEventPriorityScoreBuilder<
+    mod_event_priority_score_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ModEventPriorityScoreBuilder {
@@ -9526,9 +9622,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    ModEventPriorityScoreBuilder<mod_event_priority_score_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> ModEventPriorityScoreBuilder<mod_event_priority_score_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ModEventPriorityScoreBuilder {
@@ -9539,9 +9635,10 @@ impl<S: jacquard_common::BosStr>
     }
 }
 
-impl<St: mod_event_priority_score_state::State, S: jacquard_common::BosStr>
-    ModEventPriorityScoreBuilder<St, S>
-{
+impl<
+    St: mod_event_priority_score_state::State,
+    S: jacquard_common::BosStr,
+> ModEventPriorityScoreBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -9604,9 +9701,9 @@ where
 
 pub mod mod_event_report_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9650,8 +9747,10 @@ pub struct ModEventReportBuilder<
 
 impl ModEventReport<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ModEventReportBuilder<mod_event_report_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ModEventReportBuilder<
+        mod_event_report_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ModEventReportBuilder::new()
     }
 }
@@ -9674,7 +9773,9 @@ impl ModEventReportBuilder<mod_event_report_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> ModEventReportBuilder<mod_event_report_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> ModEventReportBuilder<mod_event_report_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ModEventReportBuilder {
@@ -9685,7 +9786,10 @@ impl<S: jacquard_common::BosStr> ModEventReportBuilder<mod_event_report_state::E
     }
 }
 
-impl<St: mod_event_report_state::State, S: jacquard_common::BosStr> ModEventReportBuilder<St, S> {
+impl<
+    St: mod_event_report_state::State,
+    S: jacquard_common::BosStr,
+> ModEventReportBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -9698,7 +9802,10 @@ impl<St: mod_event_report_state::State, S: jacquard_common::BosStr> ModEventRepo
     }
 }
 
-impl<St: mod_event_report_state::State, S: jacquard_common::BosStr> ModEventReportBuilder<St, S> {
+impl<
+    St: mod_event_report_state::State,
+    S: jacquard_common::BosStr,
+> ModEventReportBuilder<St, S> {
     /// Set the `isReporterMuted` field (optional)
     pub fn is_reporter_muted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.1 = value.into();
@@ -9763,9 +9870,9 @@ where
 
 pub mod mod_event_tag_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9822,7 +9929,10 @@ pub struct ModEventTagBuilder<
 
 impl ModEventTag<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ModEventTagBuilder<mod_event_tag_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ModEventTagBuilder<
+        mod_event_tag_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ModEventTagBuilder::new()
     }
 }
@@ -9875,7 +9985,10 @@ where
     }
 }
 
-impl<St: mod_event_tag_state::State, S: jacquard_common::BosStr> ModEventTagBuilder<St, S> {
+impl<
+    St: mod_event_tag_state::State,
+    S: jacquard_common::BosStr,
+> ModEventTagBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -9888,7 +10001,10 @@ impl<St: mod_event_tag_state::State, S: jacquard_common::BosStr> ModEventTagBuil
     }
 }
 
-impl<St: mod_event_tag_state::State, S: jacquard_common::BosStr> ModEventTagBuilder<St, S> {
+impl<
+    St: mod_event_tag_state::State,
+    S: jacquard_common::BosStr,
+> ModEventTagBuilder<St, S> {
     /// Set the `durationInHours` field (optional)
     pub fn duration_in_hours(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();
@@ -9956,9 +10072,9 @@ where
 
 pub mod mod_event_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10088,7 +10204,10 @@ pub struct ModEventViewBuilder<
 
 impl ModEventView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ModEventViewBuilder<mod_event_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ModEventViewBuilder<
+        mod_event_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ModEventViewBuilder::new()
     }
 }
@@ -10160,7 +10279,10 @@ where
     }
 }
 
-impl<St: mod_event_view_state::State, S: jacquard_common::BosStr> ModEventViewBuilder<St, S> {
+impl<
+    St: mod_event_view_state::State,
+    S: jacquard_common::BosStr,
+> ModEventViewBuilder<St, S> {
     /// Set the `creatorHandle` field (optional)
     pub fn creator_handle(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -10211,7 +10333,10 @@ where
     }
 }
 
-impl<St: mod_event_view_state::State, S: jacquard_common::BosStr> ModEventViewBuilder<St, S> {
+impl<
+    St: mod_event_view_state::State,
+    S: jacquard_common::BosStr,
+> ModEventViewBuilder<St, S> {
     /// Set the `modTool` field (optional)
     pub fn mod_tool(
         mut self,
@@ -10268,7 +10393,10 @@ where
     }
 }
 
-impl<St: mod_event_view_state::State, S: jacquard_common::BosStr> ModEventViewBuilder<St, S> {
+impl<
+    St: mod_event_view_state::State,
+    S: jacquard_common::BosStr,
+> ModEventViewBuilder<St, S> {
     /// Set the `subjectHandle` field (optional)
     pub fn subject_handle(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.8 = value.into();
@@ -10331,9 +10459,9 @@ where
 
 pub mod mod_event_view_detail_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10461,21 +10589,28 @@ pub struct ModEventViewDetailBuilder<
 
 impl ModEventViewDetail<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> ModEventViewDetailBuilder<mod_event_view_detail_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ModEventViewDetailBuilder<
+        mod_event_view_detail_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ModEventViewDetailBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> ModEventViewDetail<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ModEventViewDetailBuilder<mod_event_view_detail_state::Empty, S> {
+    pub fn builder() -> ModEventViewDetailBuilder<
+        mod_event_view_detail_state::Empty,
+        S,
+    > {
         ModEventViewDetailBuilder::builder()
     }
 }
 
-impl ModEventViewDetailBuilder<mod_event_view_detail_state::Empty, jacquard_common::DefaultStr> {
+impl ModEventViewDetailBuilder<
+    mod_event_view_detail_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ModEventViewDetailBuilder {
@@ -10486,7 +10621,9 @@ impl ModEventViewDetailBuilder<mod_event_view_detail_state::Empty, jacquard_comm
     }
 }
 
-impl<S: jacquard_common::BosStr> ModEventViewDetailBuilder<mod_event_view_detail_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> ModEventViewDetailBuilder<mod_event_view_detail_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ModEventViewDetailBuilder {
@@ -10573,9 +10710,10 @@ where
     }
 }
 
-impl<St: mod_event_view_detail_state::State, S: jacquard_common::BosStr>
-    ModEventViewDetailBuilder<St, S>
-{
+impl<
+    St: mod_event_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> ModEventViewDetailBuilder<St, S> {
     /// Set the `modTool` field (optional)
     pub fn mod_tool(
         mut self,
@@ -10678,9 +10816,9 @@ where
 
 pub mod record_event_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10737,7 +10875,10 @@ pub struct RecordEventBuilder<
 
 impl RecordEvent<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RecordEventBuilder<record_event_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> RecordEventBuilder<
+        record_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RecordEventBuilder::new()
     }
 }
@@ -10771,20 +10912,32 @@ impl<S: jacquard_common::BosStr> RecordEventBuilder<record_event_state::Empty, S
     }
 }
 
-impl<St: record_event_state::State, S: jacquard_common::BosStr> RecordEventBuilder<St, S> {
+impl<
+    St: record_event_state::State,
+    S: jacquard_common::BosStr,
+> RecordEventBuilder<St, S> {
     /// Set the `cid` field (optional)
-    pub fn cid(mut self, value: impl Into<Option<jacquard_common::types::string::Cid<S>>>) -> Self {
+    pub fn cid(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Cid<S>>>,
+    ) -> Self {
         self._fields.0 = value.into();
         self
     }
     /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<S>>) -> Self {
+    pub fn maybe_cid(
+        mut self,
+        value: Option<jacquard_common::types::string::Cid<S>>,
+    ) -> Self {
         self._fields.0 = value;
         self
     }
 }
 
-impl<St: record_event_state::State, S: jacquard_common::BosStr> RecordEventBuilder<St, S> {
+impl<
+    St: record_event_state::State,
+    S: jacquard_common::BosStr,
+> RecordEventBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -10871,9 +11024,9 @@ where
 
 pub mod record_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11023,7 +11176,10 @@ pub struct RecordViewBuilder<
 
 impl RecordView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RecordViewBuilder<record_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> RecordViewBuilder<
+        record_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RecordViewBuilder::new()
     }
 }
@@ -11237,9 +11393,9 @@ where
 
 pub mod record_view_detail_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11376,11 +11532,15 @@ pub struct RecordViewDetailBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<Vec<crate::generated::tools_ozone::moderation::BlobView<S>>>,
+        core::option::Option<
+            Vec<crate::generated::tools_ozone::moderation::BlobView<S>>,
+        >,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
-        core::option::Option<crate::generated::tools_ozone::moderation::ModerationDetail<S>>,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::ModerationDetail<S>,
+        >,
         core::option::Option<crate::generated::tools_ozone::moderation::RepoView<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
         core::option::Option<jacquard_common::types::value::Data<S>>,
@@ -11390,8 +11550,10 @@ pub struct RecordViewDetailBuilder<
 
 impl RecordViewDetail<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> RecordViewDetailBuilder<record_view_detail_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> RecordViewDetailBuilder<
+        record_view_detail_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RecordViewDetailBuilder::new()
     }
 }
@@ -11403,7 +11565,10 @@ impl<S: jacquard_common::BosStr> RecordViewDetail<S> {
     }
 }
 
-impl RecordViewDetailBuilder<record_view_detail_state::Empty, jacquard_common::DefaultStr> {
+impl RecordViewDetailBuilder<
+    record_view_detail_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RecordViewDetailBuilder {
@@ -11414,7 +11579,9 @@ impl RecordViewDetailBuilder<record_view_detail_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> RecordViewDetailBuilder<record_view_detail_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> RecordViewDetailBuilder<record_view_detail_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         RecordViewDetailBuilder {
@@ -11482,9 +11649,10 @@ where
     }
 }
 
-impl<St: record_view_detail_state::State, S: jacquard_common::BosStr>
-    RecordViewDetailBuilder<St, S>
-{
+impl<
+    St: record_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RecordViewDetailBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
@@ -11628,9 +11796,9 @@ where
 
 pub mod record_view_not_found_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11670,21 +11838,28 @@ pub struct RecordViewNotFoundBuilder<
 
 impl RecordViewNotFound<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> RecordViewNotFoundBuilder<record_view_not_found_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> RecordViewNotFoundBuilder<
+        record_view_not_found_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RecordViewNotFoundBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> RecordViewNotFound<S> {
     /// Create a new builder for this type
-    pub fn builder() -> RecordViewNotFoundBuilder<record_view_not_found_state::Empty, S> {
+    pub fn builder() -> RecordViewNotFoundBuilder<
+        record_view_not_found_state::Empty,
+        S,
+    > {
         RecordViewNotFoundBuilder::builder()
     }
 }
 
-impl RecordViewNotFoundBuilder<record_view_not_found_state::Empty, jacquard_common::DefaultStr> {
+impl RecordViewNotFoundBuilder<
+    record_view_not_found_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RecordViewNotFoundBuilder {
@@ -11695,7 +11870,9 @@ impl RecordViewNotFoundBuilder<record_view_not_found_state::Empty, jacquard_comm
     }
 }
 
-impl<S: jacquard_common::BosStr> RecordViewNotFoundBuilder<record_view_not_found_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> RecordViewNotFoundBuilder<record_view_not_found_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         RecordViewNotFoundBuilder {
@@ -11754,9 +11931,9 @@ where
 
 pub mod repo_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11861,14 +12038,19 @@ pub struct RepoViewBuilder<
         core::option::Option<bool>,
         core::option::Option<crate::generated::tools_ozone::moderation::Moderation<S>>,
         core::option::Option<Vec<jacquard_common::types::value::Data<S>>>,
-        core::option::Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
+        core::option::Option<
+            Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>,
+        >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl RepoView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RepoViewBuilder<repo_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> RepoViewBuilder<
+        repo_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RepoViewBuilder::new()
     }
 }
@@ -11885,9 +12067,7 @@ impl RepoViewBuilder<repo_view_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         RepoViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (
-                None, None, None, None, None, None, None, None, None, None, None,
-            ),
+            _fields: (None, None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -11898,9 +12078,7 @@ impl<S: jacquard_common::BosStr> RepoViewBuilder<repo_view_state::Empty, S> {
     pub fn builder() -> Self {
         RepoViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (
-                None, None, None, None, None, None, None, None, None, None, None,
-            ),
+            _fields: (None, None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -12082,7 +12260,9 @@ impl<St: repo_view_state::State, S: jacquard_common::BosStr> RepoViewBuilder<St,
     /// Set the `threatSignatures` field (optional)
     pub fn threat_signatures(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
+        >,
     ) -> Self {
         self._fields.10 = value.into();
         self
@@ -12150,9 +12330,9 @@ where
 
 pub mod repo_view_detail_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12258,17 +12438,23 @@ pub struct RepoViewDetailBuilder<
         core::option::Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>,
         core::option::Option<bool>,
         core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
-        core::option::Option<crate::generated::tools_ozone::moderation::ModerationDetail<S>>,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::ModerationDetail<S>,
+        >,
         core::option::Option<Vec<jacquard_common::types::value::Data<S>>>,
-        core::option::Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
+        core::option::Option<
+            Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>,
+        >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl RepoViewDetail<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RepoViewDetailBuilder<repo_view_detail_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> RepoViewDetailBuilder<
+        repo_view_detail_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RepoViewDetailBuilder::new()
     }
 }
@@ -12286,27 +12472,58 @@ impl RepoViewDetailBuilder<repo_view_detail_state::Empty, jacquard_common::Defau
         RepoViewDetailBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<S: jacquard_common::BosStr> RepoViewDetailBuilder<repo_view_detail_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<repo_view_detail_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         RepoViewDetailBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `deactivatedAt` field (optional)
     pub fn deactivated_at(
         mut self,
@@ -12344,7 +12561,10 @@ where
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `email` field (optional)
     pub fn email(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -12357,7 +12577,10 @@ impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDeta
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `emailConfirmedAt` field (optional)
     pub fn email_confirmed_at(
         mut self,
@@ -12414,7 +12637,10 @@ where
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `inviteNote` field (optional)
     pub fn invite_note(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.6 = value.into();
@@ -12427,7 +12653,10 @@ impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDeta
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `invitedBy` field (optional)
     pub fn invited_by(
         mut self,
@@ -12446,11 +12675,16 @@ impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDeta
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `invites` field (optional)
     pub fn invites(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>,
+        >,
     ) -> Self {
         self._fields.8 = value.into();
         self
@@ -12465,7 +12699,10 @@ impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDeta
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `invitesDisabled` field (optional)
     pub fn invites_disabled(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.9 = value.into();
@@ -12478,7 +12715,10 @@ impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDeta
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
@@ -12535,11 +12775,16 @@ where
     }
 }
 
-impl<St: repo_view_detail_state::State, S: jacquard_common::BosStr> RepoViewDetailBuilder<St, S> {
+impl<
+    St: repo_view_detail_state::State,
+    S: jacquard_common::BosStr,
+> RepoViewDetailBuilder<St, S> {
     /// Set the `threatSignatures` field (optional)
     pub fn threat_signatures(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
+        >,
     ) -> Self {
         self._fields.13 = value.into();
         self
@@ -12613,9 +12858,9 @@ where
 
 pub mod repo_view_not_found_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12655,9 +12900,10 @@ pub struct RepoViewNotFoundBuilder<
 
 impl RepoViewNotFound<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> RepoViewNotFoundBuilder<repo_view_not_found_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> RepoViewNotFoundBuilder<
+        repo_view_not_found_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RepoViewNotFoundBuilder::new()
     }
 }
@@ -12669,7 +12915,10 @@ impl<S: jacquard_common::BosStr> RepoViewNotFound<S> {
     }
 }
 
-impl RepoViewNotFoundBuilder<repo_view_not_found_state::Empty, jacquard_common::DefaultStr> {
+impl RepoViewNotFoundBuilder<
+    repo_view_not_found_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RepoViewNotFoundBuilder {
@@ -12680,7 +12929,9 @@ impl RepoViewNotFoundBuilder<repo_view_not_found_state::Empty, jacquard_common::
     }
 }
 
-impl<S: jacquard_common::BosStr> RepoViewNotFoundBuilder<repo_view_not_found_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> RepoViewNotFoundBuilder<repo_view_not_found_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         RepoViewNotFoundBuilder {
@@ -12739,9 +12990,9 @@ where
 
 pub mod reporter_stats_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12943,7 +13194,10 @@ pub struct ReporterStatsBuilder<
 
 impl ReporterStats<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ReporterStatsBuilder<reporter_stats_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ReporterStatsBuilder<
+        reporter_stats_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ReporterStatsBuilder::new()
     }
 }
@@ -13201,9 +13455,9 @@ where
 
 pub mod scheduled_action_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13339,27 +13593,47 @@ pub struct ScheduledActionViewBuilder<
 
 impl ScheduledActionView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> ScheduledActionViewBuilder<scheduled_action_view_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ScheduledActionViewBuilder<
+        scheduled_action_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ScheduledActionViewBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> ScheduledActionView<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ScheduledActionViewBuilder<scheduled_action_view_state::Empty, S> {
+    pub fn builder() -> ScheduledActionViewBuilder<
+        scheduled_action_view_state::Empty,
+        S,
+    > {
         ScheduledActionViewBuilder::builder()
     }
 }
 
-impl ScheduledActionViewBuilder<scheduled_action_view_state::Empty, jacquard_common::DefaultStr> {
+impl ScheduledActionViewBuilder<
+    scheduled_action_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ScheduledActionViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
                 None,
             ),
             _type: ::core::marker::PhantomData,
@@ -13367,13 +13641,28 @@ impl ScheduledActionViewBuilder<scheduled_action_view_state::Empty, jacquard_com
     }
 }
 
-impl<S: jacquard_common::BosStr> ScheduledActionViewBuilder<scheduled_action_view_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<scheduled_action_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ScheduledActionViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
                 None,
             ),
             _type: ::core::marker::PhantomData,
@@ -13457,9 +13746,10 @@ where
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `eventData` field (optional)
     pub fn event_data(
         mut self,
@@ -13478,9 +13768,10 @@ impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `executeAfter` field (optional)
     pub fn execute_after(
         mut self,
@@ -13499,9 +13790,10 @@ impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `executeAt` field (optional)
     pub fn execute_at(
         mut self,
@@ -13520,9 +13812,10 @@ impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `executeUntil` field (optional)
     pub fn execute_until(
         mut self,
@@ -13541,9 +13834,10 @@ impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `executionEventId` field (optional)
     pub fn execution_event_id(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.8 = value.into();
@@ -13575,9 +13869,10 @@ where
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `lastExecutedAt` field (optional)
     pub fn last_executed_at(
         mut self,
@@ -13596,9 +13891,10 @@ impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `lastFailureReason` field (optional)
     pub fn last_failure_reason(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.11 = value.into();
@@ -13611,9 +13907,10 @@ impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `randomizeExecution` field (optional)
     pub fn randomize_execution(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.12 = value.into();
@@ -13645,9 +13942,10 @@ where
     }
 }
 
-impl<St: scheduled_action_view_state::State, S: jacquard_common::BosStr>
-    ScheduledActionViewBuilder<St, S>
-{
+impl<
+    St: scheduled_action_view_state::State,
+    S: jacquard_common::BosStr,
+> ScheduledActionViewBuilder<St, S> {
     /// Set the `updatedAt` field (optional)
     pub fn updated_at(
         mut self,
@@ -13728,9 +14026,9 @@ where
 
 pub mod subject_status_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13826,7 +14124,9 @@ pub struct SubjectStatusViewBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::tools_ozone::moderation::AccountStats<S>>,
-        core::option::Option<crate::generated::tools_ozone::moderation::AccountStrike<S>>,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::AccountStrike<S>,
+        >,
         core::option::Option<SubjectStatusViewAgeAssuranceState<S>>,
         core::option::Option<SubjectStatusViewAgeAssuranceUpdatedBy<S>>,
         core::option::Option<bool>,
@@ -13842,7 +14142,9 @@ pub struct SubjectStatusViewBuilder<
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::tools_ozone::moderation::RecordsStats<S>>,
-        core::option::Option<crate::generated::tools_ozone::moderation::SubjectReviewState<S>>,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::SubjectReviewState<S>,
+        >,
         core::option::Option<SubjectStatusViewSubject<S>>,
         core::option::Option<Vec<jacquard_common::types::string::Cid<S>>>,
         core::option::Option<S>,
@@ -13856,9 +14158,10 @@ pub struct SubjectStatusViewBuilder<
 
 impl SubjectStatusView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SubjectStatusViewBuilder<subject_status_view_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> SubjectStatusViewBuilder<
+        subject_status_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SubjectStatusViewBuilder::new()
     }
 }
@@ -13870,41 +14173,95 @@ impl<S: jacquard_common::BosStr> SubjectStatusView<S> {
     }
 }
 
-impl SubjectStatusViewBuilder<subject_status_view_state::Empty, jacquard_common::DefaultStr> {
+impl SubjectStatusViewBuilder<
+    subject_status_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubjectStatusViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<S: jacquard_common::BosStr> SubjectStatusViewBuilder<subject_status_view_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<subject_status_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SubjectStatusViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `accountStats` field (optional)
     pub fn account_stats(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::AccountStats<S>>>,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::AccountStats<S>>,
+        >,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -13919,13 +14276,16 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `accountStrike` field (optional)
     pub fn account_strike(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::AccountStrike<S>>>,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::AccountStrike<S>>,
+        >,
     ) -> Self {
         self._fields.1 = value.into();
         self
@@ -13940,9 +14300,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `ageAssuranceState` field (optional)
     pub fn age_assurance_state(
         mut self,
@@ -13961,9 +14322,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `ageAssuranceUpdatedBy` field (optional)
     pub fn age_assurance_updated_by(
         mut self,
@@ -13982,9 +14344,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `appealed` field (optional)
     pub fn appealed(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.4 = value.into();
@@ -13997,9 +14360,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.5 = value.into();
@@ -14031,11 +14395,15 @@ where
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `hosting` field (optional)
-    pub fn hosting(mut self, value: impl Into<Option<SubjectStatusViewHosting<S>>>) -> Self {
+    pub fn hosting(
+        mut self,
+        value: impl Into<Option<SubjectStatusViewHosting<S>>>,
+    ) -> Self {
         self._fields.7 = value.into();
         self
     }
@@ -14065,9 +14433,10 @@ where
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `lastAppealedAt` field (optional)
     pub fn last_appealed_at(
         mut self,
@@ -14086,9 +14455,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `lastReportedAt` field (optional)
     pub fn last_reported_at(
         mut self,
@@ -14107,9 +14477,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `lastReviewedAt` field (optional)
     pub fn last_reviewed_at(
         mut self,
@@ -14128,9 +14499,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `lastReviewedBy` field (optional)
     pub fn last_reviewed_by(
         mut self,
@@ -14149,9 +14521,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `muteReportingUntil` field (optional)
     pub fn mute_reporting_until(
         mut self,
@@ -14170,9 +14543,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `muteUntil` field (optional)
     pub fn mute_until(
         mut self,
@@ -14191,9 +14565,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `priorityScore` field (optional)
     pub fn priority_score(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.15 = value.into();
@@ -14206,13 +14581,16 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `recordsStats` field (optional)
     pub fn records_stats(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::RecordsStats<S>>>,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::RecordsStats<S>>,
+        >,
     ) -> Self {
         self._fields.16 = value.into();
         self
@@ -14235,7 +14613,9 @@ where
     /// Set the `reviewState` field (required)
     pub fn review_state(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::moderation::SubjectReviewState<S>>,
+        value: impl Into<
+            crate::generated::tools_ozone::moderation::SubjectReviewState<S>,
+        >,
     ) -> SubjectStatusViewBuilder<subject_status_view_state::SetReviewState<St>, S> {
         self._fields.17 = ::core::option::Option::Some(value.into());
         SubjectStatusViewBuilder {
@@ -14265,9 +14645,10 @@ where
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `subjectBlobCids` field (optional)
     pub fn subject_blob_cids(
         mut self,
@@ -14286,9 +14667,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `subjectRepoHandle` field (optional)
     pub fn subject_repo_handle(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.20 = value.into();
@@ -14301,9 +14683,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `suspendUntil` field (optional)
     pub fn suspend_until(
         mut self,
@@ -14322,9 +14705,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `tags` field (optional)
     pub fn tags(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.22 = value.into();
@@ -14337,9 +14721,10 @@ impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: subject_status_view_state::State, S: jacquard_common::BosStr>
-    SubjectStatusViewBuilder<St, S>
-{
+impl<
+    St: subject_status_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectStatusViewBuilder<St, S> {
     /// Set the `takendown` field (optional)
     pub fn takendown(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.23 = value.into();
@@ -14452,9 +14837,9 @@ where
 
 pub mod subject_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -14502,9 +14887,15 @@ pub struct SubjectViewBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::types::value::Data<S>>,
-        core::option::Option<crate::generated::tools_ozone::moderation::RecordViewDetail<S>>,
-        core::option::Option<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>,
-        core::option::Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::RecordViewDetail<S>,
+        >,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::RepoViewDetail<S>,
+        >,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::SubjectStatusView<S>,
+        >,
         core::option::Option<S>,
         core::option::Option<crate::generated::com_atproto::moderation::SubjectType<S>>,
     ),
@@ -14513,7 +14904,10 @@ pub struct SubjectViewBuilder<
 
 impl SubjectView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SubjectViewBuilder<subject_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SubjectViewBuilder<
+        subject_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SubjectViewBuilder::new()
     }
 }
@@ -14547,7 +14941,10 @@ impl<S: jacquard_common::BosStr> SubjectViewBuilder<subject_view_state::Empty, S
     }
 }
 
-impl<St: subject_view_state::State, S: jacquard_common::BosStr> SubjectViewBuilder<St, S> {
+impl<
+    St: subject_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectViewBuilder<St, S> {
     /// Set the `profile` field (optional)
     pub fn profile(
         mut self,
@@ -14557,17 +14954,25 @@ impl<St: subject_view_state::State, S: jacquard_common::BosStr> SubjectViewBuild
         self
     }
     /// Set the `profile` field to an Option value (optional)
-    pub fn maybe_profile(mut self, value: Option<jacquard_common::types::value::Data<S>>) -> Self {
+    pub fn maybe_profile(
+        mut self,
+        value: Option<jacquard_common::types::value::Data<S>>,
+    ) -> Self {
         self._fields.0 = value;
         self
     }
 }
 
-impl<St: subject_view_state::State, S: jacquard_common::BosStr> SubjectViewBuilder<St, S> {
+impl<
+    St: subject_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectViewBuilder<St, S> {
     /// Set the `record` field (optional)
     pub fn record(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::RecordViewDetail<S>>>,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::RecordViewDetail<S>>,
+        >,
     ) -> Self {
         self._fields.1 = value.into();
         self
@@ -14582,11 +14987,16 @@ impl<St: subject_view_state::State, S: jacquard_common::BosStr> SubjectViewBuild
     }
 }
 
-impl<St: subject_view_state::State, S: jacquard_common::BosStr> SubjectViewBuilder<St, S> {
+impl<
+    St: subject_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectViewBuilder<St, S> {
     /// Set the `repo` field (optional)
     pub fn repo(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>>,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>,
+        >,
     ) -> Self {
         self._fields.2 = value.into();
         self
@@ -14601,11 +15011,16 @@ impl<St: subject_view_state::State, S: jacquard_common::BosStr> SubjectViewBuild
     }
 }
 
-impl<St: subject_view_state::State, S: jacquard_common::BosStr> SubjectViewBuilder<St, S> {
+impl<
+    St: subject_view_state::State,
+    S: jacquard_common::BosStr,
+> SubjectViewBuilder<St, S> {
     /// Set the `status` field (optional)
     pub fn status(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>>,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
+        >,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -14698,9 +15113,9 @@ where
 
 pub mod video_details_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -14770,7 +15185,10 @@ pub struct VideoDetailsBuilder<
 
 impl VideoDetails<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> VideoDetailsBuilder<video_details_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> VideoDetailsBuilder<
+        video_details_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         VideoDetailsBuilder::new()
     }
 }

@@ -11,9 +11,17 @@ pub mod delete_template;
 pub mod list_templates;
 pub mod update_template;
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -35,11 +43,7 @@ pub struct TemplateView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject: core::option::Option<S>,
     pub updated_at: jacquard_common::types::string::Datetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,7 +52,8 @@ pub struct TemplateView<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TemplateView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for TemplateView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.communication.defs"
     }
@@ -65,9 +70,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tem
 
 pub mod template_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -219,7 +224,10 @@ pub struct TemplateViewBuilder<
 
 impl TemplateView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> TemplateViewBuilder<template_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> TemplateViewBuilder<
+        template_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         TemplateViewBuilder::new()
     }
 }
@@ -329,7 +337,10 @@ where
     }
 }
 
-impl<St: template_view_state::State, S: jacquard_common::BosStr> TemplateViewBuilder<St, S> {
+impl<
+    St: template_view_state::State,
+    S: jacquard_common::BosStr,
+> TemplateViewBuilder<St, S> {
     /// Set the `lang` field (optional)
     pub fn lang(
         mut self,
@@ -339,7 +350,10 @@ impl<St: template_view_state::State, S: jacquard_common::BosStr> TemplateViewBui
         self
     }
     /// Set the `lang` field to an Option value (optional)
-    pub fn maybe_lang(mut self, value: Option<jacquard_common::types::string::Language>) -> Self {
+    pub fn maybe_lang(
+        mut self,
+        value: Option<jacquard_common::types::string::Language>,
+    ) -> Self {
         self._fields.4 = value;
         self
     }
@@ -383,7 +397,10 @@ where
     }
 }
 
-impl<St: template_view_state::State, S: jacquard_common::BosStr> TemplateViewBuilder<St, S> {
+impl<
+    St: template_view_state::State,
+    S: jacquard_common::BosStr,
+> TemplateViewBuilder<St, S> {
     /// Set the `subject` field (optional)
     pub fn subject(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.7 = value.into();
@@ -464,7 +481,9 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_communication_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_communication_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.communication.defs"),

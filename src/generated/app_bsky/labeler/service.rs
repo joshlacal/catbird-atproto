@@ -8,8 +8,15 @@
 /// A declaration of the existence of labeler service.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.labeler.service",
@@ -19,24 +26,26 @@
 pub struct Service<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    pub labels: core::option::Option<
+        crate::generated::com_atproto::label::SelfLabels<S>,
+    >,
     pub policies: crate::generated::app_bsky::labeler::LabelerPolicies<S>,
     ///The set of report reason 'codes' which are in-scope for this service to review and action. These usually align to policy categories. If not defined (distinct from empty array), all reason types are allowed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub reason_types:
-        core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
+    pub reason_types: core::option::Option<
+        Vec<crate::generated::com_atproto::moderation::ReasonType<S>>,
+    >,
     ///Set of record types (collection NSIDs) which can be reported to this service. If not defined (distinct from empty array), default is any record type.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_collections: core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+    pub subject_collections: core::option::Option<
+        Vec<jacquard_common::types::string::Nsid<S>>,
+    >,
     ///The set of subject types (account, record, etc) this service accepts reports on.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_types:
-        core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub subject_types: core::option::Option<
+        Vec<crate::generated::com_atproto::moderation::SubjectType<S>>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,10 +57,19 @@ pub struct Service<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct ServiceGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ServiceGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -88,7 +106,8 @@ impl<S: jacquard_common::BosStr> From<ServiceGetRecordOutput<S>> for Service<S> 
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Service<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+for Service<S> {
     const NSID: &'static str = "app.bsky.labeler.service";
     type Record = ServiceRecord;
 }
@@ -115,9 +134,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ser
 
 pub mod service_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -167,9 +186,13 @@ pub struct ServiceBuilder<
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
         core::option::Option<crate::generated::app_bsky::labeler::LabelerPolicies<S>>,
-        core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
+        core::option::Option<
+            Vec<crate::generated::com_atproto::moderation::ReasonType<S>>,
+        >,
         core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
-        core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
+        core::option::Option<
+            Vec<crate::generated::com_atproto::moderation::SubjectType<S>>,
+        >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -271,7 +294,9 @@ impl<St: service_state::State, S: jacquard_common::BosStr> ServiceBuilder<St, S>
     /// Set the `reasonTypes` field (optional)
     pub fn reason_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
+        >,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -309,7 +334,9 @@ impl<St: service_state::State, S: jacquard_common::BosStr> ServiceBuilder<St, S>
     /// Set the `subjectTypes` field (optional)
     pub fn subject_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
+        >,
     ) -> Self {
         self._fields.5 = value.into();
         self
@@ -362,7 +389,9 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_labeler_service() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_labeler_service() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.labeler.service"),

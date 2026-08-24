@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,22 +31,30 @@ pub struct GetPostThread<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub uri: jacquard_common::types::string::AtUri<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetPostThreadOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetPostThreadOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub thread: GetPostThreadOutputThread<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub threadgate: core::option::Option<crate::generated::app_bsky::feed::ThreadgateView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub threadgate: core::option::Option<
+        crate::generated::app_bsky::feed::ThreadgateView<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,15 +63,25 @@ pub struct GetPostThreadOutput<S: jacquard_common::BosStr = jacquard_common::Def
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum GetPostThreadOutputThread<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum GetPostThreadOutputThread<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "app.bsky.feed.defs#threadViewPost")]
     ThreadViewPost(Box<crate::generated::app_bsky::feed::ThreadViewPost<S>>),
     #[serde(rename = "app.bsky.feed.defs#notFoundPost")]
@@ -64,6 +89,7 @@ pub enum GetPostThreadOutputThread<S: jacquard_common::BosStr = jacquard_common:
     #[serde(rename = "app.bsky.feed.defs#blockedPost")]
     BlockedPost(Box<crate::generated::app_bsky::feed::BlockedPost<S>>),
 }
+
 
 #[derive(
     serde::Serialize,
@@ -73,8 +99,9 @@ pub enum GetPostThreadOutputThread<S: jacquard_common::BosStr = jacquard_common:
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetPostThreadError {
     #[serde(rename = "NotFound")]
@@ -119,7 +146,8 @@ impl jacquard_common::xrpc::XrpcResp for GetPostThreadResponse {
     type Err = GetPostThreadError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetPostThread<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetPostThread<S> {
     const NSID: &'static str = "app.bsky.feed.getPostThread";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetPostThreadResponse;
@@ -146,9 +174,9 @@ fn _default_parent_height() -> core::option::Option<i64> {
 
 pub mod get_post_thread_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -192,8 +220,10 @@ pub struct GetPostThreadBuilder<
 
 impl GetPostThread<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetPostThreadBuilder<get_post_thread_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetPostThreadBuilder<
+        get_post_thread_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetPostThreadBuilder::new()
     }
 }
@@ -227,7 +257,10 @@ impl<S: jacquard_common::BosStr> GetPostThreadBuilder<get_post_thread_state::Emp
     }
 }
 
-impl<St: get_post_thread_state::State, S: jacquard_common::BosStr> GetPostThreadBuilder<St, S> {
+impl<
+    St: get_post_thread_state::State,
+    S: jacquard_common::BosStr,
+> GetPostThreadBuilder<St, S> {
     /// Set the `depth` field (optional)
     pub fn depth(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();
@@ -240,7 +273,10 @@ impl<St: get_post_thread_state::State, S: jacquard_common::BosStr> GetPostThread
     }
 }
 
-impl<St: get_post_thread_state::State, S: jacquard_common::BosStr> GetPostThreadBuilder<St, S> {
+impl<
+    St: get_post_thread_state::State,
+    S: jacquard_common::BosStr,
+> GetPostThreadBuilder<St, S> {
     /// Set the `parentHeight` field (optional)
     pub fn parent_height(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

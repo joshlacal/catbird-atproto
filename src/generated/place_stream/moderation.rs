@@ -32,7 +32,7 @@ pub mod update_livestream;
 )]
 pub struct PermissionView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///The streamer who granted these permissions
-    pub author: jacquard_common::types::value::Data<S>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
     ///Content identifier of the permission record
     pub cid: jacquard_common::types::string::Cid<S>,
     ///The permission record itself
@@ -145,7 +145,7 @@ pub struct PermissionViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
         core::option::Option<jacquard_common::types::value::Data<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
@@ -200,7 +200,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
     ) -> PermissionViewBuilder<permission_view_state::SetAuthor<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         PermissionViewBuilder {

@@ -6,22 +6,19 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub signed_request: crate::generated::blue_catbird::chat::SignedBlobDeletion<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,17 +27,9 @@ pub struct DeleteBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -48,7 +37,11 @@ pub struct DeleteBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 pub struct DeleteBlobOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub deleted_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -56,7 +49,6 @@ pub struct DeleteBlobOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -66,9 +58,8 @@ pub struct DeleteBlobOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum DeleteBlobError {
     #[serde(rename = "BlobBound")]
@@ -90,17 +81,11 @@ pub enum DeleteBlobError {
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -229,9 +214,8 @@ impl jacquard_common::xrpc::XrpcResp for DeleteBlobResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteBlob<S> {
     const NSID: &'static str = "blue.catbird.chat.deleteBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteBlobResponse;
 }
 
@@ -241,16 +225,15 @@ Path: `/xrpc/blue.catbird.chat.deleteBlob`. The request payload type is `DeleteB
 pub struct DeleteBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteBlobRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.deleteBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = DeleteBlob<S>;
     type Response = DeleteBlobResponse;
 }
 
 pub mod delete_blob_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -286,20 +269,13 @@ pub struct DeleteBlobBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<
-            crate::generated::blue_catbird::chat::SignedBlobDeletion<S>,
-        >,
-    ),
+    _fields: (core::option::Option<crate::generated::blue_catbird::chat::SignedBlobDeletion<S>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl DeleteBlob<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeleteBlobBuilder<
-        delete_blob_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> DeleteBlobBuilder<delete_blob_state::Empty, jacquard_common::DefaultStr> {
         DeleteBlobBuilder::new()
     }
 }

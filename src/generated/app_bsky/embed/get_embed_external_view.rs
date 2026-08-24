@@ -6,16 +6,26 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetEmbedExternalView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetEmbedExternalView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub uris: Vec<jacquard_common::types::string::AtUri<S>>,
     pub url: jacquard_common::types::string::UriValue<S>,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -25,27 +35,29 @@ pub struct GetEmbedExternalView<S: jacquard_common::BosStr = jacquard_common::De
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetEmbedExternalViewOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetEmbedExternalViewOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub associated_records: core::option::Option<Vec<jacquard_common::types::value::Data<S>>>,
+    pub associated_records: core::option::Option<
+        Vec<jacquard_common::types::value::Data<S>>,
+    >,
     ///StrongRefs (URI+CID) of the Atmosphere records that backed this view, suitable for embedding into a post's external.associatedRefs.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub associated_refs:
-        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    pub associated_refs: core::option::Option<
+        Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    >,
     ///Hydrated view of the embed. Present only when the resolved records back the requested URL and supply enough information to populate the required `viewExternal` fields. Omitted alongside the rest of the response when no records resolved or validation failed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub view: core::option::Option<crate::generated::app_bsky::embed::external::View<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -65,7 +77,8 @@ impl jacquard_common::xrpc::XrpcResp for GetEmbedExternalViewResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetEmbedExternalView<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetEmbedExternalView<S> {
     const NSID: &'static str = "app.bsky.embed.getEmbedExternalView";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetEmbedExternalViewResponse;
@@ -84,9 +97,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetEmbedExternalViewRequest {
 
 pub mod get_embed_external_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -151,14 +164,18 @@ impl GetEmbedExternalView<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> GetEmbedExternalView<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetEmbedExternalViewBuilder<get_embed_external_view_state::Empty, S> {
+    pub fn builder() -> GetEmbedExternalViewBuilder<
+        get_embed_external_view_state::Empty,
+        S,
+    > {
         GetEmbedExternalViewBuilder::builder()
     }
 }
 
-impl
-    GetEmbedExternalViewBuilder<get_embed_external_view_state::Empty, jacquard_common::DefaultStr>
-{
+impl GetEmbedExternalViewBuilder<
+    get_embed_external_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetEmbedExternalViewBuilder {
@@ -169,9 +186,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    GetEmbedExternalViewBuilder<get_embed_external_view_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> GetEmbedExternalViewBuilder<get_embed_external_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetEmbedExternalViewBuilder {

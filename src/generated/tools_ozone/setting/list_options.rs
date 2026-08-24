@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,9 +36,17 @@ pub struct ListOptions<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub scope: core::option::Option<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -40,11 +55,7 @@ pub struct ListOptionsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub options: Vec<crate::generated::tools_ozone::setting::DefsOption<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -91,9 +102,9 @@ fn _default_scope<S: jacquard_common::FromStaticStr>() -> Option<S> {
 
 pub mod list_options_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -126,7 +137,10 @@ pub struct ListOptionsBuilder<
 
 impl ListOptions<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ListOptionsBuilder<list_options_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ListOptionsBuilder<
+        list_options_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ListOptionsBuilder::new()
     }
 }
@@ -160,7 +174,10 @@ impl<S: jacquard_common::BosStr> ListOptionsBuilder<list_options_state::Empty, S
     }
 }
 
-impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
+impl<
+    St: list_options_state::State,
+    S: jacquard_common::BosStr,
+> ListOptionsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -173,7 +190,10 @@ impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuild
     }
 }
 
-impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
+impl<
+    St: list_options_state::State,
+    S: jacquard_common::BosStr,
+> ListOptionsBuilder<St, S> {
     /// Set the `keys` field (optional)
     pub fn keys(
         mut self,
@@ -192,7 +212,10 @@ impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuild
     }
 }
 
-impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
+impl<
+    St: list_options_state::State,
+    S: jacquard_common::BosStr,
+> ListOptionsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();
@@ -205,7 +228,10 @@ impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuild
     }
 }
 
-impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
+impl<
+    St: list_options_state::State,
+    S: jacquard_common::BosStr,
+> ListOptionsBuilder<St, S> {
     /// Set the `prefix` field (optional)
     pub fn prefix(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();
@@ -218,7 +244,10 @@ impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuild
     }
 }
 
-impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
+impl<
+    St: list_options_state::State,
+    S: jacquard_common::BosStr,
+> ListOptionsBuilder<St, S> {
     /// Set the `scope` field (optional)
     pub fn scope(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();

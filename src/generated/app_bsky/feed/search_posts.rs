@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -42,9 +49,17 @@ pub struct SearchPosts<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -56,11 +71,7 @@ pub struct SearchPostsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub hits_total: core::option::Option<i64>,
     pub posts: Vec<crate::generated::app_bsky::feed::PostView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -68,6 +79,7 @@ pub struct SearchPostsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -77,8 +89,9 @@ pub struct SearchPostsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum SearchPostsError {
     #[serde(rename = "BadQueryString")]
@@ -150,9 +163,9 @@ fn _default_sort<S: jacquard_common::FromStaticStr>() -> Option<S> {
 
 pub mod search_posts_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -205,7 +218,10 @@ pub struct SearchPostsBuilder<
 
 impl SearchPosts<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SearchPostsBuilder<search_posts_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SearchPostsBuilder<
+        search_posts_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SearchPostsBuilder::new()
     }
 }
@@ -223,7 +239,18 @@ impl SearchPostsBuilder<search_posts_state::Empty, jacquard_common::DefaultStr> 
         SearchPostsBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -236,14 +263,28 @@ impl<S: jacquard_common::BosStr> SearchPostsBuilder<search_posts_state::Empty, S
         SearchPostsBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `author` field (optional)
     pub fn author(
         mut self,
@@ -262,7 +303,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -275,7 +319,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `domain` field (optional)
     pub fn domain(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -288,7 +335,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `lang` field (optional)
     pub fn lang(
         mut self,
@@ -298,13 +348,19 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
         self
     }
     /// Set the `lang` field to an Option value (optional)
-    pub fn maybe_lang(mut self, value: Option<jacquard_common::types::string::Language>) -> Self {
+    pub fn maybe_lang(
+        mut self,
+        value: Option<jacquard_common::types::string::Language>,
+    ) -> Self {
         self._fields.3 = value;
         self
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.4 = value.into();
@@ -317,7 +373,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `mentions` field (optional)
     pub fn mentions(
         mut self,
@@ -342,7 +401,10 @@ where
     St::Q: search_posts_state::IsUnset,
 {
     /// Set the `q` field (required)
-    pub fn q(mut self, value: impl Into<S>) -> SearchPostsBuilder<search_posts_state::SetQ<St>, S> {
+    pub fn q(
+        mut self,
+        value: impl Into<S>,
+    ) -> SearchPostsBuilder<search_posts_state::SetQ<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         SearchPostsBuilder {
             _state: ::core::marker::PhantomData,
@@ -352,7 +414,10 @@ where
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `since` field (optional)
     pub fn since(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.7 = value.into();
@@ -365,7 +430,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `sort` field (optional)
     pub fn sort(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.8 = value.into();
@@ -378,7 +446,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `tag` field (optional)
     pub fn tag(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.9 = value.into();
@@ -391,7 +462,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `until` field (optional)
     pub fn until(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.10 = value.into();
@@ -404,7 +478,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
     }
 }
 
-impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuilder<St, S> {
+impl<
+    St: search_posts_state::State,
+    S: jacquard_common::BosStr,
+> SearchPostsBuilder<St, S> {
     /// Set the `url` field (optional)
     pub fn url(
         mut self,
@@ -414,7 +491,10 @@ impl<St: search_posts_state::State, S: jacquard_common::BosStr> SearchPostsBuild
         self
     }
     /// Set the `url` field to an Option value (optional)
-    pub fn maybe_url(mut self, value: Option<jacquard_common::types::string::UriValue<S>>) -> Self {
+    pub fn maybe_url(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
         self._fields.11 = value;
         self
     }

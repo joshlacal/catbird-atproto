@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -16,20 +23,26 @@ pub struct FindCorrelation<S: jacquard_common::BosStr = jacquard_common::Default
     pub dids: Vec<jacquard_common::types::string::Did<S>>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct FindCorrelationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct FindCorrelationOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub details: Vec<crate::generated::tools_ozone::signature::SigDetail<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -49,7 +62,8 @@ impl jacquard_common::xrpc::XrpcResp for FindCorrelationResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for FindCorrelation<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for FindCorrelation<S> {
     const NSID: &'static str = "tools.ozone.signature.findCorrelation";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = FindCorrelationResponse;
@@ -68,9 +82,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for FindCorrelationRequest {
 
 pub mod find_correlation_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -110,8 +124,10 @@ pub struct FindCorrelationBuilder<
 
 impl FindCorrelation<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> FindCorrelationBuilder<find_correlation_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> FindCorrelationBuilder<
+        find_correlation_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         FindCorrelationBuilder::new()
     }
 }
@@ -134,7 +150,9 @@ impl FindCorrelationBuilder<find_correlation_state::Empty, jacquard_common::Defa
     }
 }
 
-impl<S: jacquard_common::BosStr> FindCorrelationBuilder<find_correlation_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> FindCorrelationBuilder<find_correlation_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         FindCorrelationBuilder {

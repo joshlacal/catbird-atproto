@@ -6,20 +6,27 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct PutActivitySubscription<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub activity_subscription: crate::generated::app_bsky::notification::ActivitySubscription<S>,
+pub struct PutActivitySubscription<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub activity_subscription: crate::generated::app_bsky::notification::ActivitySubscription<
+        S,
+    >,
     pub subject: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -28,23 +35,30 @@ pub struct PutActivitySubscription<S: jacquard_common::BosStr = jacquard_common:
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct PutActivitySubscriptionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct PutActivitySubscriptionOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub activity_subscription:
-        core::option::Option<crate::generated::app_bsky::notification::ActivitySubscription<S>>,
+    pub activity_subscription: core::option::Option<
+        crate::generated::app_bsky::notification::ActivitySubscription<S>,
+    >,
     pub subject: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -64,10 +78,12 @@ impl jacquard_common::xrpc::XrpcResp for PutActivitySubscriptionResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for PutActivitySubscription<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for PutActivitySubscription<S> {
     const NSID: &'static str = "app.bsky.notification.putActivitySubscription";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = PutActivitySubscriptionResponse;
 }
 
@@ -77,17 +93,18 @@ Path: `/xrpc/app.bsky.notification.putActivitySubscription`. The request payload
 pub struct PutActivitySubscriptionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PutActivitySubscriptionRequest {
     const PATH: &'static str = "/xrpc/app.bsky.notification.putActivitySubscription";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = PutActivitySubscription<S>;
     type Response = PutActivitySubscriptionResponse;
 }
 
 pub mod put_activity_subscription_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -134,7 +151,9 @@ pub struct PutActivitySubscriptionBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::app_bsky::notification::ActivitySubscription<S>>,
+        core::option::Option<
+            crate::generated::app_bsky::notification::ActivitySubscription<S>,
+        >,
         core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -152,17 +171,18 @@ impl PutActivitySubscription<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> PutActivitySubscription<S> {
     /// Create a new builder for this type
-    pub fn builder() -> PutActivitySubscriptionBuilder<put_activity_subscription_state::Empty, S> {
+    pub fn builder() -> PutActivitySubscriptionBuilder<
+        put_activity_subscription_state::Empty,
+        S,
+    > {
         PutActivitySubscriptionBuilder::builder()
     }
 }
 
-impl
-    PutActivitySubscriptionBuilder<
-        put_activity_subscription_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl PutActivitySubscriptionBuilder<
+    put_activity_subscription_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PutActivitySubscriptionBuilder {
@@ -173,9 +193,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    PutActivitySubscriptionBuilder<put_activity_subscription_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> PutActivitySubscriptionBuilder<put_activity_subscription_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         PutActivitySubscriptionBuilder {
@@ -194,7 +214,9 @@ where
     /// Set the `activitySubscription` field (required)
     pub fn activity_subscription(
         mut self,
-        value: impl Into<crate::generated::app_bsky::notification::ActivitySubscription<S>>,
+        value: impl Into<
+            crate::generated::app_bsky::notification::ActivitySubscription<S>,
+        >,
     ) -> PutActivitySubscriptionBuilder<
         put_activity_subscription_state::SetActivitySubscription<St>,
         S,
@@ -217,7 +239,10 @@ where
     pub fn subject(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> PutActivitySubscriptionBuilder<put_activity_subscription_state::SetSubject<St>, S> {
+    ) -> PutActivitySubscriptionBuilder<
+        put_activity_subscription_state::SetSubject<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         PutActivitySubscriptionBuilder {
             _state: ::core::marker::PhantomData,

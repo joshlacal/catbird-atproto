@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -19,7 +26,9 @@ pub struct EmitEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub external_id: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub mod_tool: core::option::Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
+    pub mod_tool: core::option::Option<
+        crate::generated::tools_ozone::moderation::ModTool<S>,
+    >,
     ///Optional report-level targeting. If provided, this event will be linked to specific reports and reporters may be notified.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub report_action: core::option::Option<
@@ -27,12 +36,10 @@ pub struct EmitEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
     pub subject: EmitEventSubject<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_blob_cids: core::option::Option<Vec<jacquard_common::types::string::Cid<S>>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub subject_blob_cids: core::option::Option<
+        Vec<jacquard_common::types::string::Cid<S>>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -41,21 +48,35 @@ pub struct EmitEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub enum EmitEventEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.moderation.defs#modEventTakedown")]
-    ModEventTakedown(Box<crate::generated::tools_ozone::moderation::ModEventTakedown<S>>),
+    ModEventTakedown(
+        Box<crate::generated::tools_ozone::moderation::ModEventTakedown<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventAcknowledge")]
-    ModEventAcknowledge(Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<S>>),
+    ModEventAcknowledge(
+        Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEscalate")]
-    ModEventEscalate(Box<crate::generated::tools_ozone::moderation::ModEventEscalate<S>>),
+    ModEventEscalate(
+        Box<crate::generated::tools_ozone::moderation::ModEventEscalate<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventComment")]
     ModEventComment(Box<crate::generated::tools_ozone::moderation::ModEventComment<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventLabel")]
@@ -67,7 +88,9 @@ pub enum EmitEventEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmute")]
     ModEventUnmute(Box<crate::generated::tools_ozone::moderation::ModEventUnmute<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMuteReporter")]
-    ModEventMuteReporter(Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<S>>),
+    ModEventMuteReporter(
+        Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmuteReporter")]
     ModEventUnmuteReporter(
         Box<crate::generated::tools_ozone::moderation::ModEventUnmuteReporter<S>>,
@@ -77,7 +100,9 @@ pub enum EmitEventEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         Box<crate::generated::tools_ozone::moderation::ModEventReverseTakedown<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventResolveAppeal")]
-    ModEventResolveAppeal(Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<S>>),
+    ModEventResolveAppeal(
+        Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEmail")]
     ModEventEmail(Box<crate::generated::tools_ozone::moderation::ModEventEmail<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventDivert")]
@@ -91,9 +116,13 @@ pub enum EmitEventEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(rename = "tools.ozone.moderation.defs#recordEvent")]
     RecordEvent(Box<crate::generated::tools_ozone::moderation::RecordEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventPriorityScore")]
-    ModEventPriorityScore(Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<S>>),
+    ModEventPriorityScore(
+        Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceEvent")]
-    AgeAssuranceEvent(Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<S>>),
+    AgeAssuranceEvent(
+        Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceOverrideEvent")]
     AgeAssuranceOverrideEvent(
         Box<crate::generated::tools_ozone::moderation::AgeAssuranceOverrideEvent<S>>,
@@ -107,17 +136,27 @@ pub enum EmitEventEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         Box<crate::generated::tools_ozone::moderation::RevokeAccountCredentialsEvent<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#scheduleTakedownEvent")]
-    ScheduleTakedownEvent(Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<S>>),
+    ScheduleTakedownEvent(
+        Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<S>>,
+    ),
     #[serde(rename = "tools.ozone.moderation.defs#cancelScheduledTakedownEvent")]
     CancelScheduledTakedownEvent(
         Box<crate::generated::tools_ozone::moderation::CancelScheduledTakedownEvent<S>>,
     ),
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -129,9 +168,17 @@ pub enum EmitEventSubject<S: jacquard_common::BosStr = jacquard_common::DefaultS
     StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -139,11 +186,7 @@ pub enum EmitEventSubject<S: jacquard_common::BosStr = jacquard_common::DefaultS
 pub struct EmitEventOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::moderation::ModEventView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -151,6 +194,7 @@ pub struct EmitEventOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -160,8 +204,9 @@ pub struct EmitEventOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum EmitEventError {
     #[serde(rename = "SubjectHasAction")]
@@ -215,8 +260,9 @@ impl core::fmt::Display for EmitEventError {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -234,11 +280,7 @@ pub struct ReportAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     ///Target reports matching these report types on the subject (fully qualified NSIDs)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub types: core::option::Option<Vec<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -260,8 +302,9 @@ impl jacquard_common::xrpc::XrpcResp for EmitEventResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for EmitEvent<S> {
     const NSID: &'static str = "tools.ozone.moderation.emitEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = EmitEventResponse;
 }
 
@@ -271,13 +314,15 @@ Path: `/xrpc/tools.ozone.moderation.emitEvent`. The request payload type is `Emi
 pub struct EmitEventRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for EmitEventRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.moderation.emitEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = EmitEvent<S>;
     type Response = EmitEventResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReportAction<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ReportAction<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.emitEvent"
     }
@@ -294,9 +339,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
 
 pub mod emit_event_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -372,7 +417,10 @@ pub struct EmitEventBuilder<
 
 impl EmitEvent<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> EmitEventBuilder<emit_event_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> EmitEventBuilder<
+        emit_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EmitEventBuilder::new()
     }
 }
@@ -480,7 +528,11 @@ impl<St: emit_event_state::State, S: jacquard_common::BosStr> EmitEventBuilder<S
     /// Set the `reportAction` field (optional)
     pub fn report_action(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>>>,
+        value: impl Into<
+            Option<
+                crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>,
+            >,
+        >,
     ) -> Self {
         self._fields.4 = value.into();
         self
@@ -488,7 +540,9 @@ impl<St: emit_event_state::State, S: jacquard_common::BosStr> EmitEventBuilder<S
     /// Set the `reportAction` field to an Option value (optional)
     pub fn maybe_report_action(
         mut self,
-        value: Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>>,
+        value: Option<
+            crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>,
+        >,
     ) -> Self {
         self._fields.4 = value;
         self
@@ -574,8 +628,9 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_moderation_emitEvent() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_tools_ozone_moderation_emitEvent() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.moderation.emitEvent"),

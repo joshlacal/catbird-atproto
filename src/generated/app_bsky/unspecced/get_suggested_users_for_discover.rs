@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedUsersForDiscover {
     /// Defaults to `25`. Min: 1. Max: 50.
@@ -16,9 +23,17 @@ pub struct GetSuggestedUsersForDiscover {
     pub limit: core::option::Option<i64>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -30,11 +45,7 @@ pub struct GetSuggestedUsersForDiscoverOutput<
     ///Snowflake for this recommendation, use when submitting recommendation events.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rec_id_str: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -77,9 +88,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_suggested_users_for_discover_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -95,15 +106,18 @@ pub mod get_suggested_users_for_discover_state {
 }
 
 /// Builder for constructing an instance of this type.
-pub struct GetSuggestedUsersForDiscoverBuilder<St: get_suggested_users_for_discover_state::State> {
+pub struct GetSuggestedUsersForDiscoverBuilder<
+    St: get_suggested_users_for_discover_state::State,
+> {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (core::option::Option<i64>,),
 }
 
 impl GetSuggestedUsersForDiscover {
     /// Create a new builder for this type.
-    pub fn new(
-    ) -> GetSuggestedUsersForDiscoverBuilder<get_suggested_users_for_discover_state::Empty> {
+    pub fn new() -> GetSuggestedUsersForDiscoverBuilder<
+        get_suggested_users_for_discover_state::Empty,
+    > {
         GetSuggestedUsersForDiscoverBuilder::new()
     }
 }
@@ -128,7 +142,9 @@ impl GetSuggestedUsersForDiscoverBuilder<get_suggested_users_for_discover_state:
     }
 }
 
-impl<St: get_suggested_users_for_discover_state::State> GetSuggestedUsersForDiscoverBuilder<St> {
+impl<
+    St: get_suggested_users_for_discover_state::State,
+> GetSuggestedUsersForDiscoverBuilder<St> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();

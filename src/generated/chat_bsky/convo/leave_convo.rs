@@ -13,19 +13,16 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct LeaveConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,6 +30,7 @@ pub struct LeaveConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -42,8 +40,9 @@ pub struct LeaveConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -51,11 +50,7 @@ pub struct LeaveConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 pub struct LeaveConvoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub rev: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -63,6 +58,7 @@ pub struct LeaveConvoOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -72,8 +68,9 @@ pub struct LeaveConvoOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum LeaveConvoError {
     #[serde(rename = "InvalidConvo")]
@@ -130,8 +127,9 @@ impl jacquard_common::xrpc::XrpcResp for LeaveConvoResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for LeaveConvo<S> {
     const NSID: &'static str = "chat.bsky.convo.leaveConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = LeaveConvoResponse;
 }
 
@@ -141,8 +139,9 @@ Path: `/xrpc/chat.bsky.convo.leaveConvo`. The request payload type is `LeaveConv
 pub struct LeaveConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for LeaveConvoRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.leaveConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = LeaveConvo<S>;
     type Response = LeaveConvoResponse;
 }

@@ -6,22 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetLeafRecoveryInbox<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetLeafRecoveryInbox<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor_device_id: S,
     pub inventory_session_id: S,
     ///  Defaults to `50`
@@ -32,24 +23,14 @@ pub struct GetLeafRecoveryInbox<
     pub page_cursor: core::option::Option<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetLeafRecoveryInboxOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetLeafRecoveryInboxOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub has_more: bool,
     pub inventory_session_id: S,
     pub items: Vec<crate::generated::blue_catbird::chat::LeafRecoveryInboxItem<S>>,
@@ -57,7 +38,11 @@ pub struct GetLeafRecoveryInboxOutput<
     pub next_page_cursor: core::option::Option<S>,
     pub snapshot_event_cursor: S,
     pub snapshot_expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -65,7 +50,6 @@ pub struct GetLeafRecoveryInboxOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -75,9 +59,8 @@ pub struct GetLeafRecoveryInboxOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetLeafRecoveryInboxError {
     #[serde(rename = "CursorExpired")]
@@ -91,27 +74,17 @@ pub enum GetLeafRecoveryInboxError {
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InventorySessionExpired")]
-    InventorySessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    InventorySessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InventorySessionMismatch")]
-    InventorySessionMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    InventorySessionMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -231,8 +204,7 @@ impl jacquard_common::xrpc::XrpcResp for GetLeafRecoveryInboxResponse {
     type Err = GetLeafRecoveryInboxError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetLeafRecoveryInbox<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetLeafRecoveryInbox<S> {
     const NSID: &'static str = "blue.catbird.chat.getLeafRecoveryInbox";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetLeafRecoveryInboxResponse;
@@ -255,7 +227,7 @@ fn _default_limit() -> i64 {
 
 pub mod get_leaf_recovery_inbox_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -338,18 +310,14 @@ impl GetLeafRecoveryInbox<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> GetLeafRecoveryInbox<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetLeafRecoveryInboxBuilder<
-        get_leaf_recovery_inbox_state::Empty,
-        S,
-    > {
+    pub fn builder() -> GetLeafRecoveryInboxBuilder<get_leaf_recovery_inbox_state::Empty, S> {
         GetLeafRecoveryInboxBuilder::builder()
     }
 }
 
-impl GetLeafRecoveryInboxBuilder<
-    get_leaf_recovery_inbox_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    GetLeafRecoveryInboxBuilder<get_leaf_recovery_inbox_state::Empty, jacquard_common::DefaultStr>
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetLeafRecoveryInboxBuilder {
@@ -360,9 +328,9 @@ impl GetLeafRecoveryInboxBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetLeafRecoveryInboxBuilder<get_leaf_recovery_inbox_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    GetLeafRecoveryInboxBuilder<get_leaf_recovery_inbox_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetLeafRecoveryInboxBuilder {
@@ -382,10 +350,7 @@ where
     pub fn actor_device_id(
         mut self,
         value: impl Into<S>,
-    ) -> GetLeafRecoveryInboxBuilder<
-        get_leaf_recovery_inbox_state::SetActorDeviceId<St>,
-        S,
-    > {
+    ) -> GetLeafRecoveryInboxBuilder<get_leaf_recovery_inbox_state::SetActorDeviceId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         GetLeafRecoveryInboxBuilder {
             _state: ::core::marker::PhantomData,
@@ -404,10 +369,8 @@ where
     pub fn inventory_session_id(
         mut self,
         value: impl Into<S>,
-    ) -> GetLeafRecoveryInboxBuilder<
-        get_leaf_recovery_inbox_state::SetInventorySessionId<St>,
-        S,
-    > {
+    ) -> GetLeafRecoveryInboxBuilder<get_leaf_recovery_inbox_state::SetInventorySessionId<St>, S>
+    {
         self._fields.1 = ::core::option::Option::Some(value.into());
         GetLeafRecoveryInboxBuilder {
             _state: ::core::marker::PhantomData,
@@ -436,10 +399,9 @@ where
     }
 }
 
-impl<
-    St: get_leaf_recovery_inbox_state::State,
-    S: jacquard_common::BosStr,
-> GetLeafRecoveryInboxBuilder<St, S> {
+impl<St: get_leaf_recovery_inbox_state::State, S: jacquard_common::BosStr>
+    GetLeafRecoveryInboxBuilder<St, S>
+{
     /// Set the `pageCursor` field (optional)
     pub fn page_cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();

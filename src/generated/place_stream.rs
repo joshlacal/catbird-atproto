@@ -42,10 +42,10 @@ pub mod video;
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct BlockView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub blocker: jacquard_common::types::value::Data<S>,
+    pub blocker: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
     pub cid: jacquard_common::types::string::Cid<S>,
     pub indexed_at: jacquard_common::types::string::Datetime,
-    pub record: jacquard_common::types::value::Data<S>,
+    pub record: crate::generated::app_bsky::graph::block::Block<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
@@ -256,10 +256,10 @@ pub struct BlockViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::graph::block::Block<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -312,7 +312,7 @@ where
     /// Set the `blocker` field (required)
     pub fn blocker(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
     ) -> BlockViewBuilder<block_view_state::SetBlocker<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         BlockViewBuilder {
@@ -369,7 +369,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::graph::block::Block<S>>,
     ) -> BlockViewBuilder<block_view_state::SetRecord<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         BlockViewBuilder {

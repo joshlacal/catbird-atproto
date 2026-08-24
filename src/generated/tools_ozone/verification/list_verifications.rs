@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -35,22 +42,30 @@ pub struct ListVerifications<S: jacquard_common::BosStr = jacquard_common::Defau
     pub subjects: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListVerificationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ListVerificationsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub verifications: Vec<crate::generated::tools_ozone::verification::VerificationView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub verifications: Vec<
+        crate::generated::tools_ozone::verification::VerificationView<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,7 +85,8 @@ impl jacquard_common::xrpc::XrpcResp for ListVerificationsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListVerifications<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for ListVerifications<S> {
     const NSID: &'static str = "tools.ozone.verification.listVerifications";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListVerificationsResponse;
@@ -97,9 +113,9 @@ fn _default_sort_direction<S: jacquard_common::FromStaticStr>() -> Option<S> {
 
 pub mod list_verifications_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -135,9 +151,10 @@ pub struct ListVerificationsBuilder<
 
 impl ListVerifications<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> ListVerificationsBuilder<list_verifications_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> ListVerificationsBuilder<
+        list_verifications_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ListVerificationsBuilder::new()
     }
 }
@@ -149,7 +166,10 @@ impl<S: jacquard_common::BosStr> ListVerifications<S> {
     }
 }
 
-impl ListVerificationsBuilder<list_verifications_state::Empty, jacquard_common::DefaultStr> {
+impl ListVerificationsBuilder<
+    list_verifications_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListVerificationsBuilder {
@@ -160,7 +180,9 @@ impl ListVerificationsBuilder<list_verifications_state::Empty, jacquard_common::
     }
 }
 
-impl<S: jacquard_common::BosStr> ListVerificationsBuilder<list_verifications_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<list_verifications_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ListVerificationsBuilder {
@@ -171,9 +193,10 @@ impl<S: jacquard_common::BosStr> ListVerificationsBuilder<list_verifications_sta
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `createdAfter` field (optional)
     pub fn created_after(
         mut self,
@@ -192,9 +215,10 @@ impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `createdBefore` field (optional)
     pub fn created_before(
         mut self,
@@ -213,9 +237,10 @@ impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -228,9 +253,10 @@ impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `isRevoked` field (optional)
     pub fn is_revoked(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.3 = value.into();
@@ -243,9 +269,10 @@ impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `issuers` field (optional)
     pub fn issuers(
         mut self,
@@ -264,9 +291,10 @@ impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.5 = value.into();
@@ -279,9 +307,10 @@ impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `sortDirection` field (optional)
     pub fn sort_direction(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.6 = value.into();
@@ -294,9 +323,10 @@ impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: list_verifications_state::State, S: jacquard_common::BosStr>
-    ListVerificationsBuilder<St, S>
-{
+impl<
+    St: list_verifications_state::State,
+    S: jacquard_common::BosStr,
+> ListVerificationsBuilder<St, S> {
     /// Set the `subjects` field (optional)
     pub fn subjects(
         mut self,

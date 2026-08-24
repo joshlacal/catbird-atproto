@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedStarterPacks {
     /// Defaults to `10`. Min: 1. Max: 25.
@@ -16,21 +23,26 @@ pub struct GetSuggestedStarterPacks {
     pub limit: core::option::Option<i64>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetSuggestedStarterPacksOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
-{
+pub struct GetSuggestedStarterPacksOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -73,9 +85,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_suggested_starter_packs_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -91,14 +103,18 @@ pub mod get_suggested_starter_packs_state {
 }
 
 /// Builder for constructing an instance of this type.
-pub struct GetSuggestedStarterPacksBuilder<St: get_suggested_starter_packs_state::State> {
+pub struct GetSuggestedStarterPacksBuilder<
+    St: get_suggested_starter_packs_state::State,
+> {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (core::option::Option<i64>,),
 }
 
 impl GetSuggestedStarterPacks {
     /// Create a new builder for this type.
-    pub fn new() -> GetSuggestedStarterPacksBuilder<get_suggested_starter_packs_state::Empty> {
+    pub fn new() -> GetSuggestedStarterPacksBuilder<
+        get_suggested_starter_packs_state::Empty,
+    > {
         GetSuggestedStarterPacksBuilder::new()
     }
 }

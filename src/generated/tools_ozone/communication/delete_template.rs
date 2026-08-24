@@ -13,19 +13,16 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteTemplate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -45,10 +42,12 @@ impl jacquard_common::xrpc::XrpcResp for DeleteTemplateResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteTemplate<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for DeleteTemplate<S> {
     const NSID: &'static str = "tools.ozone.communication.deleteTemplate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeleteTemplateResponse;
 }
 
@@ -58,8 +57,9 @@ Path: `/xrpc/tools.ozone.communication.deleteTemplate`. The request payload type
 pub struct DeleteTemplateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteTemplateRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.communication.deleteTemplate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DeleteTemplate<S>;
     type Response = DeleteTemplateResponse;
 }

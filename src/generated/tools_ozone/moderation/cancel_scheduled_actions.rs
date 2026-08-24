@@ -6,24 +6,31 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CancellationResults<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct CancellationResults<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///DIDs for which cancellation failed with error details
     pub failed: Vec<
-        crate::generated::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<S>,
+        crate::generated::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<
+            S,
+        >,
     >,
     ///DIDs for which all pending scheduled actions were successfully cancelled
     pub succeeded: Vec<jacquard_common::types::string::Did<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -32,9 +39,17 @@ pub struct CancellationResults<S: jacquard_common::BosStr = jacquard_common::Def
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -44,11 +59,7 @@ pub struct FailedCancellation<S: jacquard_common::BosStr = jacquard_common::Defa
     pub error: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub error_code: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,24 +68,30 @@ pub struct FailedCancellation<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CancelScheduledActions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct CancelScheduledActions<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Optional comment describing the reason for cancellation
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
     ///Array of DID subjects to cancel scheduled actions for
     pub subjects: Vec<jacquard_common::types::string::Did<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -83,21 +100,27 @@ pub struct CancelScheduledActions<S: jacquard_common::BosStr = jacquard_common::
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CancelScheduledActionsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct CancelScheduledActionsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(flatten)]
     pub value: jacquard_common::types::value::Data<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -107,8 +130,7 @@ pub struct CancelScheduledActionsOutput<S: jacquard_common::BosStr = jacquard_co
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for CancellationResults<S>
-{
+for CancellationResults<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.cancelScheduledActions"
     }
@@ -123,7 +145,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for FailedCancellation<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for FailedCancellation<S> {
     fn nsid() -> &'static str {
         "tools.ozone.moderation.cancelScheduledActions"
     }
@@ -149,10 +172,12 @@ impl jacquard_common::xrpc::XrpcResp for CancelScheduledActionsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CancelScheduledActions<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for CancelScheduledActions<S> {
     const NSID: &'static str = "tools.ozone.moderation.cancelScheduledActions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CancelScheduledActionsResponse;
 }
 
@@ -162,17 +187,18 @@ Path: `/xrpc/tools.ozone.moderation.cancelScheduledActions`. The request payload
 pub struct CancelScheduledActionsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CancelScheduledActionsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.moderation.cancelScheduledActions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CancelScheduledActions<S>;
     type Response = CancelScheduledActionsResponse;
 }
 
 pub mod cancellation_results_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -233,21 +259,28 @@ pub struct CancellationResultsBuilder<
 
 impl CancellationResults<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> CancellationResultsBuilder<cancellation_results_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> CancellationResultsBuilder<
+        cancellation_results_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CancellationResultsBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> CancellationResults<S> {
     /// Create a new builder for this type
-    pub fn builder() -> CancellationResultsBuilder<cancellation_results_state::Empty, S> {
+    pub fn builder() -> CancellationResultsBuilder<
+        cancellation_results_state::Empty,
+        S,
+    > {
         CancellationResultsBuilder::builder()
     }
 }
 
-impl CancellationResultsBuilder<cancellation_results_state::Empty, jacquard_common::DefaultStr> {
+impl CancellationResultsBuilder<
+    cancellation_results_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CancellationResultsBuilder {
@@ -258,7 +291,9 @@ impl CancellationResultsBuilder<cancellation_results_state::Empty, jacquard_comm
     }
 }
 
-impl<S: jacquard_common::BosStr> CancellationResultsBuilder<cancellation_results_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> CancellationResultsBuilder<cancellation_results_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         CancellationResultsBuilder {
@@ -343,11 +378,14 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_moderation_cancelScheduledActions(
-) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_moderation_cancelScheduledActions() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("tools.ozone.moderation.cancelScheduledActions"),
+        id: ::jacquard_common::CowStr::new_static(
+            "tools.ozone.moderation.cancelScheduledActions",
+        ),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
@@ -408,48 +446,50 @@ fn lexicon_doc_tools_ozone_moderation_cancelScheduledActions(
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("failedCancellation"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("errorCode"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "failedCancellation",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("error")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "error",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "errorCode",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -519,9 +559,9 @@ fn lexicon_doc_tools_ozone_moderation_cancelScheduledActions(
 
 pub mod failed_cancellation_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -577,9 +617,10 @@ pub struct FailedCancellationBuilder<
 
 impl FailedCancellation<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> FailedCancellationBuilder<failed_cancellation_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> FailedCancellationBuilder<
+        failed_cancellation_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         FailedCancellationBuilder::new()
     }
 }
@@ -591,7 +632,10 @@ impl<S: jacquard_common::BosStr> FailedCancellation<S> {
     }
 }
 
-impl FailedCancellationBuilder<failed_cancellation_state::Empty, jacquard_common::DefaultStr> {
+impl FailedCancellationBuilder<
+    failed_cancellation_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FailedCancellationBuilder {
@@ -602,7 +646,9 @@ impl FailedCancellationBuilder<failed_cancellation_state::Empty, jacquard_common
     }
 }
 
-impl<S: jacquard_common::BosStr> FailedCancellationBuilder<failed_cancellation_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> FailedCancellationBuilder<failed_cancellation_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         FailedCancellationBuilder {
@@ -651,9 +697,10 @@ where
     }
 }
 
-impl<St: failed_cancellation_state::State, S: jacquard_common::BosStr>
-    FailedCancellationBuilder<St, S>
-{
+impl<
+    St: failed_cancellation_state::State,
+    S: jacquard_common::BosStr,
+> FailedCancellationBuilder<St, S> {
     /// Set the `errorCode` field (optional)
     pub fn error_code(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -700,9 +747,9 @@ where
 
 pub mod cancel_scheduled_actions_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -755,17 +802,18 @@ impl CancelScheduledActions<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> CancelScheduledActions<S> {
     /// Create a new builder for this type
-    pub fn builder() -> CancelScheduledActionsBuilder<cancel_scheduled_actions_state::Empty, S> {
+    pub fn builder() -> CancelScheduledActionsBuilder<
+        cancel_scheduled_actions_state::Empty,
+        S,
+    > {
         CancelScheduledActionsBuilder::builder()
     }
 }
 
-impl
-    CancelScheduledActionsBuilder<
-        cancel_scheduled_actions_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl CancelScheduledActionsBuilder<
+    cancel_scheduled_actions_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CancelScheduledActionsBuilder {
@@ -776,9 +824,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    CancelScheduledActionsBuilder<cancel_scheduled_actions_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> CancelScheduledActionsBuilder<cancel_scheduled_actions_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         CancelScheduledActionsBuilder {
@@ -789,9 +837,10 @@ impl<S: jacquard_common::BosStr>
     }
 }
 
-impl<St: cancel_scheduled_actions_state::State, S: jacquard_common::BosStr>
-    CancelScheduledActionsBuilder<St, S>
-{
+impl<
+    St: cancel_scheduled_actions_state::State,
+    S: jacquard_common::BosStr,
+> CancelScheduledActionsBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -813,7 +862,10 @@ where
     pub fn subjects(
         mut self,
         value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
-    ) -> CancelScheduledActionsBuilder<cancel_scheduled_actions_state::SetSubjects<St>, S> {
+    ) -> CancelScheduledActionsBuilder<
+        cancel_scheduled_actions_state::SetSubjects<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         CancelScheduledActionsBuilder {
             _state: ::core::marker::PhantomData,

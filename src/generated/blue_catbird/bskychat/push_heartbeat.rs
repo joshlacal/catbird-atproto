@@ -13,9 +13,8 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,7 +22,11 @@
 pub struct PushHeartbeat<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///Client platform identifier (e.g., 'ios', 'macos')
     pub platform: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -32,27 +35,21 @@ pub struct PushHeartbeat<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct PushHeartbeatOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct PushHeartbeatOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///When the foreground lease expires
     pub lease_expires_at: jacquard_common::types::string::Datetime,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -72,12 +69,10 @@ impl jacquard_common::xrpc::XrpcResp for PushHeartbeatResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for PushHeartbeat<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for PushHeartbeat<S> {
     const NSID: &'static str = "blue.catbird.bskychat.pushHeartbeat";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = PushHeartbeatResponse;
 }
 
@@ -87,9 +82,8 @@ Path: `/xrpc/blue.catbird.bskychat.pushHeartbeat`. The request payload type is `
 pub struct PushHeartbeatRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PushHeartbeatRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.bskychat.pushHeartbeat";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = PushHeartbeat<S>;
     type Response = PushHeartbeatResponse;
 }

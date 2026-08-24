@@ -13,36 +13,38 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetConfigOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub appview:
-        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    pub appview: core::option::Option<
+        crate::generated::tools_ozone::server::get_config::ServiceConfig<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub blob_divert:
-        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    pub blob_divert: core::option::Option<
+        crate::generated::tools_ozone::server::get_config::ServiceConfig<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub chat:
-        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    pub chat: core::option::Option<
+        crate::generated::tools_ozone::server::get_config::ServiceConfig<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub pds:
-        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    pub pds: core::option::Option<
+        crate::generated::tools_ozone::server::get_config::ServiceConfig<S>,
+    >,
     ///The did of the verifier used for verification.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub verifier_did: core::option::Option<jacquard_common::types::string::Did<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub viewer:
-        core::option::Option<crate::generated::tools_ozone::server::get_config::ViewerConfig<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub viewer: core::option::Option<
+        crate::generated::tools_ozone::server::get_config::ViewerConfig<S>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,6 +52,7 @@ pub struct GetConfigOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -59,8 +62,9 @@ pub struct GetConfigOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -68,11 +72,7 @@ pub struct GetConfigOutput<S: jacquard_common::BosStr = jacquard_common::Default
 pub struct ServiceConfig<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -80,6 +80,7 @@ pub struct ServiceConfig<S: jacquard_common::BosStr = jacquard_common::DefaultSt
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -89,8 +90,9 @@ pub struct ServiceConfig<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -98,11 +100,7 @@ pub struct ServiceConfig<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 pub struct ViewerConfig<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub role: core::option::Option<ViewerConfigRole<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -110,6 +108,7 @@ pub struct ViewerConfig<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ViewerConfigRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -164,8 +163,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for ViewerConfigRole<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for ViewerConfigRole<S>
-{
+for ViewerConfigRole<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -210,7 +208,7 @@ This endpoint has no request parameters or input body; send this marker with `ja
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Copy,
+    Copy
 )]
 pub struct GetConfig;
 /** Response marker for the `tools.ozone.server.getConfig` query.
@@ -241,7 +239,8 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetConfigRequest {
     type Response = GetConfigResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ServiceConfig<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ServiceConfig<S> {
     fn nsid() -> &'static str {
         "tools.ozone.server.getConfig"
     }
@@ -256,7 +255,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ser
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewerConfig<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ViewerConfig<S> {
     fn nsid() -> &'static str {
         "tools.ozone.server.getConfig"
     }
@@ -271,7 +271,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vie
     }
 }
 
-fn lexicon_doc_tools_ozone_server_getConfig() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_server_getConfig() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.server.getConfig"),
@@ -279,57 +281,51 @@ fn lexicon_doc_tools_ozone_server_getConfig() -> jacquard_lexicon::lexicon::Lexi
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(
-                    ::jacquard_lexicon::lexicon::LexXrpcQuery {
-                        parameters: None,
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
+                    parameters: None,
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("serviceConfig"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("url"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        ..Default::default()
-                                    },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "url",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("viewerConfig"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "role",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map
         },

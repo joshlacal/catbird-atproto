@@ -86,8 +86,8 @@ pub struct MessageGetRecordOutput<
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReplyRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub parent: jacquard_common::types::value::Data<S>,
-    pub root: jacquard_common::types::value::Data<S>,
+    pub parent: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    pub root: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
     #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
@@ -655,8 +655,12 @@ pub struct ReplyRefBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<jacquard_common::types::value::Data<S>>,
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<
+            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+        >,
+        core::option::Option<
+            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+        >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -708,7 +712,7 @@ where
     /// Set the `parent` field (required)
     pub fn parent(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ) -> ReplyRefBuilder<reply_ref_state::SetParent<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {
@@ -727,7 +731,7 @@ where
     /// Set the `root` field (required)
     pub fn root(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ) -> ReplyRefBuilder<reply_ref_state::SetRoot<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {

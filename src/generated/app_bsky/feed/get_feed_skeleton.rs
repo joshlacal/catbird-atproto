@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -22,25 +29,31 @@ pub struct GetFeedSkeleton<S: jacquard_common::BosStr = jacquard_common::Default
     pub limit: core::option::Option<i64>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetFeedSkeletonOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetFeedSkeletonOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub feed: Vec<crate::generated::app_bsky::feed::SkeletonFeedPost<S>>,
     ///Unique identifier per request that may be passed back alongside interactions.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub req_id: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,6 +61,7 @@ pub struct GetFeedSkeletonOutput<S: jacquard_common::BosStr = jacquard_common::D
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -57,8 +71,9 @@ pub struct GetFeedSkeletonOutput<S: jacquard_common::BosStr = jacquard_common::D
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetFeedSkeletonError {
     #[serde(rename = "UnknownFeed")]
@@ -103,7 +118,8 @@ impl jacquard_common::xrpc::XrpcResp for GetFeedSkeletonResponse {
     type Err = GetFeedSkeletonError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetFeedSkeleton<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetFeedSkeleton<S> {
     const NSID: &'static str = "app.bsky.feed.getFeedSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetFeedSkeletonResponse;
@@ -126,9 +142,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_feed_skeleton_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -172,8 +188,10 @@ pub struct GetFeedSkeletonBuilder<
 
 impl GetFeedSkeleton<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GetFeedSkeletonBuilder<
+        get_feed_skeleton_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetFeedSkeletonBuilder::new()
     }
 }
@@ -185,7 +203,10 @@ impl<S: jacquard_common::BosStr> GetFeedSkeleton<S> {
     }
 }
 
-impl GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, jacquard_common::DefaultStr> {
+impl GetFeedSkeletonBuilder<
+    get_feed_skeleton_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetFeedSkeletonBuilder {
@@ -196,7 +217,9 @@ impl GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, jacquard_common::Def
     }
 }
 
-impl<S: jacquard_common::BosStr> GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetFeedSkeletonBuilder {
@@ -207,7 +230,10 @@ impl<S: jacquard_common::BosStr> GetFeedSkeletonBuilder<get_feed_skeleton_state:
     }
 }
 
-impl<St: get_feed_skeleton_state::State, S: jacquard_common::BosStr> GetFeedSkeletonBuilder<St, S> {
+impl<
+    St: get_feed_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> GetFeedSkeletonBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -239,7 +265,10 @@ where
     }
 }
 
-impl<St: get_feed_skeleton_state::State, S: jacquard_common::BosStr> GetFeedSkeletonBuilder<St, S> {
+impl<
+    St: get_feed_skeleton_state::State,
+    S: jacquard_common::BosStr,
+> GetFeedSkeletonBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();

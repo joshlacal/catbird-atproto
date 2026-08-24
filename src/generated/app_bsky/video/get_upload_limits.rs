@@ -6,13 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetUploadLimitsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetUploadLimitsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub can_upload: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub error: core::option::Option<S>,
@@ -22,11 +31,7 @@ pub struct GetUploadLimitsOutput<S: jacquard_common::BosStr = jacquard_common::D
     pub remaining_daily_bytes: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub remaining_daily_videos: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,7 +52,7 @@ This endpoint has no request parameters or input body; send this marker with `ja
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Copy,
+    Copy
 )]
 pub struct GetUploadLimits;
 /** Response marker for the `app.bsky.video.getUploadLimits` query.

@@ -6,13 +6,26 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 //! Generated bindings for the `app.bsky.video` Lexicon namespace/module.
+pub mod abort_upload;
+pub mod finish_upload;
 pub mod get_job_status;
 pub mod get_upload_limits;
+pub mod get_upload_status;
+pub mod start_upload;
+pub mod upload_part;
 pub mod upload_video;
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -34,11 +47,7 @@ pub struct JobStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub progress: core::option::Option<i64>,
     ///The state of the video processing job. All values not listed as a known value indicate that the job is in process.
     pub state: JobStatusState<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -105,8 +114,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for JobStatusFailureCode<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for JobStatusFailureCode<S>
-{
+for JobStatusFailureCode<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -130,14 +138,22 @@ where
     type Output = JobStatusFailureCode<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
-            JobStatusFailureCode::ValidationFailure => JobStatusFailureCode::ValidationFailure,
-            JobStatusFailureCode::EncodingFailure => JobStatusFailureCode::EncodingFailure,
-            JobStatusFailureCode::PdsUploadFailure => JobStatusFailureCode::PdsUploadFailure,
+            JobStatusFailureCode::ValidationFailure => {
+                JobStatusFailureCode::ValidationFailure
+            }
+            JobStatusFailureCode::EncodingFailure => {
+                JobStatusFailureCode::EncodingFailure
+            }
+            JobStatusFailureCode::PdsUploadFailure => {
+                JobStatusFailureCode::PdsUploadFailure
+            }
             JobStatusFailureCode::PdsUploadUnsupportedBlobSize => {
                 JobStatusFailureCode::PdsUploadUnsupportedBlobSize
             }
             JobStatusFailureCode::GenericFailure => JobStatusFailureCode::GenericFailure,
-            JobStatusFailureCode::Other(v) => JobStatusFailureCode::Other(v.into_static()),
+            JobStatusFailureCode::Other(v) => {
+                JobStatusFailureCode::Other(v.into_static())
+            }
         }
     }
 }
@@ -146,6 +162,13 @@ where
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum JobStatusState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    JobStateCreated,
+    JobStateEncoding,
+    JobStateEncoded,
+    JobStateScanning,
+    JobStateScanned,
+    JobStateUploading,
+    JobStateUploaded,
     JobStateCompleted,
     JobStateFailed,
     Other(S),
@@ -154,6 +177,13 @@ pub enum JobStatusState<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 impl<S: jacquard_common::BosStr> JobStatusState<S> {
     pub fn as_str(&self) -> &str {
         match self {
+            Self::JobStateCreated => "JOB_STATE_CREATED",
+            Self::JobStateEncoding => "JOB_STATE_ENCODING",
+            Self::JobStateEncoded => "JOB_STATE_ENCODED",
+            Self::JobStateScanning => "JOB_STATE_SCANNING",
+            Self::JobStateScanned => "JOB_STATE_SCANNED",
+            Self::JobStateUploading => "JOB_STATE_UPLOADING",
+            Self::JobStateUploaded => "JOB_STATE_UPLOADED",
             Self::JobStateCompleted => "JOB_STATE_COMPLETED",
             Self::JobStateFailed => "JOB_STATE_FAILED",
             Self::Other(s) => s.as_ref(),
@@ -162,6 +192,13 @@ impl<S: jacquard_common::BosStr> JobStatusState<S> {
     /// Construct from a string-like value, matching known values.
     pub fn from_value(s: S) -> Self {
         match s.as_ref() {
+            "JOB_STATE_CREATED" => Self::JobStateCreated,
+            "JOB_STATE_ENCODING" => Self::JobStateEncoding,
+            "JOB_STATE_ENCODED" => Self::JobStateEncoded,
+            "JOB_STATE_SCANNING" => Self::JobStateScanning,
+            "JOB_STATE_SCANNED" => Self::JobStateScanned,
+            "JOB_STATE_UPLOADING" => Self::JobStateUploading,
+            "JOB_STATE_UPLOADED" => Self::JobStateUploaded,
             "JOB_STATE_COMPLETED" => Self::JobStateCompleted,
             "JOB_STATE_FAILED" => Self::JobStateFailed,
             _ => Self::Other(s),
@@ -191,8 +228,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for JobStatusState<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for JobStatusState<S>
-{
+for JobStatusState<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -216,6 +252,13 @@ where
     type Output = JobStatusState<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
+            JobStatusState::JobStateCreated => JobStatusState::JobStateCreated,
+            JobStatusState::JobStateEncoding => JobStatusState::JobStateEncoding,
+            JobStatusState::JobStateEncoded => JobStatusState::JobStateEncoded,
+            JobStatusState::JobStateScanning => JobStatusState::JobStateScanning,
+            JobStatusState::JobStateScanned => JobStatusState::JobStateScanned,
+            JobStatusState::JobStateUploading => JobStatusState::JobStateUploading,
+            JobStatusState::JobStateUploaded => JobStatusState::JobStateUploaded,
             JobStatusState::JobStateCompleted => JobStatusState::JobStateCompleted,
             JobStatusState::JobStateFailed => JobStatusState::JobStateFailed,
             JobStatusState::Other(v) => JobStatusState::Other(v.into_static()),
@@ -223,7 +266,8 @@ where
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for JobStatus<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for JobStatus<S> {
     fn nsid() -> &'static str {
         "app.bsky.video.defs"
     }
@@ -237,7 +281,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Job
         if let Some(ref value) = self.progress {
             if *value > 100i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("progress"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "progress",
+                    ),
                     max: 100i64,
                     actual: *value,
                 });
@@ -246,7 +292,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Job
         if let Some(ref value) = self.progress {
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("progress"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "progress",
+                    ),
                     min: 0i64,
                     actual: *value,
                 });
@@ -258,9 +306,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Job
 
 pub mod job_status_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -335,7 +383,10 @@ pub struct JobStatusBuilder<
 
 impl JobStatus<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> JobStatusBuilder<job_status_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> JobStatusBuilder<
+        job_status_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         JobStatusBuilder::new()
     }
 }
@@ -379,7 +430,10 @@ impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<S
         self
     }
     /// Set the `blob` field to an Option value (optional)
-    pub fn maybe_blob(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
+    pub fn maybe_blob(
+        mut self,
+        value: Option<jacquard_common::types::blob::BlobRef<S>>,
+    ) -> Self {
         self._fields.0 = value;
         self
     }
@@ -419,7 +473,10 @@ impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<S
 
 impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `failureCode` field (optional)
-    pub fn failure_code(mut self, value: impl Into<Option<JobStatusFailureCode<S>>>) -> Self {
+    pub fn failure_code(
+        mut self,
+        value: impl Into<Option<JobStatusFailureCode<S>>>,
+    ) -> Self {
         self._fields.3 = value.into();
         self
     }

@@ -23,7 +23,7 @@
 )]
 pub struct Facet<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub features: Vec<FacetFeaturesItem<S>>,
-    pub index: jacquard_common::types::value::Data<S>,
+    pub index: crate::generated::app_bsky::richtext::facet::ByteSlice<S>,
     #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
@@ -49,7 +49,13 @@ pub struct Facet<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum FacetFeaturesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {}
+pub enum FacetFeaturesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.richtext.facet#mention")]
+    FacetMention(Box<crate::generated::app_bsky::richtext::facet::Mention<S>>),
+    #[serde(rename = "app.bsky.richtext.facet#link")]
+    FacetLink(Box<crate::generated::app_bsky::richtext::facet::Link<S>>),
+}
+
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Facet<S> {
     fn nsid() -> &'static str {
         "place.stream.richtext.facet"
@@ -117,7 +123,7 @@ pub struct FacetBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<Vec<FacetFeaturesItem<S>>>,
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::richtext::facet::ByteSlice<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -185,7 +191,7 @@ where
     /// Set the `index` field (required)
     pub fn index(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::richtext::facet::ByteSlice<S>>,
     ) -> FacetBuilder<facet_state::SetIndex<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         FacetBuilder {

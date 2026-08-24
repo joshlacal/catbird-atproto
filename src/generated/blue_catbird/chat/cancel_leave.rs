@@ -6,22 +6,19 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CancelLeave<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub signed_request: crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,17 +27,9 @@ pub struct CancelLeave<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -48,7 +37,11 @@ pub struct CancelLeave<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 pub struct CancelLeaveOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub entry: crate::generated::blue_catbird::chat::LeaveCancellationEntry<S>,
     pub leave_request: crate::generated::blue_catbird::chat::LeaveRequestView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -56,7 +49,6 @@ pub struct CancelLeaveOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -66,9 +58,8 @@ pub struct CancelLeaveOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum CancelLeaveError {
     #[serde(rename = "CancellationConflict")]
@@ -90,17 +81,11 @@ pub enum CancelLeaveError {
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -229,9 +214,8 @@ impl jacquard_common::xrpc::XrpcResp for CancelLeaveResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CancelLeave<S> {
     const NSID: &'static str = "blue.catbird.chat.cancelLeave";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CancelLeaveResponse;
 }
 
@@ -241,16 +225,15 @@ Path: `/xrpc/blue.catbird.chat.cancelLeave`. The request payload type is `Cancel
 pub struct CancelLeaveRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CancelLeaveRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.cancelLeave";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = CancelLeave<S>;
     type Response = CancelLeaveResponse;
 }
 
 pub mod cancel_leave_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -286,20 +269,14 @@ pub struct CancelLeaveBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<
-            crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>,
-        >,
-    ),
+    _fields:
+        (core::option::Option<crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl CancelLeave<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CancelLeaveBuilder<
-        cancel_leave_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> CancelLeaveBuilder<cancel_leave_state::Empty, jacquard_common::DefaultStr> {
         CancelLeaveBuilder::new()
     }
 }
@@ -341,9 +318,7 @@ where
     /// Set the `signedRequest` field (required)
     pub fn signed_request(
         mut self,
-        value: impl Into<
-            crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>,
-        >,
+        value: impl Into<crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>>,
     ) -> CancelLeaveBuilder<cancel_leave_state::SetSignedRequest<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         CancelLeaveBuilder {

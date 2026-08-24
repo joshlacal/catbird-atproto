@@ -6,13 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetSuggestedUsersForExplore<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetSuggestedUsersForExplore<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub category: core::option::Option<S>,
     /// Defaults to `25`. Min: 1. Max: 50.
@@ -21,9 +30,17 @@ pub struct GetSuggestedUsersForExplore<S: jacquard_common::BosStr = jacquard_com
     pub limit: core::option::Option<i64>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -35,11 +52,7 @@ pub struct GetSuggestedUsersForExploreOutput<
     ///Snowflake for this recommendation, use when submitting recommendation events.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rec_id_str: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -60,8 +73,7 @@ impl jacquard_common::xrpc::XrpcResp for GetSuggestedUsersForExploreResponse {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-    for GetSuggestedUsersForExplore<S>
-{
+for GetSuggestedUsersForExplore<S> {
     const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForExplore";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetSuggestedUsersForExploreResponse;
@@ -84,9 +96,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_suggested_users_for_explore_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -123,18 +135,18 @@ impl GetSuggestedUsersForExplore<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> GetSuggestedUsersForExplore<S> {
     /// Create a new builder for this type
-    pub fn builder(
-    ) -> GetSuggestedUsersForExploreBuilder<get_suggested_users_for_explore_state::Empty, S> {
+    pub fn builder() -> GetSuggestedUsersForExploreBuilder<
+        get_suggested_users_for_explore_state::Empty,
+        S,
+    > {
         GetSuggestedUsersForExploreBuilder::builder()
     }
 }
 
-impl
-    GetSuggestedUsersForExploreBuilder<
-        get_suggested_users_for_explore_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl GetSuggestedUsersForExploreBuilder<
+    get_suggested_users_for_explore_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSuggestedUsersForExploreBuilder {
@@ -145,9 +157,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    GetSuggestedUsersForExploreBuilder<get_suggested_users_for_explore_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> GetSuggestedUsersForExploreBuilder<get_suggested_users_for_explore_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetSuggestedUsersForExploreBuilder {
@@ -158,9 +170,10 @@ impl<S: jacquard_common::BosStr>
     }
 }
 
-impl<St: get_suggested_users_for_explore_state::State, S: jacquard_common::BosStr>
-    GetSuggestedUsersForExploreBuilder<St, S>
-{
+impl<
+    St: get_suggested_users_for_explore_state::State,
+    S: jacquard_common::BosStr,
+> GetSuggestedUsersForExploreBuilder<St, S> {
     /// Set the `category` field (optional)
     pub fn category(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -173,9 +186,10 @@ impl<St: get_suggested_users_for_explore_state::State, S: jacquard_common::BosSt
     }
 }
 
-impl<St: get_suggested_users_for_explore_state::State, S: jacquard_common::BosStr>
-    GetSuggestedUsersForExploreBuilder<St, S>
-{
+impl<
+    St: get_suggested_users_for_explore_state::State,
+    S: jacquard_common::BosStr,
+> GetSuggestedUsersForExploreBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

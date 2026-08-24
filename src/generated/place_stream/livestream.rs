@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct LivestreamView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub author: jacquard_common::types::value::Data<S>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
     pub cid: jacquard_common::types::string::Cid<S>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     pub record: jacquard_common::types::value::Data<S>,
@@ -81,7 +81,9 @@ pub struct Livestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
     ///The post that announced this livestream.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub post: core::option::Option<jacquard_common::types::value::Data<S>>,
+    pub post: core::option::Option<
+        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub thumb: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
     ///The title of the livestream, as it will be announced to followers.
@@ -242,7 +244,7 @@ pub struct TeleportArrival<S: jacquard_common::BosStr = jacquard_common::Default
         crate::generated::place_stream::chat::profile::Profile<S>,
     >,
     ///The streamer who is teleporting their viewers here
-    pub source: jacquard_common::types::value::Data<S>,
+    pub source: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
     ///When this teleport started
     pub starts_at: jacquard_common::types::string::Datetime,
     ///The URI of the teleport record
@@ -639,7 +641,7 @@ pub struct LivestreamViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::value::Data<S>>,
@@ -696,7 +698,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
     ) -> LivestreamViewBuilder<livestream_view_state::SetAuthor<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         LivestreamViewBuilder {
@@ -1391,7 +1393,9 @@ pub struct LivestreamBuilder<
         core::option::Option<
             crate::generated::place_stream::livestream::NotificationSettings<S>,
         >,
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<
+            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+        >,
         core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
@@ -1567,7 +1571,9 @@ impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<
     /// Set the `post` field (optional)
     pub fn post(
         mut self,
-        value: impl Into<Option<jacquard_common::types::value::Data<S>>>,
+        value: impl Into<
+            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        >,
     ) -> Self {
         self._fields.7 = value.into();
         self
@@ -1575,7 +1581,7 @@ impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<
     /// Set the `post` field to an Option value (optional)
     pub fn maybe_post(
         mut self,
-        value: Option<jacquard_common::types::value::Data<S>>,
+        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ) -> Self {
         self._fields.7 = value;
         self
@@ -1904,7 +1910,7 @@ pub struct TeleportArrivalBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
-        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
         core::option::Option<i64>,
@@ -1985,7 +1991,7 @@ where
     /// Set the `source` field (required)
     pub fn source(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<S>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
     ) -> TeleportArrivalBuilder<teleport_arrival_state::SetSource<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         TeleportArrivalBuilder {

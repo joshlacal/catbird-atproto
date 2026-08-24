@@ -15,7 +15,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Live;
 impl core::fmt::Display for Live {
@@ -27,8 +27,15 @@ impl core::fmt::Display for Live {
 /// A declaration of a Bluesky account status.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.actor.status",
@@ -42,14 +49,12 @@ pub struct Status<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub duration_minutes: core::option::Option<i64>,
     ///An optional embed associated with the status.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub embed: core::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>,
+    pub embed: core::option::Option<
+        crate::generated::app_bsky::embed::external::ExternalRecord<S>,
+    >,
     ///The status for the account.
     pub status: StatusStatus<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -104,8 +109,7 @@ impl<S: jacquard_common::BosStr> serde::Serialize for StatusStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for StatusStatus<S>
-{
+for StatusStatus<S> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -138,10 +142,19 @@ where
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct StatusGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct StatusGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -178,7 +191,8 @@ impl<S: jacquard_common::BosStr> From<StatusGetRecordOutput<S>> for Status<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Status<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+for Status<S> {
     const NSID: &'static str = "app.bsky.actor.status";
     type Record = StatusRecord;
 }
@@ -216,9 +230,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sta
 
 pub mod status_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -267,7 +281,9 @@ pub struct StatusBuilder<
     _fields: (
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>,
+        core::option::Option<
+            crate::generated::app_bsky::embed::external::ExternalRecord<S>,
+        >,
         core::option::Option<StatusStatus<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -345,7 +361,9 @@ impl<St: status_state::State, S: jacquard_common::BosStr> StatusBuilder<St, S> {
     /// Set the `embed` field (optional)
     pub fn embed(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>>,
+        value: impl Into<
+            Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>,
+        >,
     ) -> Self {
         self._fields.2 = value.into();
         self
@@ -413,7 +431,9 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_actor_status() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_actor_status() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.actor.status"),
@@ -421,11 +441,9 @@ fn lexicon_doc_app_bsky_actor_status() -> jacquard_lexicon::lexicon::LexiconDoc<
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("live"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
