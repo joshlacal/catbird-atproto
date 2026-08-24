@@ -13,14 +13,15 @@ pub mod delete_circle;
 pub mod get_capabilities;
 pub mod get_feed;
 pub mod get_media;
+pub mod get_operation;
 pub mod get_post_thread;
 pub mod list_circles;
 pub mod list_notifications;
 pub mod metadata;
 pub mod report_record;
+pub mod retry_operation;
 pub mod update_member;
 pub mod update_preferences;
-
 /// Space declaration descriptor for `blue.catbird.circle`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SpaceDeclarationDescriptor;

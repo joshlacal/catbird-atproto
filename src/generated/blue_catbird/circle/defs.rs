@@ -153,6 +153,8 @@ pub enum MemberAction {
 pub struct CircleSummary<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub access_state: AccessState,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub members: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub muted: core::option::Option<bool>,
     pub name: S,
     pub owner: jacquard_common::types::string::Did<S>,

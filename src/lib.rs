@@ -35,6 +35,7 @@ pub use generated::site_standard;
 pub use jacquard_common;
 pub use jacquard_common::types;
 pub use jacquard_derive;
+pub use jacquard_lexicon;
 
 #[cfg(feature = "namespace-bluecatbird")]
 pub mod catbird {
