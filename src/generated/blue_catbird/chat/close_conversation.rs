@@ -6,19 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CloseConversation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub signed_request: crate::generated::blue_catbird::chat::SignedConversationClose<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,20 +30,26 @@ pub struct CloseConversation<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CloseConversationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct CloseConversationOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub result: crate::generated::blue_catbird::chat::ConversationCloseResult<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,6 +57,7 @@ pub struct CloseConversationOutput<S: jacquard_common::BosStr = jacquard_common:
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -57,12 +67,15 @@ pub struct CloseConversationOutput<S: jacquard_common::BosStr = jacquard_common:
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CloseConversationError {
     #[serde(rename = "ConversationCloseNotAllowed")]
-    ConversationCloseNotAllowed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationCloseNotAllowed(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "CoordinateOverflow")]
@@ -84,13 +97,19 @@ pub enum CloseConversationError {
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -238,10 +257,12 @@ impl jacquard_common::xrpc::XrpcResp for CloseConversationResponse {
     type Err = CloseConversationError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CloseConversation<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for CloseConversation<S> {
     const NSID: &'static str = "blue.catbird.chat.closeConversation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CloseConversationResponse;
 }
 
@@ -251,15 +272,16 @@ Path: `/xrpc/blue.catbird.chat.closeConversation`. The request payload type is `
 pub struct CloseConversationRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CloseConversationRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.closeConversation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CloseConversation<S>;
     type Response = CloseConversationResponse;
 }
 
 pub mod close_conversation_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -295,16 +317,20 @@ pub struct CloseConversationBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields:
-        (core::option::Option<crate::generated::blue_catbird::chat::SignedConversationClose<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::blue_catbird::chat::SignedConversationClose<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl CloseConversation<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> CloseConversationBuilder<close_conversation_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> CloseConversationBuilder<
+        close_conversation_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CloseConversationBuilder::new()
     }
 }
@@ -316,7 +342,10 @@ impl<S: jacquard_common::BosStr> CloseConversation<S> {
     }
 }
 
-impl CloseConversationBuilder<close_conversation_state::Empty, jacquard_common::DefaultStr> {
+impl CloseConversationBuilder<
+    close_conversation_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CloseConversationBuilder {
@@ -327,7 +356,9 @@ impl CloseConversationBuilder<close_conversation_state::Empty, jacquard_common::
     }
 }
 
-impl<S: jacquard_common::BosStr> CloseConversationBuilder<close_conversation_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> CloseConversationBuilder<close_conversation_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         CloseConversationBuilder {
@@ -346,7 +377,9 @@ where
     /// Set the `signedRequest` field (required)
     pub fn signed_request(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::SignedConversationClose<S>>,
+        value: impl Into<
+            crate::generated::blue_catbird::chat::SignedConversationClose<S>,
+        >,
     ) -> CloseConversationBuilder<close_conversation_state::SetSignedRequest<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         CloseConversationBuilder {

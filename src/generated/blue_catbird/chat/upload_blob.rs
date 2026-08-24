@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,17 +24,33 @@ pub struct UploadBlobParams<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub upload_ticket: S,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct UploadBlob {
     pub body: jacquard_common::deps::bytes::Bytes,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -35,11 +58,7 @@ pub struct UploadBlob {
 pub struct UploadBlobOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub binding: crate::generated::blue_catbird::chat::UploadedBlobBinding<S>,
     pub uploaded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,6 +66,7 @@ pub struct UploadBlobOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -56,8 +76,9 @@ pub struct UploadBlobOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum UploadBlobError {
     #[serde(rename = "BlobConflict")]
@@ -75,13 +96,19 @@ pub enum UploadBlobError {
     #[serde(rename = "UploadTicketNotFound")]
     UploadTicketNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -203,16 +230,22 @@ impl jacquard_common::xrpc::XrpcResp for UploadBlobResponse {
 
 impl jacquard_common::xrpc::XrpcRequest for UploadBlob {
     const NSID: &'static str = "blue.catbird.chat.uploadBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/octet-stream",
+    );
     type Response = UploadBlobResponse;
-    fn encode_body(&self, buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError>
+    fn encode_body(
+        &self,
+        buffer: &mut Vec<u8>,
+    ) -> Result<(), jacquard_common::xrpc::EncodeError>
     where
         Self: serde::Serialize,
     {
         Ok(buffer.extend_from_slice(self.body.as_ref()))
     }
-    fn decode_body<'de>(body: &'de [u8]) -> Result<Self, jacquard_common::error::DecodeError>
+    fn decode_body<'de>(
+        body: &'de [u8],
+    ) -> Result<Self, jacquard_common::error::DecodeError>
     where
         Self: serde::Deserialize<'de>,
     {
@@ -228,15 +261,16 @@ Path: `/xrpc/blue.catbird.chat.uploadBlob`. The request payload type is `UploadB
 pub struct UploadBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UploadBlobRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.uploadBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/octet-stream",
+    );
     type Request<S: jacquard_common::BosStr> = UploadBlob;
     type Response = UploadBlobResponse;
 }
 
 pub mod upload_blob_params_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -290,8 +324,10 @@ pub struct UploadBlobParamsBuilder<
 
 impl UploadBlobParams<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> UploadBlobParamsBuilder<upload_blob_params_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> UploadBlobParamsBuilder<
+        upload_blob_params_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         UploadBlobParamsBuilder::new()
     }
 }
@@ -303,7 +339,10 @@ impl<S: jacquard_common::BosStr> UploadBlobParams<S> {
     }
 }
 
-impl UploadBlobParamsBuilder<upload_blob_params_state::Empty, jacquard_common::DefaultStr> {
+impl UploadBlobParamsBuilder<
+    upload_blob_params_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UploadBlobParamsBuilder {
@@ -314,7 +353,9 @@ impl UploadBlobParamsBuilder<upload_blob_params_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> UploadBlobParamsBuilder<upload_blob_params_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> UploadBlobParamsBuilder<upload_blob_params_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         UploadBlobParamsBuilder {

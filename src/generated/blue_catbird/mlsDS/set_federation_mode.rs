@@ -13,8 +13,9 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -22,11 +23,7 @@
 pub struct SetFederationMode<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///Federation mode to set (e.g., 'off', 'allowlist', 'open')
     pub mode: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,14 +32,24 @@ pub struct SetFederationMode<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SetFederationModeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SetFederationModeOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///New effective federation mode
     pub effective_mode: S,
     ///Federation mode from environment configuration
@@ -52,11 +59,7 @@ pub struct SetFederationModeOutput<S: jacquard_common::BosStr = jacquard_common:
     pub override_mode: core::option::Option<S>,
     ///Whether the mode was updated
     pub updated: bool,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -76,10 +79,12 @@ impl jacquard_common::xrpc::XrpcResp for SetFederationModeResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SetFederationMode<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for SetFederationMode<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.setFederationMode";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = SetFederationModeResponse;
 }
 
@@ -89,8 +94,9 @@ Path: `/xrpc/blue.catbird.mlsDS.setFederationMode`. The request payload type is 
 pub struct SetFederationModeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SetFederationModeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.setFederationMode";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = SetFederationMode<S>;
     type Response = SetFederationModeResponse;
 }

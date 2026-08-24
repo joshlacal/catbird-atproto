@@ -6,19 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SendMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub signed_request: crate::generated::blue_catbird::chat::SignedApplicationSend<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,20 +30,24 @@ pub struct SendMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SendMessageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub entry: crate::generated::blue_catbird::chat::ApplicationEntry<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,6 +55,7 @@ pub struct SendMessageOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -57,8 +65,9 @@ pub struct SendMessageOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum SendMessageError {
     #[serde(rename = "BlobBindingConflict")]
@@ -68,7 +77,9 @@ pub enum SendMessageError {
     #[serde(rename = "BlockedRelationship")]
     BlockedRelationship(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ConversationNotAccepted")]
-    ConversationNotAccepted(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotAccepted(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "CutoverRequired")]
@@ -82,7 +93,9 @@ pub enum SendMessageError {
     #[serde(rename = "IdempotencyConflict")]
     IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidApplicationMessage")]
-    InvalidApplicationMessage(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidApplicationMessage(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidSignature")]
@@ -92,19 +105,29 @@ pub enum SendMessageError {
     #[serde(rename = "RecipientNotReady")]
     RecipientNotReady(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RelationshipPolicyUnavailable")]
-    RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RelationshipPolicyUnavailable(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "UnsupportedMlsProfile")]
-    UnsupportedMlsProfile(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedMlsProfile(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -303,8 +326,9 @@ impl jacquard_common::xrpc::XrpcResp for SendMessageResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SendMessage<S> {
     const NSID: &'static str = "blue.catbird.chat.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = SendMessageResponse;
 }
 
@@ -314,15 +338,16 @@ Path: `/xrpc/blue.catbird.chat.sendMessage`. The request payload type is `SendMe
 pub struct SendMessageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendMessageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = SendMessage<S>;
     type Response = SendMessageResponse;
 }
 
 pub mod send_message_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -358,13 +383,20 @@ pub struct SendMessageBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<crate::generated::blue_catbird::chat::SignedApplicationSend<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::blue_catbird::chat::SignedApplicationSend<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl SendMessage<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SendMessageBuilder<send_message_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SendMessageBuilder<
+        send_message_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SendMessageBuilder::new()
     }
 }

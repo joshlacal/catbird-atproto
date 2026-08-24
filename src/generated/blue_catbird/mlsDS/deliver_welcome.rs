@@ -6,31 +6,45 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeliverWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Conversation ID
-    pub convo_id: S,
-    ///Initial epoch of the group for the new member
-    pub initial_epoch: i64,
-    ///Hash of the consumed key package
-    pub key_package_hash: S,
-    ///DID of the recipient user
-    pub recipient_did: S,
-    ///DID of the sending delivery service
-    pub sender_ds_did: S,
-    ///Serialized MLS Welcome message
+    pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
+    ///Canonical DAG-CBOR bytes of the exact control entry
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub welcome_data: jacquard_common::deps::bytes::Bytes,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub entry_bytes: jacquard_common::deps::bytes::Bytes,
+    pub entry_locator: crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>,
+    pub header: crate::generated::blue_catbird::mlsDS::EnvelopeHeaderV1<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub key_package_ref: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub public_snapshot_sha256: jacquard_common::deps::bytes::Bytes,
+    pub recipient_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    pub recovery_request_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    ///Exact JSON bytes of the signed transition request
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signed_request_bytes: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub tree_summary_sha256: jacquard_common::deps::bytes::Bytes,
+    ///Serialized MLS Welcome message bytes
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub welcome_bytes: jacquard_common::deps::bytes::Bytes,
+    pub welcome_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub welcome_sha256: jacquard_common::deps::bytes::Bytes,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -39,25 +53,28 @@ pub struct DeliverWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct DeliverWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the welcome was accepted
+pub struct DeliverWelcomeOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    ///Whether the welcome was accepted and verified against preprovisioned mailbox state
     pub accepted: bool,
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub ack: core::option::Option<
-        crate::generated::blue_catbird::mlsDS::deliver_message::DeliveryAck<S>,
-    >,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub receipt: crate::generated::blue_catbird::mlsDS::FederationReceiptV1<S>,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -65,6 +82,7 @@ pub struct DeliverWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::De
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -74,14 +92,27 @@ pub struct DeliverWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::De
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum DeliverWelcomeError {
-    #[serde(rename = "RecipientNotFound")]
-    RecipientNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "MailboxNotProvisioned")]
+    MailboxNotProvisioned(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeliveryConflict")]
+    DeliveryConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotSequencer")]
     NotSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "TermStale")]
+    TermStale(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "InvalidEnvelope")]
+    InvalidEnvelope(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "UnauthorizedRecipient")]
+    UnauthorizedRecipient(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -93,8 +124,15 @@ pub enum DeliverWelcomeError {
 impl core::fmt::Display for DeliverWelcomeError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::RecipientNotFound(msg) => {
-                write!(f, "RecipientNotFound")?;
+            Self::MailboxNotProvisioned(msg) => {
+                write!(f, "MailboxNotProvisioned")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeliveryConflict(msg) => {
+                write!(f, "DeliveryConflict")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -102,6 +140,27 @@ impl core::fmt::Display for DeliverWelcomeError {
             }
             Self::NotSequencer(msg) => {
                 write!(f, "NotSequencer")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::TermStale(msg) => {
+                write!(f, "TermStale")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidEnvelope(msg) => {
+                write!(f, "InvalidEnvelope")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::UnauthorizedRecipient(msg) => {
+                write!(f, "UnauthorizedRecipient")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -129,10 +188,12 @@ impl jacquard_common::xrpc::XrpcResp for DeliverWelcomeResponse {
     type Err = DeliverWelcomeError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeliverWelcome<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for DeliverWelcome<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeliverWelcomeResponse;
 }
 
@@ -142,15 +203,16 @@ Path: `/xrpc/blue.catbird.mlsDS.deliverWelcome`. The request payload type is `De
 pub struct DeliverWelcomeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeliverWelcomeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deliverWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DeliverWelcome<S>;
     type Response = DeliverWelcomeResponse;
 }
 
 pub mod deliver_welcome_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -158,105 +220,337 @@ pub mod deliver_welcome_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
-        type InitialEpoch;
-        type KeyPackageHash;
+        type Coordinates;
+        type EntryBytes;
+        type EntryLocator;
+        type Header;
+        type KeyPackageRef;
+        type PublicSnapshotSha256;
+        type RecipientDeviceId;
         type RecipientDid;
-        type SenderDsDid;
-        type WelcomeData;
+        type RecoveryRequestId;
+        type SignedRequestBytes;
+        type TreeSummarySha256;
+        type WelcomeBytes;
+        type WelcomeId;
+        type WelcomeSha256;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
-        type InitialEpoch = Unset;
-        type KeyPackageHash = Unset;
+        type Coordinates = Unset;
+        type EntryBytes = Unset;
+        type EntryLocator = Unset;
+        type Header = Unset;
+        type KeyPackageRef = Unset;
+        type PublicSnapshotSha256 = Unset;
+        type RecipientDeviceId = Unset;
         type RecipientDid = Unset;
-        type SenderDsDid = Unset;
-        type WelcomeData = Unset;
+        type RecoveryRequestId = Unset;
+        type SignedRequestBytes = Unset;
+        type TreeSummarySha256 = Unset;
+        type WelcomeBytes = Unset;
+        type WelcomeId = Unset;
+        type WelcomeSha256 = Unset;
     }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetConvoId<St> {}
-    impl<St: State> State for SetConvoId<St> {
-        type ConvoId = Set<members::convo_id>;
-        type InitialEpoch = St::InitialEpoch;
-        type KeyPackageHash = St::KeyPackageHash;
+    ///State transition - sets the `coordinates` field to Set
+    pub struct SetCoordinates<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCoordinates<St> {}
+    impl<St: State> State for SetCoordinates<St> {
+        type Coordinates = Set<members::coordinates>;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
         type RecipientDid = St::RecipientDid;
-        type SenderDsDid = St::SenderDsDid;
-        type WelcomeData = St::WelcomeData;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
     }
-    ///State transition - sets the `initial_epoch` field to Set
-    pub struct SetInitialEpoch<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetInitialEpoch<St> {}
-    impl<St: State> State for SetInitialEpoch<St> {
-        type ConvoId = St::ConvoId;
-        type InitialEpoch = Set<members::initial_epoch>;
-        type KeyPackageHash = St::KeyPackageHash;
+    ///State transition - sets the `entry_bytes` field to Set
+    pub struct SetEntryBytes<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEntryBytes<St> {}
+    impl<St: State> State for SetEntryBytes<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = Set<members::entry_bytes>;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
         type RecipientDid = St::RecipientDid;
-        type SenderDsDid = St::SenderDsDid;
-        type WelcomeData = St::WelcomeData;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
     }
-    ///State transition - sets the `key_package_hash` field to Set
-    pub struct SetKeyPackageHash<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetKeyPackageHash<St> {}
-    impl<St: State> State for SetKeyPackageHash<St> {
-        type ConvoId = St::ConvoId;
-        type InitialEpoch = St::InitialEpoch;
-        type KeyPackageHash = Set<members::key_package_hash>;
+    ///State transition - sets the `entry_locator` field to Set
+    pub struct SetEntryLocator<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEntryLocator<St> {}
+    impl<St: State> State for SetEntryLocator<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = Set<members::entry_locator>;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
         type RecipientDid = St::RecipientDid;
-        type SenderDsDid = St::SenderDsDid;
-        type WelcomeData = St::WelcomeData;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `header` field to Set
+    pub struct SetHeader<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHeader<St> {}
+    impl<St: State> State for SetHeader<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = Set<members::header>;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `key_package_ref` field to Set
+    pub struct SetKeyPackageRef<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyPackageRef<St> {}
+    impl<St: State> State for SetKeyPackageRef<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = Set<members::key_package_ref>;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `public_snapshot_sha256` field to Set
+    pub struct SetPublicSnapshotSha256<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPublicSnapshotSha256<St> {}
+    impl<St: State> State for SetPublicSnapshotSha256<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = Set<members::public_snapshot_sha256>;
+        type RecipientDeviceId = St::RecipientDeviceId;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `recipient_device_id` field to Set
+    pub struct SetRecipientDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecipientDeviceId<St> {}
+    impl<St: State> State for SetRecipientDeviceId<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = Set<members::recipient_device_id>;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
     }
     ///State transition - sets the `recipient_did` field to Set
     pub struct SetRecipientDid<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetRecipientDid<St> {}
     impl<St: State> State for SetRecipientDid<St> {
-        type ConvoId = St::ConvoId;
-        type InitialEpoch = St::InitialEpoch;
-        type KeyPackageHash = St::KeyPackageHash;
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
         type RecipientDid = Set<members::recipient_did>;
-        type SenderDsDid = St::SenderDsDid;
-        type WelcomeData = St::WelcomeData;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
     }
-    ///State transition - sets the `sender_ds_did` field to Set
-    pub struct SetSenderDsDid<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetSenderDsDid<St> {}
-    impl<St: State> State for SetSenderDsDid<St> {
-        type ConvoId = St::ConvoId;
-        type InitialEpoch = St::InitialEpoch;
-        type KeyPackageHash = St::KeyPackageHash;
+    ///State transition - sets the `recovery_request_id` field to Set
+    pub struct SetRecoveryRequestId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecoveryRequestId<St> {}
+    impl<St: State> State for SetRecoveryRequestId<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
         type RecipientDid = St::RecipientDid;
-        type SenderDsDid = Set<members::sender_ds_did>;
-        type WelcomeData = St::WelcomeData;
+        type RecoveryRequestId = Set<members::recovery_request_id>;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
     }
-    ///State transition - sets the `welcome_data` field to Set
-    pub struct SetWelcomeData<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetWelcomeData<St> {}
-    impl<St: State> State for SetWelcomeData<St> {
-        type ConvoId = St::ConvoId;
-        type InitialEpoch = St::InitialEpoch;
-        type KeyPackageHash = St::KeyPackageHash;
+    ///State transition - sets the `signed_request_bytes` field to Set
+    pub struct SetSignedRequestBytes<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignedRequestBytes<St> {}
+    impl<St: State> State for SetSignedRequestBytes<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
         type RecipientDid = St::RecipientDid;
-        type SenderDsDid = St::SenderDsDid;
-        type WelcomeData = Set<members::welcome_data>;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = Set<members::signed_request_bytes>;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `tree_summary_sha256` field to Set
+    pub struct SetTreeSummarySha256<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTreeSummarySha256<St> {}
+    impl<St: State> State for SetTreeSummarySha256<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = Set<members::tree_summary_sha256>;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `welcome_bytes` field to Set
+    pub struct SetWelcomeBytes<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWelcomeBytes<St> {}
+    impl<St: State> State for SetWelcomeBytes<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = Set<members::welcome_bytes>;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `welcome_id` field to Set
+    pub struct SetWelcomeId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWelcomeId<St> {}
+    impl<St: State> State for SetWelcomeId<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = Set<members::welcome_id>;
+        type WelcomeSha256 = St::WelcomeSha256;
+    }
+    ///State transition - sets the `welcome_sha256` field to Set
+    pub struct SetWelcomeSha256<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWelcomeSha256<St> {}
+    impl<St: State> State for SetWelcomeSha256<St> {
+        type Coordinates = St::Coordinates;
+        type EntryBytes = St::EntryBytes;
+        type EntryLocator = St::EntryLocator;
+        type Header = St::Header;
+        type KeyPackageRef = St::KeyPackageRef;
+        type PublicSnapshotSha256 = St::PublicSnapshotSha256;
+        type RecipientDeviceId = St::RecipientDeviceId;
+        type RecipientDid = St::RecipientDid;
+        type RecoveryRequestId = St::RecoveryRequestId;
+        type SignedRequestBytes = St::SignedRequestBytes;
+        type TreeSummarySha256 = St::TreeSummarySha256;
+        type WelcomeBytes = St::WelcomeBytes;
+        type WelcomeId = St::WelcomeId;
+        type WelcomeSha256 = Set<members::welcome_sha256>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `initial_epoch` field
-        pub struct initial_epoch(());
-        ///Marker type for the `key_package_hash` field
-        pub struct key_package_hash(());
+        ///Marker type for the `coordinates` field
+        pub struct coordinates(());
+        ///Marker type for the `entry_bytes` field
+        pub struct entry_bytes(());
+        ///Marker type for the `entry_locator` field
+        pub struct entry_locator(());
+        ///Marker type for the `header` field
+        pub struct header(());
+        ///Marker type for the `key_package_ref` field
+        pub struct key_package_ref(());
+        ///Marker type for the `public_snapshot_sha256` field
+        pub struct public_snapshot_sha256(());
+        ///Marker type for the `recipient_device_id` field
+        pub struct recipient_device_id(());
         ///Marker type for the `recipient_did` field
         pub struct recipient_did(());
-        ///Marker type for the `sender_ds_did` field
-        pub struct sender_ds_did(());
-        ///Marker type for the `welcome_data` field
-        pub struct welcome_data(());
+        ///Marker type for the `recovery_request_id` field
+        pub struct recovery_request_id(());
+        ///Marker type for the `signed_request_bytes` field
+        pub struct signed_request_bytes(());
+        ///Marker type for the `tree_summary_sha256` field
+        pub struct tree_summary_sha256(());
+        ///Marker type for the `welcome_bytes` field
+        pub struct welcome_bytes(());
+        ///Marker type for the `welcome_id` field
+        pub struct welcome_id(());
+        ///Marker type for the `welcome_sha256` field
+        pub struct welcome_sha256(());
     }
 }
 
@@ -267,11 +561,21 @@ pub struct DeliverWelcomeBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<S>,
-        core::option::Option<i64>,
-        core::option::Option<S>,
-        core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<
+            crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
+        >,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>>,
+        core::option::Option<crate::generated::blue_catbird::mlsDS::EnvelopeHeaderV1<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -279,8 +583,10 @@ pub struct DeliverWelcomeBuilder<
 
 impl DeliverWelcome<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeliverWelcomeBuilder<deliver_welcome_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> DeliverWelcomeBuilder<
+        deliver_welcome_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         DeliverWelcomeBuilder::new()
     }
 }
@@ -297,7 +603,22 @@ impl DeliverWelcomeBuilder<deliver_welcome_state::Empty, jacquard_common::Defaul
     pub fn new() -> Self {
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -308,7 +629,22 @@ impl<S: jacquard_common::BosStr> DeliverWelcomeBuilder<deliver_welcome_state::Em
     pub fn builder() -> Self {
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -317,13 +653,15 @@ impl<S: jacquard_common::BosStr> DeliverWelcomeBuilder<deliver_welcome_state::Em
 impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
 where
     St: deliver_welcome_state::State,
-    St::ConvoId: deliver_welcome_state::IsUnset,
+    St::Coordinates: deliver_welcome_state::IsUnset,
 {
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
+    /// Set the `coordinates` field (required)
+    pub fn coordinates(
         mut self,
-        value: impl Into<S>,
-    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetConvoId<St>, S> {
+        value: impl Into<
+            crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
+        >,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetCoordinates<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
@@ -336,13 +674,13 @@ where
 impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
 where
     St: deliver_welcome_state::State,
-    St::InitialEpoch: deliver_welcome_state::IsUnset,
+    St::EntryBytes: deliver_welcome_state::IsUnset,
 {
-    /// Set the `initialEpoch` field (required)
-    pub fn initial_epoch(
+    /// Set the `entryBytes` field (required)
+    pub fn entry_bytes(
         mut self,
-        value: impl Into<i64>,
-    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetInitialEpoch<St>, S> {
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetEntryBytes<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
@@ -355,14 +693,90 @@ where
 impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
 where
     St: deliver_welcome_state::State,
-    St::KeyPackageHash: deliver_welcome_state::IsUnset,
+    St::EntryLocator: deliver_welcome_state::IsUnset,
 {
-    /// Set the `keyPackageHash` field (required)
-    pub fn key_package_hash(
+    /// Set the `entryLocator` field (required)
+    pub fn entry_locator(
         mut self,
-        value: impl Into<S>,
-    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetKeyPackageHash<St>, S> {
+        value: impl Into<crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetEntryLocator<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::Header: deliver_welcome_state::IsUnset,
+{
+    /// Set the `header` field (required)
+    pub fn header(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::mlsDS::EnvelopeHeaderV1<S>>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetHeader<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::KeyPackageRef: deliver_welcome_state::IsUnset,
+{
+    /// Set the `keyPackageRef` field (required)
+    pub fn key_package_ref(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetKeyPackageRef<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::PublicSnapshotSha256: deliver_welcome_state::IsUnset,
+{
+    /// Set the `publicSnapshotSha256` field (required)
+    pub fn public_snapshot_sha256(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetPublicSnapshotSha256<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::RecipientDeviceId: deliver_welcome_state::IsUnset,
+{
+    /// Set the `recipientDeviceId` field (required)
+    pub fn recipient_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetRecipientDeviceId<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -379,9 +793,9 @@ where
     /// Set the `recipientDid` field (required)
     pub fn recipient_did(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetRecipientDid<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -393,14 +807,14 @@ where
 impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
 where
     St: deliver_welcome_state::State,
-    St::SenderDsDid: deliver_welcome_state::IsUnset,
+    St::RecoveryRequestId: deliver_welcome_state::IsUnset,
 {
-    /// Set the `senderDsDid` field (required)
-    pub fn sender_ds_did(
+    /// Set the `recoveryRequestId` field (required)
+    pub fn recovery_request_id(
         mut self,
-        value: impl Into<S>,
-    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetSenderDsDid<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetRecoveryRequestId<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -412,14 +826,14 @@ where
 impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
 where
     St: deliver_welcome_state::State,
-    St::WelcomeData: deliver_welcome_state::IsUnset,
+    St::SignedRequestBytes: deliver_welcome_state::IsUnset,
 {
-    /// Set the `welcomeData` field (required)
-    pub fn welcome_data(
+    /// Set the `signedRequestBytes` field (required)
+    pub fn signed_request_bytes(
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetWelcomeData<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetSignedRequestBytes<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
         DeliverWelcomeBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -431,22 +845,114 @@ where
 impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
 where
     St: deliver_welcome_state::State,
-    St::ConvoId: deliver_welcome_state::IsSet,
-    St::InitialEpoch: deliver_welcome_state::IsSet,
-    St::KeyPackageHash: deliver_welcome_state::IsSet,
+    St::TreeSummarySha256: deliver_welcome_state::IsUnset,
+{
+    /// Set the `treeSummarySha256` field (required)
+    pub fn tree_summary_sha256(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetTreeSummarySha256<St>, S> {
+        self._fields.10 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::WelcomeBytes: deliver_welcome_state::IsUnset,
+{
+    /// Set the `welcomeBytes` field (required)
+    pub fn welcome_bytes(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetWelcomeBytes<St>, S> {
+        self._fields.11 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::WelcomeId: deliver_welcome_state::IsUnset,
+{
+    /// Set the `welcomeId` field (required)
+    pub fn welcome_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetWelcomeId<St>, S> {
+        self._fields.12 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::WelcomeSha256: deliver_welcome_state::IsUnset,
+{
+    /// Set the `welcomeSha256` field (required)
+    pub fn welcome_sha256(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetWelcomeSha256<St>, S> {
+        self._fields.13 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::Coordinates: deliver_welcome_state::IsSet,
+    St::EntryBytes: deliver_welcome_state::IsSet,
+    St::EntryLocator: deliver_welcome_state::IsSet,
+    St::Header: deliver_welcome_state::IsSet,
+    St::KeyPackageRef: deliver_welcome_state::IsSet,
+    St::PublicSnapshotSha256: deliver_welcome_state::IsSet,
+    St::RecipientDeviceId: deliver_welcome_state::IsSet,
     St::RecipientDid: deliver_welcome_state::IsSet,
-    St::SenderDsDid: deliver_welcome_state::IsSet,
-    St::WelcomeData: deliver_welcome_state::IsSet,
+    St::RecoveryRequestId: deliver_welcome_state::IsSet,
+    St::SignedRequestBytes: deliver_welcome_state::IsSet,
+    St::TreeSummarySha256: deliver_welcome_state::IsSet,
+    St::WelcomeBytes: deliver_welcome_state::IsSet,
+    St::WelcomeId: deliver_welcome_state::IsSet,
+    St::WelcomeSha256: deliver_welcome_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> DeliverWelcome<S> {
         DeliverWelcome {
-            convo_id: self._fields.0.unwrap(),
-            initial_epoch: self._fields.1.unwrap(),
-            key_package_hash: self._fields.2.unwrap(),
-            recipient_did: self._fields.3.unwrap(),
-            sender_ds_did: self._fields.4.unwrap(),
-            welcome_data: self._fields.5.unwrap(),
+            coordinates: self._fields.0.unwrap(),
+            entry_bytes: self._fields.1.unwrap(),
+            entry_locator: self._fields.2.unwrap(),
+            header: self._fields.3.unwrap(),
+            key_package_ref: self._fields.4.unwrap(),
+            public_snapshot_sha256: self._fields.5.unwrap(),
+            recipient_device_id: self._fields.6.unwrap(),
+            recipient_did: self._fields.7.unwrap(),
+            recovery_request_id: self._fields.8.unwrap(),
+            signed_request_bytes: self._fields.9.unwrap(),
+            tree_summary_sha256: self._fields.10.unwrap(),
+            welcome_bytes: self._fields.11.unwrap(),
+            welcome_id: self._fields.12.unwrap(),
+            welcome_sha256: self._fields.13.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -459,12 +965,20 @@ where
         >,
     ) -> DeliverWelcome<S> {
         DeliverWelcome {
-            convo_id: self._fields.0.unwrap(),
-            initial_epoch: self._fields.1.unwrap(),
-            key_package_hash: self._fields.2.unwrap(),
-            recipient_did: self._fields.3.unwrap(),
-            sender_ds_did: self._fields.4.unwrap(),
-            welcome_data: self._fields.5.unwrap(),
+            coordinates: self._fields.0.unwrap(),
+            entry_bytes: self._fields.1.unwrap(),
+            entry_locator: self._fields.2.unwrap(),
+            header: self._fields.3.unwrap(),
+            key_package_ref: self._fields.4.unwrap(),
+            public_snapshot_sha256: self._fields.5.unwrap(),
+            recipient_device_id: self._fields.6.unwrap(),
+            recipient_did: self._fields.7.unwrap(),
+            recovery_request_id: self._fields.8.unwrap(),
+            signed_request_bytes: self._fields.9.unwrap(),
+            tree_summary_sha256: self._fields.10.unwrap(),
+            welcome_bytes: self._fields.11.unwrap(),
+            welcome_id: self._fields.12.unwrap(),
+            welcome_sha256: self._fields.13.unwrap(),
             extra_data: Some(extra_data),
         }
     }

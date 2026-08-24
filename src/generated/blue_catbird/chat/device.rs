@@ -8,8 +8,15 @@
 /// Per-device MLS signature key published to the user's repo. Used to verify that key packages served by the delivery service belong to an authorized device.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "blue.catbird.chat.device",
@@ -24,11 +31,7 @@ pub struct Device<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///The MLS credential signature public key for this device
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub mls_signature_public_key: jacquard_common::deps::bytes::Bytes,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -40,10 +43,19 @@ pub struct Device<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct DeviceGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct DeviceGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -80,7 +92,8 @@ impl<S: jacquard_common::BosStr> From<DeviceGetRecordOutput<S>> for Device<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Device<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+for Device<S> {
     const NSID: &'static str = "blue.catbird.chat.device";
     type Record = DeviceRecord;
 }
@@ -107,7 +120,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dev
 
 pub mod device_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -303,7 +316,9 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_chat_device() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_blue_catbird_chat_device() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.chat.device"),
