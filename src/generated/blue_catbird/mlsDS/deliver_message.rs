@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,7 +22,11 @@ pub struct DeliverMessage<S: jacquard_common::BosStr = jacquard_common::DefaultS
     ///Exact JSON bytes of the signed message request
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub signed_request_bytes: jacquard_common::deps::bytes::Bytes,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -38,28 +35,22 @@ pub struct DeliverMessage<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct DeliverMessageOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct DeliverMessageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///Whether the message was delivered and persisted
     pub accepted: bool,
     pub receipt: crate::generated::blue_catbird::mlsDS::FederationReceiptV1<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -67,7 +58,6 @@ pub struct DeliverMessageOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -77,15 +67,12 @@ pub struct DeliverMessageOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum DeliverMessageError {
     #[serde(rename = "MailboxNotProvisioned")]
-    MailboxNotProvisioned(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    MailboxNotProvisioned(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "SequenceConflict")]
     SequenceConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeliveryConflict")]
@@ -97,9 +84,7 @@ pub enum DeliverMessageError {
     #[serde(rename = "InvalidEnvelope")]
     InvalidEnvelope(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "UnauthorizedRecipient")]
-    UnauthorizedRecipient(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    UnauthorizedRecipient(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -182,12 +167,10 @@ impl jacquard_common::xrpc::XrpcResp for DeliverMessageResponse {
     type Err = DeliverMessageError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for DeliverMessage<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeliverMessage<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeliverMessageResponse;
 }
 
@@ -197,16 +180,15 @@ Path: `/xrpc/blue.catbird.mlsDS.deliverMessage`. The request payload type is `De
 pub struct DeliverMessageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeliverMessageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deliverMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = DeliverMessage<S>;
     type Response = DeliverMessageResponse;
 }
 
 pub mod deliver_message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -314,10 +296,8 @@ pub struct DeliverMessageBuilder<
 
 impl DeliverMessage<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeliverMessageBuilder<
-        deliver_message_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> DeliverMessageBuilder<deliver_message_state::Empty, jacquard_common::DefaultStr>
+    {
         DeliverMessageBuilder::new()
     }
 }

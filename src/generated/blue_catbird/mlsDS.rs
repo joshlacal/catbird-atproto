@@ -20,17 +20,9 @@ pub mod submit_commit;
 pub mod transfer_sequencer;
 pub mod upsert_federation_peer;
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -42,7 +34,11 @@ pub struct EntryLocatorV1<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub outer_entry_fingerprint: jacquard_common::deps::bytes::Bytes,
     pub seq: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -51,17 +47,9 @@ pub struct EntryLocatorV1<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -76,7 +64,11 @@ pub struct EnvelopeHeaderV1<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub sender_ds_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub sequencer_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub sequencer_term: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -88,22 +80,13 @@ pub struct EnvelopeHeaderV1<S: jacquard_common::BosStr = jacquard_common::Defaul
 pub type FederationEndpoint<S = jacquard_common::DefaultStr> = S;
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct FederationReceiptV1<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct FederationReceiptV1<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub completed_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub delivery_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -119,11 +102,12 @@ pub struct FederationReceiptV1<
     pub sequencer_term: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub signature: jacquard_common::deps::bytes::Bytes,
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub source_locator: core::option::Option<
-        crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub source_locator: crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -133,8 +117,7 @@ pub struct FederationReceiptV1<
 }
 
 pub type ProtocolVersion<S = jacquard_common::DefaultStr> = S;
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EntryLocatorV1<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EntryLocatorV1<S> {
     fn nsid() -> &'static str {
         "blue.catbird.mlsDS.defs"
     }
@@ -149,9 +132,7 @@ for EntryLocatorV1<S> {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "seq",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
                     max: 9007199254740991i64,
                     actual: *value,
                 });
@@ -161,9 +142,7 @@ for EntryLocatorV1<S> {
             let value = &self.seq;
             if *value < 1i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "seq",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
                     min: 1i64,
                     actual: *value,
                 });
@@ -173,8 +152,7 @@ for EntryLocatorV1<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EnvelopeHeaderV1<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EnvelopeHeaderV1<S> {
     fn nsid() -> &'static str {
         "blue.catbird.mlsDS.defs"
     }
@@ -214,7 +192,8 @@ for EnvelopeHeaderV1<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for FederationReceiptV1<S> {
+    for FederationReceiptV1<S>
+{
     fn nsid() -> &'static str {
         "blue.catbird.mlsDS.defs"
     }
@@ -255,7 +234,7 @@ for FederationReceiptV1<S> {
 
 pub mod entry_locator_v1_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -344,10 +323,8 @@ pub struct EntryLocatorV1Builder<
 
 impl EntryLocatorV1<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> EntryLocatorV1Builder<
-        entry_locator_v1_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> EntryLocatorV1Builder<entry_locator_v1_state::Empty, jacquard_common::DefaultStr>
+    {
         EntryLocatorV1Builder::new()
     }
 }
@@ -370,9 +347,7 @@ impl EntryLocatorV1Builder<entry_locator_v1_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EntryLocatorV1Builder<entry_locator_v1_state::Empty, S> {
+impl<S: jacquard_common::BosStr> EntryLocatorV1Builder<entry_locator_v1_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EntryLocatorV1Builder {
@@ -495,9 +470,7 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsDS_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsDS_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsDS.defs"),
@@ -505,358 +478,411 @@ fn lexicon_doc_blue_catbird_mlsDS_defs() -> jacquard_lexicon::lexicon::LexiconDo
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("entryLocatorV1"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("entryId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("acceptedPayloadSha256"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("outerEntryFingerprint")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "acceptedPayloadSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "entryId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#operationId",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "outerEntryFingerprint",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "seq",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(1i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "acceptedPayloadSha256",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("entryId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#operationId",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "outerEntryFingerprint",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(1i64),
+                                        maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "envelopeHeaderV1",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("protocolVersion"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deliveryId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("conversationId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDsDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("receiverDsDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerTerm"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("payloadSha256")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "conversationId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#operationId",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "deliveryId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#operationId",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "payloadSha256",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("envelopeHeaderV1"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "protocolVersion",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#protocolVersion",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "receiverDsDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#bareDid",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "senderDsDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#bareDid",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sequencerDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#bareDid",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sequencerTerm",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "federationEndpoint",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "federationReceiptV1",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("protocolVersion"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("deliveryId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("conversationId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "conversationId",
+                            ),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDsDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("receiverDsDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerTerm"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("envelopeSha256"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("resultSha256"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("completedAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "completedAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#canonicalDatetime",
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("payloadSha256"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "conversationId",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#operationId",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "deliveryId",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#operationId",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "payloadSha256",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "protocolVersion",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#protocolVersion",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "receiverDsDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#bareDid",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "senderDsDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#bareDid",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#bareDid",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerTerm",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("federationEndpoint"),
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("federationReceiptV1"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "protocolVersion",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deliveryId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#operationId",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "deliveryId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#operationId",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "endpoint",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#federationEndpoint",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDsDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("receiverDsDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerTerm"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "envelopeSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "protocolVersion",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#protocolVersion",
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("resultSha256"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sourceLocator"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("completedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "completedAt",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "receiverDsDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#bareDid",
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#canonicalDatetime",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "resultSha256",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "senderDsDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#bareDid",
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "conversationId",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sequencerDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.chat.defs#bareDid",
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#operationId",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sequencerTerm",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "signature",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(64usize),
-                                min_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sourceLocator",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#entryLocatorV1",
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "deliveryId",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#operationId",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#federationEndpoint",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "envelopeSha256",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "protocolVersion",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#protocolVersion",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "receiverDsDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#bareDid",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "resultSha256",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "senderDsDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#bareDid",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#bareDid",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerTerm",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("signature"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(64usize),
+                                        min_length: Some(64usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sourceLocator",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#entryLocatorV1",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "protocolVersion",
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("protocolVersion"),
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        ..Default::default()
+                    },
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
-                    ..Default::default()
-                }),
             );
             map
         },
@@ -866,7 +892,7 @@ fn lexicon_doc_blue_catbird_mlsDS_defs() -> jacquard_lexicon::lexicon::LexiconDo
 
 pub mod envelope_header_v1_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -1043,10 +1069,8 @@ pub struct EnvelopeHeaderV1Builder<
 
 impl EnvelopeHeaderV1<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> EnvelopeHeaderV1Builder<
-        envelope_header_v1_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> EnvelopeHeaderV1Builder<envelope_header_v1_state::Empty, jacquard_common::DefaultStr> {
         EnvelopeHeaderV1Builder::new()
     }
 }
@@ -1058,10 +1082,7 @@ impl<S: jacquard_common::BosStr> EnvelopeHeaderV1<S> {
     }
 }
 
-impl EnvelopeHeaderV1Builder<
-    envelope_header_v1_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl EnvelopeHeaderV1Builder<envelope_header_v1_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EnvelopeHeaderV1Builder {
@@ -1072,9 +1093,7 @@ impl EnvelopeHeaderV1Builder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EnvelopeHeaderV1Builder<envelope_header_v1_state::Empty, S> {
+impl<S: jacquard_common::BosStr> EnvelopeHeaderV1Builder<envelope_header_v1_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EnvelopeHeaderV1Builder {
@@ -1287,7 +1306,7 @@ where
 
 pub mod federation_receipt_v1_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -1307,6 +1326,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid;
         type SequencerTerm;
         type Signature;
+        type SourceLocator;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
@@ -1324,6 +1344,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = Unset;
         type SequencerTerm = Unset;
         type Signature = Unset;
+        type SourceLocator = Unset;
     }
     ///State transition - sets the `completed_at` field to Set
     pub struct SetCompletedAt<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1341,6 +1362,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `conversation_id` field to Set
     pub struct SetConversationId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1358,6 +1380,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `delivery_id` field to Set
     pub struct SetDeliveryId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1375,6 +1398,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `endpoint` field to Set
     pub struct SetEndpoint<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1392,6 +1416,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `envelope_sha256` field to Set
     pub struct SetEnvelopeSha256<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1409,6 +1434,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `protocol_version` field to Set
     pub struct SetProtocolVersion<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1426,6 +1452,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `receiver_ds_did` field to Set
     pub struct SetReceiverDsDid<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1443,6 +1470,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `result_sha256` field to Set
     pub struct SetResultSha256<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1460,6 +1488,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `sender_ds_did` field to Set
     pub struct SetSenderDsDid<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1477,6 +1506,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `sequencer_did` field to Set
     pub struct SetSequencerDid<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1494,6 +1524,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = Set<members::sequencer_did>;
         type SequencerTerm = St::SequencerTerm;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `sequencer_term` field to Set
     pub struct SetSequencerTerm<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1511,6 +1542,7 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = Set<members::sequencer_term>;
         type Signature = St::Signature;
+        type SourceLocator = St::SourceLocator;
     }
     ///State transition - sets the `signature` field to Set
     pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
@@ -1528,6 +1560,25 @@ pub mod federation_receipt_v1_state {
         type SequencerDid = St::SequencerDid;
         type SequencerTerm = St::SequencerTerm;
         type Signature = Set<members::signature>;
+        type SourceLocator = St::SourceLocator;
+    }
+    ///State transition - sets the `source_locator` field to Set
+    pub struct SetSourceLocator<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSourceLocator<St> {}
+    impl<St: State> State for SetSourceLocator<St> {
+        type CompletedAt = St::CompletedAt;
+        type ConversationId = St::ConversationId;
+        type DeliveryId = St::DeliveryId;
+        type Endpoint = St::Endpoint;
+        type EnvelopeSha256 = St::EnvelopeSha256;
+        type ProtocolVersion = St::ProtocolVersion;
+        type ReceiverDsDid = St::ReceiverDsDid;
+        type ResultSha256 = St::ResultSha256;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerDid = St::SequencerDid;
+        type SequencerTerm = St::SequencerTerm;
+        type Signature = St::Signature;
+        type SourceLocator = Set<members::source_locator>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
@@ -1556,6 +1607,8 @@ pub mod federation_receipt_v1_state {
         pub struct sequencer_term(());
         ///Marker type for the `signature` field
         pub struct signature(());
+        ///Marker type for the `source_locator` field
+        pub struct source_locator(());
     }
 }
 
@@ -1569,9 +1622,7 @@ pub struct FederationReceiptV1Builder<
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<
-            crate::generated::blue_catbird::mlsDS::FederationEndpoint<S>,
-        >,
+        core::option::Option<crate::generated::blue_catbird::mlsDS::FederationEndpoint<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::mlsDS::ProtocolVersion<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
@@ -1587,73 +1638,40 @@ pub struct FederationReceiptV1Builder<
 
 impl FederationReceiptV1<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::Empty, jacquard_common::DefaultStr>
+    {
         FederationReceiptV1Builder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> FederationReceiptV1<S> {
     /// Create a new builder for this type
-    pub fn builder() -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::Empty,
-        S,
-    > {
+    pub fn builder() -> FederationReceiptV1Builder<federation_receipt_v1_state::Empty, S> {
         FederationReceiptV1Builder::builder()
     }
 }
 
-impl FederationReceiptV1Builder<
-    federation_receipt_v1_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl FederationReceiptV1Builder<federation_receipt_v1_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> FederationReceiptV1Builder<federation_receipt_v1_state::Empty, S> {
+impl<S: jacquard_common::BosStr> FederationReceiptV1Builder<federation_receipt_v1_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -1688,10 +1706,7 @@ where
     pub fn conversation_id(
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
-    ) -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::SetConversationId<St>,
-        S,
-    > {
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetConversationId<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
@@ -1748,10 +1763,7 @@ where
     pub fn envelope_sha256(
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::SetEnvelopeSha256<St>,
-        S,
-    > {
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetEnvelopeSha256<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
@@ -1770,10 +1782,7 @@ where
     pub fn protocol_version(
         mut self,
         value: impl Into<crate::generated::blue_catbird::mlsDS::ProtocolVersion<S>>,
-    ) -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::SetProtocolVersion<St>,
-        S,
-    > {
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetProtocolVersion<St>, S> {
         self._fields.5 = ::core::option::Option::Some(value.into());
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
@@ -1792,10 +1801,7 @@ where
     pub fn receiver_ds_did(
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
-    ) -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::SetReceiverDsDid<St>,
-        S,
-    > {
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetReceiverDsDid<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
@@ -1814,10 +1820,7 @@ where
     pub fn result_sha256(
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::SetResultSha256<St>,
-        S,
-    > {
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetResultSha256<St>, S> {
         self._fields.7 = ::core::option::Option::Some(value.into());
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
@@ -1855,10 +1858,7 @@ where
     pub fn sequencer_did(
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
-    ) -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::SetSequencerDid<St>,
-        S,
-    > {
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetSequencerDid<St>, S> {
         self._fields.9 = ::core::option::Option::Some(value.into());
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
@@ -1877,10 +1877,7 @@ where
     pub fn sequencer_term(
         mut self,
         value: impl Into<i64>,
-    ) -> FederationReceiptV1Builder<
-        federation_receipt_v1_state::SetSequencerTerm<St>,
-        S,
-    > {
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetSequencerTerm<St>, S> {
         self._fields.10 = ::core::option::Option::Some(value.into());
         FederationReceiptV1Builder {
             _state: ::core::marker::PhantomData,
@@ -1909,27 +1906,22 @@ where
     }
 }
 
-impl<
+impl<St, S: jacquard_common::BosStr> FederationReceiptV1Builder<St, S>
+where
     St: federation_receipt_v1_state::State,
-    S: jacquard_common::BosStr,
-> FederationReceiptV1Builder<St, S> {
-    /// Set the `sourceLocator` field (optional)
+    St::SourceLocator: federation_receipt_v1_state::IsUnset,
+{
+    /// Set the `sourceLocator` field (required)
     pub fn source_locator(
         mut self,
-        value: impl Into<
-            Option<crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>>,
-        >,
-    ) -> Self {
-        self._fields.12 = value.into();
-        self
-    }
-    /// Set the `sourceLocator` field to an Option value (optional)
-    pub fn maybe_source_locator(
-        mut self,
-        value: Option<crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>>,
-    ) -> Self {
-        self._fields.12 = value;
-        self
+        value: impl Into<crate::generated::blue_catbird::mlsDS::EntryLocatorV1<S>>,
+    ) -> FederationReceiptV1Builder<federation_receipt_v1_state::SetSourceLocator<St>, S> {
+        self._fields.12 = ::core::option::Option::Some(value.into());
+        FederationReceiptV1Builder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
     }
 }
 
@@ -1948,6 +1940,7 @@ where
     St::SequencerDid: federation_receipt_v1_state::IsSet,
     St::SequencerTerm: federation_receipt_v1_state::IsSet,
     St::Signature: federation_receipt_v1_state::IsSet,
+    St::SourceLocator: federation_receipt_v1_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> FederationReceiptV1<S> {
@@ -1964,7 +1957,7 @@ where
             sequencer_did: self._fields.9.unwrap(),
             sequencer_term: self._fields.10.unwrap(),
             signature: self._fields.11.unwrap(),
-            source_locator: self._fields.12,
+            source_locator: self._fields.12.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -1989,7 +1982,7 @@ where
             sequencer_did: self._fields.9.unwrap(),
             sequencer_term: self._fields.10.unwrap(),
             signature: self._fields.11.unwrap(),
-            source_locator: self._fields.12,
+            source_locator: self._fields.12.unwrap(),
             extra_data: Some(extra_data),
         }
     }
