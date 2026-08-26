@@ -147,8 +147,8 @@ fn convo_event_entry_kind_table_driven_mapping_and_round_trip() {
         let decoded: ConvoEventEntryEntryKind =
             serde_json::from_value(json!(raw)).unwrap();
         assert_eq!(
-            ConvoEventEntryEntryKind::from_value(raw).as_str(),
-            expected.as_str(),
+            ConvoEventEntryEntryKind::from_value(jacquard_common::DefaultStr::from(raw)),
+            expected,
             "from_value mismatch for {raw}"
         );
         assert_eq!(decoded, expected, "JSON mapping mismatch for {raw}");
