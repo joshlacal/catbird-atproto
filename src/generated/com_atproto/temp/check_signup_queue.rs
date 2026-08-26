@@ -61,6 +61,9 @@ impl jacquard_common::xrpc::XrpcRequest for CheckSignupQueue {
     const NSID: &'static str = "com.atproto.temp.checkSignupQueue";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = CheckSignupQueueResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `com.atproto.temp.checkSignupQueue` query.

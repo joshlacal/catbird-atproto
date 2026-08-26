@@ -6,25 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeletePin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The AT-URI of the pinned record to delete.
+    /// The AT-URI of the pinned record to delete.
     pub pin_uri: jacquard_common::types::string::AtUri<S>,
-    ///The DID of the streamer.
+    /// The DID of the streamer.
     pub streamer: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -32,7 +29,6 @@ pub struct DeletePin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -42,15 +38,18 @@ pub struct DeletePin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeletePinOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -58,7 +57,6 @@ pub struct DeletePinOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -68,24 +66,33 @@ pub struct DeletePinOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum DeletePinError {
     /// The request lacks valid authentication credentials.
     #[serde(rename = "Unauthorized")]
-    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    Unauthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The caller does not have permission to unpin messages for this streamer.
     #[serde(rename = "Forbidden")]
-    Forbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    Forbidden(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The streamer's OAuth session could not be found or is invalid.
     #[serde(rename = "SessionNotFound")]
-    SessionNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SessionNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -138,9 +145,8 @@ impl jacquard_common::xrpc::XrpcResp for DeletePinResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeletePin<S> {
     const NSID: &'static str = "place.stream.moderation.deletePin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeletePinResponse;
 }
 
@@ -150,18 +156,17 @@ Path: `/xrpc/place.stream.moderation.deletePin`. The request payload type is `De
 pub struct DeletePinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeletePinRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.deletePin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = DeletePin<S>;
     type Response = DeletePinResponse;
 }
 
 pub mod delete_pin_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -216,10 +221,7 @@ pub struct DeletePinBuilder<
 
 impl DeletePin<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeletePinBuilder<
-        delete_pin_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> DeletePinBuilder<delete_pin_state::Empty, jacquard_common::DefaultStr> {
         DeletePinBuilder::new()
     }
 }

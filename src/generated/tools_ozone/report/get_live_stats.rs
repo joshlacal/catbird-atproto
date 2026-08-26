@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -28,25 +21,21 @@ pub struct GetLiveStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub report_types: core::option::Option<Vec<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetLiveStatsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Statistics for the requested filter.
+    /// Statistics for the requested filter.
     pub stats: crate::generated::tools_ozone::report::LiveStats<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -85,9 +74,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetLiveStatsRequest {
 
 pub mod get_live_stats_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -118,10 +107,7 @@ pub struct GetLiveStatsBuilder<
 
 impl GetLiveStats<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetLiveStatsBuilder<
-        get_live_stats_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetLiveStatsBuilder<get_live_stats_state::Empty, jacquard_common::DefaultStr> {
         GetLiveStatsBuilder::new()
     }
 }
@@ -155,10 +141,7 @@ impl<S: jacquard_common::BosStr> GetLiveStatsBuilder<get_live_stats_state::Empty
     }
 }
 
-impl<
-    St: get_live_stats_state::State,
-    S: jacquard_common::BosStr,
-> GetLiveStatsBuilder<St, S> {
+impl<St: get_live_stats_state::State, S: jacquard_common::BosStr> GetLiveStatsBuilder<St, S> {
     /// Set the `moderatorDid` field (optional)
     pub fn moderator_did(
         mut self,
@@ -177,10 +160,7 @@ impl<
     }
 }
 
-impl<
-    St: get_live_stats_state::State,
-    S: jacquard_common::BosStr,
-> GetLiveStatsBuilder<St, S> {
+impl<St: get_live_stats_state::State, S: jacquard_common::BosStr> GetLiveStatsBuilder<St, S> {
     /// Set the `queueId` field (optional)
     pub fn queue_id(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
@@ -193,10 +173,7 @@ impl<
     }
 }
 
-impl<
-    St: get_live_stats_state::State,
-    S: jacquard_common::BosStr,
-> GetLiveStatsBuilder<St, S> {
+impl<St: get_live_stats_state::State, S: jacquard_common::BosStr> GetLiveStatsBuilder<St, S> {
     /// Set the `reportTypes` field (optional)
     pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.2 = value.into();

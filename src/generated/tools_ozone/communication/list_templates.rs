@@ -6,26 +6,19 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListTemplatesOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    pub communication_templates: Vec<
-        crate::generated::tools_ozone::communication::TemplateView<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+pub struct ListTemplatesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub communication_templates: Vec<crate::generated::tools_ozone::communication::TemplateView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -46,7 +39,7 @@ This endpoint has no request parameters or input body; send this marker with `ja
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Copy
+    Copy,
 )]
 pub struct ListTemplates;
 /** Response marker for the `tools.ozone.communication.listTemplates` query.
@@ -64,6 +57,9 @@ impl jacquard_common::xrpc::XrpcRequest for ListTemplates {
     const NSID: &'static str = "tools.ozone.communication.listTemplates";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListTemplatesResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `tools.ozone.communication.listTemplates` query.

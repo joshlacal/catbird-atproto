@@ -8,15 +8,8 @@
 /// Record declaring a 'like' of a piece of subject content.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.feed.like",
@@ -27,10 +20,13 @@ pub struct Like<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
     pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub via: core::option::Option<
-        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub via: core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_like_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,19 +38,10 @@ pub struct Like<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct LikeGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct LikeGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -91,8 +78,7 @@ impl<S: jacquard_common::BosStr> From<LikeGetRecordOutput<S>> for Like<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Like<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Like<S> {
     const NSID: &'static str = "app.bsky.feed.like";
     type Record = LikeRecord;
 }
@@ -117,11 +103,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lik
     }
 }
 
+fn deserialize_like_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod like_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -169,12 +185,8 @@ pub struct LikeBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -257,9 +269,7 @@ impl<St: like_state::State, S: jacquard_common::BosStr> LikeBuilder<St, S> {
     /// Set the `via` field (optional)
     pub fn via(
         mut self,
-        value: impl Into<
-            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        >,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
         self._fields.2 = value.into();
         self

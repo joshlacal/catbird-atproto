@@ -8,27 +8,23 @@
 /// A declaration of an account's preferences for appearing in content discovery surfaces.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.actor.contentVisibilityDeclaration",
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ContentVisibilityDeclaration<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///Whether the account requests that its posts be hidden from algorithmic recommendations. Consumers must treat a missing record as false.
+pub struct ContentVisibilityDeclaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Whether the account requests that its posts be hidden from algorithmic recommendations. Consumers must treat a missing record as false.
     pub hide_from_algorithmic_recommendations: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_content_visibility_declaration_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -40,15 +36,8 @@ pub struct ContentVisibilityDeclaration<
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct ContentVisibilityDeclarationGetRecordOutput<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
@@ -79,33 +68,33 @@ pub struct ContentVisibilityDeclarationRecord;
 impl jacquard_common::xrpc::XrpcResp for ContentVisibilityDeclarationRecord {
     const NSID: &'static str = "app.bsky.actor.contentVisibilityDeclaration";
     const ENCODING: &'static str = "application/json";
-    type Output<S: jacquard_common::BosStr> = ContentVisibilityDeclarationGetRecordOutput<
-        S,
-    >;
+    type Output<S: jacquard_common::BosStr> = ContentVisibilityDeclarationGetRecordOutput<S>;
     type Err = jacquard_common::types::collection::RecordError;
 }
 
 impl<S: jacquard_common::BosStr> From<ContentVisibilityDeclarationGetRecordOutput<S>>
-for ContentVisibilityDeclaration<S> {
+    for ContentVisibilityDeclaration<S>
+{
     fn from(output: ContentVisibilityDeclarationGetRecordOutput<S>) -> Self {
         output.value
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for ContentVisibilityDeclaration<S> {
+    for ContentVisibilityDeclaration<S>
+{
     const NSID: &'static str = "app.bsky.actor.contentVisibilityDeclaration";
     type Record = ContentVisibilityDeclarationRecord;
 }
 
-impl jacquard_common::types::collection::Collection
-for ContentVisibilityDeclarationRecord {
+impl jacquard_common::types::collection::Collection for ContentVisibilityDeclarationRecord {
     const NSID: &'static str = "app.bsky.actor.contentVisibilityDeclaration";
     type Record = ContentVisibilityDeclarationRecord;
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ContentVisibilityDeclaration<S> {
+    for ContentVisibilityDeclaration<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.actor.contentVisibilityDeclaration"
     }
@@ -120,11 +109,41 @@ for ContentVisibilityDeclaration<S> {
     }
 }
 
+fn deserialize_content_visibility_declaration_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod content_visibility_declaration_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -139,14 +158,11 @@ pub mod content_visibility_declaration_state {
         type HideFromAlgorithmicRecommendations = Unset;
     }
     ///State transition - sets the `hide_from_algorithmic_recommendations` field to Set
-    pub struct SetHideFromAlgorithmicRecommendations<St: State = Empty>(
-        PhantomData<fn() -> St>,
-    );
+    pub struct SetHideFromAlgorithmicRecommendations<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetHideFromAlgorithmicRecommendations<St> {}
     impl<St: State> State for SetHideFromAlgorithmicRecommendations<St> {
-        type HideFromAlgorithmicRecommendations = Set<
-            members::hide_from_algorithmic_recommendations,
-        >;
+        type HideFromAlgorithmicRecommendations =
+            Set<members::hide_from_algorithmic_recommendations>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
@@ -178,18 +194,18 @@ impl ContentVisibilityDeclaration<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> ContentVisibilityDeclaration<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ContentVisibilityDeclarationBuilder<
-        content_visibility_declaration_state::Empty,
-        S,
-    > {
+    pub fn builder(
+    ) -> ContentVisibilityDeclarationBuilder<content_visibility_declaration_state::Empty, S> {
         ContentVisibilityDeclarationBuilder::builder()
     }
 }
 
-impl ContentVisibilityDeclarationBuilder<
-    content_visibility_declaration_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ContentVisibilityDeclarationBuilder<
+        content_visibility_declaration_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ContentVisibilityDeclarationBuilder {
@@ -200,9 +216,9 @@ impl ContentVisibilityDeclarationBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ContentVisibilityDeclarationBuilder<content_visibility_declaration_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    ContentVisibilityDeclarationBuilder<content_visibility_declaration_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ContentVisibilityDeclarationBuilder {
@@ -262,14 +278,11 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_actor_contentVisibilityDeclaration() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_actor_contentVisibilityDeclaration(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "app.bsky.actor.contentVisibilityDeclaration",
-        ),
+        id: ::jacquard_common::CowStr::new_static("app.bsky.actor.contentVisibilityDeclaration"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(

@@ -14,7 +14,6 @@ pub mod list_webhooks;
 pub mod settings;
 pub mod update_webhook;
 
-
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -23,19 +22,23 @@ pub mod update_webhook;
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RewriteRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Text to search for and replace.
+    /// Text to search for and replace.
     pub from: S,
-    ///Text to replace with.
+    /// Text to replace with.
     pub to: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_rewrite_rule_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,60 +50,56 @@ pub struct RewriteRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// A webhook configuration for receiving Streamplace events.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Webhook<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether this webhook is currently active.
+    /// Whether this webhook is currently active.
     pub active: bool,
-    ///When this webhook was created.
+    /// When this webhook was created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///A description of what this webhook is used for.
+    /// A description of what this webhook is used for.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///Number of consecutive errors for this webhook.
+    /// Number of consecutive errors for this webhook.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub error_count: core::option::Option<i64>,
-    ///The types of events this webhook should receive.
-    pub events: Vec<S>,
-    ///Unique identifier for this webhook.
+    /// The types of events this webhook should receive.
+    pub events: Vec<WebhookEvents<S>>,
+    /// Unique identifier for this webhook.
     pub id: S,
-    ///When this webhook was last triggered.
+    /// When this webhook was last triggered.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub last_triggered: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///Words to filter out from chat messages. Messages containing any of these words will not be forwarded.
+    /// Words to filter out from chat messages. Messages containing any of these words will not be forwarded.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub mute_words: core::option::Option<Vec<S>>,
-    ///A user-friendly name for this webhook.
+    /// A user-friendly name for this webhook.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub name: core::option::Option<S>,
-    ///Text to prepend to webhook messages.
+    /// Text to prepend to webhook messages.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub prefix: core::option::Option<S>,
-    ///Text replacement rules for webhook messages.
+    /// Text replacement rules for webhook messages.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub rewrite: core::option::Option<
-        Vec<crate::generated::place_stream::server::RewriteRule<S>>,
-    >,
-    ///Text to append to webhook messages.
+    pub rewrite: core::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>,
+    /// Text to append to webhook messages.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub suffix: core::option::Option<S>,
-    ///When this webhook was last updated.
+    /// When this webhook was last updated.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///The webhook URL where events will be sent.
+    /// The webhook URL where events will be sent.
     pub url: jacquard_common::types::string::UriValue<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_webhook_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -109,8 +108,94 @@ pub struct Webhook<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for RewriteRule<S> {
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum WebhookEvents<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Chat,
+    Livestream,
+    Follow,
+    Mention,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> WebhookEvents<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Chat => "chat",
+            Self::Livestream => "livestream",
+            Self::Follow => "follow",
+            Self::Mention => "mention",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "chat" => Self::Chat,
+            "livestream" => Self::Livestream,
+            "follow" => Self::Follow,
+            "mention" => Self::Mention,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for WebhookEvents<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for WebhookEvents<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for WebhookEvents<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for WebhookEvents<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for WebhookEvents<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for WebhookEvents<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = WebhookEvents<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            WebhookEvents::Chat => WebhookEvents::Chat,
+            WebhookEvents::Livestream => WebhookEvents::Livestream,
+            WebhookEvents::Follow => WebhookEvents::Follow,
+            WebhookEvents::Mention => WebhookEvents::Mention,
+            WebhookEvents::Other(v) => WebhookEvents::Other(v.into_static()),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RewriteRule<S> {
     fn nsid() -> &'static str {
         "place.stream.server.defs"
     }
@@ -126,9 +211,7 @@ for RewriteRule<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "from",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("from"),
                     max: 100usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -139,9 +222,7 @@ for RewriteRule<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 1usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "from",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("from"),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -177,21 +258,31 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Web
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 500usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "description",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 500usize,
                     actual: <str>::len(value.as_ref()),
                 });
+            }
+        }
+        if let Some(values) = &self.mute_words {
+            for value in values {
+                #[allow(unused_comparisons)]
+                if <str>::len(value.as_ref()) > 100usize {
+                    return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                        path: jacquard_lexicon::validation::ValidationPath::from_field(
+                            "mute_words",
+                        ),
+                        max: 100usize,
+                        actual: <str>::len(value.as_ref()),
+                    });
+                }
             }
         }
         if let Some(ref value) = self.name {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "name",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     max: 100usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -201,9 +292,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Web
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "prefix",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("prefix"),
                     max: 100usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -213,9 +302,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Web
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "suffix",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("suffix"),
                     max: 100usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -225,9 +312,31 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Web
     }
 }
 
-fn lexicon_doc_place_stream_server_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn deserialize_rewrite_rule_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn lexicon_doc_place_stream_server_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.server.defs"),
@@ -235,47 +344,45 @@ fn lexicon_doc_place_stream_server_defs() -> jacquard_lexicon::lexicon::LexiconD
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("rewriteRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("from"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("to")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "from",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Text to search for and replace.",
-                                    ),
-                                ),
-                                min_length: Some(1usize),
-                                max_length: Some(100usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("to"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Text to replace with.",
-                                    ),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("from"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Text to search for and replace.",
+                                        )),
+                                        min_length: Some(1usize),
+                                        max_length: Some(100usize),
+                                        ..Default::default()
+                                    },
                                 ),
-                                max_length: Some(100usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("to"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Text to replace with.",
+                                        )),
+                                        max_length: Some(100usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("webhook"),
@@ -507,11 +614,35 @@ fn lexicon_doc_place_stream_server_defs() -> jacquard_lexicon::lexicon::LexiconD
     }
 }
 
+fn deserialize_webhook_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod webhook_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -610,15 +741,13 @@ pub struct WebhookBuilder<
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<WebhookEvents<S>>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<Vec<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<
-            Vec<crate::generated::place_stream::server::RewriteRule<S>>,
-        >,
+        core::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
@@ -646,20 +775,7 @@ impl WebhookBuilder<webhook_state::Empty, jacquard_common::DefaultStr> {
         WebhookBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -672,20 +788,7 @@ impl<S: jacquard_common::BosStr> WebhookBuilder<webhook_state::Empty, S> {
         WebhookBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -764,7 +867,7 @@ where
     /// Set the `events` field (required)
     pub fn events(
         mut self,
-        value: impl Into<Vec<S>>,
+        value: impl Into<Vec<WebhookEvents<S>>>,
     ) -> WebhookBuilder<webhook_state::SetEvents<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         WebhookBuilder {
@@ -781,10 +884,7 @@ where
     St::Id: webhook_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(
-        mut self,
-        value: impl Into<S>,
-    ) -> WebhookBuilder<webhook_state::SetId<St>, S> {
+    pub fn id(mut self, value: impl Into<S>) -> WebhookBuilder<webhook_state::SetId<St>, S> {
         self._fields.5 = ::core::option::Option::Some(value.into());
         WebhookBuilder {
             _state: ::core::marker::PhantomData,
@@ -856,9 +956,7 @@ impl<St: webhook_state::State, S: jacquard_common::BosStr> WebhookBuilder<St, S>
     /// Set the `rewrite` field (optional)
     pub fn rewrite(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>>,
     ) -> Self {
         self._fields.10 = value.into();
         self

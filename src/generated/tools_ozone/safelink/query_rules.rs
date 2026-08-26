@@ -13,40 +13,44 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct QueryRules<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Filter by action types
+    /// Filter by action types
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub actions: core::option::Option<Vec<S>>,
-    ///Filter by rule creator
+    /// Filter by rule creator
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_by: core::option::Option<jacquard_common::types::string::Did<S>>,
-    ///Cursor for pagination
+    /// Cursor for pagination
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    ///Maximum number of results to return  Defaults to `50`.
+    /// Maximum number of results to return  Defaults to `50`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_query_rules_limit")]
     pub limit: core::option::Option<i64>,
-    ///Filter by pattern type
+    /// Filter by pattern type
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pattern_type: core::option::Option<S>,
-    ///Filter by reason type
+    /// Filter by reason type
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reason: core::option::Option<S>,
-    ///Sort direction
+    /// Sort direction  Defaults to `"desc"`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_query_rules_sort_direction")]
     pub sort_direction: core::option::Option<QueryRulesSortDirection<S>>,
-    ///Filter by specific URLs or domains
+    /// Filter by specific URLs or domains
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub urls: core::option::Option<Vec<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -58,9 +62,7 @@ pub struct QueryRules<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 /// Sort direction
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum QueryRulesSortDirection<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum QueryRulesSortDirection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Asc,
     Desc,
     Other(S),
@@ -106,7 +108,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for QueryRulesSortDirection<S>
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for QueryRulesSortDirection<S> {
+    for QueryRulesSortDirection<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -122,8 +125,7 @@ impl<S: jacquard_common::BosStr + Default> Default for QueryRulesSortDirection<S
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for QueryRulesSortDirection<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryRulesSortDirection<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -133,34 +135,28 @@ where
         match self {
             QueryRulesSortDirection::Asc => QueryRulesSortDirection::Asc,
             QueryRulesSortDirection::Desc => QueryRulesSortDirection::Desc,
-            QueryRulesSortDirection::Other(v) => {
-                QueryRulesSortDirection::Other(v.into_static())
-            }
+            QueryRulesSortDirection::Other(v) => QueryRulesSortDirection::Other(v.into_static()),
         }
     }
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct QueryRulesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Next cursor for pagination. Only present if there are more results.
+    /// Next cursor for pagination. Only present if there are more results.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub rules: Vec<crate::generated::tools_ozone::safelink::UrlRule<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -182,9 +178,8 @@ impl jacquard_common::xrpc::XrpcResp for QueryRulesResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for QueryRules<S> {
     const NSID: &'static str = "tools.ozone.safelink.queryRules";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = QueryRulesResponse;
 }
 
@@ -194,13 +189,20 @@ Path: `/xrpc/tools.ozone.safelink.queryRules`. The request payload type is `Quer
 pub struct QueryRulesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for QueryRulesRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.safelink.queryRules";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = QueryRules<S>;
     type Response = QueryRulesResponse;
 }
 
 fn _default_query_rules_limit() -> core::option::Option<i64> {
     Some(50i64)
+}
+
+fn _default_query_rules_sort_direction<
+    S: jacquard_common::FromStaticStr + jacquard_common::BosStr,
+>() -> ::core::option::Option<QueryRulesSortDirection<S>> {
+    Some(<QueryRulesSortDirection<S>>::from_value(S::from_static(
+        "desc",
+    )))
 }

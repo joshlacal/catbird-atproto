@@ -16,10 +16,10 @@ pub struct CreateReport<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub mod_tool:
         core::option::Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>,
-    ///Additional context about the content and violation.
+    /// Additional context about the content and violation.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reason: core::option::Option<S>,
-    ///Indicates the broad category of violation the report is for.
+    /// Indicates the broad category of violation the report is for.
     pub reason_type: crate::generated::com_atproto::moderation::ReasonType<S>,
     pub subject: CreateReportSubject<S>,
     #[serde(
@@ -110,14 +110,15 @@ pub enum CreateReportOutputSubject<S: jacquard_common::BosStr = jacquard_common:
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ModTool<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Additional arbitrary metadata about the source
+    /// Additional arbitrary metadata about the source
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub meta: core::option::Option<jacquard_common::types::value::Data<S>>,
-    ///Name/identifier of the source (e.g., 'bsky-app/android', 'bsky-web/chrome')
+    /// Name/identifier of the source (e.g., 'bsky-app/android', 'bsky-web/chrome')
     pub name: S,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_mod_tool_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -177,7 +178,7 @@ pub mod create_report_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -370,6 +371,30 @@ where
             extra_data: Some(extra_data),
         }
     }
+}
+
+fn deserialize_mod_tool_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn lexicon_doc_com_atproto_moderation_createReport(

@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,28 +22,22 @@ pub struct ListMutualGroups<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub subject: jacquard_common::types::string::Did<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListMutualGroupsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ListMutualGroupsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convos: Vec<crate::generated::chat_bsky::convo::ConvoView<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,8 +57,7 @@ impl jacquard_common::xrpc::XrpcResp for ListMutualGroupsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for ListMutualGroups<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListMutualGroups<S> {
     const NSID: &'static str = "chat.bsky.group.listMutualGroups";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListMutualGroupsResponse;
@@ -94,9 +80,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod list_mutual_groups_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -140,10 +126,8 @@ pub struct ListMutualGroupsBuilder<
 
 impl ListMutualGroups<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ListMutualGroupsBuilder<
-        list_mutual_groups_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> ListMutualGroupsBuilder<list_mutual_groups_state::Empty, jacquard_common::DefaultStr> {
         ListMutualGroupsBuilder::new()
     }
 }
@@ -155,10 +139,7 @@ impl<S: jacquard_common::BosStr> ListMutualGroups<S> {
     }
 }
 
-impl ListMutualGroupsBuilder<
-    list_mutual_groups_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl ListMutualGroupsBuilder<list_mutual_groups_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListMutualGroupsBuilder {
@@ -169,9 +150,7 @@ impl ListMutualGroupsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ListMutualGroupsBuilder<list_mutual_groups_state::Empty, S> {
+impl<S: jacquard_common::BosStr> ListMutualGroupsBuilder<list_mutual_groups_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ListMutualGroupsBuilder {
@@ -182,10 +161,9 @@ impl<
     }
 }
 
-impl<
-    St: list_mutual_groups_state::State,
-    S: jacquard_common::BosStr,
-> ListMutualGroupsBuilder<St, S> {
+impl<St: list_mutual_groups_state::State, S: jacquard_common::BosStr>
+    ListMutualGroupsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -198,10 +176,9 @@ impl<
     }
 }
 
-impl<
-    St: list_mutual_groups_state::State,
-    S: jacquard_common::BosStr,
-> ListMutualGroupsBuilder<St, S> {
+impl<St: list_mutual_groups_state::State, S: jacquard_common::BosStr>
+    ListMutualGroupsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

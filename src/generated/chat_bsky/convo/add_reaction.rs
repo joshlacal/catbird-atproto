@@ -13,9 +13,8 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,7 +23,11 @@ pub struct AddReaction<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub convo_id: S,
     pub message_id: S,
     pub value: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,24 +36,20 @@ pub struct AddReaction<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AddReactionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub message: crate::generated::chat_bsky::convo::MessageView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -58,7 +57,6 @@ pub struct AddReactionOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -68,31 +66,44 @@ pub struct AddReactionOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum AddReactionError {
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidConvo(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Indicates that reactions are not allowed on this message, e.g. because it is a system message.
     #[serde(rename = "ReactionNotAllowed")]
-    ReactionNotAllowed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReactionNotAllowed(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Indicates that the message has been deleted and reactions can no longer be added/removed.
     #[serde(rename = "ReactionMessageDeleted")]
     ReactionMessageDeleted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// Indicates that the message has the maximum number of reactions allowed for a single user, and the requested reaction wasn't yet present. If it was already present, the request will not fail since it is idempotent.
     #[serde(rename = "ReactionLimitReached")]
-    ReactionLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReactionLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Indicates the value for the reaction is not acceptable. In general, this means it is not an emoji.
     #[serde(rename = "ReactionInvalidValue")]
-    ReactionInvalidValue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReactionInvalidValue(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -159,9 +170,8 @@ impl jacquard_common::xrpc::XrpcResp for AddReactionResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AddReaction<S> {
     const NSID: &'static str = "chat.bsky.convo.addReaction";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AddReactionResponse;
 }
 
@@ -171,9 +181,8 @@ Path: `/xrpc/chat.bsky.convo.addReaction`. The request payload type is `AddReact
 pub struct AddReactionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AddReactionRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.addReaction";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = AddReaction<S>;
     type Response = AddReactionResponse;
 }

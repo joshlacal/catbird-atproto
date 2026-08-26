@@ -64,17 +64,27 @@ pub struct RefreshIdentityOutput<S: jacquard_common::BosStr = jacquard_common::D
 pub enum RefreshIdentityError {
     /// The resolution process confirmed that the handle does not resolve to any DID.
     #[serde(rename = "HandleNotFound")]
-    HandleNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    HandleNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The DID resolution process confirmed that there is no current DID.
     #[serde(rename = "DidNotFound")]
-    DidNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DidNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The DID previously existed, but has been deactivated.
     #[serde(rename = "DidDeactivated")]
-    DidDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DidDeactivated(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -148,7 +158,7 @@ pub mod refresh_identity_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -20,12 +20,12 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateSession<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///When true, instead of throwing error for takendown accounts, a valid response with a narrow scoped token will be returned
+    /// When true, instead of throwing error for takendown accounts, a valid response with a narrow scoped token will be returned
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub allow_takendown: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub auth_factor_token: core::option::Option<S>,
-    ///Handle or other identifier supported by the server for the authenticating user.
+    /// Handle or other identifier supported by the server for the authenticating user.
     pub identifier: S,
     pub password: S,
     #[serde(
@@ -63,7 +63,7 @@ pub struct CreateSessionOutput<S: jacquard_common::BosStr = jacquard_common::Def
     pub email_confirmed: core::option::Option<bool>,
     pub handle: jacquard_common::types::string::Handle<S>,
     pub refresh_jwt: S,
-    ///If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
+    /// If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub status: core::option::Option<CreateSessionOutputStatus<S>>,
     #[serde(
@@ -179,13 +179,20 @@ where
 #[serde(tag = "error", content = "message")]
 pub enum CreateSessionError {
     #[serde(rename = "AccountTakedown")]
-    AccountTakedown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountTakedown(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AuthFactorTokenRequired")]
-    AuthFactorTokenRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AuthFactorTokenRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }

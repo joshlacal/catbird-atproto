@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct ExportAccountDataOutput {
     pub body: jacquard_common::deps::bytes::Bytes,
@@ -32,7 +25,7 @@ This endpoint has no request parameters or input body; send this marker with `ja
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Copy
+    Copy,
 )]
 pub struct ExportAccountData;
 /** Response marker for the `chat.bsky.actor.exportAccountData` query.
@@ -69,6 +62,9 @@ impl jacquard_common::xrpc::XrpcRequest for ExportAccountData {
     const NSID: &'static str = "chat.bsky.actor.exportAccountData";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ExportAccountDataResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `chat.bsky.actor.exportAccountData` query.

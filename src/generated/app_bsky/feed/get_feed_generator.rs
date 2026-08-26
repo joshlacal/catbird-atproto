@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,30 +16,24 @@ pub struct GetFeedGenerator<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub feed: jacquard_common::types::string::AtUri<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetFeedGeneratorOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///Indicates whether the feed generator service has been online recently, or else seems to be inactive.
+pub struct GetFeedGeneratorOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Indicates whether the feed generator service has been online recently, or else seems to be inactive.
     pub is_online: bool,
-    ///Indicates whether the feed generator service is compatible with the record declaration.
+    /// Indicates whether the feed generator service is compatible with the record declaration.
     pub is_valid: bool,
     pub view: crate::generated::app_bsky::feed::GeneratorView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -66,8 +53,7 @@ impl jacquard_common::xrpc::XrpcResp for GetFeedGeneratorResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetFeedGenerator<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetFeedGenerator<S> {
     const NSID: &'static str = "app.bsky.feed.getFeedGenerator";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetFeedGeneratorResponse;
@@ -86,9 +72,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetFeedGeneratorRequest {
 
 pub mod get_feed_generator_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -128,10 +114,8 @@ pub struct GetFeedGeneratorBuilder<
 
 impl GetFeedGenerator<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetFeedGeneratorBuilder<
-        get_feed_generator_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetFeedGeneratorBuilder<get_feed_generator_state::Empty, jacquard_common::DefaultStr> {
         GetFeedGeneratorBuilder::new()
     }
 }
@@ -143,10 +127,7 @@ impl<S: jacquard_common::BosStr> GetFeedGenerator<S> {
     }
 }
 
-impl GetFeedGeneratorBuilder<
-    get_feed_generator_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetFeedGeneratorBuilder<get_feed_generator_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetFeedGeneratorBuilder {
@@ -157,9 +138,7 @@ impl GetFeedGeneratorBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetFeedGeneratorBuilder<get_feed_generator_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetFeedGeneratorBuilder<get_feed_generator_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetFeedGeneratorBuilder {

@@ -8,15 +8,8 @@
 /// Record defining a single gated chat message.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.chat.gate",
@@ -24,9 +17,14 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Gate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///URI of the hidden chat message.
+    /// URI of the hidden chat message.
     pub hidden_message: jacquard_common::types::string::AtUri<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_gate_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -38,19 +36,10 @@ pub struct Gate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct GateGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GateGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -87,8 +76,7 @@ impl<S: jacquard_common::BosStr> From<GateGetRecordOutput<S>> for Gate<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Gate<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Gate<S> {
     const NSID: &'static str = "place.stream.chat.gate";
     type Record = GateRecord;
 }
@@ -113,11 +101,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Gat
     }
 }
 
+fn deserialize_gate_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod gate_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -237,9 +255,7 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_chat_gate() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_chat_gate() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.gate"),

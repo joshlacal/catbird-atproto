@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReserveSigningKey<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The DID to reserve a key for.
+    /// The DID to reserve a key for.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
     #[serde(
@@ -51,7 +51,7 @@ pub struct ReserveSigningKey<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReserveSigningKeyOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The public key for the reserved signing key, in did:key serialization.
+    /// The public key for the reserved signing key, in did:key serialization.
     pub signing_key: S,
     #[serde(
         flatten,

@@ -8,15 +8,8 @@
 /// Record declaring a social 'follow' relationship of another account. Duplicate follows will be ignored by the AppView.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.graph.follow",
@@ -27,10 +20,13 @@ pub struct Follow<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
     pub subject: jacquard_common::types::string::Did<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub via: core::option::Option<
-        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub via: core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_follow_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,19 +38,10 @@ pub struct Follow<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct FollowGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct FollowGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -91,8 +78,7 @@ impl<S: jacquard_common::BosStr> From<FollowGetRecordOutput<S>> for Follow<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Follow<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Follow<S> {
     const NSID: &'static str = "app.bsky.graph.follow";
     type Record = FollowRecord;
 }
@@ -117,11 +103,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Fol
     }
 }
 
+fn deserialize_follow_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod follow_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -170,9 +186,7 @@ pub struct FollowBuilder<
     _fields: (
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -255,9 +269,7 @@ impl<St: follow_state::State, S: jacquard_common::BosStr> FollowBuilder<St, S> {
     /// Set the `via` field (optional)
     pub fn via(
         mut self,
-        value: impl Into<
-            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        >,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
         self._fields.2 = value.into();
         self
@@ -304,9 +316,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_graph_follow() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_graph_follow() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.graph.follow"),

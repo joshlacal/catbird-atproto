@@ -8,15 +8,8 @@
 /// Specifies the sub-string range a facet feature applies to. Start index is inclusive, end index is exclusive. Indices are zero-indexed, counting bytes of the UTF-8 encoded text. NOTE: some languages, like Javascript, use UTF-16 or Unicode codepoints for string slice indexing; in these languages, convert to byte arrays before working with facets.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,7 +17,12 @@
 pub struct ByteSlice<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub byte_end: i64,
     pub byte_start: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_byte_slice_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -36,22 +34,20 @@ pub struct ByteSlice<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Facet feature for a URL. The text URL may have been simplified or truncated, but the facet reference should be a complete URL.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Link<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub uri: jacquard_common::types::string::UriValue<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_link_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -63,15 +59,8 @@ pub struct Link<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Annotation of a sub-string within rich text.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -79,7 +68,12 @@ pub struct Link<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 pub struct Facet<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub features: Vec<FacetFeaturesItem<S>>,
     pub index: crate::generated::app_bsky::richtext::facet::ByteSlice<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_facet_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -88,18 +82,10 @@ pub struct Facet<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -116,22 +102,20 @@ pub enum FacetFeaturesItem<S: jacquard_common::BosStr = jacquard_common::Default
 /// Facet feature for mention of another account. The text is usually a handle, including a '@' prefix, but the facet reference is a DID.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Mention<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_mention_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -150,16 +134,20 @@ pub struct Mention<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Tag<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub tag: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_tag_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -168,8 +156,7 @@ pub struct Tag<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ByteSlice<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ByteSlice<S> {
     fn nsid() -> &'static str {
         "app.bsky.richtext.facet"
     }
@@ -184,9 +171,7 @@ for ByteSlice<S> {
             let value = &self.byte_end;
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "byte_end",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("byte_end"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -196,9 +181,7 @@ for ByteSlice<S> {
             let value = &self.byte_start;
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "byte_start",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("byte_start"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -269,9 +252,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tag
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 640usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "tag",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("tag"),
                     max: 640usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -286,13 +267,13 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tag
                     )
                     .count();
                 if count > 64usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "tag",
-                        ),
-                        max: 64usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("tag"),
+                            max: 64usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -300,11 +281,35 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tag
     }
 }
 
+fn deserialize_byte_slice_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod byte_slice_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -356,10 +361,7 @@ pub struct ByteSliceBuilder<
 
 impl ByteSlice<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ByteSliceBuilder<
-        byte_slice_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ByteSliceBuilder<byte_slice_state::Empty, jacquard_common::DefaultStr> {
         ByteSliceBuilder::new()
     }
 }
@@ -461,9 +463,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_richtext_facet() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_richtext_facet() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.richtext.facet"),
@@ -543,50 +543,52 @@ fn lexicon_doc_app_bsky_richtext_facet() -> jacquard_lexicon::lexicon::LexiconDo
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Annotation of a sub-string within rich text.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("index"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("features")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "features",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                    refs: vec![
-                                        ::jacquard_common::CowStr::new_static("#mention"),
-                                        ::jacquard_common::CowStr::new_static("#link"),
-                                        ::jacquard_common::CowStr::new_static("#tag")
-                                    ],
-                                    ..Default::default()
-                                }),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "index",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static("#byteSlice"),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("features"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("features"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(
+                                            ::jacquard_lexicon::lexicon::LexRefUnion {
+                                                refs: vec![
+                                                    ::jacquard_common::CowStr::new_static(
+                                                        "#mention",
+                                                    ),
+                                                    ::jacquard_common::CowStr::new_static("#link"),
+                                                    ::jacquard_common::CowStr::new_static("#tag"),
+                                                ],
+                                                ..Default::default()
+                                            },
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("index"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#byteSlice"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("mention"),
@@ -657,11 +659,35 @@ fn lexicon_doc_app_bsky_richtext_facet() -> jacquard_lexicon::lexicon::LexiconDo
     }
 }
 
+fn deserialize_link_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod link_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -781,11 +807,35 @@ where
     }
 }
 
+fn deserialize_facet_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod facet_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -942,11 +992,35 @@ where
     }
 }
 
+fn deserialize_mention_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod mention_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1064,4 +1138,28 @@ where
             extra_data: Some(extra_data),
         }
     }
+}
+
+fn deserialize_tag_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }

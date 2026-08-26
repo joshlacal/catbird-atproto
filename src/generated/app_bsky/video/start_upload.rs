@@ -6,37 +6,34 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct StartUpload<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Advisory, non-authoritative duration used only for early failure; the authoritative probe runs asynchronously after upload.
+    /// Advisory, non-authoritative duration used only for early failure; the authoritative probe runs asynchronously after upload.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub duration_ms: core::option::Option<i64>,
-    ///Advisory, non-authoritative height used only for early failure; the authoritative probe runs asynchronously after upload.
+    /// Advisory, non-authoritative height used only for early failure; the authoritative probe runs asynchronously after upload.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub height: core::option::Option<i64>,
-    ///Declared MIME type of the video.
+    /// Declared MIME type of the video.
     pub mime_type: S,
-    ///Optional client-provided file name.
+    /// Optional client-provided file name.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub name: core::option::Option<S>,
-    ///Exact byte size of the complete upload-ready video file before it is split into parts.
+    /// Exact byte size of the complete upload-ready video file before it is split into parts.
     pub size_bytes: i64,
-    ///Advisory, non-authoritative width used only for early failure; the authoritative probe runs asynchronously after upload.
+    /// Advisory, non-authoritative width used only for early failure; the authoritative probe runs asynchronously after upload.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub width: core::option::Option<i64>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -45,17 +42,9 @@ pub struct StartUpload<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -65,7 +54,11 @@ pub struct StartUploadOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     pub job_id: S,
     pub part_count: i64,
     pub part_size_bytes: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -73,7 +66,6 @@ pub struct StartUploadOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -83,41 +75,63 @@ pub struct StartUploadOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum StartUploadError {
     /// The declared MIME type is not supported.
     #[serde(rename = "UnsupportedContentType")]
     UnsupportedContentType(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// The exact file size exceeds the per-file cap or remaining daily byte allowance.
     #[serde(rename = "VideoTooLarge")]
-    VideoTooLarge(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    VideoTooLarge(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The advisory declared duration exceeds the limit.
     #[serde(rename = "VideoTooLong")]
-    VideoTooLong(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    VideoTooLong(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The advisory declared dimensions have an unsupported aspect ratio.
     #[serde(rename = "BadAspectRatio")]
-    BadAspectRatio(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BadAspectRatio(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The daily video or byte allowance, including active reservations, is exhausted.
     #[serde(rename = "DailyLimitExceeded")]
-    DailyLimitExceeded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DailyLimitExceeded(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The account has reached its open multipart upload limit.
     #[serde(rename = "TooManyOpenUploads")]
-    TooManyOpenUploads(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TooManyOpenUploads(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The account is not permitted to upload video.
     #[serde(rename = "UploadForbidden")]
-    UploadForbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadForbidden(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The service is draining, at capacity, or temporarily unable to create the multipart upload.
     #[serde(rename = "ServiceOverloaded")]
-    ServiceOverloaded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ServiceOverloaded(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -205,9 +219,8 @@ impl jacquard_common::xrpc::XrpcResp for StartUploadResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for StartUpload<S> {
     const NSID: &'static str = "app.bsky.video.startUpload";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = StartUploadResponse;
 }
 
@@ -217,18 +230,17 @@ Path: `/xrpc/app.bsky.video.startUpload`. The request payload type is `StartUplo
 pub struct StartUploadRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for StartUploadRequest {
     const PATH: &'static str = "/xrpc/app.bsky.video.startUpload";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = StartUpload<S>;
     type Response = StartUploadResponse;
 }
 
 pub mod start_upload_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -287,10 +299,7 @@ pub struct StartUploadBuilder<
 
 impl StartUpload<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> StartUploadBuilder<
-        start_upload_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> StartUploadBuilder<start_upload_state::Empty, jacquard_common::DefaultStr> {
         StartUploadBuilder::new()
     }
 }
@@ -324,10 +333,7 @@ impl<S: jacquard_common::BosStr> StartUploadBuilder<start_upload_state::Empty, S
     }
 }
 
-impl<
-    St: start_upload_state::State,
-    S: jacquard_common::BosStr,
-> StartUploadBuilder<St, S> {
+impl<St: start_upload_state::State, S: jacquard_common::BosStr> StartUploadBuilder<St, S> {
     /// Set the `durationMs` field (optional)
     pub fn duration_ms(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();
@@ -340,10 +346,7 @@ impl<
     }
 }
 
-impl<
-    St: start_upload_state::State,
-    S: jacquard_common::BosStr,
-> StartUploadBuilder<St, S> {
+impl<St: start_upload_state::State, S: jacquard_common::BosStr> StartUploadBuilder<St, S> {
     /// Set the `height` field (optional)
     pub fn height(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
@@ -375,10 +378,7 @@ where
     }
 }
 
-impl<
-    St: start_upload_state::State,
-    S: jacquard_common::BosStr,
-> StartUploadBuilder<St, S> {
+impl<St: start_upload_state::State, S: jacquard_common::BosStr> StartUploadBuilder<St, S> {
     /// Set the `name` field (optional)
     pub fn name(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();
@@ -410,10 +410,7 @@ where
     }
 }
 
-impl<
-    St: start_upload_state::State,
-    S: jacquard_common::BosStr,
-> StartUploadBuilder<St, S> {
+impl<St: start_upload_state::State, S: jacquard_common::BosStr> StartUploadBuilder<St, S> {
     /// Set the `width` field (optional)
     pub fn width(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.5 = value.into();

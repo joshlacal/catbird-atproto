@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,7 +17,11 @@ pub struct UnregisterPush<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub platform: UnregisterPushPlatform<S>,
     pub service_did: jacquard_common::types::string::Did<S>,
     pub token: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,11 +30,8 @@ pub struct UnregisterPush<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum UnregisterPushPlatform<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum UnregisterPushPlatform<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Ios,
     Android,
     Web,
@@ -86,7 +80,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for UnregisterPushPlatform<S> 
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for UnregisterPushPlatform<S> {
+    for UnregisterPushPlatform<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -102,8 +97,7 @@ impl<S: jacquard_common::BosStr + Default> Default for UnregisterPushPlatform<S>
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for UnregisterPushPlatform<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for UnregisterPushPlatform<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -114,9 +108,7 @@ where
             UnregisterPushPlatform::Ios => UnregisterPushPlatform::Ios,
             UnregisterPushPlatform::Android => UnregisterPushPlatform::Android,
             UnregisterPushPlatform::Web => UnregisterPushPlatform::Web,
-            UnregisterPushPlatform::Other(v) => {
-                UnregisterPushPlatform::Other(v.into_static())
-            }
+            UnregisterPushPlatform::Other(v) => UnregisterPushPlatform::Other(v.into_static()),
         }
     }
 }
@@ -130,14 +122,24 @@ impl jacquard_common::xrpc::XrpcResp for UnregisterPushResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for UnregisterPush<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UnregisterPush<S> {
     const NSID: &'static str = "app.bsky.notification.unregisterPush";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UnregisterPushResponse;
 }
 
@@ -147,18 +149,17 @@ Path: `/xrpc/app.bsky.notification.unregisterPush`. The request payload type is 
 pub struct UnregisterPushRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UnregisterPushRequest {
     const PATH: &'static str = "/xrpc/app.bsky.notification.unregisterPush";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UnregisterPush<S>;
     type Response = UnregisterPushResponse;
 }
 
 pub mod unregister_push_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -245,10 +246,8 @@ pub struct UnregisterPushBuilder<
 
 impl UnregisterPush<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UnregisterPushBuilder<
-        unregister_push_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> UnregisterPushBuilder<unregister_push_state::Empty, jacquard_common::DefaultStr>
+    {
         UnregisterPushBuilder::new()
     }
 }

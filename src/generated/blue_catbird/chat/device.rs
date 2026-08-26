@@ -17,16 +17,17 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Device<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Signature algorithm: 'ed25519' or 'p256'
+    /// Signature algorithm: 'ed25519' or 'p256'
     pub algorithm: S,
-    ///Timestamp when this device record was created.
+    /// Timestamp when this device record was created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///The MLS credential signature public key for this device
+    /// The MLS credential signature public key for this device
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub mls_signature_public_key: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_device_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -105,11 +106,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dev
     }
 }
 
+fn deserialize_device_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod device_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

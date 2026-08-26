@@ -13,22 +13,22 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateAccount<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Pre-existing atproto DID, being imported to a new account.
+    /// Pre-existing atproto DID, being imported to a new account.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub email: core::option::Option<S>,
-    ///Requested handle for the account.
+    /// Requested handle for the account.
     pub handle: jacquard_common::types::string::Handle<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invite_code: core::option::Option<S>,
-    ///Initial account password. May need to meet instance-specific password strength requirements.
+    /// Initial account password. May need to meet instance-specific password strength requirements.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub password: core::option::Option<S>,
-    ///A signed DID PLC operation to be submitted as part of importing an existing account to this instance. NOTE: this optional field may be updated when full account migration is implemented.
+    /// A signed DID PLC operation to be submitted as part of importing an existing account to this instance. NOTE: this optional field may be updated when full account migration is implemented.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub plc_op: core::option::Option<jacquard_common::types::value::Data<S>>,
-    ///DID PLC rotation key (aka, recovery key) to be included in PLC creation operation.
+    /// DID PLC rotation key (aka, recovery key) to be included in PLC creation operation.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub recovery_key: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -57,9 +57,9 @@ pub struct CreateAccount<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 )]
 pub struct CreateAccountOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub access_jwt: S,
-    ///The DID of the new account.
+    /// The DID of the new account.
     pub did: jacquard_common::types::string::Did<S>,
-    ///Complete DID document.
+    /// Complete DID document.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub did_doc: core::option::Option<jacquard_common::types::value::Data<S>>,
     pub handle: jacquard_common::types::string::Handle<S>,
@@ -90,23 +90,45 @@ pub struct CreateAccountOutput<S: jacquard_common::BosStr = jacquard_common::Def
 #[serde(tag = "error", content = "message")]
 pub enum CreateAccountError {
     #[serde(rename = "InvalidHandle")]
-    InvalidHandle(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidHandle(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidPassword")]
-    InvalidPassword(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidPassword(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidInviteCode")]
-    InvalidInviteCode(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidInviteCode(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "HandleNotAvailable")]
-    HandleNotAvailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    HandleNotAvailable(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnsupportedDomain")]
-    UnsupportedDomain(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedDomain(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnresolvableDid")]
-    UnresolvableDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnresolvableDid(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "IncompatibleDidDoc")]
-    IncompatibleDidDoc(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    IncompatibleDidDoc(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -208,7 +230,7 @@ pub mod create_account_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

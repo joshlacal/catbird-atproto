@@ -24,13 +24,13 @@ pub struct DescribeRepo<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DescribeRepoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///List of all the collections (NSIDs) for which this repo contains at least one record.
+    /// List of all the collections (NSIDs) for which this repo contains at least one record.
     pub collections: Vec<jacquard_common::types::string::Nsid<S>>,
     pub did: jacquard_common::types::string::Did<S>,
-    ///The complete DID document for this account.
+    /// The complete DID document for this account.
     pub did_doc: jacquard_common::types::value::Data<S>,
     pub handle: jacquard_common::types::string::Handle<S>,
-    ///Indicates if handle is currently valid (resolves bi-directionally)
+    /// Indicates if handle is currently valid (resolves bi-directionally)
     pub handle_is_correct: bool,
     #[serde(
         flatten,
@@ -77,7 +77,7 @@ pub mod describe_repo_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

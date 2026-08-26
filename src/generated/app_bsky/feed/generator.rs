@@ -8,15 +8,8 @@
 /// Record declaring of the existence of a feed generator, and containing metadata about it. The record can exist in any repository.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.feed.generator",
@@ -24,7 +17,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Generator<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Declaration that a feed accepts feedback interactions from a client through app.bsky.feed.sendInteractions
+    /// Declaration that a feed accepts feedback interactions from a client through app.bsky.feed.sendInteractions
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub accepts_interactions: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -35,17 +28,19 @@ pub struct Generator<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub description_facets: core::option::Option<
-        Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>,
-    >,
+    pub description_facets:
+        core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
     pub did: jacquard_common::types::string::Did<S>,
     pub display_name: S,
-    ///Self-label values
+    /// Self-label values
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<
-        crate::generated::com_atproto::label::SelfLabels<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_generator_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -53,7 +48,6 @@ pub struct Generator<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
         >,
     >,
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GeneratorContentMode<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -102,7 +96,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for GeneratorContentMode<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for GeneratorContentMode<S> {
+    for GeneratorContentMode<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -129,12 +124,8 @@ where
             GeneratorContentMode::ContentModeUnspecified => {
                 GeneratorContentMode::ContentModeUnspecified
             }
-            GeneratorContentMode::ContentModeVideo => {
-                GeneratorContentMode::ContentModeVideo
-            }
-            GeneratorContentMode::Other(v) => {
-                GeneratorContentMode::Other(v.into_static())
-            }
+            GeneratorContentMode::ContentModeVideo => GeneratorContentMode::ContentModeVideo,
+            GeneratorContentMode::Other(v) => GeneratorContentMode::Other(v.into_static()),
         }
     }
 }
@@ -142,19 +133,10 @@ where
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct GeneratorGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GeneratorGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -191,8 +173,7 @@ impl<S: jacquard_common::BosStr> From<GeneratorGetRecordOutput<S>> for Generator
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Generator<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Generator<S> {
     const NSID: &'static str = "app.bsky.feed.generator";
     type Record = GeneratorRecord;
 }
@@ -202,8 +183,7 @@ impl jacquard_common::types::collection::Collection for GeneratorRecord {
     type Record = GeneratorRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Generator<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Generator<S> {
     fn nsid() -> &'static str {
         "app.bsky.feed.generator"
     }
@@ -218,13 +198,15 @@ for Generator<S> {
             {
                 let size = value.blob().size;
                 if size > 1000000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "avatar",
-                        ),
-                        max: 1000000usize,
-                        actual: size,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
                 }
             }
         }
@@ -232,29 +214,26 @@ for Generator<S> {
             {
                 let mime = value.blob().mime_type.as_str();
                 let accepted: &[&str] = &["image/png", "image/jpeg"];
-                let matched = accepted
-                    .iter()
-                    .any(|pattern| {
-                        if *pattern == "*/*" {
-                            true
-                        } else if pattern.ends_with("/*") {
-                            let prefix = &pattern[..pattern.len() - 2];
-                            mime.starts_with(prefix)
-                                && mime.as_bytes().get(prefix.len()) == Some(&b'/')
-                        } else {
-                            mime == *pattern
-                        }
-                    });
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
                 if !matched {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "avatar",
-                        ),
-                        accepted: vec![
-                            "image/png".to_string(), "image/jpeg".to_string()
-                        ],
-                        actual: mime.to_string(),
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            accepted: vec!["image/png".to_string(), "image/jpeg".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
                 }
             }
         }
@@ -262,9 +241,7 @@ for Generator<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 3000usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "description",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 3000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -278,13 +255,15 @@ for Generator<S> {
                     )
                     .count();
                 if count > 300usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "description",
-                        ),
-                        max: 300usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "description",
+                            ),
+                            max: 300usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -293,9 +272,7 @@ for Generator<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 240usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "display_name",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("display_name"),
                     max: 240usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -310,13 +287,15 @@ for Generator<S> {
                     )
                     .count();
                 if count > 24usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "display_name",
-                        ),
-                        max: 24usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "display_name",
+                            ),
+                            max: 24usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -324,11 +303,41 @@ for Generator<S> {
     }
 }
 
+fn deserialize_generator_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod generator_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -404,10 +413,7 @@ pub struct GeneratorBuilder<
 
 impl Generator<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GeneratorBuilder<
-        generator_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GeneratorBuilder<generator_state::Empty, jacquard_common::DefaultStr> {
         GeneratorBuilder::new()
     }
 }
@@ -464,10 +470,7 @@ impl<St: generator_state::State, S: jacquard_common::BosStr> GeneratorBuilder<St
         self
     }
     /// Set the `avatar` field to an Option value (optional)
-    pub fn maybe_avatar(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_avatar(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.1 = value;
         self
     }
@@ -475,10 +478,7 @@ impl<St: generator_state::State, S: jacquard_common::BosStr> GeneratorBuilder<St
 
 impl<St: generator_state::State, S: jacquard_common::BosStr> GeneratorBuilder<St, S> {
     /// Set the `contentMode` field (optional)
-    pub fn content_mode(
-        mut self,
-        value: impl Into<Option<GeneratorContentMode<S>>>,
-    ) -> Self {
+    pub fn content_mode(mut self, value: impl Into<Option<GeneratorContentMode<S>>>) -> Self {
         self._fields.2 = value.into();
         self
     }
@@ -525,9 +525,7 @@ impl<St: generator_state::State, S: jacquard_common::BosStr> GeneratorBuilder<St
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>>,
     ) -> Self {
         self._fields.5 = value.into();
         self
@@ -644,9 +642,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_feed_generator() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_feed_generator() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.generator"),

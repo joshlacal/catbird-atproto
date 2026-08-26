@@ -8,15 +8,8 @@
 /// Record declaring a verification relationship between two accounts. Verifications are only considered valid by an app if issued by an account the app considers trusted.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.graph.verification",
@@ -24,15 +17,20 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Verification<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Date of when the verification was created.
+    /// Date of when the verification was created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Display name of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current displayName matches the one at the time of verifying.
+    /// Display name of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current displayName matches the one at the time of verifying.
     pub display_name: S,
-    ///Handle of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current handle matches the one at the time of verifying.
+    /// Handle of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current handle matches the one at the time of verifying.
     pub handle: jacquard_common::types::string::Handle<S>,
-    ///DID of the subject the verification applies to.
+    /// DID of the subject the verification applies to.
     pub subject: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_verification_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -44,19 +42,10 @@ pub struct Verification<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct VerificationGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct VerificationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -87,15 +76,15 @@ impl jacquard_common::xrpc::XrpcResp for VerificationRecord {
     type Err = jacquard_common::types::collection::RecordError;
 }
 
-impl<S: jacquard_common::BosStr> From<VerificationGetRecordOutput<S>>
-for Verification<S> {
+impl<S: jacquard_common::BosStr> From<VerificationGetRecordOutput<S>> for Verification<S> {
     fn from(output: VerificationGetRecordOutput<S>) -> Self {
         output.value
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Verification<S> {
+    for Verification<S>
+{
     const NSID: &'static str = "app.bsky.graph.verification";
     type Record = VerificationRecord;
 }
@@ -105,8 +94,7 @@ impl jacquard_common::types::collection::Collection for VerificationRecord {
     type Record = VerificationRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Verification<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Verification<S> {
     fn nsid() -> &'static str {
         "app.bsky.graph.verification"
     }
@@ -121,11 +109,41 @@ for Verification<S> {
     }
 }
 
+fn deserialize_verification_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod verification_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -212,10 +230,7 @@ pub struct VerificationBuilder<
 
 impl Verification<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> VerificationBuilder<
-        verification_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> VerificationBuilder<verification_state::Empty, jacquard_common::DefaultStr> {
         VerificationBuilder::new()
     }
 }
@@ -361,9 +376,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_graph_verification() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_graph_verification() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.graph.verification"),

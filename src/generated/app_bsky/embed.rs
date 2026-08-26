@@ -17,15 +17,8 @@ pub mod video;
 /// width:height represents an aspect ratio. It may be approximate, and may not correspond to absolute dimensions in any given unit.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -33,7 +26,12 @@ pub mod video;
 pub struct AspectRatio<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub height: i64,
     pub width: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_aspect_ratio_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,8 +40,7 @@ pub struct AspectRatio<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for AspectRatio<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AspectRatio<S> {
     fn nsid() -> &'static str {
         "app.bsky.embed.defs"
     }
@@ -58,9 +55,7 @@ for AspectRatio<S> {
             let value = &self.height;
             if *value < 1i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "height",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("height"),
                     min: 1i64,
                     actual: *value,
                 });
@@ -70,9 +65,7 @@ for AspectRatio<S> {
             let value = &self.width;
             if *value < 1i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "width",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("width"),
                     min: 1i64,
                     actual: *value,
                 });
@@ -82,11 +75,35 @@ for AspectRatio<S> {
     }
 }
 
+fn deserialize_aspect_ratio_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod aspect_ratio_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -138,10 +155,7 @@ pub struct AspectRatioBuilder<
 
 impl AspectRatio<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> AspectRatioBuilder<
-        aspect_ratio_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> AspectRatioBuilder<aspect_ratio_state::Empty, jacquard_common::DefaultStr> {
         AspectRatioBuilder::new()
     }
 }

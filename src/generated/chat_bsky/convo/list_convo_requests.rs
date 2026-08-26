@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -28,28 +21,22 @@ pub struct ListConvoRequests<S: jacquard_common::BosStr = jacquard_common::Defau
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListConvoRequestsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ListConvoRequestsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub requests: Vec<ListConvoRequestsOutputRequestsItem<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -58,18 +45,10 @@ pub struct ListConvoRequestsOutput<
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -80,9 +59,7 @@ pub enum ListConvoRequestsOutputRequestsItem<
     #[serde(rename = "chat.bsky.convo.defs#convoView")]
     ConvoView(Box<crate::generated::chat_bsky::convo::ConvoView<S>>),
     #[serde(rename = "chat.bsky.group.defs#joinRequestConvoView")]
-    JoinRequestConvoView(
-        Box<crate::generated::chat_bsky::group::JoinRequestConvoView<S>>,
-    ),
+    JoinRequestConvoView(Box<crate::generated::chat_bsky::group::JoinRequestConvoView<S>>),
 }
 
 /** Response marker for the `chat.bsky.convo.listConvoRequests` query.
@@ -96,8 +73,7 @@ impl jacquard_common::xrpc::XrpcResp for ListConvoRequestsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for ListConvoRequests<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListConvoRequests<S> {
     const NSID: &'static str = "chat.bsky.convo.listConvoRequests";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListConvoRequestsResponse;
@@ -120,9 +96,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod list_convo_requests_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -149,10 +125,9 @@ pub struct ListConvoRequestsBuilder<
 
 impl ListConvoRequests<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ListConvoRequestsBuilder<
-        list_convo_requests_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> ListConvoRequestsBuilder<list_convo_requests_state::Empty, jacquard_common::DefaultStr>
+    {
         ListConvoRequestsBuilder::new()
     }
 }
@@ -164,10 +139,7 @@ impl<S: jacquard_common::BosStr> ListConvoRequests<S> {
     }
 }
 
-impl ListConvoRequestsBuilder<
-    list_convo_requests_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl ListConvoRequestsBuilder<list_convo_requests_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListConvoRequestsBuilder {
@@ -178,9 +150,7 @@ impl ListConvoRequestsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ListConvoRequestsBuilder<list_convo_requests_state::Empty, S> {
+impl<S: jacquard_common::BosStr> ListConvoRequestsBuilder<list_convo_requests_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ListConvoRequestsBuilder {
@@ -191,10 +161,9 @@ impl<
     }
 }
 
-impl<
-    St: list_convo_requests_state::State,
-    S: jacquard_common::BosStr,
-> ListConvoRequestsBuilder<St, S> {
+impl<St: list_convo_requests_state::State, S: jacquard_common::BosStr>
+    ListConvoRequestsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -207,10 +176,9 @@ impl<
     }
 }
 
-impl<
-    St: list_convo_requests_state::State,
-    S: jacquard_common::BosStr,
-> ListConvoRequestsBuilder<St, S> {
+impl<St: list_convo_requests_state::State, S: jacquard_common::BosStr>
+    ListConvoRequestsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

@@ -8,15 +8,8 @@
 /// Record representing a video on Streamplace
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.video",
@@ -24,19 +17,24 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Video<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Client-declared timestamp when this video was created.
+    /// Client-declared timestamp when this video was created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Optional description of the video.
+    /// Optional description of the video.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///The duration of the video in nanoseconds.
+    /// The duration of the video in nanoseconds.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub duration: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub thumb: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
-    ///The title of the video.
+    /// The title of the video.
     pub title: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_video_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,19 +46,10 @@ pub struct Video<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct VideoGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct VideoGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -97,8 +86,7 @@ impl<S: jacquard_common::BosStr> From<VideoGetRecordOutput<S>> for Video<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Video<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Video<S> {
     const NSID: &'static str = "place.stream.video";
     type Record = VideoRecord;
 }
@@ -123,9 +111,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 10000usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "description",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -139,13 +125,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
                     )
                     .count();
                 if count > 1000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "description",
-                        ),
-                        max: 1000usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "description",
+                            ),
+                            max: 1000usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -153,13 +141,13 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
             {
                 let size = value.blob().size;
                 if size > 1000000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "thumb",
-                        ),
-                        max: 1000000usize,
-                        actual: size,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
                 }
             }
         }
@@ -167,27 +155,24 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
             {
                 let mime = value.blob().mime_type.as_str();
                 let accepted: &[&str] = &["image/*"];
-                let matched = accepted
-                    .iter()
-                    .any(|pattern| {
-                        if *pattern == "*/*" {
-                            true
-                        } else if pattern.ends_with("/*") {
-                            let prefix = &pattern[..pattern.len() - 2];
-                            mime.starts_with(prefix)
-                                && mime.as_bytes().get(prefix.len()) == Some(&b'/')
-                        } else {
-                            mime == *pattern
-                        }
-                    });
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
                 if !matched {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "thumb",
-                        ),
-                        accepted: vec!["image/*".to_string()],
-                        actual: mime.to_string(),
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            accepted: vec!["image/*".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
                 }
             }
         }
@@ -196,9 +181,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 3000usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "title",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("title"),
                     max: 3000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -213,13 +196,13 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
                     )
                     .count();
                 if count > 300usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "title",
-                        ),
-                        max: 300usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("title"),
+                            max: 300usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -227,11 +210,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vid
     }
 }
 
+fn deserialize_video_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod video_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -378,10 +391,7 @@ impl<St: video_state::State, S: jacquard_common::BosStr> VideoBuilder<St, S> {
         self
     }
     /// Set the `thumb` field to an Option value (optional)
-    pub fn maybe_thumb(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.3 = value;
         self
     }
@@ -393,10 +403,7 @@ where
     St::Title: video_state::IsUnset,
 {
     /// Set the `title` field (required)
-    pub fn title(
-        mut self,
-        value: impl Into<S>,
-    ) -> VideoBuilder<video_state::SetTitle<St>, S> {
+    pub fn title(mut self, value: impl Into<S>) -> VideoBuilder<video_state::SetTitle<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         VideoBuilder {
             _state: ::core::marker::PhantomData,

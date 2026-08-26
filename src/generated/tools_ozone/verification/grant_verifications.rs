@@ -8,25 +8,23 @@
 /// Error object for failed verifications.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GrantError<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Error message describing the reason for failure.
+    /// Error message describing the reason for failure.
     pub error: S,
-    ///The did of the subject being verified
+    /// The did of the subject being verified
     pub subject: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_grant_error_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,29 +33,22 @@ pub struct GrantError<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GrantVerifications<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Array of verification requests to process
-    pub verifications: Vec<
-        crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<
-            S,
-        >,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    /// Array of verification requests to process
+    pub verifications:
+        Vec<crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -66,31 +57,22 @@ pub struct GrantVerifications<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GrantVerificationsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    pub failed_verifications: Vec<
-        crate::generated::tools_ozone::verification::grant_verifications::GrantError<S>,
-    >,
-    pub verifications: Vec<
-        crate::generated::tools_ozone::verification::VerificationView<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+pub struct GrantVerificationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub failed_verifications:
+        Vec<crate::generated::tools_ozone::verification::grant_verifications::GrantError<S>>,
+    pub verifications: Vec<crate::generated::tools_ozone::verification::VerificationView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -99,32 +81,29 @@ pub struct GrantVerificationsOutput<
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct VerificationInput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Timestamp for verification record. Defaults to current time when not specified.
+    /// Timestamp for verification record. Defaults to current time when not specified.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///Display name of the subject the verification applies to at the moment of verifying.
+    /// Display name of the subject the verification applies to at the moment of verifying.
     pub display_name: S,
-    ///Handle of the subject the verification applies to at the moment of verifying.
+    /// Handle of the subject the verification applies to at the moment of verifying.
     pub handle: jacquard_common::types::string::Handle<S>,
-    ///The did of the subject being verified
+    /// The did of the subject being verified
     pub subject: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_verification_input_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -133,8 +112,7 @@ pub struct VerificationInput<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for GrantError<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for GrantError<S> {
     fn nsid() -> &'static str {
         "tools.ozone.verification.grantVerifications"
     }
@@ -160,12 +138,10 @@ impl jacquard_common::xrpc::XrpcResp for GrantVerificationsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GrantVerifications<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GrantVerifications<S> {
     const NSID: &'static str = "tools.ozone.verification.grantVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = GrantVerificationsResponse;
 }
 
@@ -175,15 +151,13 @@ Path: `/xrpc/tools.ozone.verification.grantVerifications`. The request payload t
 pub struct GrantVerificationsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GrantVerificationsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.verification.grantVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = GrantVerifications<S>;
     type Response = GrantVerificationsResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for VerificationInput<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for VerificationInput<S> {
     fn nsid() -> &'static str {
         "tools.ozone.verification.grantVerifications"
     }
@@ -198,11 +172,35 @@ for VerificationInput<S> {
     }
 }
 
+fn deserialize_grant_error_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod grant_error_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -257,10 +255,7 @@ pub struct GrantErrorBuilder<
 
 impl GrantError<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GrantErrorBuilder<
-        grant_error_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GrantErrorBuilder<grant_error_state::Empty, jacquard_common::DefaultStr> {
         GrantErrorBuilder::new()
     }
 }
@@ -362,66 +357,57 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_verification_grantVerifications() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_tools_ozone_verification_grantVerifications(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "tools.ozone.verification.grantVerifications",
-        ),
+        id: ::jacquard_common::CowStr::new_static("tools.ozone.verification.grantVerifications"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("grantError"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Error object for failed verifications.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "error",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Error message describing the reason for failure.",
-                                    ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Error message describing the reason for failure.",
+                                        )),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "subject",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The did of the subject being verified",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The did of the subject being verified",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -559,9 +545,9 @@ fn lexicon_doc_tools_ozone_verification_grantVerifications() -> jacquard_lexicon
 
 pub mod grant_verifications_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -609,10 +595,9 @@ pub struct GrantVerificationsBuilder<
 
 impl GrantVerifications<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GrantVerificationsBuilder<
-        grant_verifications_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GrantVerificationsBuilder<grant_verifications_state::Empty, jacquard_common::DefaultStr>
+    {
         GrantVerificationsBuilder::new()
     }
 }
@@ -624,10 +609,7 @@ impl<S: jacquard_common::BosStr> GrantVerifications<S> {
     }
 }
 
-impl GrantVerificationsBuilder<
-    grant_verifications_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GrantVerificationsBuilder<grant_verifications_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GrantVerificationsBuilder {
@@ -638,9 +620,7 @@ impl GrantVerificationsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GrantVerificationsBuilder<grant_verifications_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GrantVerificationsBuilder<grant_verifications_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GrantVerificationsBuilder {
@@ -703,11 +683,35 @@ where
     }
 }
 
+fn deserialize_verification_input_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod verification_input_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -778,10 +782,9 @@ pub struct VerificationInputBuilder<
 
 impl VerificationInput<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> VerificationInputBuilder<
-        verification_input_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> VerificationInputBuilder<verification_input_state::Empty, jacquard_common::DefaultStr>
+    {
         VerificationInputBuilder::new()
     }
 }
@@ -793,10 +796,7 @@ impl<S: jacquard_common::BosStr> VerificationInput<S> {
     }
 }
 
-impl VerificationInputBuilder<
-    verification_input_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl VerificationInputBuilder<verification_input_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         VerificationInputBuilder {
@@ -807,9 +807,7 @@ impl VerificationInputBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> VerificationInputBuilder<verification_input_state::Empty, S> {
+impl<S: jacquard_common::BosStr> VerificationInputBuilder<verification_input_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         VerificationInputBuilder {
@@ -820,10 +818,9 @@ impl<
     }
 }
 
-impl<
-    St: verification_input_state::State,
-    S: jacquard_common::BosStr,
-> VerificationInputBuilder<St, S> {
+impl<St: verification_input_state::State, S: jacquard_common::BosStr>
+    VerificationInputBuilder<St, S>
+{
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,

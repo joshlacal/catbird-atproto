@@ -24,11 +24,11 @@ pub struct ResolveLexicon<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ResolveLexiconOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The CID of the lexicon schema record.
+    /// The CID of the lexicon schema record.
     pub cid: jacquard_common::types::string::Cid<S>,
-    ///The resolved lexicon schema record.
+    /// The resolved lexicon schema record.
     pub schema: crate::generated::com_atproto::lexicon::schema::Schema<S>,
-    ///The AT-URI of the lexicon schema record.
+    /// The AT-URI of the lexicon schema record.
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(
         flatten,
@@ -57,11 +57,15 @@ pub struct ResolveLexiconOutput<S: jacquard_common::BosStr = jacquard_common::De
 pub enum ResolveLexiconError {
     /// No lexicon was resolved for the NSID.
     #[serde(rename = "LexiconNotFound")]
-    LexiconNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LexiconNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -119,7 +123,7 @@ pub mod resolve_lexicon_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

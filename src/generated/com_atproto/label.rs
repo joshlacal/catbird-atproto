@@ -21,33 +21,34 @@ pub mod subscribe_labels;
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Label<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Optionally, CID specifying the specific version of 'uri' resource this label applies to.
+    /// Optionally, CID specifying the specific version of 'uri' resource this label applies to.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
-    ///Timestamp when this label was created.
+    /// Timestamp when this label was created.
     pub cts: jacquard_common::types::string::Datetime,
-    ///Timestamp at which this label expires (no longer applies).
+    /// Timestamp at which this label expires (no longer applies).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub exp: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///If true, this is a negation label, overwriting a previous label.
+    /// If true, this is a negation label, overwriting a previous label.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub neg: core::option::Option<bool>,
-    ///Signature of dag-cbor encoded label.
+    /// Signature of dag-cbor encoded label.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
     pub sig: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    ///DID of the actor who created this label.
+    /// DID of the actor who created this label.
     pub src: jacquard_common::types::string::Did<S>,
-    ///AT URI of the record, repository (account), or other resource that this label applies to.
+    /// AT URI of the record, repository (account), or other resource that this label applies to.
     pub uri: jacquard_common::types::string::UriValue<S>,
-    ///The short string name of the value or type of this label.
+    /// The short string name of the value or type of this label.
     pub val: S,
-    ///The AT Protocol version of the label object.
+    /// The AT Protocol version of the label object.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub ver: core::option::Option<i64>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_label_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -165,22 +166,24 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct LabelValueDefinition<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Does the user need to have adult content enabled in order to configure this label?
+    /// Does the user need to have adult content enabled in order to configure this label?
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub adult_only: core::option::Option<bool>,
-    ///What should this label hide in the UI, if applied? 'content' hides all of the target; 'media' hides the images/video/audio; 'none' hides nothing.
+    /// What should this label hide in the UI, if applied? 'content' hides all of the target; 'media' hides the images/video/audio; 'none' hides nothing.
     pub blurs: LabelValueDefinitionBlurs<S>,
-    ///The default setting for this label.
+    /// The default setting for this label.  Defaults to `"warn"`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_label_value_definition_default_setting")]
     pub default_setting: core::option::Option<LabelValueDefinitionDefaultSetting<S>>,
-    ///The value of the label being defined. Must only include lowercase ascii and the '-' character ([a-z-]+).
+    /// The value of the label being defined. Must only include lowercase ascii and the '-' character ([a-z-]+).
     pub identifier: S,
     pub locales: Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<S>>,
-    ///How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.
+    /// How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.
     pub severity: LabelValueDefinitionSeverity<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_label_value_definition_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -467,15 +470,16 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct LabelValueDefinitionStrings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///A longer description of what the label means and why it might be applied.
+    /// A longer description of what the label means and why it might be applied.
     pub description: S,
-    ///The code of the language these strings are written in.
+    /// The code of the language these strings are written in.
     pub lang: jacquard_common::types::string::Language,
-    ///A short human-readable name for the label.
+    /// A short human-readable name for the label.
     pub name: S,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_label_value_definition_strings_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -503,11 +507,12 @@ pub struct LabelValueDefinitionStrings<S: jacquard_common::BosStr = jacquard_com
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SelfLabel<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The short string name of the value or type of this label.
+    /// The short string name of the value or type of this label.
     pub val: S,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_self_label_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -532,6 +537,7 @@ pub struct SelfLabels<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_self_labels_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -748,11 +754,35 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sel
     }
 }
 
+fn deserialize_label_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod label_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1469,11 +1499,43 @@ fn lexicon_doc_com_atproto_label_defs() -> jacquard_lexicon::lexicon::LexiconDoc
     }
 }
 
+fn deserialize_label_value_definition_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn _default_label_value_definition_default_setting<
+    S: jacquard_common::FromStaticStr + jacquard_common::BosStr,
+>() -> ::core::option::Option<LabelValueDefinitionDefaultSetting<S>> {
+    Some(<LabelValueDefinitionDefaultSetting<S>>::from_value(
+        S::from_static("warn"),
+    ))
+}
+
 pub mod label_value_definition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1754,11 +1816,35 @@ where
     }
 }
 
+fn deserialize_label_value_definition_strings_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod label_value_definition_strings_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1968,11 +2054,59 @@ where
     }
 }
 
+fn deserialize_self_label_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_self_labels_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod self_labels_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

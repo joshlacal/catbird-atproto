@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -30,17 +23,9 @@ pub struct GetSuggestedUsersForDiscoverSkeleton<
     pub viewer: core::option::Option<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -49,10 +34,14 @@ pub struct GetSuggestedUsersForDiscoverSkeletonOutput<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub dids: Vec<jacquard_common::types::string::Did<S>>,
-    ///Snowflake for this recommendation, use when submitting recommendation events.
+    /// Snowflake for this recommendation, use when submitting recommendation events.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rec_id_str: core::option::Option<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -68,14 +57,13 @@ pub struct GetSuggestedUsersForDiscoverSkeletonResponse;
 impl jacquard_common::xrpc::XrpcResp for GetSuggestedUsersForDiscoverSkeletonResponse {
     const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForDiscoverSkeleton";
     const ENCODING: &'static str = "application/json";
-    type Output<S: jacquard_common::BosStr> = GetSuggestedUsersForDiscoverSkeletonOutput<
-        S,
-    >;
+    type Output<S: jacquard_common::BosStr> = GetSuggestedUsersForDiscoverSkeletonOutput<S>;
     type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetSuggestedUsersForDiscoverSkeleton<S> {
+    for GetSuggestedUsersForDiscoverSkeleton<S>
+{
     const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForDiscoverSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetSuggestedUsersForDiscoverSkeletonResponse;
@@ -85,8 +73,7 @@ for GetSuggestedUsersForDiscoverSkeleton<S> {
 
 Path: `/xrpc/app.bsky.unspecced.getSuggestedUsersForDiscoverSkeleton`. The request payload type is `GetSuggestedUsersForDiscoverSkeleton<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetSuggestedUsersForDiscoverSkeletonRequest;
-impl jacquard_common::xrpc::XrpcEndpoint
-for GetSuggestedUsersForDiscoverSkeletonRequest {
+impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestedUsersForDiscoverSkeletonRequest {
     const PATH: &'static str = "/xrpc/app.bsky.unspecced.getSuggestedUsersForDiscoverSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Request<S: jacquard_common::BosStr> = GetSuggestedUsersForDiscoverSkeleton<S>;
@@ -99,9 +86,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_suggested_users_for_discover_skeleton_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -149,10 +136,12 @@ impl<S: jacquard_common::BosStr> GetSuggestedUsersForDiscoverSkeleton<S> {
     }
 }
 
-impl GetSuggestedUsersForDiscoverSkeletonBuilder<
-    get_suggested_users_for_discover_skeleton_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    GetSuggestedUsersForDiscoverSkeletonBuilder<
+        get_suggested_users_for_discover_skeleton_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSuggestedUsersForDiscoverSkeletonBuilder {
@@ -163,12 +152,12 @@ impl GetSuggestedUsersForDiscoverSkeletonBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetSuggestedUsersForDiscoverSkeletonBuilder<
-    get_suggested_users_for_discover_skeleton_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    GetSuggestedUsersForDiscoverSkeletonBuilder<
+        get_suggested_users_for_discover_skeleton_state::Empty,
+        S,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetSuggestedUsersForDiscoverSkeletonBuilder {
@@ -179,10 +168,9 @@ impl<
     }
 }
 
-impl<
-    St: get_suggested_users_for_discover_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> GetSuggestedUsersForDiscoverSkeletonBuilder<St, S> {
+impl<St: get_suggested_users_for_discover_skeleton_state::State, S: jacquard_common::BosStr>
+    GetSuggestedUsersForDiscoverSkeletonBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();
@@ -195,10 +183,9 @@ impl<
     }
 }
 
-impl<
-    St: get_suggested_users_for_discover_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> GetSuggestedUsersForDiscoverSkeletonBuilder<St, S> {
+impl<St: get_suggested_users_for_discover_skeleton_state::State, S: jacquard_common::BosStr>
+    GetSuggestedUsersForDiscoverSkeletonBuilder<St, S>
+{
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
@@ -208,10 +195,7 @@ impl<
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<S>>,
-    ) -> Self {
+    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
         self._fields.1 = value;
         self
     }

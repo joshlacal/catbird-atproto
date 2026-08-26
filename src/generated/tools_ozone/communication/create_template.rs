@@ -13,27 +13,30 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateTemplate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Content of the template, markdown supported, can contain variable placeholders.
+    /// Content of the template, markdown supported, can contain variable placeholders.
     pub content_markdown: S,
-    ///DID of the user who is creating the template.
+    /// DID of the user who is creating the template.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_by: core::option::Option<jacquard_common::types::string::Did<S>>,
-    ///Message language.
+    /// Message language.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub lang: core::option::Option<jacquard_common::types::string::Language>,
-    ///Name of the template.
+    /// Name of the template.
     pub name: S,
-    ///Subject of the message, used in emails.
+    /// Subject of the message, used in emails.
     pub subject: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,27 +45,21 @@ pub struct CreateTemplate<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CreateTemplateOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct CreateTemplateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::communication::TemplateView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,7 +67,6 @@ pub struct CreateTemplateOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -80,19 +76,20 @@ pub struct CreateTemplateOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum CreateTemplateError {
     #[serde(rename = "DuplicateTemplateName")]
     DuplicateTemplateName(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -129,12 +126,10 @@ impl jacquard_common::xrpc::XrpcResp for CreateTemplateResponse {
     type Err = CreateTemplateError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for CreateTemplate<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateTemplate<S> {
     const NSID: &'static str = "tools.ozone.communication.createTemplate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateTemplateResponse;
 }
 
@@ -144,9 +139,8 @@ Path: `/xrpc/tools.ozone.communication.createTemplate`. The request payload type
 pub struct CreateTemplateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateTemplateRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.communication.createTemplate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = CreateTemplate<S>;
     type Response = CreateTemplateResponse;
 }

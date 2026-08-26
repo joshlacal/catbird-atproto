@@ -6,28 +6,25 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RegisterPush<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Set to true when the actor is age restricted
+    /// Set to true when the actor is age restricted
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub age_restricted: core::option::Option<bool>,
     pub app_id: S,
     pub platform: RegisterPushPlatform<S>,
     pub service_did: jacquard_common::types::string::Did<S>,
     pub token: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,7 +32,6 @@ pub struct RegisterPush<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RegisterPushPlatform<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -87,7 +83,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for RegisterPushPlatform<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for RegisterPushPlatform<S> {
+    for RegisterPushPlatform<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -114,9 +111,7 @@ where
             RegisterPushPlatform::Ios => RegisterPushPlatform::Ios,
             RegisterPushPlatform::Android => RegisterPushPlatform::Android,
             RegisterPushPlatform::Web => RegisterPushPlatform::Web,
-            RegisterPushPlatform::Other(v) => {
-                RegisterPushPlatform::Other(v.into_static())
-            }
+            RegisterPushPlatform::Other(v) => RegisterPushPlatform::Other(v.into_static()),
         }
     }
 }
@@ -130,13 +125,24 @@ impl jacquard_common::xrpc::XrpcResp for RegisterPushResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RegisterPush<S> {
     const NSID: &'static str = "app.bsky.notification.registerPush";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RegisterPushResponse;
 }
 
@@ -146,18 +152,17 @@ Path: `/xrpc/app.bsky.notification.registerPush`. The request payload type is `R
 pub struct RegisterPushRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RegisterPushRequest {
     const PATH: &'static str = "/xrpc/app.bsky.notification.registerPush";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = RegisterPush<S>;
     type Response = RegisterPushResponse;
 }
 
 pub mod register_push_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -245,10 +250,7 @@ pub struct RegisterPushBuilder<
 
 impl RegisterPush<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RegisterPushBuilder<
-        register_push_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> RegisterPushBuilder<register_push_state::Empty, jacquard_common::DefaultStr> {
         RegisterPushBuilder::new()
     }
 }
@@ -282,10 +284,7 @@ impl<S: jacquard_common::BosStr> RegisterPushBuilder<register_push_state::Empty,
     }
 }
 
-impl<
-    St: register_push_state::State,
-    S: jacquard_common::BosStr,
-> RegisterPushBuilder<St, S> {
+impl<St: register_push_state::State, S: jacquard_common::BosStr> RegisterPushBuilder<St, S> {
     /// Set the `ageRestricted` field (optional)
     pub fn age_restricted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.0 = value.into();

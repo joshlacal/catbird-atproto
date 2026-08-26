@@ -6,22 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct NotifySpaceDeleted<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Reference to the deleted space.
-    pub space: S,
+    /// Reference to the deleted space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -44,6 +37,18 @@ impl jacquard_common::xrpc::XrpcResp for NotifySpaceDeletedResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for NotifySpaceDeleted<S> {
@@ -63,4 +68,130 @@ impl jacquard_common::xrpc::XrpcEndpoint for NotifySpaceDeletedRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = NotifySpaceDeleted<S>;
     type Response = NotifySpaceDeletedResponse;
+}
+
+pub mod notify_space_deleted_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Space;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Space = Unset;
+    }
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Space = Set<members::space>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `space` field
+        pub struct space(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct NotifySpaceDeletedBuilder<
+    St: notify_space_deleted_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl NotifySpaceDeleted<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> NotifySpaceDeletedBuilder<notify_space_deleted_state::Empty, jacquard_common::DefaultStr>
+    {
+        NotifySpaceDeletedBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> NotifySpaceDeleted<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> NotifySpaceDeletedBuilder<notify_space_deleted_state::Empty, S> {
+        NotifySpaceDeletedBuilder::builder()
+    }
+}
+
+impl NotifySpaceDeletedBuilder<notify_space_deleted_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        NotifySpaceDeletedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> NotifySpaceDeletedBuilder<notify_space_deleted_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        NotifySpaceDeletedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NotifySpaceDeletedBuilder<St, S>
+where
+    St: notify_space_deleted_state::State,
+    St::Space: notify_space_deleted_state::IsUnset,
+{
+    /// Set the `space` field (required)
+    pub fn space(
+        mut self,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> NotifySpaceDeletedBuilder<notify_space_deleted_state::SetSpace<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        NotifySpaceDeletedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NotifySpaceDeletedBuilder<St, S>
+where
+    St: notify_space_deleted_state::State,
+    St::Space: notify_space_deleted_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> NotifySpaceDeleted<S> {
+        NotifySpaceDeleted {
+            space: self._fields.0.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> NotifySpaceDeleted<S> {
+        NotifySpaceDeleted {
+            space: self._fields.0.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

@@ -15,15 +15,19 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DisableRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_disable_rule_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,15 +39,8 @@ pub struct DisableRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// Record defining interaction rules for a post. The record key (rkey) of the postgate record must match the record key of the post, and that record must be in the same repository.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.feed.postgate",
@@ -52,19 +49,22 @@ pub struct DisableRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub struct Postgate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
-    ///List of AT-URIs embedding this post that the author has detached from.
+    /// List of AT-URIs embedding this post that the author has detached from.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub detached_embedding_uris: core::option::Option<
-        Vec<jacquard_common::types::string::AtUri<S>>,
-    >,
-    ///List of rules defining who can embed this post. If value is an empty array or is undefined, no particular rules apply and anyone can embed.
+    pub detached_embedding_uris:
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+    /// List of rules defining who can embed this post. If value is an empty array or is undefined, no particular rules apply and anyone can embed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub embedding_rules: core::option::Option<
-        Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>,
-    >,
-    ///Reference (AT-URI) to the post record.
+    pub embedding_rules:
+        core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>,
+    /// Reference (AT-URI) to the post record.
     pub post: jacquard_common::types::string::AtUri<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_postgate_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -76,19 +76,10 @@ pub struct Postgate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct PostgateGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct PostgateGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -108,8 +99,7 @@ impl<S: jacquard_common::BosStr> Postgate<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for DisableRule<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DisableRule<S> {
     fn nsid() -> &'static str {
         "app.bsky.feed.postgate"
     }
@@ -141,8 +131,7 @@ impl<S: jacquard_common::BosStr> From<PostgateGetRecordOutput<S>> for Postgate<S
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Postgate<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Postgate<S> {
     const NSID: &'static str = "app.bsky.feed.postgate";
     type Record = PostgateRecord;
 }
@@ -152,8 +141,7 @@ impl jacquard_common::types::collection::Collection for PostgateRecord {
     type Record = PostgateRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Postgate<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Postgate<S> {
     fn nsid() -> &'static str {
         "app.bsky.feed.postgate"
     }
@@ -192,9 +180,31 @@ for Postgate<S> {
     }
 }
 
-fn lexicon_doc_app_bsky_feed_postgate() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn deserialize_disable_rule_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn lexicon_doc_app_bsky_feed_postgate() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.postgate"),
@@ -202,19 +212,19 @@ fn lexicon_doc_app_bsky_feed_postgate() -> jacquard_lexicon::lexicon::LexiconDoc
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("disableRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Disables embedding of this post.",
-                        ),
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map
+                        )),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -315,11 +325,41 @@ fn lexicon_doc_app_bsky_feed_postgate() -> jacquard_lexicon::lexicon::LexiconDoc
     }
 }
 
+fn deserialize_postgate_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod postgate_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -368,9 +408,7 @@ pub struct PostgateBuilder<
     _fields: (
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
-        core::option::Option<
-            Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>,
-        >,
+        core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -454,9 +492,7 @@ impl<St: postgate_state::State, S: jacquard_common::BosStr> PostgateBuilder<St, 
     /// Set the `embeddingRules` field (optional)
     pub fn embedding_rules(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>>,
     ) -> Self {
         self._fields.2 = value.into();
         self

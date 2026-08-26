@@ -8,15 +8,8 @@
 /// Record representing a list of accounts (actors). Scope includes both moderation-oriented lists and curration-oriented lists.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.graph.list",
@@ -30,18 +23,20 @@ pub struct List<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub description_facets: core::option::Option<
-        Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>,
-    >,
+    pub description_facets:
+        core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<
-        crate::generated::com_atproto::label::SelfLabels<S>,
-    >,
-    ///Display name for list; can not be empty.
+    pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    /// Display name for list; can not be empty.
     pub name: S,
-    ///Defines the purpose of the list (aka, moderation-oriented or curration-oriented)
+    /// Defines the purpose of the list (aka, moderation-oriented or curration-oriented)
     pub purpose: crate::generated::app_bsky::graph::ListPurpose<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_list_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -53,19 +48,10 @@ pub struct List<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct ListGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ListGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -102,8 +88,7 @@ impl<S: jacquard_common::BosStr> From<ListGetRecordOutput<S>> for List<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for List<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for List<S> {
     const NSID: &'static str = "app.bsky.graph.list";
     type Record = ListRecord;
 }
@@ -128,13 +113,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lis
             {
                 let size = value.blob().size;
                 if size > 1000000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "avatar",
-                        ),
-                        max: 1000000usize,
-                        actual: size,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
                 }
             }
         }
@@ -142,29 +129,26 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lis
             {
                 let mime = value.blob().mime_type.as_str();
                 let accepted: &[&str] = &["image/png", "image/jpeg"];
-                let matched = accepted
-                    .iter()
-                    .any(|pattern| {
-                        if *pattern == "*/*" {
-                            true
-                        } else if pattern.ends_with("/*") {
-                            let prefix = &pattern[..pattern.len() - 2];
-                            mime.starts_with(prefix)
-                                && mime.as_bytes().get(prefix.len()) == Some(&b'/')
-                        } else {
-                            mime == *pattern
-                        }
-                    });
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
                 if !matched {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "avatar",
-                        ),
-                        accepted: vec![
-                            "image/png".to_string(), "image/jpeg".to_string()
-                        ],
-                        actual: mime.to_string(),
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            accepted: vec!["image/png".to_string(), "image/jpeg".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
                 }
             }
         }
@@ -172,9 +156,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lis
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 3000usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "description",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 3000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -188,13 +170,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lis
                     )
                     .count();
                 if count > 300usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "description",
-                        ),
-                        max: 300usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "description",
+                            ),
+                            max: 300usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -203,9 +187,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lis
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 64usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "name",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     max: 64usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -216,9 +198,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lis
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 1usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "name",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -228,11 +208,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lis
     }
 }
 
+fn deserialize_list_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod list_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -350,10 +360,7 @@ impl<St: list_state::State, S: jacquard_common::BosStr> ListBuilder<St, S> {
         self
     }
     /// Set the `avatar` field to an Option value (optional)
-    pub fn maybe_avatar(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_avatar(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.0 = value;
         self
     }
@@ -395,9 +402,7 @@ impl<St: list_state::State, S: jacquard_common::BosStr> ListBuilder<St, S> {
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>>,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -437,10 +442,7 @@ where
     St::Name: list_state::IsUnset,
 {
     /// Set the `name` field (required)
-    pub fn name(
-        mut self,
-        value: impl Into<S>,
-    ) -> ListBuilder<list_state::SetName<St>, S> {
+    pub fn name(mut self, value: impl Into<S>) -> ListBuilder<list_state::SetName<St>, S> {
         self._fields.5 = ::core::option::Option::Some(value.into());
         ListBuilder {
             _state: ::core::marker::PhantomData,

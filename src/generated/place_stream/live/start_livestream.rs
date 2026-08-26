@@ -6,27 +6,24 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct StartLivestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether to create a Bluesky post announcing the livestream.
+    /// Whether to create a Bluesky post announcing the livestream.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub create_bluesky_post: core::option::Option<bool>,
     pub livestream: crate::generated::place_stream::livestream::Livestream<S>,
-    ///The DID of the streamer.
+    /// The DID of the streamer.
     pub streamer: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,29 +32,23 @@ pub struct StartLivestream<S: jacquard_common::BosStr = jacquard_common::Default
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct StartLivestreamOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The CID of the livestream record.
+pub struct StartLivestreamOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The CID of the livestream record.
     pub cid: jacquard_common::types::string::Cid<S>,
-    ///The URI of the livestream record.
+    /// The URI of the livestream record.
     pub uri: jacquard_common::types::string::UriValue<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -77,12 +68,10 @@ impl jacquard_common::xrpc::XrpcResp for StartLivestreamResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for StartLivestream<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for StartLivestream<S> {
     const NSID: &'static str = "place.stream.live.startLivestream";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = StartLivestreamResponse;
 }
 
@@ -92,18 +81,17 @@ Path: `/xrpc/place.stream.live.startLivestream`. The request payload type is `St
 pub struct StartLivestreamRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for StartLivestreamRequest {
     const PATH: &'static str = "/xrpc/place.stream.live.startLivestream";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = StartLivestream<S>;
     type Response = StartLivestreamResponse;
 }
 
 pub mod start_livestream_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -159,10 +147,8 @@ pub struct StartLivestreamBuilder<
 
 impl StartLivestream<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> StartLivestreamBuilder<
-        start_livestream_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> StartLivestreamBuilder<start_livestream_state::Empty, jacquard_common::DefaultStr> {
         StartLivestreamBuilder::new()
     }
 }
@@ -185,9 +171,7 @@ impl StartLivestreamBuilder<start_livestream_state::Empty, jacquard_common::Defa
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> StartLivestreamBuilder<start_livestream_state::Empty, S> {
+impl<S: jacquard_common::BosStr> StartLivestreamBuilder<start_livestream_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         StartLivestreamBuilder {
@@ -198,10 +182,7 @@ impl<
     }
 }
 
-impl<
-    St: start_livestream_state::State,
-    S: jacquard_common::BosStr,
-> StartLivestreamBuilder<St, S> {
+impl<St: start_livestream_state::State, S: jacquard_common::BosStr> StartLivestreamBuilder<St, S> {
     /// Set the `createBlueskyPost` field (optional)
     pub fn create_bluesky_post(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.0 = value.into();

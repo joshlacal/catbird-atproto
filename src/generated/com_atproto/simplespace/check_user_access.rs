@@ -15,7 +15,7 @@
 pub struct CheckUserAccess<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub client_id: core::option::Option<S>,
-    pub space: S,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     pub user: jacquard_common::types::string::Did<S>,
 }
 
@@ -27,7 +27,7 @@ pub struct CheckUserAccess<S: jacquard_common::BosStr = jacquard_common::Default
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CheckUserAccessOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the managing app authorizes the request.
+    /// Whether the managing app authorizes the request.
     pub authorized: bool,
     #[serde(
         flatten,
@@ -74,7 +74,7 @@ pub mod check_user_access_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -122,7 +122,7 @@ pub struct CheckUserAccessBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -186,7 +186,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> CheckUserAccessBuilder<check_user_access_state::SetSpace<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         CheckUserAccessBuilder {

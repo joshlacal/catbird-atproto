@@ -15,17 +15,18 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Account<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Indicates that the account has a repository which can be fetched from the host that emitted this event.
+    /// Indicates that the account has a repository which can be fetched from the host that emitted this event.
     pub active: bool,
     pub did: jacquard_common::types::string::Did<S>,
     pub seq: i64,
-    ///If active=false, this optional field indicates a reason for why the account is not active.
+    /// If active=false, this optional field indicates a reason for why the account is not active.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub status: core::option::Option<AccountStatus<S>>,
     pub time: jacquard_common::types::string::Datetime,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_account_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -144,33 +145,34 @@ where
 )]
 pub struct Commit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blobs: Vec<jacquard_common::types::cid::CidLink<S>>,
-    ///CAR file containing relevant blocks, as a diff since the previous repo state. The commit must be included as a block, and the commit block CID must be the first entry in the CAR header 'roots' list.
+    /// CAR file containing relevant blocks, as a diff since the previous repo state. The commit must be included as a block, and the commit block CID must be the first entry in the CAR header 'roots' list.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blocks: jacquard_common::deps::bytes::Bytes,
-    ///Repo commit object CID.
+    /// Repo commit object CID.
     pub commit: jacquard_common::types::cid::CidLink<S>,
     pub ops: Vec<crate::generated::com_atproto::sync::subscribe_repos::RepoOp<S>>,
-    ///The root CID of the MST tree for the previous commit from this repo (indicated by the 'since' revision field in this message). Corresponds to the 'data' field in the repo commit object. NOTE: this field is effectively required for the 'inductive' version of firehose.
+    /// The root CID of the MST tree for the previous commit from this repo (indicated by the 'since' revision field in this message). Corresponds to the 'data' field in the repo commit object. NOTE: this field is effectively required for the 'inductive' version of firehose.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub prev_data: core::option::Option<jacquard_common::types::cid::CidLink<S>>,
-    ///DEPRECATED -- unused
+    /// DEPRECATED -- unused
     pub rebase: bool,
-    ///The repo this event comes from. Note that all other message types name this field 'did'.
+    /// The repo this event comes from. Note that all other message types name this field 'did'.
     pub repo: jacquard_common::types::string::Did<S>,
-    ///The rev of the emitted commit. Note that this information is also in the commit object included in blocks, unless this is a tooBig event.
+    /// The rev of the emitted commit. Note that this information is also in the commit object included in blocks, unless this is a tooBig event.
     pub rev: jacquard_common::types::string::Tid,
-    ///The stream sequence number of this message.
+    /// The stream sequence number of this message.
     pub seq: i64,
-    ///The rev of the last emitted commit from this repo (if any).
+    /// The rev of the last emitted commit from this repo (if any).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub since: core::option::Option<jacquard_common::types::string::Tid>,
-    ///Timestamp of when this message was originally broadcast.
+    /// Timestamp of when this message was originally broadcast.
     pub time: jacquard_common::types::string::Datetime,
-    ///DEPRECATED -- replaced by #sync event and data limits. Indicates that this commit contained too many ops, or data size was too large. Consumers will need to make a separate request to get missing data.
+    /// DEPRECATED -- replaced by #sync event and data limits. Indicates that this commit contained too many ops, or data size was too large. Consumers will need to make a separate request to get missing data.
     pub too_big: bool,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_commit_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -192,7 +194,7 @@ pub struct Commit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 )]
 pub struct Identity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
-    ///The current handle for the account, or 'handle.invalid' if validation fails. This field is optional, might have been validated or passed-through from an upstream source. Semantics and behaviors for PDS vs Relay may evolve in the future; see atproto specs for more details.
+    /// The current handle for the account, or 'handle.invalid' if validation fails. This field is optional, might have been validated or passed-through from an upstream source. Semantics and behaviors for PDS vs Relay may evolve in the future; see atproto specs for more details.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub handle: core::option::Option<jacquard_common::types::string::Handle<S>>,
     pub seq: i64,
@@ -200,6 +202,7 @@ pub struct Identity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_identity_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -231,6 +234,7 @@ pub struct Info<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_info_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -334,15 +338,15 @@ pub struct SubscribeRepos {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub enum SubscribeReposMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(rename = "#commit")]
+    #[serde(rename = "com.atproto.sync.subscribeRepos#commit")]
     Commit(Box<crate::generated::com_atproto::sync::subscribe_repos::Commit<S>>),
-    #[serde(rename = "#sync")]
+    #[serde(rename = "com.atproto.sync.subscribeRepos#sync")]
     Sync(Box<crate::generated::com_atproto::sync::subscribe_repos::Sync<S>>),
-    #[serde(rename = "#identity")]
+    #[serde(rename = "com.atproto.sync.subscribeRepos#identity")]
     Identity(Box<crate::generated::com_atproto::sync::subscribe_repos::Identity<S>>),
-    #[serde(rename = "#account")]
+    #[serde(rename = "com.atproto.sync.subscribeRepos#account")]
     Account(Box<crate::generated::com_atproto::sync::subscribe_repos::Account<S>>),
-    #[serde(rename = "#info")]
+    #[serde(rename = "com.atproto.sync.subscribeRepos#info")]
     Info(Box<crate::generated::com_atproto::sync::subscribe_repos::Info<S>>),
 }
 
@@ -396,14 +400,21 @@ impl<S: jacquard_common::BosStr> SubscribeReposMessage<S> {
 #[serde(tag = "error", content = "message")]
 pub enum SubscribeReposError {
     #[serde(rename = "FutureCursor")]
-    FutureCursor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    FutureCursor(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// If the consumer of the stream can not keep up with events, and a backlog gets too large, the server will drop the connection.
     #[serde(rename = "ConsumerTooSlow")]
-    ConsumerTooSlow(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConsumerTooSlow(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -447,16 +458,17 @@ impl core::fmt::Display for SubscribeReposError {
 )]
 pub struct RepoOp<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub action: RepoOpAction<S>,
-    ///For creates and updates, the new record CID. For deletions, null.
+    /// For creates and updates, the new record CID. For deletions, null.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::cid::CidLink<S>>,
     pub path: S,
-    ///For updates and deletes, the previous record CID (required for inductive firehose). For creations, field should not be defined.
+    /// For updates and deletes, the previous record CID (required for inductive firehose). For creations, field should not be defined.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub prev: core::option::Option<jacquard_common::types::cid::CidLink<S>>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_repo_op_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -560,20 +572,21 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Sync<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///CAR file containing the commit, as a block. The CAR header must include the commit block CID as the first 'root'.
+    /// CAR file containing the commit, as a block. The CAR header must include the commit block CID as the first 'root'.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blocks: jacquard_common::deps::bytes::Bytes,
-    ///The account this repo event corresponds to. Must match that in the commit object.
+    /// The account this repo event corresponds to. Must match that in the commit object.
     pub did: jacquard_common::types::string::Did<S>,
-    ///The rev of the commit. This value must match that in the commit object.
+    /// The rev of the commit. This value must match that in the commit object.
     pub rev: S,
-    ///The stream sequence number of this message.
+    /// The stream sequence number of this message.
     pub seq: i64,
-    ///Timestamp of when this message was originally broadcast.
+    /// Timestamp of when this message was originally broadcast.
     pub time: jacquard_common::types::string::Datetime,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_sync_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -721,11 +734,35 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Syn
     }
 }
 
+fn deserialize_account_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod account_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1491,11 +1528,35 @@ fn lexicon_doc_com_atproto_sync_subscribeRepos() -> jacquard_lexicon::lexicon::L
     }
 }
 
+fn deserialize_commit_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod commit_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2043,11 +2104,35 @@ where
     }
 }
 
+fn deserialize_identity_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod identity_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2260,11 +2345,35 @@ where
     }
 }
 
+fn deserialize_info_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod subscribe_repos_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2337,11 +2446,35 @@ where
     }
 }
 
+fn deserialize_repo_op_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod repo_op_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2533,11 +2666,35 @@ where
     }
 }
 
+fn deserialize_sync_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod sync_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

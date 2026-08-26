@@ -62,55 +62,125 @@ pub struct CreateConversationOutput<S: jacquard_common::BosStr = jacquard_common
 #[serde(tag = "error", content = "message")]
 pub enum CreateConversationError {
     #[serde(rename = "BlockedRelationship")]
-    BlockedRelationship(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BlockedRelationship(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationAlreadyExists")]
-    ConversationAlreadyExists(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationAlreadyExists(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
-    CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotRegistered")]
-    DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceRevoked")]
-    DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "GroupInvitesDisabled")]
-    GroupInvitesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    GroupInvitesDisabled(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "IdempotencyConflict")]
-    IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    IdempotencyConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidGenesisGroupInfo")]
-    InvalidGenesisGroupInfo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidGenesisGroupInfo(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidMetadataSnapshot")]
-    InvalidMetadataSnapshot(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidMetadataSnapshot(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidMlsArtifact")]
-    InvalidMlsArtifact(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidMlsArtifact(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
-    InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidSignature")]
-    InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidSignature(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvitationLimitReached")]
-    InvitationLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvitationLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MessagesDisabled")]
-    MessagesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MessagesDisabled(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MetadataNonceReuse")]
-    MetadataNonceReuse(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MetadataNonceReuse(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotFollowedByRecipient")]
-    NotFollowedByRecipient(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotFollowedByRecipient(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RelationshipPolicyUnavailable")]
-    RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RelationshipPolicyUnavailable(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnsupportedMlsProfile")]
-    UnsupportedMlsProfile(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedMlsProfile(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
-    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -324,7 +394,7 @@ pub mod create_conversation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -6,28 +6,23 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RevokeVerifications<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///Reason for revoking the verification. This is optional and can be omitted if not needed.
+pub struct RevokeVerifications<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Reason for revoking the verification. This is optional and can be omitted if not needed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub revoke_reason: core::option::Option<S>,
-    ///Array of verification record uris to revoke
+    /// Array of verification record uris to revoke
     pub uris: Vec<jacquard_common::types::string::AtUri<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -36,31 +31,24 @@ pub struct RevokeVerifications<
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RevokeVerificationsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///List of verification uris that couldn't be revoked, including failure reasons
-    pub failed_revocations: Vec<
-        crate::generated::tools_ozone::verification::revoke_verifications::RevokeError<S>,
-    >,
-    ///List of verification uris successfully revoked
+pub struct RevokeVerificationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// List of verification uris that couldn't be revoked, including failure reasons
+    pub failed_revocations:
+        Vec<crate::generated::tools_ozone::verification::revoke_verifications::RevokeError<S>>,
+    /// List of verification uris successfully revoked
     pub revoked_verifications: Vec<jacquard_common::types::string::AtUri<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -72,25 +60,23 @@ pub struct RevokeVerificationsOutput<
 /// Error object for failed revocations
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RevokeError<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Description of the error that occurred during revocation.
+    /// Description of the error that occurred during revocation.
     pub error: S,
-    ///The AT-URI of the verification record that failed to revoke.
+    /// The AT-URI of the verification record that failed to revoke.
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_revoke_error_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -110,12 +96,10 @@ impl jacquard_common::xrpc::XrpcResp for RevokeVerificationsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for RevokeVerifications<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RevokeVerifications<S> {
     const NSID: &'static str = "tools.ozone.verification.revokeVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RevokeVerificationsResponse;
 }
 
@@ -125,15 +109,13 @@ Path: `/xrpc/tools.ozone.verification.revokeVerifications`. The request payload 
 pub struct RevokeVerificationsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RevokeVerificationsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.verification.revokeVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = RevokeVerifications<S>;
     type Response = RevokeVerificationsResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for RevokeError<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RevokeError<S> {
     fn nsid() -> &'static str {
         "tools.ozone.verification.revokeVerifications"
     }
@@ -150,9 +132,9 @@ for RevokeError<S> {
 
 pub mod revoke_verifications_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -195,28 +177,21 @@ pub struct RevokeVerificationsBuilder<
 
 impl RevokeVerifications<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RevokeVerificationsBuilder<
-        revoke_verifications_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> RevokeVerificationsBuilder<revoke_verifications_state::Empty, jacquard_common::DefaultStr>
+    {
         RevokeVerificationsBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> RevokeVerifications<S> {
     /// Create a new builder for this type
-    pub fn builder() -> RevokeVerificationsBuilder<
-        revoke_verifications_state::Empty,
-        S,
-    > {
+    pub fn builder() -> RevokeVerificationsBuilder<revoke_verifications_state::Empty, S> {
         RevokeVerificationsBuilder::builder()
     }
 }
 
-impl RevokeVerificationsBuilder<
-    revoke_verifications_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl RevokeVerificationsBuilder<revoke_verifications_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RevokeVerificationsBuilder {
@@ -227,9 +202,7 @@ impl RevokeVerificationsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> RevokeVerificationsBuilder<revoke_verifications_state::Empty, S> {
+impl<S: jacquard_common::BosStr> RevokeVerificationsBuilder<revoke_verifications_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         RevokeVerificationsBuilder {
@@ -240,10 +213,9 @@ impl<
     }
 }
 
-impl<
-    St: revoke_verifications_state::State,
-    S: jacquard_common::BosStr,
-> RevokeVerificationsBuilder<St, S> {
+impl<St: revoke_verifications_state::State, S: jacquard_common::BosStr>
+    RevokeVerificationsBuilder<St, S>
+{
     /// Set the `revokeReason` field (optional)
     pub fn revoke_reason(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -304,11 +276,35 @@ where
     }
 }
 
+fn deserialize_revoke_error_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod revoke_error_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -363,10 +359,7 @@ pub struct RevokeErrorBuilder<
 
 impl RevokeError<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RevokeErrorBuilder<
-        revoke_error_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> RevokeErrorBuilder<revoke_error_state::Empty, jacquard_common::DefaultStr> {
         RevokeErrorBuilder::new()
     }
 }
@@ -468,14 +461,11 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_verification_revokeVerifications() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_tools_ozone_verification_revokeVerifications(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "tools.ozone.verification.revokeVerifications",
-        ),
+        id: ::jacquard_common::CowStr::new_static("tools.ozone.verification.revokeVerifications"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(

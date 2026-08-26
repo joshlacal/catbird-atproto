@@ -13,7 +13,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SendEmail<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Additional comment by the sender that won't be used in the email itself but helpful to provide more context for moderators/reviewers
+    /// Additional comment by the sender that won't be used in the email itself but helpful to provide more context for moderators/reviewers
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
     pub content: S,
@@ -90,7 +90,7 @@ pub mod send_email_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

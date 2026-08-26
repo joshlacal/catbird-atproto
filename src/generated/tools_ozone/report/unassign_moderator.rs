@@ -6,23 +6,20 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UnassignModerator<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The ID of the report to unassign.
+    /// The ID of the report to unassign.
     pub report_id: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -31,27 +28,21 @@ pub struct UnassignModerator<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct UnassignModeratorOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct UnassignModeratorOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::report::AssignmentView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -59,7 +50,6 @@ pub struct UnassignModeratorOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -69,18 +59,21 @@ pub struct UnassignModeratorOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum UnassignModeratorError {
     /// The report ID is invalid.
     #[serde(rename = "InvalidAssignment")]
-    InvalidAssignment(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidAssignment(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -117,12 +110,10 @@ impl jacquard_common::xrpc::XrpcResp for UnassignModeratorResponse {
     type Err = UnassignModeratorError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for UnassignModerator<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UnassignModerator<S> {
     const NSID: &'static str = "tools.ozone.report.unassignModerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UnassignModeratorResponse;
 }
 
@@ -132,18 +123,17 @@ Path: `/xrpc/tools.ozone.report.unassignModerator`. The request payload type is 
 pub struct UnassignModeratorRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UnassignModeratorRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.report.unassignModerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UnassignModerator<S>;
     type Response = UnassignModeratorResponse;
 }
 
 pub mod unassign_moderator_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -183,10 +173,9 @@ pub struct UnassignModeratorBuilder<
 
 impl UnassignModerator<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UnassignModeratorBuilder<
-        unassign_moderator_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> UnassignModeratorBuilder<unassign_moderator_state::Empty, jacquard_common::DefaultStr>
+    {
         UnassignModeratorBuilder::new()
     }
 }
@@ -198,10 +187,7 @@ impl<S: jacquard_common::BosStr> UnassignModerator<S> {
     }
 }
 
-impl UnassignModeratorBuilder<
-    unassign_moderator_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl UnassignModeratorBuilder<unassign_moderator_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UnassignModeratorBuilder {
@@ -212,9 +198,7 @@ impl UnassignModeratorBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> UnassignModeratorBuilder<unassign_moderator_state::Empty, S> {
+impl<S: jacquard_common::BosStr> UnassignModeratorBuilder<unassign_moderator_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         UnassignModeratorBuilder {

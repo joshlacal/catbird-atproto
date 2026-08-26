@@ -28,13 +28,14 @@ pub struct DeliveryAck<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub epoch: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub msg_id: core::option::Option<S>,
-    ///Signed acknowledgment token
+    /// Signed acknowledgment token
     pub sig: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub term: core::option::Option<i64>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_delivery_ack_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -53,25 +54,25 @@ pub struct DeliveryAck<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeliverMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Encrypted MLS message payload
+    /// Encrypted MLS message payload
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext: jacquard_common::deps::bytes::Bytes,
-    ///Conversation ID
+    /// Conversation ID
     pub convo_id: S,
-    ///Delivery tracking ID (ULID)
+    /// Delivery tracking ID (ULID)
     pub delivery_id: S,
-    ///MLS epoch of the message
+    /// MLS epoch of the message
     pub epoch: i64,
-    ///Message type (default: 'app')
+    /// Message type (default: 'app')
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub message_type: core::option::Option<S>,
-    ///Unique message ID (ULID)
+    /// Unique message ID (ULID)
     pub msg_id: S,
-    ///Padded size of the plaintext for uniform message lengths
+    /// Padded size of the plaintext for uniform message lengths
     pub padded_size: i64,
-    ///DID of the sending delivery service
+    /// DID of the sending delivery service
     pub sender_ds_did: S,
-    ///Current sequencer term for CAS validation
+    /// Current sequencer term for CAS validation
     pub sequencer_term: i64,
     #[serde(
         flatten,
@@ -94,15 +95,15 @@ pub struct DeliverMessage<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeliverMessageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the message was accepted
+    /// Whether the message was accepted
     pub accepted: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub ack: core::option::Option<
         crate::generated::blue_catbird::mlsDS::deliver_message::DeliveryAck<S>,
     >,
-    ///Echo of the delivery ID
+    /// Echo of the delivery ID
     pub delivery_id: S,
-    ///Assigned sequence number
+    /// Assigned sequence number
     pub seq: i64,
     #[serde(
         flatten,
@@ -130,15 +131,25 @@ pub struct DeliverMessageOutput<S: jacquard_common::BosStr = jacquard_common::De
 #[serde(tag = "error", content = "message")]
 pub enum DeliverMessageError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotSequencer")]
-    NotSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotSequencer(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "TermStale")]
-    TermStale(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TermStale(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -221,6 +232,30 @@ impl jacquard_common::xrpc::XrpcEndpoint for DeliverMessageRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = DeliverMessage<S>;
     type Response = DeliverMessageResponse;
+}
+
+fn deserialize_delivery_ack_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn lexicon_doc_blue_catbird_mlsDS_deliverMessage() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
@@ -465,7 +500,7 @@ pub mod deliver_message_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

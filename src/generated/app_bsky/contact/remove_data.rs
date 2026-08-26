@@ -13,15 +13,18 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RemoveData<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -29,7 +32,6 @@ pub struct RemoveData<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -39,15 +41,18 @@ pub struct RemoveData<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RemoveDataOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -55,7 +60,6 @@ pub struct RemoveDataOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -65,19 +69,25 @@ pub struct RemoveDataOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum RemoveDataError {
     #[serde(rename = "InvalidDid")]
-    InvalidDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidDid(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InternalError")]
-    InternalError(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InternalError(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -123,9 +133,8 @@ impl jacquard_common::xrpc::XrpcResp for RemoveDataResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RemoveData<S> {
     const NSID: &'static str = "app.bsky.contact.removeData";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RemoveDataResponse;
 }
 
@@ -135,9 +144,8 @@ Path: `/xrpc/app.bsky.contact.removeData`. The request payload type is `RemoveDa
 pub struct RemoveDataRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveDataRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.removeData";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = RemoveData<S>;
     type Response = RemoveDataResponse;
 }

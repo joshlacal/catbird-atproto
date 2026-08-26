@@ -23,7 +23,7 @@ pub struct UpdateEmail<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub email: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub email_auth_factor: core::option::Option<bool>,
-    ///Requires a token from com.atproto.sever.requestEmailUpdate if the account's email has been confirmed.
+    /// Requires a token from com.atproto.sever.requestEmailUpdate if the account's email has been confirmed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub token: core::option::Option<S>,
     #[serde(
@@ -52,15 +52,25 @@ pub struct UpdateEmail<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 #[serde(tag = "error", content = "message")]
 pub enum UpdateEmailError {
     #[serde(rename = "ExpiredToken")]
-    ExpiredToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ExpiredToken(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidToken")]
-    InvalidToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidToken(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "TokenRequired")]
-    TokenRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TokenRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -109,6 +119,18 @@ impl jacquard_common::xrpc::XrpcResp for UpdateEmailResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = UpdateEmailError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateEmail<S> {

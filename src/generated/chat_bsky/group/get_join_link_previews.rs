@@ -6,45 +6,30 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetJoinLinkPreviews<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetJoinLinkPreviews<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub codes: Vec<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetJoinLinkPreviewsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetJoinLinkPreviewsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub join_link_previews: Vec<GetJoinLinkPreviewsOutputJoinLinkPreviewsItem<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -53,18 +38,10 @@ pub struct GetJoinLinkPreviewsOutput<
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -95,8 +72,7 @@ impl jacquard_common::xrpc::XrpcResp for GetJoinLinkPreviewsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetJoinLinkPreviews<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetJoinLinkPreviews<S> {
     const NSID: &'static str = "chat.bsky.group.getJoinLinkPreviews";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetJoinLinkPreviewsResponse;
@@ -115,9 +91,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetJoinLinkPreviewsRequest {
 
 pub mod get_join_link_previews_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -157,28 +133,21 @@ pub struct GetJoinLinkPreviewsBuilder<
 
 impl GetJoinLinkPreviews<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetJoinLinkPreviewsBuilder<
-        get_join_link_previews_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, jacquard_common::DefaultStr>
+    {
         GetJoinLinkPreviewsBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> GetJoinLinkPreviews<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetJoinLinkPreviewsBuilder<
-        get_join_link_previews_state::Empty,
-        S,
-    > {
+    pub fn builder() -> GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, S> {
         GetJoinLinkPreviewsBuilder::builder()
     }
 }
 
-impl GetJoinLinkPreviewsBuilder<
-    get_join_link_previews_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetJoinLinkPreviewsBuilder {
@@ -189,9 +158,9 @@ impl GetJoinLinkPreviewsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetJoinLinkPreviewsBuilder {

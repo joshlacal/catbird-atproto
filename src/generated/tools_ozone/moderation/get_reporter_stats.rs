@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,26 +16,20 @@ pub struct GetReporterStats<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub dids: Vec<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetReporterStatsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetReporterStatsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub stats: Vec<crate::generated::tools_ozone::moderation::ReporterStats<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -62,8 +49,7 @@ impl jacquard_common::xrpc::XrpcResp for GetReporterStatsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetReporterStats<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetReporterStats<S> {
     const NSID: &'static str = "tools.ozone.moderation.getReporterStats";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetReporterStatsResponse;
@@ -82,9 +68,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetReporterStatsRequest {
 
 pub mod get_reporter_stats_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -124,10 +110,8 @@ pub struct GetReporterStatsBuilder<
 
 impl GetReporterStats<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetReporterStatsBuilder<
-        get_reporter_stats_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetReporterStatsBuilder<get_reporter_stats_state::Empty, jacquard_common::DefaultStr> {
         GetReporterStatsBuilder::new()
     }
 }
@@ -139,10 +123,7 @@ impl<S: jacquard_common::BosStr> GetReporterStats<S> {
     }
 }
 
-impl GetReporterStatsBuilder<
-    get_reporter_stats_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetReporterStatsBuilder<get_reporter_stats_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetReporterStatsBuilder {
@@ -153,9 +134,7 @@ impl GetReporterStatsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetReporterStatsBuilder<get_reporter_stats_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetReporterStatsBuilder<get_reporter_stats_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetReporterStatsBuilder {

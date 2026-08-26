@@ -6,27 +6,24 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the viewer's account is allowed to create group chats. New accounts are restricted from creating groups.
+    /// Whether the viewer's account is allowed to create group chats. New accounts are restricted from creating groups.
     pub can_create_groups: bool,
-    ///True when the viewer's account is disabled and cannot actively participate in chat.
+    /// True when the viewer's account is disabled and cannot actively participate in chat.
     pub chat_disabled: bool,
-    ///The maximum number of members allowed in a group conversation.
+    /// The maximum number of members allowed in a group conversation.
     pub group_member_limit: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,7 +44,7 @@ This endpoint has no request parameters or input body; send this marker with `ja
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Copy
+    Copy,
 )]
 pub struct GetStatus;
 /** Response marker for the `chat.bsky.actor.getStatus` query.
@@ -65,6 +62,9 @@ impl jacquard_common::xrpc::XrpcRequest for GetStatus {
     const NSID: &'static str = "chat.bsky.actor.getStatus";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetStatusResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `chat.bsky.actor.getStatus` query.

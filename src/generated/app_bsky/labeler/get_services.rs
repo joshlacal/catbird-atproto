@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -27,24 +20,20 @@ pub struct GetServices<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub dids: Vec<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetServicesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub views: Vec<GetServicesOutputViewsItem<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -53,31 +42,19 @@ pub struct GetServicesOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum GetServicesOutputViewsItem<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum GetServicesOutputViewsItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "app.bsky.labeler.defs#labelerView")]
     LabelerView(Box<crate::generated::app_bsky::labeler::LabelerView<S>>),
     #[serde(rename = "app.bsky.labeler.defs#labelerViewDetailed")]
-    LabelerViewDetailed(
-        Box<crate::generated::app_bsky::labeler::LabelerViewDetailed<S>>,
-    ),
+    LabelerViewDetailed(Box<crate::generated::app_bsky::labeler::LabelerViewDetailed<S>>),
 }
 
 /** Response marker for the `app.bsky.labeler.getServices` query.
@@ -114,9 +91,9 @@ fn _default_detailed() -> core::option::Option<bool> {
 
 pub mod get_services_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -159,10 +136,7 @@ pub struct GetServicesBuilder<
 
 impl GetServices<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetServicesBuilder<
-        get_services_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetServicesBuilder<get_services_state::Empty, jacquard_common::DefaultStr> {
         GetServicesBuilder::new()
     }
 }
@@ -196,10 +170,7 @@ impl<S: jacquard_common::BosStr> GetServicesBuilder<get_services_state::Empty, S
     }
 }
 
-impl<
-    St: get_services_state::State,
-    S: jacquard_common::BosStr,
-> GetServicesBuilder<St, S> {
+impl<St: get_services_state::State, S: jacquard_common::BosStr> GetServicesBuilder<St, S> {
     /// Set the `detailed` field (optional)
     pub fn detailed(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.0 = value.into();

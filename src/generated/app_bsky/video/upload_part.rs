@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,33 +17,17 @@ pub struct UploadPartParams<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub part_number: i64,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct UploadPart {
     pub body: jacquard_common::deps::bytes::Bytes,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -58,7 +35,11 @@ pub struct UploadPart {
 pub struct UploadPartOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub part_number: i64,
     pub size_bytes: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -66,7 +47,6 @@ pub struct UploadPartOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -76,44 +56,69 @@ pub struct UploadPartOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum UploadPartError {
     /// The job ID is unknown or aged out of retention; known terminal sessions are never reported as not found.
     #[serde(rename = "UploadNotFound")]
-    UploadNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The upload session expired before completion.
     #[serde(rename = "UploadExpired")]
-    UploadExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The part number is outside the upload's valid part range.
     #[serde(rename = "InvalidPartNumber")]
-    InvalidPartNumber(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidPartNumber(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Content-Length does not exactly match the expected size for this part.
     #[serde(rename = "PartSizeMismatch")]
-    PartSizeMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    PartSizeMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// A finish is in progress; check getUploadStatus and retry.
     #[serde(rename = "UploadNotReady")]
-    UploadNotReady(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadNotReady(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The session is known to have failed; the error carries its failure reason.
     #[serde(rename = "UploadFailed")]
-    UploadFailed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadFailed(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The session is known to have been aborted.
     #[serde(rename = "UploadAborted")]
-    UploadAborted(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadAborted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The session is known to have already completed.
     #[serde(rename = "UploadAlreadyCompleted")]
     UploadAlreadyCompleted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// The service is draining or temporarily at capacity; retry on another worker.
     #[serde(rename = "ServiceOverloaded")]
-    ServiceOverloaded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ServiceOverloaded(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -208,22 +213,16 @@ impl jacquard_common::xrpc::XrpcResp for UploadPartResponse {
 
 impl jacquard_common::xrpc::XrpcRequest for UploadPart {
     const NSID: &'static str = "app.bsky.video.uploadPart";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/octet-stream",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
     type Response = UploadPartResponse;
-    fn encode_body(
-        &self,
-        buffer: &mut Vec<u8>,
-    ) -> Result<(), jacquard_common::xrpc::EncodeError>
+    fn encode_body(&self, buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError>
     where
         Self: serde::Serialize,
     {
         Ok(buffer.extend_from_slice(self.body.as_ref()))
     }
-    fn decode_body<'de>(
-        body: &'de [u8],
-    ) -> Result<Self, jacquard_common::error::DecodeError>
+    fn decode_body<'de>(body: &'de [u8]) -> Result<Self, jacquard_common::error::DecodeError>
     where
         Self: serde::Deserialize<'de>,
     {
@@ -239,18 +238,17 @@ Path: `/xrpc/app.bsky.video.uploadPart`. The request payload type is `UploadPart
 pub struct UploadPartRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UploadPartRequest {
     const PATH: &'static str = "/xrpc/app.bsky.video.uploadPart";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/octet-stream",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
     type Request<S: jacquard_common::BosStr> = UploadPart;
     type Response = UploadPartResponse;
 }
 
 pub mod upload_part_params_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -302,10 +300,8 @@ pub struct UploadPartParamsBuilder<
 
 impl UploadPartParams<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UploadPartParamsBuilder<
-        upload_part_params_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> UploadPartParamsBuilder<upload_part_params_state::Empty, jacquard_common::DefaultStr> {
         UploadPartParamsBuilder::new()
     }
 }
@@ -317,10 +313,7 @@ impl<S: jacquard_common::BosStr> UploadPartParams<S> {
     }
 }
 
-impl UploadPartParamsBuilder<
-    upload_part_params_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl UploadPartParamsBuilder<upload_part_params_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UploadPartParamsBuilder {
@@ -331,9 +324,7 @@ impl UploadPartParamsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> UploadPartParamsBuilder<upload_part_params_state::Empty, S> {
+impl<S: jacquard_common::BosStr> UploadPartParamsBuilder<upload_part_params_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         UploadPartParamsBuilder {

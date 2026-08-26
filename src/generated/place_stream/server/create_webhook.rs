@@ -6,49 +6,44 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateWebhook<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether this webhook should be active upon creation.  Defaults to `false`.
+    /// Whether this webhook should be active upon creation.  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_create_webhook_active")]
     pub active: core::option::Option<bool>,
-    ///A description of what this webhook is used for.
+    /// A description of what this webhook is used for.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///The types of events this webhook should receive.
-    pub events: Vec<S>,
-    ///Words to filter out from chat messages. Messages containing any of these words will not be forwarded.
+    /// The types of events this webhook should receive.
+    pub events: Vec<CreateWebhookEvents<S>>,
+    /// Words to filter out from chat messages. Messages containing any of these words will not be forwarded.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub mute_words: core::option::Option<Vec<S>>,
-    ///A user-friendly name for this webhook.
+    /// A user-friendly name for this webhook.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub name: core::option::Option<S>,
-    ///Text to prepend to webhook messages.
+    /// Text to prepend to webhook messages.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub prefix: core::option::Option<S>,
-    ///Text replacement rules for webhook messages.
+    /// Text replacement rules for webhook messages.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub rewrite: core::option::Option<
-        Vec<crate::generated::place_stream::server::RewriteRule<S>>,
-    >,
-    ///Text to append to webhook messages.
+    pub rewrite: core::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>,
+    /// Text to append to webhook messages.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub suffix: core::option::Option<S>,
-    ///The webhook URL where events will be sent.
+    /// The webhook URL where events will be sent.
     pub url: jacquard_common::types::string::UriValue<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,26 +52,107 @@ pub struct CreateWebhook<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum CreateWebhookEvents<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Chat,
+    Livestream,
+    Follow,
+    Mention,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> CreateWebhookEvents<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Chat => "chat",
+            Self::Livestream => "livestream",
+            Self::Follow => "follow",
+            Self::Mention => "mention",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "chat" => Self::Chat,
+            "livestream" => Self::Livestream,
+            "follow" => Self::Follow,
+            "mention" => Self::Mention,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for CreateWebhookEvents<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for CreateWebhookEvents<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for CreateWebhookEvents<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for CreateWebhookEvents<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for CreateWebhookEvents<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for CreateWebhookEvents<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = CreateWebhookEvents<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            CreateWebhookEvents::Chat => CreateWebhookEvents::Chat,
+            CreateWebhookEvents::Livestream => CreateWebhookEvents::Livestream,
+            CreateWebhookEvents::Follow => CreateWebhookEvents::Follow,
+            CreateWebhookEvents::Mention => CreateWebhookEvents::Mention,
+            CreateWebhookEvents::Other(v) => CreateWebhookEvents::Other(v.into_static()),
+        }
+    }
+}
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CreateWebhookOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct CreateWebhookOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub webhook: crate::generated::place_stream::server::Webhook<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -84,7 +160,6 @@ pub struct CreateWebhookOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -94,24 +169,33 @@ pub struct CreateWebhookOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum CreateWebhookError {
     /// The provided webhook URL is invalid or unreachable.
     #[serde(rename = "InvalidUrl")]
-    InvalidUrl(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidUrl(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// A webhook with this URL already exists for this user.
     #[serde(rename = "DuplicateWebhook")]
-    DuplicateWebhook(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DuplicateWebhook(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The user has reached their maximum number of webhooks.
     #[serde(rename = "TooManyWebhooks")]
-    TooManyWebhooks(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TooManyWebhooks(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -162,12 +246,10 @@ impl jacquard_common::xrpc::XrpcResp for CreateWebhookResponse {
     type Err = CreateWebhookError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for CreateWebhook<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateWebhook<S> {
     const NSID: &'static str = "place.stream.server.createWebhook";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateWebhookResponse;
 }
 
@@ -177,9 +259,8 @@ Path: `/xrpc/place.stream.server.createWebhook`. The request payload type is `Cr
 pub struct CreateWebhookRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateWebhookRequest {
     const PATH: &'static str = "/xrpc/place.stream.server.createWebhook";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = CreateWebhook<S>;
     type Response = CreateWebhookResponse;
 }
@@ -190,9 +271,9 @@ fn _default_create_webhook_active() -> core::option::Option<bool> {
 
 pub mod create_webhook_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -241,13 +322,11 @@ pub struct CreateWebhookBuilder<
     _fields: (
         core::option::Option<bool>,
         core::option::Option<S>,
-        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<CreateWebhookEvents<S>>>,
         core::option::Option<Vec<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<
-            Vec<crate::generated::place_stream::server::RewriteRule<S>>,
-        >,
+        core::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
@@ -256,10 +335,7 @@ pub struct CreateWebhookBuilder<
 
 impl CreateWebhook<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreateWebhookBuilder<
-        create_webhook_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> CreateWebhookBuilder<create_webhook_state::Empty, jacquard_common::DefaultStr> {
         CreateWebhookBuilder::new()
     }
 }
@@ -293,10 +369,7 @@ impl<S: jacquard_common::BosStr> CreateWebhookBuilder<create_webhook_state::Empt
     }
 }
 
-impl<
-    St: create_webhook_state::State,
-    S: jacquard_common::BosStr,
-> CreateWebhookBuilder<St, S> {
+impl<St: create_webhook_state::State, S: jacquard_common::BosStr> CreateWebhookBuilder<St, S> {
     /// Set the `active` field (optional)
     pub fn active(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.0 = value.into();
@@ -309,10 +382,7 @@ impl<
     }
 }
 
-impl<
-    St: create_webhook_state::State,
-    S: jacquard_common::BosStr,
-> CreateWebhookBuilder<St, S> {
+impl<St: create_webhook_state::State, S: jacquard_common::BosStr> CreateWebhookBuilder<St, S> {
     /// Set the `description` field (optional)
     pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -333,7 +403,7 @@ where
     /// Set the `events` field (required)
     pub fn events(
         mut self,
-        value: impl Into<Vec<S>>,
+        value: impl Into<Vec<CreateWebhookEvents<S>>>,
     ) -> CreateWebhookBuilder<create_webhook_state::SetEvents<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         CreateWebhookBuilder {
@@ -344,10 +414,7 @@ where
     }
 }
 
-impl<
-    St: create_webhook_state::State,
-    S: jacquard_common::BosStr,
-> CreateWebhookBuilder<St, S> {
+impl<St: create_webhook_state::State, S: jacquard_common::BosStr> CreateWebhookBuilder<St, S> {
     /// Set the `muteWords` field (optional)
     pub fn mute_words(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.3 = value.into();
@@ -360,10 +427,7 @@ impl<
     }
 }
 
-impl<
-    St: create_webhook_state::State,
-    S: jacquard_common::BosStr,
-> CreateWebhookBuilder<St, S> {
+impl<St: create_webhook_state::State, S: jacquard_common::BosStr> CreateWebhookBuilder<St, S> {
     /// Set the `name` field (optional)
     pub fn name(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();
@@ -376,10 +440,7 @@ impl<
     }
 }
 
-impl<
-    St: create_webhook_state::State,
-    S: jacquard_common::BosStr,
-> CreateWebhookBuilder<St, S> {
+impl<St: create_webhook_state::State, S: jacquard_common::BosStr> CreateWebhookBuilder<St, S> {
     /// Set the `prefix` field (optional)
     pub fn prefix(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.5 = value.into();
@@ -392,16 +453,11 @@ impl<
     }
 }
 
-impl<
-    St: create_webhook_state::State,
-    S: jacquard_common::BosStr,
-> CreateWebhookBuilder<St, S> {
+impl<St: create_webhook_state::State, S: jacquard_common::BosStr> CreateWebhookBuilder<St, S> {
     /// Set the `rewrite` field (optional)
     pub fn rewrite(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>>,
     ) -> Self {
         self._fields.6 = value.into();
         self
@@ -416,10 +472,7 @@ impl<
     }
 }
 
-impl<
-    St: create_webhook_state::State,
-    S: jacquard_common::BosStr,
-> CreateWebhookBuilder<St, S> {
+impl<St: create_webhook_state::State, S: jacquard_common::BosStr> CreateWebhookBuilder<St, S> {
     /// Set the `suffix` field (optional)
     pub fn suffix(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.7 = value.into();

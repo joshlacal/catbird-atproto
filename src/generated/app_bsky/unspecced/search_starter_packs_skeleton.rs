@@ -6,22 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SearchStarterPacksSkeleton<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct SearchStarterPacksSkeleton<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     /// Defaults to `25`. Min: 1. Max: 100.
@@ -33,17 +24,9 @@ pub struct SearchStarterPacksSkeleton<
     pub viewer: core::option::Option<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -53,13 +36,15 @@ pub struct SearchStarterPacksSkeletonOutput<
 > {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    ///Count of search hits. Optional, may be rounded/truncated, and may not be possible to paginate through all hits.
+    /// Count of search hits. Optional, may be rounded/truncated, and may not be possible to paginate through all hits.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub hits_total: core::option::Option<i64>,
-    pub starter_packs: Vec<
-        crate::generated::app_bsky::unspecced::SkeletonSearchStarterPack<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub starter_packs: Vec<crate::generated::app_bsky::unspecced::SkeletonSearchStarterPack<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -67,7 +52,6 @@ pub struct SearchStarterPacksSkeletonOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -77,17 +61,20 @@ pub struct SearchStarterPacksSkeletonOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum SearchStarterPacksSkeletonError {
     #[serde(rename = "BadQueryString")]
-    BadQueryString(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BadQueryString(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -125,7 +112,8 @@ impl jacquard_common::xrpc::XrpcResp for SearchStarterPacksSkeletonResponse {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for SearchStarterPacksSkeleton<S> {
+    for SearchStarterPacksSkeleton<S>
+{
     const NSID: &'static str = "app.bsky.unspecced.searchStarterPacksSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = SearchStarterPacksSkeletonResponse;
@@ -148,9 +136,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod search_starter_packs_skeleton_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -205,18 +193,18 @@ impl SearchStarterPacksSkeleton<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SearchStarterPacksSkeleton<S> {
     /// Create a new builder for this type
-    pub fn builder() -> SearchStarterPacksSkeletonBuilder<
-        search_starter_packs_skeleton_state::Empty,
-        S,
-    > {
+    pub fn builder(
+    ) -> SearchStarterPacksSkeletonBuilder<search_starter_packs_skeleton_state::Empty, S> {
         SearchStarterPacksSkeletonBuilder::builder()
     }
 }
 
-impl SearchStarterPacksSkeletonBuilder<
-    search_starter_packs_skeleton_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    SearchStarterPacksSkeletonBuilder<
+        search_starter_packs_skeleton_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchStarterPacksSkeletonBuilder {
@@ -227,9 +215,9 @@ impl SearchStarterPacksSkeletonBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> SearchStarterPacksSkeletonBuilder<search_starter_packs_skeleton_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    SearchStarterPacksSkeletonBuilder<search_starter_packs_skeleton_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SearchStarterPacksSkeletonBuilder {
@@ -240,10 +228,9 @@ impl<
     }
 }
 
-impl<
-    St: search_starter_packs_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> SearchStarterPacksSkeletonBuilder<St, S> {
+impl<St: search_starter_packs_skeleton_state::State, S: jacquard_common::BosStr>
+    SearchStarterPacksSkeletonBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -256,10 +243,9 @@ impl<
     }
 }
 
-impl<
-    St: search_starter_packs_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> SearchStarterPacksSkeletonBuilder<St, S> {
+impl<St: search_starter_packs_skeleton_state::State, S: jacquard_common::BosStr>
+    SearchStarterPacksSkeletonBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
@@ -281,10 +267,7 @@ where
     pub fn q(
         mut self,
         value: impl Into<S>,
-    ) -> SearchStarterPacksSkeletonBuilder<
-        search_starter_packs_skeleton_state::SetQ<St>,
-        S,
-    > {
+    ) -> SearchStarterPacksSkeletonBuilder<search_starter_packs_skeleton_state::SetQ<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         SearchStarterPacksSkeletonBuilder {
             _state: ::core::marker::PhantomData,
@@ -294,10 +277,9 @@ where
     }
 }
 
-impl<
-    St: search_starter_packs_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> SearchStarterPacksSkeletonBuilder<St, S> {
+impl<St: search_starter_packs_skeleton_state::State, S: jacquard_common::BosStr>
+    SearchStarterPacksSkeletonBuilder<St, S>
+{
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
@@ -307,10 +289,7 @@ impl<
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<S>>,
-    ) -> Self {
+    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
         self._fields.3 = value;
         self
     }

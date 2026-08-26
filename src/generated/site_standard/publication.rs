@@ -17,29 +17,30 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Publication<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Simplified publication theme for tools and apps to utilize when displaying content.
+    /// Simplified publication theme for tools and apps to utilize when displaying content.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub basic_theme: core::option::Option<crate::generated::site_standard::theme::basic::Basic<S>>,
-    ///Brief description of the publication.
+    /// Brief description of the publication.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///Square image to identify the publication. Should be at least 256x256.
+    /// Square image to identify the publication. Should be at least 256x256.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub icon: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
-    ///Self-label values for this publication. Effectively content warnings.
+    /// Self-label values for this publication. Effectively content warnings.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
-    ///Name of the publication.
+    /// Name of the publication.
     pub name: S,
-    ///Object containing platform specific preferences (with a few shared properties).
+    /// Object containing platform specific preferences (with a few shared properties).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub preferences:
         core::option::Option<crate::generated::site_standard::publication::Preferences<S>>,
-    ///Base publication url (ex: https://standard.site). The canonical document URL is formed by combining this value with the document path.
+    /// Base publication url (ex: https://standard.site). The canonical document URL is formed by combining this value with the document path.
     pub url: jacquard_common::types::string::UriValue<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_publication_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -71,13 +72,14 @@ pub struct PublicationGetRecordOutput<S: jacquard_common::BosStr = jacquard_comm
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Preferences<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Boolean which decides whether the publication should appear in discovery feeds.  Defaults to `true`.
+    /// Boolean which decides whether the publication should appear in discovery feeds.  Defaults to `true`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_preferences_show_in_discover")]
     pub show_in_discover: core::option::Option<bool>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_preferences_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -257,11 +259,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pre
     }
 }
 
+fn deserialize_publication_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod publication_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -670,6 +702,30 @@ fn lexicon_doc_site_standard_publication() -> jacquard_lexicon::lexicon::Lexicon
         },
         ..Default::default()
     }
+}
+
+fn deserialize_preferences_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn _default_preferences_show_in_discover() -> core::option::Option<bool> {

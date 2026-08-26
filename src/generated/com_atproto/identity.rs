@@ -25,13 +25,14 @@ pub mod update_handle;
 )]
 pub struct IdentityInfo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
-    ///The complete DID document for the identity.
+    /// The complete DID document for the identity.
     pub did_doc: jacquard_common::types::value::Data<S>,
-    ///The validated handle of the account; or 'handle.invalid' if the handle did not bi-directionally match the DID document.
+    /// The validated handle of the account; or 'handle.invalid' if the handle did not bi-directionally match the DID document.
     pub handle: jacquard_common::types::string::Handle<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_identity_info_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -57,11 +58,35 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ide
     }
 }
 
+fn deserialize_identity_info_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod identity_info_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

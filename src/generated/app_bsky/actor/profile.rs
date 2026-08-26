@@ -8,15 +8,8 @@
 /// A declaration of a Bluesky account profile.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "app.bsky.actor.profile",
@@ -24,38 +17,39 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Profile<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Small image to be displayed next to posts from account. AKA, 'profile picture'
+    /// Small image to be displayed next to posts from account. AKA, 'profile picture'
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub avatar: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
-    ///Larger horizontal image to display behind profile view.
+    /// Larger horizontal image to display behind profile view.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub banner: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///Free-form profile description text.
+    /// Free-form profile description text.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub display_name: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub joined_via_starter_pack: core::option::Option<
-        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-    >,
-    ///Self-label values, specific to the Bluesky application, on the overall account.
+    pub joined_via_starter_pack:
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    /// Self-label values, specific to the Bluesky application, on the overall account.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<
-        crate::generated::com_atproto::label::SelfLabels<S>,
-    >,
+    pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub pinned_post: core::option::Option<
-        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-    >,
-    ///Free-form pronouns text.
+    pub pinned_post:
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    /// Free-form pronouns text.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pronouns: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub website: core::option::Option<jacquard_common::types::string::UriValue<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_profile_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -67,19 +61,10 @@ pub struct Profile<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct ProfileGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ProfileGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -116,8 +101,7 @@ impl<S: jacquard_common::BosStr> From<ProfileGetRecordOutput<S>> for Profile<S> 
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Profile<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Profile<S> {
     const NSID: &'static str = "app.bsky.actor.profile";
     type Record = ProfileRecord;
 }
@@ -142,13 +126,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
             {
                 let size = value.blob().size;
                 if size > 1000000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "avatar",
-                        ),
-                        max: 1000000usize,
-                        actual: size,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
                 }
             }
         }
@@ -156,29 +142,26 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
             {
                 let mime = value.blob().mime_type.as_str();
                 let accepted: &[&str] = &["image/png", "image/jpeg"];
-                let matched = accepted
-                    .iter()
-                    .any(|pattern| {
-                        if *pattern == "*/*" {
-                            true
-                        } else if pattern.ends_with("/*") {
-                            let prefix = &pattern[..pattern.len() - 2];
-                            mime.starts_with(prefix)
-                                && mime.as_bytes().get(prefix.len()) == Some(&b'/')
-                        } else {
-                            mime == *pattern
-                        }
-                    });
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
                 if !matched {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "avatar",
-                        ),
-                        accepted: vec![
-                            "image/png".to_string(), "image/jpeg".to_string()
-                        ],
-                        actual: mime.to_string(),
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            accepted: vec!["image/png".to_string(), "image/jpeg".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
                 }
             }
         }
@@ -186,13 +169,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
             {
                 let size = value.blob().size;
                 if size > 1000000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "banner",
-                        ),
-                        max: 1000000usize,
-                        actual: size,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "banner",
+                            ),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
                 }
             }
         }
@@ -200,29 +185,26 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
             {
                 let mime = value.blob().mime_type.as_str();
                 let accepted: &[&str] = &["image/png", "image/jpeg"];
-                let matched = accepted
-                    .iter()
-                    .any(|pattern| {
-                        if *pattern == "*/*" {
-                            true
-                        } else if pattern.ends_with("/*") {
-                            let prefix = &pattern[..pattern.len() - 2];
-                            mime.starts_with(prefix)
-                                && mime.as_bytes().get(prefix.len()) == Some(&b'/')
-                        } else {
-                            mime == *pattern
-                        }
-                    });
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
                 if !matched {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "banner",
-                        ),
-                        accepted: vec![
-                            "image/png".to_string(), "image/jpeg".to_string()
-                        ],
-                        actual: mime.to_string(),
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "banner",
+                            ),
+                            accepted: vec!["image/png".to_string(), "image/jpeg".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
                 }
             }
         }
@@ -230,9 +212,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 2560usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "description",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 2560usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -246,13 +226,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
                     )
                     .count();
                 if count > 256usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "description",
-                        ),
-                        max: 256usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "description",
+                            ),
+                            max: 256usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -260,9 +242,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 640usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "display_name",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("display_name"),
                     max: 640usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -276,13 +256,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
                     )
                     .count();
                 if count > 64usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "display_name",
-                        ),
-                        max: 64usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "display_name",
+                            ),
+                            max: 64usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -290,9 +272,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 200usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "pronouns",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("pronouns"),
                     max: 200usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -306,13 +286,15 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
                     )
                     .count();
                 if count > 20usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "pronouns",
-                        ),
-                        max: 20usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "pronouns",
+                            ),
+                            max: 20usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -320,11 +302,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
     }
 }
 
+fn deserialize_profile_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod profile_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -351,13 +363,9 @@ pub struct ProfileBuilder<
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
         core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
@@ -410,10 +418,7 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
         self
     }
     /// Set the `avatar` field to an Option value (optional)
-    pub fn maybe_avatar(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_avatar(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.0 = value;
         self
     }
@@ -429,10 +434,7 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
         self
     }
     /// Set the `banner` field to an Option value (optional)
-    pub fn maybe_banner(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_banner(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.1 = value;
         self
     }
@@ -487,9 +489,7 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
     /// Set the `joinedViaStarterPack` field (optional)
     pub fn joined_via_starter_pack(
         mut self,
-        value: impl Into<
-            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        >,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
         self._fields.5 = value.into();
         self
@@ -527,9 +527,7 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
     /// Set the `pinnedPost` field (optional)
     pub fn pinned_post(
         mut self,
-        value: impl Into<
-            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        >,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
         self._fields.7 = value.into();
         self
@@ -620,9 +618,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_actor_profile() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_actor_profile() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.actor.profile"),

@@ -13,17 +13,17 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeliverWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Conversation ID
+    /// Conversation ID
     pub convo_id: S,
-    ///Initial epoch of the group for the new member
+    /// Initial epoch of the group for the new member
     pub initial_epoch: i64,
-    ///Hash of the consumed key package
+    /// Hash of the consumed key package
     pub key_package_hash: S,
-    ///DID of the recipient user
+    /// DID of the recipient user
     pub recipient_did: S,
-    ///DID of the sending delivery service
+    /// DID of the sending delivery service
     pub sender_ds_did: S,
-    ///Serialized MLS Welcome message
+    /// Serialized MLS Welcome message
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub welcome_data: jacquard_common::deps::bytes::Bytes,
     #[serde(
@@ -47,7 +47,7 @@ pub struct DeliverWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeliverWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the welcome was accepted
+    /// Whether the welcome was accepted
     pub accepted: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub ack: core::option::Option<
@@ -79,13 +79,20 @@ pub struct DeliverWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::De
 #[serde(tag = "error", content = "message")]
 pub enum DeliverWelcomeError {
     #[serde(rename = "RecipientNotFound")]
-    RecipientNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RecipientNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotSequencer")]
-    NotSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotSequencer(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -152,7 +159,7 @@ pub mod deliver_welcome_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

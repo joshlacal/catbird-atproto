@@ -25,7 +25,7 @@ pub struct GetSessionOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub email_confirmed: core::option::Option<bool>,
     pub handle: jacquard_common::types::string::Handle<S>,
-    ///If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
+    /// If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub status: core::option::Option<GetSessionOutputStatus<S>>,
     #[serde(
@@ -156,6 +156,9 @@ impl jacquard_common::xrpc::XrpcRequest for GetSession {
     const NSID: &'static str = "com.atproto.server.getSession";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetSessionResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `com.atproto.server.getSession` query.

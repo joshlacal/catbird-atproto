@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,7 +16,11 @@ pub struct SendInteractions<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub feed: core::option::Option<jacquard_common::types::string::AtUri<S>>,
     pub interactions: Vec<crate::generated::app_bsky::feed::Interaction<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -31,7 +28,6 @@ pub struct SendInteractions<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -41,17 +37,18 @@ pub struct SendInteractions<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SendInteractionsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+pub struct SendInteractionsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -71,12 +68,10 @@ impl jacquard_common::xrpc::XrpcResp for SendInteractionsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for SendInteractions<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SendInteractions<S> {
     const NSID: &'static str = "app.bsky.feed.sendInteractions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = SendInteractionsResponse;
 }
 
@@ -86,18 +81,17 @@ Path: `/xrpc/app.bsky.feed.sendInteractions`. The request payload type is `SendI
 pub struct SendInteractionsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendInteractionsRequest {
     const PATH: &'static str = "/xrpc/app.bsky.feed.sendInteractions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = SendInteractions<S>;
     type Response = SendInteractionsResponse;
 }
 
 pub mod send_interactions_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -140,10 +134,8 @@ pub struct SendInteractionsBuilder<
 
 impl SendInteractions<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SendInteractionsBuilder<
-        send_interactions_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> SendInteractionsBuilder<send_interactions_state::Empty, jacquard_common::DefaultStr> {
         SendInteractionsBuilder::new()
     }
 }
@@ -155,10 +147,7 @@ impl<S: jacquard_common::BosStr> SendInteractions<S> {
     }
 }
 
-impl SendInteractionsBuilder<
-    send_interactions_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl SendInteractionsBuilder<send_interactions_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SendInteractionsBuilder {
@@ -169,9 +158,7 @@ impl SendInteractionsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> SendInteractionsBuilder<send_interactions_state::Empty, S> {
+impl<S: jacquard_common::BosStr> SendInteractionsBuilder<send_interactions_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SendInteractionsBuilder {
@@ -182,10 +169,9 @@ impl<
     }
 }
 
-impl<
-    St: send_interactions_state::State,
-    S: jacquard_common::BosStr,
-> SendInteractionsBuilder<St, S> {
+impl<St: send_interactions_state::State, S: jacquard_common::BosStr>
+    SendInteractionsBuilder<St, S>
+{
     /// Set the `feed` field (optional)
     pub fn feed(
         mut self,
@@ -195,10 +181,7 @@ impl<
         self
     }
     /// Set the `feed` field to an Option value (optional)
-    pub fn maybe_feed(
-        mut self,
-        value: Option<jacquard_common::types::string::AtUri<S>>,
-    ) -> Self {
+    pub fn maybe_feed(mut self, value: Option<jacquard_common::types::string::AtUri<S>>) -> Self {
         self._fields.0 = value;
         self
     }

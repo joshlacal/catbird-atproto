@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,42 +16,34 @@ pub struct GetUploadStatus<S: jacquard_common::BosStr = jacquard_common::Default
     pub job_id: S,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetUploadStatusOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///Present only when state is completed; may differ from jobId on deduplication.
+pub struct GetUploadStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Present only when state is completed; may differ from jobId on deduplication.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub completed_job_id: core::option::Option<S>,
     pub expires_at: jacquard_common::types::string::Datetime,
-    ///Present only when state is failed.
+    /// Present only when state is failed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub failure_reason: core::option::Option<S>,
     pub job_id: S,
-    ///Present only when state is completed.
+    /// Present only when state is completed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub job_status: core::option::Option<
-        crate::generated::app_bsky::video::JobStatus<S>,
-    >,
+    pub job_status: core::option::Option<crate::generated::app_bsky::video::JobStatus<S>>,
     pub part_count: i64,
     pub part_size_bytes: i64,
     pub received_parts: Vec<i64>,
     pub state: GetUploadStatusOutputState<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -67,11 +52,8 @@ pub struct GetUploadStatusOutput<
     >,
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum GetUploadStatusOutputState<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum GetUploadStatusOutputState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Created,
     Finishing,
     Completed,
@@ -129,7 +111,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for GetUploadStatusOutputState
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for GetUploadStatusOutputState<S> {
+    for GetUploadStatusOutputState<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -145,8 +128,7 @@ impl<S: jacquard_common::BosStr + Default> Default for GetUploadStatusOutputStat
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for GetUploadStatusOutputState<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetUploadStatusOutputState<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -155,12 +137,8 @@ where
     fn into_static(self) -> Self::Output {
         match self {
             GetUploadStatusOutputState::Created => GetUploadStatusOutputState::Created,
-            GetUploadStatusOutputState::Finishing => {
-                GetUploadStatusOutputState::Finishing
-            }
-            GetUploadStatusOutputState::Completed => {
-                GetUploadStatusOutputState::Completed
-            }
+            GetUploadStatusOutputState::Finishing => GetUploadStatusOutputState::Finishing,
+            GetUploadStatusOutputState::Completed => GetUploadStatusOutputState::Completed,
             GetUploadStatusOutputState::Failed => GetUploadStatusOutputState::Failed,
             GetUploadStatusOutputState::Aborted => GetUploadStatusOutputState::Aborted,
             GetUploadStatusOutputState::Expired => GetUploadStatusOutputState::Expired,
@@ -171,7 +149,6 @@ where
     }
 }
 
-
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -180,18 +157,21 @@ where
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetUploadStatusError {
     /// The job ID is unknown or aged out of retention; known terminal sessions remain readable and are never reported as not found.
     #[serde(rename = "UploadNotFound")]
-    UploadNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -228,8 +208,7 @@ impl jacquard_common::xrpc::XrpcResp for GetUploadStatusResponse {
     type Err = GetUploadStatusError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetUploadStatus<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetUploadStatus<S> {
     const NSID: &'static str = "app.bsky.video.getUploadStatus";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetUploadStatusResponse;
@@ -248,9 +227,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetUploadStatusRequest {
 
 pub mod get_upload_status_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -290,10 +269,8 @@ pub struct GetUploadStatusBuilder<
 
 impl GetUploadStatus<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetUploadStatusBuilder<
-        get_upload_status_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetUploadStatusBuilder<get_upload_status_state::Empty, jacquard_common::DefaultStr> {
         GetUploadStatusBuilder::new()
     }
 }
@@ -305,10 +282,7 @@ impl<S: jacquard_common::BosStr> GetUploadStatus<S> {
     }
 }
 
-impl GetUploadStatusBuilder<
-    get_upload_status_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetUploadStatusBuilder<get_upload_status_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetUploadStatusBuilder {
@@ -319,9 +293,7 @@ impl GetUploadStatusBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetUploadStatusBuilder<get_upload_status_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetUploadStatusBuilder<get_upload_status_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetUploadStatusBuilder {

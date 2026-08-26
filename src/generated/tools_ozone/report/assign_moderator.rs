@@ -6,32 +6,29 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AssignModerator<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///DID to be assigned. Defaults to the caller's DID. Admins may assign to any moderator.
+    /// DID to be assigned. Defaults to the caller's DID. Admins may assign to any moderator.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
-    ///When true, the assignment has no expiry (endAt is null). Throws AlreadyAssigned if another user already has a permanent assignment on this report.
+    /// When true, the assignment has no expiry (endAt is null). Throws AlreadyAssigned if another user already has a permanent assignment on this report.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub is_permanent: core::option::Option<bool>,
-    ///Optional queue ID to associate the assignment with. If not provided and the report has been assigned on a queue before, it will stay on that queue.
+    /// Optional queue ID to associate the assignment with. If not provided and the report has been assigned on a queue before, it will stay on that queue.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub queue_id: core::option::Option<i64>,
-    ///The ID of the report to assign.
+    /// The ID of the report to assign.
     pub report_id: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -40,27 +37,21 @@ pub struct AssignModerator<S: jacquard_common::BosStr = jacquard_common::Default
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct AssignModeratorOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct AssignModeratorOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::report::AssignmentView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -68,7 +59,6 @@ pub struct AssignModeratorOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -78,21 +68,27 @@ pub struct AssignModeratorOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum AssignModeratorError {
     /// The report is already assigned to another user.
     #[serde(rename = "AlreadyAssigned")]
-    AlreadyAssigned(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AlreadyAssigned(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The report ID or queue ID is invalid.
     #[serde(rename = "InvalidAssignment")]
-    InvalidAssignment(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidAssignment(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -136,12 +132,10 @@ impl jacquard_common::xrpc::XrpcResp for AssignModeratorResponse {
     type Err = AssignModeratorError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for AssignModerator<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AssignModerator<S> {
     const NSID: &'static str = "tools.ozone.report.assignModerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AssignModeratorResponse;
 }
 
@@ -151,18 +145,17 @@ Path: `/xrpc/tools.ozone.report.assignModerator`. The request payload type is `A
 pub struct AssignModeratorRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AssignModeratorRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.report.assignModerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = AssignModerator<S>;
     type Response = AssignModeratorResponse;
 }
 
 pub mod assign_moderator_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -207,10 +200,8 @@ pub struct AssignModeratorBuilder<
 
 impl AssignModerator<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> AssignModeratorBuilder<
-        assign_moderator_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> AssignModeratorBuilder<assign_moderator_state::Empty, jacquard_common::DefaultStr> {
         AssignModeratorBuilder::new()
     }
 }
@@ -233,9 +224,7 @@ impl AssignModeratorBuilder<assign_moderator_state::Empty, jacquard_common::Defa
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> AssignModeratorBuilder<assign_moderator_state::Empty, S> {
+impl<S: jacquard_common::BosStr> AssignModeratorBuilder<assign_moderator_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         AssignModeratorBuilder {
@@ -246,32 +235,20 @@ impl<
     }
 }
 
-impl<
-    St: assign_moderator_state::State,
-    S: jacquard_common::BosStr,
-> AssignModeratorBuilder<St, S> {
+impl<St: assign_moderator_state::State, S: jacquard_common::BosStr> AssignModeratorBuilder<St, S> {
     /// Set the `did` field (optional)
-    pub fn did(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
-    ) -> Self {
+    pub fn did(mut self, value: impl Into<Option<jacquard_common::types::string::Did<S>>>) -> Self {
         self._fields.0 = value.into();
         self
     }
     /// Set the `did` field to an Option value (optional)
-    pub fn maybe_did(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<S>>,
-    ) -> Self {
+    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
         self._fields.0 = value;
         self
     }
 }
 
-impl<
-    St: assign_moderator_state::State,
-    S: jacquard_common::BosStr,
-> AssignModeratorBuilder<St, S> {
+impl<St: assign_moderator_state::State, S: jacquard_common::BosStr> AssignModeratorBuilder<St, S> {
     /// Set the `isPermanent` field (optional)
     pub fn is_permanent(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.1 = value.into();
@@ -284,10 +261,7 @@ impl<
     }
 }
 
-impl<
-    St: assign_moderator_state::State,
-    S: jacquard_common::BosStr,
-> AssignModeratorBuilder<St, S> {
+impl<St: assign_moderator_state::State, S: jacquard_common::BosStr> AssignModeratorBuilder<St, S> {
     /// Set the `queueId` field (optional)
     pub fn queue_id(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();

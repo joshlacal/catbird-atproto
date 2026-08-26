@@ -13,31 +13,35 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct QueryEvents<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Cursor for pagination
+    /// Cursor for pagination
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    ///Maximum number of results to return  Defaults to `50`.
+    /// Maximum number of results to return  Defaults to `50`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_query_events_limit")]
     pub limit: core::option::Option<i64>,
-    ///Filter by pattern type
+    /// Filter by pattern type
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pattern_type: core::option::Option<S>,
-    ///Sort direction
+    /// Sort direction  Defaults to `"desc"`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_query_events_sort_direction")]
     pub sort_direction: core::option::Option<QueryEventsSortDirection<S>>,
-    ///Filter by specific URLs or domains
+    /// Filter by specific URLs or domains
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub urls: core::option::Option<Vec<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -49,9 +53,7 @@ pub struct QueryEvents<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// Sort direction
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum QueryEventsSortDirection<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum QueryEventsSortDirection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Asc,
     Desc,
     Other(S),
@@ -97,7 +99,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for QueryEventsSortDirection<S
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for QueryEventsSortDirection<S> {
+    for QueryEventsSortDirection<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -113,8 +116,7 @@ impl<S: jacquard_common::BosStr + Default> Default for QueryEventsSortDirection<
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for QueryEventsSortDirection<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryEventsSortDirection<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -124,34 +126,28 @@ where
         match self {
             QueryEventsSortDirection::Asc => QueryEventsSortDirection::Asc,
             QueryEventsSortDirection::Desc => QueryEventsSortDirection::Desc,
-            QueryEventsSortDirection::Other(v) => {
-                QueryEventsSortDirection::Other(v.into_static())
-            }
+            QueryEventsSortDirection::Other(v) => QueryEventsSortDirection::Other(v.into_static()),
         }
     }
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct QueryEventsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Next cursor for pagination. Only present if there are more results.
+    /// Next cursor for pagination. Only present if there are more results.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub events: Vec<crate::generated::tools_ozone::safelink::Event<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -173,9 +169,8 @@ impl jacquard_common::xrpc::XrpcResp for QueryEventsResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for QueryEvents<S> {
     const NSID: &'static str = "tools.ozone.safelink.queryEvents";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = QueryEventsResponse;
 }
 
@@ -185,13 +180,20 @@ Path: `/xrpc/tools.ozone.safelink.queryEvents`. The request payload type is `Que
 pub struct QueryEventsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for QueryEventsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.safelink.queryEvents";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = QueryEvents<S>;
     type Response = QueryEventsResponse;
 }
 
 fn _default_query_events_limit() -> core::option::Option<i64> {
     Some(50i64)
+}
+
+fn _default_query_events_sort_direction<
+    S: jacquard_common::FromStaticStr + jacquard_common::BosStr,
+>() -> ::core::option::Option<QueryEventsSortDirection<S>> {
+    Some(<QueryEventsSortDirection<S>>::from_value(S::from_static(
+        "desc",
+    )))
 }

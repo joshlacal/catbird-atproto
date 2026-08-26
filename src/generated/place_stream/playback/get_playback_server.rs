@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,27 +16,21 @@ pub struct GetPlaybackServer<S: jacquard_common::BosStr = jacquard_common::Defau
     pub stream: S,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetPlaybackServerOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///List of available playback server addresses
+pub struct GetPlaybackServerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// List of available playback server addresses
     pub servers: Vec<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -51,7 +38,6 @@ pub struct GetPlaybackServerOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -61,15 +47,15 @@ pub struct GetPlaybackServerOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetPlaybackServerError {
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -99,8 +85,7 @@ impl jacquard_common::xrpc::XrpcResp for GetPlaybackServerResponse {
     type Err = GetPlaybackServerError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetPlaybackServer<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetPlaybackServer<S> {
     const NSID: &'static str = "place.stream.playback.getPlaybackServer";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetPlaybackServerResponse;
@@ -119,9 +104,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetPlaybackServerRequest {
 
 pub mod get_playback_server_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -161,10 +146,9 @@ pub struct GetPlaybackServerBuilder<
 
 impl GetPlaybackServer<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetPlaybackServerBuilder<
-        get_playback_server_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetPlaybackServerBuilder<get_playback_server_state::Empty, jacquard_common::DefaultStr>
+    {
         GetPlaybackServerBuilder::new()
     }
 }
@@ -176,10 +160,7 @@ impl<S: jacquard_common::BosStr> GetPlaybackServer<S> {
     }
 }
 
-impl GetPlaybackServerBuilder<
-    get_playback_server_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetPlaybackServerBuilder<get_playback_server_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetPlaybackServerBuilder {
@@ -190,9 +171,7 @@ impl GetPlaybackServerBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetPlaybackServerBuilder<get_playback_server_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetPlaybackServerBuilder<get_playback_server_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetPlaybackServerBuilder {

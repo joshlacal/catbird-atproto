@@ -25,6 +25,7 @@ pub struct Contact<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_contact_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -57,6 +58,7 @@ pub struct Links<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_links_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -75,24 +77,24 @@ pub struct Links<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DescribeServerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///List of domain suffixes that can be used in account handles.
+    /// List of domain suffixes that can be used in account handles.
     pub available_user_domains: Vec<S>,
-    ///Maximum size of a blob that can be uploaded via com.atproto.repo.uploadBlob, in bytes.
+    /// Maximum size of a blob that can be uploaded via com.atproto.repo.uploadBlob, in bytes.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub blob_upload_limit: core::option::Option<i64>,
-    ///Contact information
+    /// Contact information
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub contact:
         core::option::Option<crate::generated::com_atproto::server::describe_server::Contact<S>>,
     pub did: jacquard_common::types::string::Did<S>,
-    ///If true, an invite code must be supplied to create an account on this instance.
+    /// If true, an invite code must be supplied to create an account on this instance.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invite_code_required: core::option::Option<bool>,
-    ///URLs of service policy documents.
+    /// URLs of service policy documents.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub links:
         core::option::Option<crate::generated::com_atproto::server::describe_server::Links<S>>,
-    ///If true, a phone verification token must be supplied to create an account on this instance.
+    /// If true, a phone verification token must be supplied to create an account on this instance.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub phone_verification_required: core::option::Option<bool>,
     #[serde(
@@ -168,6 +170,9 @@ impl jacquard_common::xrpc::XrpcRequest for DescribeServer {
     const NSID: &'static str = "com.atproto.server.describeServer";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = DescribeServerResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `com.atproto.server.describeServer` query.
@@ -179,6 +184,30 @@ impl jacquard_common::xrpc::XrpcEndpoint for DescribeServerRequest {
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Request<S: jacquard_common::BosStr> = DescribeServer;
     type Response = DescribeServerResponse;
+}
+
+fn deserialize_contact_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn lexicon_doc_com_atproto_server_describeServer() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
@@ -261,4 +290,28 @@ fn lexicon_doc_com_atproto_server_describeServer() -> jacquard_lexicon::lexicon:
         },
         ..Default::default()
     }
+}
+
+fn deserialize_links_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }

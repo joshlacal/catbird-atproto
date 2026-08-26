@@ -29,7 +29,7 @@ pub struct GetFederationPeers<S: jacquard_common::BosStr = jacquard_common::Defa
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetFederationPeersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///List of peer records
+    /// List of peer records
     pub peers: Vec<crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<S>>,
     #[serde(
         flatten,
@@ -63,25 +63,25 @@ pub struct GetFederationPeersOutput<S: jacquard_common::BosStr = jacquard_common
 pub struct PeerRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///DID of the peer delivery service
+    /// DID of the peer delivery service
     pub ds_did: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invalid_token_count: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub last_seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///Per-peer rate limit override
+    /// Per-peer rate limit override
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub max_requests_per_minute: core::option::Option<i64>,
-    ///Admin note
+    /// Admin note
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub note: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rejected_request_count: core::option::Option<i64>,
-    ///Peer status (trusted, blocked, probation, unknown)
+    /// Peer status (trusted, blocked, probation, unknown)
     pub status: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub successful_request_count: core::option::Option<i64>,
-    ///Computed trust score
+    /// Computed trust score
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub trust_score: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -89,6 +89,7 @@ pub struct PeerRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_peer_record_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -150,7 +151,7 @@ pub mod get_federation_peers_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -254,6 +255,30 @@ where
             status: self._fields.1,
         }
     }
+}
+
+fn deserialize_peer_record_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn lexicon_doc_blue_catbird_mlsDS_getFederationPeers(

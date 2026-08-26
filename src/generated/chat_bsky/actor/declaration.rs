@@ -8,15 +8,8 @@
 /// A declaration of a Bluesky chat account.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "chat.bsky.actor.declaration",
@@ -24,11 +17,16 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Declaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Declaration about group chat invitation preferences for the record owner.
+    /// Declaration about group chat invitation preferences for the record owner.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub allow_group_invites: core::option::Option<DeclarationAllowGroupInvites<S>>,
     pub allow_incoming: DeclarationAllowIncoming<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_declaration_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -40,9 +38,7 @@ pub struct Declaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// Declaration about group chat invitation preferences for the record owner.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum DeclarationAllowGroupInvites<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum DeclarationAllowGroupInvites<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     All,
     None,
     Following,
@@ -91,7 +87,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for DeclarationAllowGroupInvit
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for DeclarationAllowGroupInvites<S> {
+    for DeclarationAllowGroupInvites<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -107,8 +104,7 @@ impl<S: jacquard_common::BosStr + Default> Default for DeclarationAllowGroupInvi
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for DeclarationAllowGroupInvites<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for DeclarationAllowGroupInvites<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -118,9 +114,7 @@ where
         match self {
             DeclarationAllowGroupInvites::All => DeclarationAllowGroupInvites::All,
             DeclarationAllowGroupInvites::None => DeclarationAllowGroupInvites::None,
-            DeclarationAllowGroupInvites::Following => {
-                DeclarationAllowGroupInvites::Following
-            }
+            DeclarationAllowGroupInvites::Following => DeclarationAllowGroupInvites::Following,
             DeclarationAllowGroupInvites::Other(v) => {
                 DeclarationAllowGroupInvites::Other(v.into_static())
             }
@@ -128,11 +122,8 @@ where
     }
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum DeclarationAllowIncoming<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum DeclarationAllowIncoming<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     All,
     None,
     Following,
@@ -181,7 +172,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for DeclarationAllowIncoming<S
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for DeclarationAllowIncoming<S> {
+    for DeclarationAllowIncoming<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -197,8 +189,7 @@ impl<S: jacquard_common::BosStr + Default> Default for DeclarationAllowIncoming<
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for DeclarationAllowIncoming<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for DeclarationAllowIncoming<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -209,9 +200,7 @@ where
             DeclarationAllowIncoming::All => DeclarationAllowIncoming::All,
             DeclarationAllowIncoming::None => DeclarationAllowIncoming::None,
             DeclarationAllowIncoming::Following => DeclarationAllowIncoming::Following,
-            DeclarationAllowIncoming::Other(v) => {
-                DeclarationAllowIncoming::Other(v.into_static())
-            }
+            DeclarationAllowIncoming::Other(v) => DeclarationAllowIncoming::Other(v.into_static()),
         }
     }
 }
@@ -219,19 +208,10 @@ where
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct DeclarationGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct DeclarationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -268,8 +248,7 @@ impl<S: jacquard_common::BosStr> From<DeclarationGetRecordOutput<S>> for Declara
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Declaration<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Declaration<S> {
     const NSID: &'static str = "chat.bsky.actor.declaration";
     type Record = DeclarationRecord;
 }
@@ -279,8 +258,7 @@ impl jacquard_common::types::collection::Collection for DeclarationRecord {
     type Record = DeclarationRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Declaration<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Declaration<S> {
     fn nsid() -> &'static str {
         "chat.bsky.actor.declaration"
     }
@@ -295,11 +273,41 @@ for Declaration<S> {
     }
 }
 
+fn deserialize_declaration_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod declaration_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -342,10 +350,7 @@ pub struct DeclarationBuilder<
 
 impl Declaration<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeclarationBuilder<
-        declaration_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> DeclarationBuilder<declaration_state::Empty, jacquard_common::DefaultStr> {
         DeclarationBuilder::new()
     }
 }
@@ -379,10 +384,7 @@ impl<S: jacquard_common::BosStr> DeclarationBuilder<declaration_state::Empty, S>
     }
 }
 
-impl<
-    St: declaration_state::State,
-    S: jacquard_common::BosStr,
-> DeclarationBuilder<St, S> {
+impl<St: declaration_state::State, S: jacquard_common::BosStr> DeclarationBuilder<St, S> {
     /// Set the `allowGroupInvites` field (optional)
     pub fn allow_group_invites(
         mut self,
@@ -449,9 +451,7 @@ where
     }
 }
 
-fn lexicon_doc_chat_bsky_actor_declaration() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_chat_bsky_actor_declaration() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.actor.declaration"),

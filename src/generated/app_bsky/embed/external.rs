@@ -8,15 +8,8 @@
 /// RGB color definition, inspired by site.standard.theme.color#rgb
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -25,7 +18,12 @@ pub struct ColorRgb<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub b: i64,
     pub g: i64,
     pub r: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_color_rgb_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -34,33 +32,29 @@ pub struct ColorRgb<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct External<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///StrongRefs (uri+cid) of the Atmosphere records that backed this view.
+    /// StrongRefs (uri+cid) of the Atmosphere records that backed this view.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub associated_refs: core::option::Option<
-        Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-    >,
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     pub description: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub thumb: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
     pub title: S,
     pub uri: jacquard_common::types::string::UriValue<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_external_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -72,22 +66,20 @@ pub struct External<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// A representation of some externally linked content (eg, a URL and 'card'), embedded in a Bluesky record (eg, a post).
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ExternalRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub external: crate::generated::app_bsky::embed::external::External<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_external_record_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -96,24 +88,21 @@ pub struct ExternalRecord<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub external: crate::generated::app_bsky::embed::external::ViewExternal<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -122,55 +111,47 @@ pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ViewExternal<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Profiles of the owners of the Atmosphere records that backed this view.
+    /// Profiles of the owners of the Atmosphere records that backed this view.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub associated_profiles: core::option::Option<
-        Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
-    >,
-    ///StrongRefs (uri+cid) of the Atmosphere records that backed this view.
+    pub associated_profiles:
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    /// StrongRefs (uri+cid) of the Atmosphere records that backed this view.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub associated_refs: core::option::Option<
-        Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-    >,
-    ///When the external content was created, if available. Example: a publication date, for an article.
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    /// When the external content was created, if available. Example: a publication date, for an article.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
     pub description: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<
-        Vec<crate::generated::com_atproto::label::Label<S>>,
-    >,
-    ///Estimated reading time in minutes, if applicable and available.
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    /// Estimated reading time in minutes, if applicable and available.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reading_time: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub source: core::option::Option<
-        crate::generated::app_bsky::embed::external::ViewExternalSource<S>,
-    >,
+    pub source:
+        core::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub thumb: core::option::Option<jacquard_common::types::string::UriValue<S>>,
     pub title: S,
-    ///When the external content was updated, if available.
+    /// When the external content was updated, if available.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
     pub uri: jacquard_common::types::string::UriValue<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_external_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -182,15 +163,8 @@ pub struct ViewExternal<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 /// The source of an external embed, such as a standard.site publication.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -198,7 +172,7 @@ pub struct ViewExternal<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 pub struct ViewExternalSource<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///Fully-qualified URL where an icon representing the source can be fetched. For example, CDN location provided by the App View.
+    /// Fully-qualified URL where an icon representing the source can be fetched. For example, CDN location provided by the App View.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub icon: core::option::Option<jacquard_common::types::string::UriValue<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -206,9 +180,14 @@ pub struct ViewExternalSource<S: jacquard_common::BosStr = jacquard_common::Defa
         crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>,
     >,
     pub title: S,
-    ///URI of the source, if available. Example: the https:// URL of a site.standard.publication record.
+    /// URI of the source, if available. Example: the https:// URL of a site.standard.publication record.
     pub uri: jacquard_common::types::string::UriValue<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_external_source_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -227,33 +206,30 @@ pub struct ViewExternalSource<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ViewExternalSourceTheme<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ViewExternalSourceTheme<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub accent_foreground_rgb: core::option::Option<
-        crate::generated::app_bsky::embed::external::ColorRgb<S>,
-    >,
+    pub accent_foreground_rgb:
+        core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub accent_rgb: core::option::Option<
-        crate::generated::app_bsky::embed::external::ColorRgb<S>,
-    >,
+    pub accent_rgb: core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub background_rgb: core::option::Option<
-        crate::generated::app_bsky::embed::external::ColorRgb<S>,
-    >,
+    pub background_rgb:
+        core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub foreground_rgb: core::option::Option<
-        crate::generated::app_bsky::embed::external::ColorRgb<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub foreground_rgb:
+        core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_external_source_theme_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -262,8 +238,7 @@ pub struct ViewExternalSourceTheme<
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ColorRgb<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ColorRgb<S> {
     fn nsid() -> &'static str {
         "app.bsky.embed.external"
     }
@@ -338,8 +313,7 @@ for ColorRgb<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for External<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for External<S> {
     fn nsid() -> &'static str {
         "app.bsky.embed.external"
     }
@@ -354,13 +328,13 @@ for External<S> {
             {
                 let size = value.blob().size;
                 if size > 1000000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "thumb",
-                        ),
-                        max: 1000000usize,
-                        actual: size,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
                 }
             }
         }
@@ -368,27 +342,24 @@ for External<S> {
             {
                 let mime = value.blob().mime_type.as_str();
                 let accepted: &[&str] = &["image/*"];
-                let matched = accepted
-                    .iter()
-                    .any(|pattern| {
-                        if *pattern == "*/*" {
-                            true
-                        } else if pattern.ends_with("/*") {
-                            let prefix = &pattern[..pattern.len() - 2];
-                            mime.starts_with(prefix)
-                                && mime.as_bytes().get(prefix.len()) == Some(&b'/')
-                        } else {
-                            mime == *pattern
-                        }
-                    });
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
                 if !matched {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "thumb",
-                        ),
-                        accepted: vec!["image/*".to_string()],
-                        actual: mime.to_string(),
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            accepted: vec!["image/*".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
                 }
             }
         }
@@ -396,8 +367,7 @@ for External<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ExternalRecord<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ExternalRecord<S> {
     fn nsid() -> &'static str {
         "app.bsky.embed.external"
     }
@@ -427,8 +397,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vie
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ViewExternal<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewExternal<S> {
     fn nsid() -> &'static str {
         "app.bsky.embed.external"
     }
@@ -443,8 +412,7 @@ for ViewExternal<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ViewExternalSource<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewExternalSource<S> {
     fn nsid() -> &'static str {
         "app.bsky.embed.external"
     }
@@ -460,7 +428,8 @@ for ViewExternalSource<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ViewExternalSourceTheme<S> {
+    for ViewExternalSourceTheme<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.embed.external"
     }
@@ -475,11 +444,35 @@ for ViewExternalSourceTheme<S> {
     }
 }
 
+fn deserialize_color_rgb_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod color_rgb_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -549,10 +542,7 @@ pub struct ColorRgbBuilder<
 
 impl ColorRgb<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ColorRgbBuilder<
-        color_rgb_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ColorRgbBuilder<color_rgb_state::Empty, jacquard_common::DefaultStr> {
         ColorRgbBuilder::new()
     }
 }
@@ -592,10 +582,7 @@ where
     St::B: color_rgb_state::IsUnset,
 {
     /// Set the `b` field (required)
-    pub fn b(
-        mut self,
-        value: impl Into<i64>,
-    ) -> ColorRgbBuilder<color_rgb_state::SetB<St>, S> {
+    pub fn b(mut self, value: impl Into<i64>) -> ColorRgbBuilder<color_rgb_state::SetB<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ColorRgbBuilder {
             _state: ::core::marker::PhantomData,
@@ -611,10 +598,7 @@ where
     St::G: color_rgb_state::IsUnset,
 {
     /// Set the `g` field (required)
-    pub fn g(
-        mut self,
-        value: impl Into<i64>,
-    ) -> ColorRgbBuilder<color_rgb_state::SetG<St>, S> {
+    pub fn g(mut self, value: impl Into<i64>) -> ColorRgbBuilder<color_rgb_state::SetG<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         ColorRgbBuilder {
             _state: ::core::marker::PhantomData,
@@ -630,10 +614,7 @@ where
     St::R: color_rgb_state::IsUnset,
 {
     /// Set the `r` field (required)
-    pub fn r(
-        mut self,
-        value: impl Into<i64>,
-    ) -> ColorRgbBuilder<color_rgb_state::SetR<St>, S> {
+    pub fn r(mut self, value: impl Into<i64>) -> ColorRgbBuilder<color_rgb_state::SetR<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         ColorRgbBuilder {
             _state: ::core::marker::PhantomData,
@@ -676,9 +657,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.embed.external"),
@@ -686,50 +665,54 @@ fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDo
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("colorRGB"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "RGB color definition, inspired by site.standard.theme.color#rgb",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("b")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(255i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(255i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(255i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        maximum: Some(255i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        maximum: Some(255i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        maximum: Some(255i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("external"),
@@ -835,30 +818,30 @@ fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDo
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("view"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("external")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "external",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#viewExternal",
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("external"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("external"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#viewExternal",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("viewExternal"),
@@ -1162,11 +1145,35 @@ fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDo
     }
 }
 
+fn deserialize_external_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod external_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1227,9 +1234,7 @@ pub struct ExternalBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<
-            Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        >,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
         core::option::Option<S>,
@@ -1278,9 +1283,7 @@ impl<St: external_state::State, S: jacquard_common::BosStr> ExternalBuilder<St, 
     /// Set the `associatedRefs` field (optional)
     pub fn associated_refs(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -1324,10 +1327,7 @@ impl<St: external_state::State, S: jacquard_common::BosStr> ExternalBuilder<St, 
         self
     }
     /// Set the `thumb` field to an Option value (optional)
-    pub fn maybe_thumb(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.2 = value;
         self
     }
@@ -1408,11 +1408,35 @@ where
     }
 }
 
+fn deserialize_external_record_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod external_record_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1446,18 +1470,14 @@ pub struct ExternalRecordBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<crate::generated::app_bsky::embed::external::External<S>>,
-    ),
+    _fields: (core::option::Option<crate::generated::app_bsky::embed::external::External<S>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl ExternalRecord<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ExternalRecordBuilder<
-        external_record_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ExternalRecordBuilder<external_record_state::Empty, jacquard_common::DefaultStr>
+    {
         ExternalRecordBuilder::new()
     }
 }
@@ -1537,11 +1557,35 @@ where
     }
 }
 
+fn deserialize_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1575,11 +1619,7 @@ pub struct ViewBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<
-            crate::generated::app_bsky::embed::external::ViewExternal<S>,
-        >,
-    ),
+    _fields: (core::option::Option<crate::generated::app_bsky::embed::external::ViewExternal<S>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -1665,11 +1705,35 @@ where
     }
 }
 
+fn deserialize_view_external_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod view_external_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1730,19 +1794,13 @@ pub struct ViewExternalBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<
-            Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
-        >,
-        core::option::Option<
-            Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        >,
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<S>,
         core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
         core::option::Option<i64>,
-        core::option::Option<
-            crate::generated::app_bsky::embed::external::ViewExternalSource<S>,
-        >,
+        core::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Datetime>,
@@ -1753,10 +1811,7 @@ pub struct ViewExternalBuilder<
 
 impl ViewExternal<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ViewExternalBuilder<
-        view_external_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ViewExternalBuilder<view_external_state::Empty, jacquard_common::DefaultStr> {
         ViewExternalBuilder::new()
     }
 }
@@ -1773,7 +1828,9 @@ impl ViewExternalBuilder<view_external_state::Empty, jacquard_common::DefaultStr
     pub fn new() -> Self {
         ViewExternalBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1784,22 +1841,19 @@ impl<S: jacquard_common::BosStr> ViewExternalBuilder<view_external_state::Empty,
     pub fn builder() -> Self {
         ViewExternalBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `associatedProfiles` field (optional)
     pub fn associated_profiles(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -1814,16 +1868,11 @@ impl<
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `associatedRefs` field (optional)
     pub fn associated_refs(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
     ) -> Self {
         self._fields.1 = value.into();
         self
@@ -1838,10 +1887,7 @@ impl<
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,
@@ -1879,10 +1925,7 @@ where
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
@@ -1901,10 +1944,7 @@ impl<
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `readingTime` field (optional)
     pub fn reading_time(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.5 = value.into();
@@ -1917,16 +1957,11 @@ impl<
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `source` field (optional)
     pub fn source(
         mut self,
-        value: impl Into<
-            Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>,
-        >,
+        value: impl Into<Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>>,
     ) -> Self {
         self._fields.6 = value.into();
         self
@@ -1941,10 +1976,7 @@ impl<
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `thumb` field (optional)
     pub fn thumb(
         mut self,
@@ -1982,10 +2014,7 @@ where
     }
 }
 
-impl<
-    St: view_external_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalBuilder<St, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `updatedAt` field (optional)
     pub fn updated_at(
         mut self,
@@ -2072,11 +2101,35 @@ where
     }
 }
 
+fn deserialize_view_external_source_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod view_external_source_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2136,10 +2189,9 @@ pub struct ViewExternalSourceBuilder<
 
 impl ViewExternalSource<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ViewExternalSourceBuilder<
-        view_external_source_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> ViewExternalSourceBuilder<view_external_source_state::Empty, jacquard_common::DefaultStr>
+    {
         ViewExternalSourceBuilder::new()
     }
 }
@@ -2151,10 +2203,7 @@ impl<S: jacquard_common::BosStr> ViewExternalSource<S> {
     }
 }
 
-impl ViewExternalSourceBuilder<
-    view_external_source_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl ViewExternalSourceBuilder<view_external_source_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewExternalSourceBuilder {
@@ -2165,9 +2214,7 @@ impl ViewExternalSourceBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ViewExternalSourceBuilder<view_external_source_state::Empty, S> {
+impl<S: jacquard_common::BosStr> ViewExternalSourceBuilder<view_external_source_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ViewExternalSourceBuilder {
@@ -2178,10 +2225,9 @@ impl<
     }
 }
 
-impl<
-    St: view_external_source_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalSourceBuilder<St, S> {
+impl<St: view_external_source_state::State, S: jacquard_common::BosStr>
+    ViewExternalSourceBuilder<St, S>
+{
     /// Set the `description` field (optional)
     pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -2194,10 +2240,9 @@ impl<
     }
 }
 
-impl<
-    St: view_external_source_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalSourceBuilder<St, S> {
+impl<St: view_external_source_state::State, S: jacquard_common::BosStr>
+    ViewExternalSourceBuilder<St, S>
+{
     /// Set the `icon` field (optional)
     pub fn icon(
         mut self,
@@ -2216,17 +2261,14 @@ impl<
     }
 }
 
-impl<
-    St: view_external_source_state::State,
-    S: jacquard_common::BosStr,
-> ViewExternalSourceBuilder<St, S> {
+impl<St: view_external_source_state::State, S: jacquard_common::BosStr>
+    ViewExternalSourceBuilder<St, S>
+{
     /// Set the `theme` field (optional)
     pub fn theme(
         mut self,
         value: impl Into<
-            Option<
-                crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>,
-            >,
+            Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>>,
         >,
     ) -> Self {
         self._fields.2 = value.into();
@@ -2235,9 +2277,7 @@ impl<
     /// Set the `theme` field to an Option value (optional)
     pub fn maybe_theme(
         mut self,
-        value: Option<
-            crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>,
-        >,
+        value: Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>>,
     ) -> Self {
         self._fields.2 = value;
         self
@@ -2316,4 +2356,28 @@ where
             extra_data: Some(extra_data),
         }
     }
+}
+
+fn deserialize_view_external_source_theme_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }

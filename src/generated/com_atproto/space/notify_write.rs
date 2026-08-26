@@ -13,15 +13,15 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct NotifyWrite<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The repo's current commit hash (sha256 of the LtHash state) after the write. Lets the space host maintain each repo's hash for listRepos.
+    /// The repo's current commit hash (sha256 of the LtHash state) after the write. Lets the space host maintain each repo's hash for listRepos.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub hash: jacquard_common::deps::bytes::Bytes,
-    ///The DID of the account whose repo advanced.
+    /// The DID of the account whose repo advanced.
     pub repo: jacquard_common::types::string::Did<S>,
-    ///The revision of the write.
+    /// The revision of the write.
     pub rev: jacquard_common::types::string::Tid,
-    ///Reference to the space.
-    pub space: S,
+    /// Reference to the space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -44,6 +44,18 @@ impl jacquard_common::xrpc::XrpcResp for NotifyWriteResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for NotifyWrite<S> {
@@ -69,7 +81,7 @@ pub mod notify_write_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -149,7 +161,7 @@ pub struct NotifyWriteBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<jacquard_common::types::string::Tid>,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -255,7 +267,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> NotifyWriteBuilder<notify_write_state::SetSpace<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         NotifyWriteBuilder {

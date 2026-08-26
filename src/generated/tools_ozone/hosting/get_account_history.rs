@@ -13,9 +13,8 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -25,7 +24,12 @@ pub struct AccountCreated<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub email: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub handle: core::option::Option<jacquard_common::types::string::Handle<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_account_created_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,7 +37,6 @@ pub struct AccountCreated<S: jacquard_common::BosStr = jacquard_common::DefaultS
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -43,16 +46,20 @@ pub struct AccountCreated<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct EmailConfirmed<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub email: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_email_confirmed_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -60,7 +67,6 @@ pub struct EmailConfirmed<S: jacquard_common::BosStr = jacquard_common::DefaultS
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -70,16 +76,20 @@ pub struct EmailConfirmed<S: jacquard_common::BosStr = jacquard_common::DefaultS
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct EmailUpdated<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub email: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_email_updated_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -88,17 +98,9 @@ pub struct EmailUpdated<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -107,7 +109,12 @@ pub struct Event<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
     pub created_by: S,
     pub details: EventDetails<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -116,18 +123,10 @@ pub struct Event<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -135,58 +134,39 @@ pub struct Event<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 pub enum EventDetails<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.hosting.getAccountHistory#accountCreated")]
     AccountCreated(
-        Box<
-            crate::generated::tools_ozone::hosting::get_account_history::AccountCreated<
-                S,
-            >,
-        >,
+        Box<crate::generated::tools_ozone::hosting::get_account_history::AccountCreated<S>>,
     ),
     #[serde(rename = "tools.ozone.hosting.getAccountHistory#emailUpdated")]
-    EmailUpdated(
-        Box<crate::generated::tools_ozone::hosting::get_account_history::EmailUpdated<S>>,
-    ),
+    EmailUpdated(Box<crate::generated::tools_ozone::hosting::get_account_history::EmailUpdated<S>>),
     #[serde(rename = "tools.ozone.hosting.getAccountHistory#emailConfirmed")]
     EmailConfirmed(
-        Box<
-            crate::generated::tools_ozone::hosting::get_account_history::EmailConfirmed<
-                S,
-            >,
-        >,
+        Box<crate::generated::tools_ozone::hosting::get_account_history::EmailConfirmed<S>>,
     ),
     #[serde(rename = "tools.ozone.hosting.getAccountHistory#passwordUpdated")]
     PasswordUpdated(
-        Box<
-            crate::generated::tools_ozone::hosting::get_account_history::PasswordUpdated<
-                S,
-            >,
-        >,
+        Box<crate::generated::tools_ozone::hosting::get_account_history::PasswordUpdated<S>>,
     ),
     #[serde(rename = "tools.ozone.hosting.getAccountHistory#handleUpdated")]
     HandleUpdated(
-        Box<
-            crate::generated::tools_ozone::hosting::get_account_history::HandleUpdated<S>,
-        >,
+        Box<crate::generated::tools_ozone::hosting::get_account_history::HandleUpdated<S>>,
     ),
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct HandleUpdated<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub handle: jacquard_common::types::string::Handle<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_handle_updated_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -195,17 +175,100 @@ pub struct HandleUpdated<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetAccountHistoryEvents<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    AccountCreated,
+    EmailUpdated,
+    EmailConfirmed,
+    PasswordUpdated,
+    HandleUpdated,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetAccountHistoryEvents<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::AccountCreated => "accountCreated",
+            Self::EmailUpdated => "emailUpdated",
+            Self::EmailConfirmed => "emailConfirmed",
+            Self::PasswordUpdated => "passwordUpdated",
+            Self::HandleUpdated => "handleUpdated",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "accountCreated" => Self::AccountCreated,
+            "emailUpdated" => Self::EmailUpdated,
+            "emailConfirmed" => Self::EmailConfirmed,
+            "passwordUpdated" => Self::PasswordUpdated,
+            "handleUpdated" => Self::HandleUpdated,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetAccountHistoryEvents<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetAccountHistoryEvents<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetAccountHistoryEvents<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetAccountHistoryEvents<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetAccountHistoryEvents<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetAccountHistoryEvents<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetAccountHistoryEvents<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetAccountHistoryEvents::AccountCreated => GetAccountHistoryEvents::AccountCreated,
+            GetAccountHistoryEvents::EmailUpdated => GetAccountHistoryEvents::EmailUpdated,
+            GetAccountHistoryEvents::EmailConfirmed => GetAccountHistoryEvents::EmailConfirmed,
+            GetAccountHistoryEvents::PasswordUpdated => GetAccountHistoryEvents::PasswordUpdated,
+            GetAccountHistoryEvents::HandleUpdated => GetAccountHistoryEvents::HandleUpdated,
+            GetAccountHistoryEvents::Other(v) => GetAccountHistoryEvents::Other(v.into_static()),
+        }
+    }
+}
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -215,37 +278,29 @@ pub struct GetAccountHistory<S: jacquard_common::BosStr = jacquard_common::Defau
     pub cursor: core::option::Option<S>,
     pub did: jacquard_common::types::string::Did<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub events: core::option::Option<Vec<S>>,
+    pub events: core::option::Option<Vec<GetAccountHistoryEvents<S>>>,
     /// Defaults to `50`. Min: 1. Max: 100.
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetAccountHistoryOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetAccountHistoryOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub events: Vec<
-        crate::generated::tools_ozone::hosting::get_account_history::Event<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub events: Vec<crate::generated::tools_ozone::hosting::get_account_history::Event<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -253,7 +308,6 @@ pub struct GetAccountHistoryOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -263,15 +317,19 @@ pub struct GetAccountHistoryOutput<
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct PasswordUpdated<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_password_updated_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -280,8 +338,7 @@ pub struct PasswordUpdated<S: jacquard_common::BosStr = jacquard_common::Default
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for AccountCreated<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AccountCreated<S> {
     fn nsid() -> &'static str {
         "tools.ozone.hosting.getAccountHistory"
     }
@@ -296,8 +353,7 @@ for AccountCreated<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EmailConfirmed<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EmailConfirmed<S> {
     fn nsid() -> &'static str {
         "tools.ozone.hosting.getAccountHistory"
     }
@@ -312,8 +368,7 @@ for EmailConfirmed<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EmailUpdated<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EmailUpdated<S> {
     fn nsid() -> &'static str {
         "tools.ozone.hosting.getAccountHistory"
     }
@@ -343,8 +398,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Eve
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for HandleUpdated<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for HandleUpdated<S> {
     fn nsid() -> &'static str {
         "tools.ozone.hosting.getAccountHistory"
     }
@@ -370,8 +424,7 @@ impl jacquard_common::xrpc::XrpcResp for GetAccountHistoryResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetAccountHistory<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetAccountHistory<S> {
     const NSID: &'static str = "tools.ozone.hosting.getAccountHistory";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetAccountHistoryResponse;
@@ -388,8 +441,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetAccountHistoryRequest {
     type Response = GetAccountHistoryResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for PasswordUpdated<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for PasswordUpdated<S> {
     fn nsid() -> &'static str {
         "tools.ozone.hosting.getAccountHistory"
     }
@@ -404,173 +456,202 @@ for PasswordUpdated<S> {
     }
 }
 
-fn lexicon_doc_tools_ozone_hosting_getAccountHistory() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn deserialize_account_created_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn lexicon_doc_tools_ozone_hosting_getAccountHistory(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "tools.ozone.hosting.getAccountHistory",
-        ),
+        id: ::jacquard_common::CowStr::new_static("tools.ozone.hosting.getAccountHistory"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("accountCreated"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(vec![]),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "email",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "handle",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("email"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("emailConfirmed"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("email")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "email",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("email"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("email"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("emailUpdated"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("email")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "email",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("email"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("email"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("event"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("details"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "createdAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "createdBy",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "details",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                refs: vec![
-                                    ::jacquard_common::CowStr::new_static("#accountCreated"),
-                                    ::jacquard_common::CowStr::new_static("#emailUpdated"),
-                                    ::jacquard_common::CowStr::new_static("#emailConfirmed"),
-                                    ::jacquard_common::CowStr::new_static("#passwordUpdated"),
-                                    ::jacquard_common::CowStr::new_static("#handleUpdated")
-                                ],
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("details"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
+                                    ::jacquard_lexicon::lexicon::LexRefUnion {
+                                        refs: vec![
+                                            ::jacquard_common::CowStr::new_static(
+                                                "#accountCreated",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static("#emailUpdated"),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "#emailConfirmed",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "#passwordUpdated",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static("#handleUpdated"),
+                                        ],
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("handleUpdated"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("handle")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "handle",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -632,18 +713,18 @@ fn lexicon_doc_tools_ozone_hosting_getAccountHistory() -> jacquard_lexicon::lexi
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "passwordUpdated",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(vec![]),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("passwordUpdated"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map
         },
@@ -651,11 +732,83 @@ fn lexicon_doc_tools_ozone_hosting_getAccountHistory() -> jacquard_lexicon::lexi
     }
 }
 
+fn deserialize_email_confirmed_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_email_updated_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -849,11 +1002,35 @@ where
     }
 }
 
+fn deserialize_handle_updated_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod handle_updated_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -893,10 +1070,7 @@ pub struct HandleUpdatedBuilder<
 
 impl HandleUpdated<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> HandleUpdatedBuilder<
-        handle_updated_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> HandleUpdatedBuilder<handle_updated_state::Empty, jacquard_common::DefaultStr> {
         HandleUpdatedBuilder::new()
     }
 }
@@ -982,9 +1156,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_account_history_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1021,7 +1195,7 @@ pub struct GetAccountHistoryBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
-        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<GetAccountHistoryEvents<S>>>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -1029,10 +1203,9 @@ pub struct GetAccountHistoryBuilder<
 
 impl GetAccountHistory<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetAccountHistoryBuilder<
-        get_account_history_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetAccountHistoryBuilder<get_account_history_state::Empty, jacquard_common::DefaultStr>
+    {
         GetAccountHistoryBuilder::new()
     }
 }
@@ -1044,10 +1217,7 @@ impl<S: jacquard_common::BosStr> GetAccountHistory<S> {
     }
 }
 
-impl GetAccountHistoryBuilder<
-    get_account_history_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetAccountHistoryBuilder<get_account_history_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetAccountHistoryBuilder {
@@ -1058,9 +1228,7 @@ impl GetAccountHistoryBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetAccountHistoryBuilder<get_account_history_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetAccountHistoryBuilder<get_account_history_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetAccountHistoryBuilder {
@@ -1071,10 +1239,9 @@ impl<
     }
 }
 
-impl<
-    St: get_account_history_state::State,
-    S: jacquard_common::BosStr,
-> GetAccountHistoryBuilder<St, S> {
+impl<St: get_account_history_state::State, S: jacquard_common::BosStr>
+    GetAccountHistoryBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -1106,26 +1273,24 @@ where
     }
 }
 
-impl<
-    St: get_account_history_state::State,
-    S: jacquard_common::BosStr,
-> GetAccountHistoryBuilder<St, S> {
+impl<St: get_account_history_state::State, S: jacquard_common::BosStr>
+    GetAccountHistoryBuilder<St, S>
+{
     /// Set the `events` field (optional)
-    pub fn events(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+    pub fn events(mut self, value: impl Into<Option<Vec<GetAccountHistoryEvents<S>>>>) -> Self {
         self._fields.2 = value.into();
         self
     }
     /// Set the `events` field to an Option value (optional)
-    pub fn maybe_events(mut self, value: Option<Vec<S>>) -> Self {
+    pub fn maybe_events(mut self, value: Option<Vec<GetAccountHistoryEvents<S>>>) -> Self {
         self._fields.2 = value;
         self
     }
 }
 
-impl<
-    St: get_account_history_state::State,
-    S: jacquard_common::BosStr,
-> GetAccountHistoryBuilder<St, S> {
+impl<St: get_account_history_state::State, S: jacquard_common::BosStr>
+    GetAccountHistoryBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.3 = value.into();
@@ -1152,4 +1317,28 @@ where
             limit: self._fields.3,
         }
     }
+}
+
+fn deserialize_password_updated_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }

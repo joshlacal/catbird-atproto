@@ -55,11 +55,15 @@ pub struct GetAccountInviteCodesOutput<S: jacquard_common::BosStr = jacquard_com
 #[serde(tag = "error", content = "message")]
 pub enum GetAccountInviteCodesError {
     #[serde(rename = "DuplicateCreate")]
-    DuplicateCreate(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DuplicateCreate(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -125,7 +129,7 @@ pub mod get_account_invite_codes_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

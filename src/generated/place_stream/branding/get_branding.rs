@@ -13,31 +13,35 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct BrandingAsset<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Inline data for text assets
+    /// Inline data for text assets
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub data: core::option::Option<S>,
-    ///Image height in pixels (optional, for images only)
+    /// Image height in pixels (optional, for images only)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub height: core::option::Option<i64>,
-    ///Asset key identifier
+    /// Asset key identifier
     pub key: S,
-    ///MIME type of the asset
+    /// MIME type of the asset
     pub mime_type: S,
-    ///URL to fetch the asset blob (for images)
+    /// URL to fetch the asset blob (for images)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub url: core::option::Option<S>,
-    ///Image width in pixels (optional, for images only)
+    /// Image width in pixels (optional, for images only)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub width: core::option::Option<i64>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_branding_asset_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -46,17 +50,9 @@ pub struct BrandingAsset<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -66,27 +62,21 @@ pub struct GetBranding<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub broadcaster: core::option::Option<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetBrandingOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///List of available branding assets
-    pub assets: Vec<
-        crate::generated::place_stream::branding::get_branding::BrandingAsset<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    /// List of available branding assets
+    pub assets: Vec<crate::generated::place_stream::branding::get_branding::BrandingAsset<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -94,7 +84,6 @@ pub struct GetBrandingOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -104,15 +93,15 @@ pub struct GetBrandingOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetBrandingError {
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -131,8 +120,7 @@ impl core::fmt::Display for GetBrandingError {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for BrandingAsset<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for BrandingAsset<S> {
     fn nsid() -> &'static str {
         "place.stream.branding.getBranding"
     }
@@ -175,9 +163,32 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetBrandingRequest {
     type Response = GetBrandingResponse;
 }
 
-fn lexicon_doc_place_stream_branding_getBranding() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn deserialize_branding_asset_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn lexicon_doc_place_stream_branding_getBranding() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.branding.getBranding"),
@@ -185,88 +196,80 @@ fn lexicon_doc_place_stream_branding_getBranding() -> jacquard_lexicon::lexicon:
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("brandingAsset"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("key"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("mimeType")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "data",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Inline data for text assets",
-                                    ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("mimeType"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("data"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Inline data for text assets",
+                                        )),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "height",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "key",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Asset key identifier",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("height"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "mimeType",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "MIME type of the asset",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("key"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Asset key identifier",
+                                        )),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "url",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "URL to fetch the asset blob (for images)",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("mimeType"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "MIME type of the asset",
+                                        )),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "width",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("url"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "URL to fetch the asset blob (for images)",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("width"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -309,9 +312,9 @@ fn lexicon_doc_place_stream_branding_getBranding() -> jacquard_lexicon::lexicon:
 
 pub mod get_branding_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -338,10 +341,7 @@ pub struct GetBrandingBuilder<
 
 impl GetBranding<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetBrandingBuilder<
-        get_branding_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetBrandingBuilder<get_branding_state::Empty, jacquard_common::DefaultStr> {
         GetBrandingBuilder::new()
     }
 }
@@ -375,10 +375,7 @@ impl<S: jacquard_common::BosStr> GetBrandingBuilder<get_branding_state::Empty, S
     }
 }
 
-impl<
-    St: get_branding_state::State,
-    S: jacquard_common::BosStr,
-> GetBrandingBuilder<St, S> {
+impl<St: get_branding_state::State, S: jacquard_common::BosStr> GetBrandingBuilder<St, S> {
     /// Set the `broadcaster` field (optional)
     pub fn broadcaster(
         mut self,

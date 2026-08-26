@@ -17,17 +17,18 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Basic<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Color used for links and button backgrounds.
+    /// Color used for links and button backgrounds.
     pub accent: crate::generated::site_standard::theme::color::Rgb<S>,
-    ///Color used for button text.
+    /// Color used for button text.
     pub accent_foreground: crate::generated::site_standard::theme::color::Rgb<S>,
-    ///Color used for content background.
+    /// Color used for content background.
     pub background: crate::generated::site_standard::theme::color::Rgb<S>,
-    ///Color used for content text.
+    /// Color used for content text.
     pub foreground: crate::generated::site_standard::theme::color::Rgb<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_basic_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -106,11 +107,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Bas
     }
 }
 
+fn deserialize_basic_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod basic_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

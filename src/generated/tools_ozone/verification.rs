@@ -13,50 +13,48 @@ pub mod revoke_verifications;
 /// Verification data for the associated subject.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct VerificationView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Timestamp when the verification was created.
+    /// Timestamp when the verification was created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Display name of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current displayName matches the one at the time of verifying.
+    /// Display name of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current displayName matches the one at the time of verifying.
     pub display_name: S,
-    ///Handle of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current handle matches the one at the time of verifying.
+    /// Handle of the subject the verification applies to at the moment of verifying, which might not be the same at the time of viewing. The verification is only valid if the current handle matches the one at the time of verifying.
     pub handle: jacquard_common::types::string::Handle<S>,
-    ///The user who issued this verification.
+    /// The user who issued this verification.
     pub issuer: jacquard_common::types::string::Did<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub issuer_profile: core::option::Option<jacquard_common::types::value::Data<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub issuer_repo: core::option::Option<VerificationViewIssuerRepo<S>>,
-    ///Describes the reason for revocation, also indicating that the verification is no longer valid.
+    /// Describes the reason for revocation, also indicating that the verification is no longer valid.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub revoke_reason: core::option::Option<S>,
-    ///Timestamp when the verification was revoked.
+    /// Timestamp when the verification was revoked.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub revoked_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///The user who revoked this verification.
+    /// The user who revoked this verification.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub revoked_by: core::option::Option<jacquard_common::types::string::Did<S>>,
-    ///The subject of the verification.
+    /// The subject of the verification.
     pub subject: jacquard_common::types::string::Did<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject_profile: core::option::Option<jacquard_common::types::value::Data<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject_repo: core::option::Option<VerificationViewSubjectRepo<S>>,
-    ///The AT-URI of the verification record.
+    /// The AT-URI of the verification record.
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_verification_view_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -65,62 +63,37 @@ pub struct VerificationView<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum VerificationViewIssuerRepo<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum VerificationViewIssuerRepo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
     RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(
-        Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>,
-    ),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>),
 }
-
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum VerificationViewSubjectRepo<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum VerificationViewSubjectRepo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
     RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(
-        Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>,
-    ),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>),
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for VerificationView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for VerificationView<S> {
     fn nsid() -> &'static str {
         "tools.ozone.verification.defs"
     }
@@ -135,11 +108,35 @@ for VerificationView<S> {
     }
 }
 
+fn deserialize_verification_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod verification_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -273,10 +270,8 @@ pub struct VerificationViewBuilder<
 
 impl VerificationView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> VerificationViewBuilder<
-        verification_view_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> VerificationViewBuilder<verification_view_state::Empty, jacquard_common::DefaultStr> {
         VerificationViewBuilder::new()
     }
 }
@@ -288,55 +283,26 @@ impl<S: jacquard_common::BosStr> VerificationView<S> {
     }
 }
 
-impl VerificationViewBuilder<
-    verification_view_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl VerificationViewBuilder<verification_view_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         VerificationViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<verification_view_state::Empty, S> {
+impl<S: jacquard_common::BosStr> VerificationViewBuilder<verification_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         VerificationViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -419,10 +385,9 @@ where
     }
 }
 
-impl<
-    St: verification_view_state::State,
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<St, S> {
+impl<St: verification_view_state::State, S: jacquard_common::BosStr>
+    VerificationViewBuilder<St, S>
+{
     /// Set the `issuerProfile` field (optional)
     pub fn issuer_profile(
         mut self,
@@ -441,32 +406,24 @@ impl<
     }
 }
 
-impl<
-    St: verification_view_state::State,
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<St, S> {
+impl<St: verification_view_state::State, S: jacquard_common::BosStr>
+    VerificationViewBuilder<St, S>
+{
     /// Set the `issuerRepo` field (optional)
-    pub fn issuer_repo(
-        mut self,
-        value: impl Into<Option<VerificationViewIssuerRepo<S>>>,
-    ) -> Self {
+    pub fn issuer_repo(mut self, value: impl Into<Option<VerificationViewIssuerRepo<S>>>) -> Self {
         self._fields.5 = value.into();
         self
     }
     /// Set the `issuerRepo` field to an Option value (optional)
-    pub fn maybe_issuer_repo(
-        mut self,
-        value: Option<VerificationViewIssuerRepo<S>>,
-    ) -> Self {
+    pub fn maybe_issuer_repo(mut self, value: Option<VerificationViewIssuerRepo<S>>) -> Self {
         self._fields.5 = value;
         self
     }
 }
 
-impl<
-    St: verification_view_state::State,
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<St, S> {
+impl<St: verification_view_state::State, S: jacquard_common::BosStr>
+    VerificationViewBuilder<St, S>
+{
     /// Set the `revokeReason` field (optional)
     pub fn revoke_reason(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.6 = value.into();
@@ -479,10 +436,9 @@ impl<
     }
 }
 
-impl<
-    St: verification_view_state::State,
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<St, S> {
+impl<St: verification_view_state::State, S: jacquard_common::BosStr>
+    VerificationViewBuilder<St, S>
+{
     /// Set the `revokedAt` field (optional)
     pub fn revoked_at(
         mut self,
@@ -501,10 +457,9 @@ impl<
     }
 }
 
-impl<
-    St: verification_view_state::State,
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<St, S> {
+impl<St: verification_view_state::State, S: jacquard_common::BosStr>
+    VerificationViewBuilder<St, S>
+{
     /// Set the `revokedBy` field (optional)
     pub fn revoked_by(
         mut self,
@@ -542,10 +497,9 @@ where
     }
 }
 
-impl<
-    St: verification_view_state::State,
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<St, S> {
+impl<St: verification_view_state::State, S: jacquard_common::BosStr>
+    VerificationViewBuilder<St, S>
+{
     /// Set the `subjectProfile` field (optional)
     pub fn subject_profile(
         mut self,
@@ -564,10 +518,9 @@ impl<
     }
 }
 
-impl<
-    St: verification_view_state::State,
-    S: jacquard_common::BosStr,
-> VerificationViewBuilder<St, S> {
+impl<St: verification_view_state::State, S: jacquard_common::BosStr>
+    VerificationViewBuilder<St, S>
+{
     /// Set the `subjectRepo` field (optional)
     pub fn subject_repo(
         mut self,
@@ -577,10 +530,7 @@ impl<
         self
     }
     /// Set the `subjectRepo` field to an Option value (optional)
-    pub fn maybe_subject_repo(
-        mut self,
-        value: Option<VerificationViewSubjectRepo<S>>,
-    ) -> Self {
+    pub fn maybe_subject_repo(mut self, value: Option<VerificationViewSubjectRepo<S>>) -> Self {
         self._fields.11 = value;
         self
     }
@@ -661,9 +611,7 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_verification_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_tools_ozone_verification_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.verification.defs"),

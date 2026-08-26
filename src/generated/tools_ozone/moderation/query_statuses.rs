@@ -5,23 +5,461 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
-)]
+/// If specified, only subjects with the given age assurance state will be returned.
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryStatusesAgeAssuranceState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Pending,
+    Assured,
+    Unknown,
+    Reset,
+    Blocked,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryStatusesAgeAssuranceState<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Pending => "pending",
+            Self::Assured => "assured",
+            Self::Unknown => "unknown",
+            Self::Reset => "reset",
+            Self::Blocked => "blocked",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "pending" => Self::Pending,
+            "assured" => Self::Assured,
+            "unknown" => Self::Unknown,
+            "reset" => Self::Reset,
+            "blocked" => Self::Blocked,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryStatusesAgeAssuranceState<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryStatusesAgeAssuranceState<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryStatusesAgeAssuranceState<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryStatusesAgeAssuranceState<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryStatusesAgeAssuranceState<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryStatusesAgeAssuranceState<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryStatusesAgeAssuranceState<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryStatusesAgeAssuranceState::Pending => QueryStatusesAgeAssuranceState::Pending,
+            QueryStatusesAgeAssuranceState::Assured => QueryStatusesAgeAssuranceState::Assured,
+            QueryStatusesAgeAssuranceState::Unknown => QueryStatusesAgeAssuranceState::Unknown,
+            QueryStatusesAgeAssuranceState::Reset => QueryStatusesAgeAssuranceState::Reset,
+            QueryStatusesAgeAssuranceState::Blocked => QueryStatusesAgeAssuranceState::Blocked,
+            QueryStatusesAgeAssuranceState::Other(v) => {
+                QueryStatusesAgeAssuranceState::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// Specify when fetching subjects in a certain state
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryStatusesReviewState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ReviewOpen,
+    ReviewClosed,
+    ReviewEscalated,
+    ReviewNone,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryStatusesReviewState<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ReviewOpen => "tools.ozone.moderation.defs#reviewOpen",
+            Self::ReviewClosed => "tools.ozone.moderation.defs#reviewClosed",
+            Self::ReviewEscalated => "tools.ozone.moderation.defs#reviewEscalated",
+            Self::ReviewNone => "tools.ozone.moderation.defs#reviewNone",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "tools.ozone.moderation.defs#reviewOpen" => Self::ReviewOpen,
+            "tools.ozone.moderation.defs#reviewClosed" => Self::ReviewClosed,
+            "tools.ozone.moderation.defs#reviewEscalated" => Self::ReviewEscalated,
+            "tools.ozone.moderation.defs#reviewNone" => Self::ReviewNone,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryStatusesReviewState<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryStatusesReviewState<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryStatusesReviewState<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryStatusesReviewState<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryStatusesReviewState<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryStatusesReviewState<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryStatusesReviewState<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryStatusesReviewState::ReviewOpen => QueryStatusesReviewState::ReviewOpen,
+            QueryStatusesReviewState::ReviewClosed => QueryStatusesReviewState::ReviewClosed,
+            QueryStatusesReviewState::ReviewEscalated => QueryStatusesReviewState::ReviewEscalated,
+            QueryStatusesReviewState::ReviewNone => QueryStatusesReviewState::ReviewNone,
+            QueryStatusesReviewState::Other(v) => QueryStatusesReviewState::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryStatusesSortDirection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Asc,
+    Desc,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryStatusesSortDirection<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "asc" => Self::Asc,
+            "desc" => Self::Desc,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryStatusesSortDirection<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryStatusesSortDirection<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryStatusesSortDirection<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryStatusesSortDirection<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryStatusesSortDirection<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryStatusesSortDirection<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryStatusesSortDirection<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryStatusesSortDirection::Asc => QueryStatusesSortDirection::Asc,
+            QueryStatusesSortDirection::Desc => QueryStatusesSortDirection::Desc,
+            QueryStatusesSortDirection::Other(v) => {
+                QueryStatusesSortDirection::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryStatusesSortField<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    LastReviewedAt,
+    LastReportedAt,
+    ReportedRecordsCount,
+    TakendownRecordsCount,
+    PriorityScore,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryStatusesSortField<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::LastReviewedAt => "lastReviewedAt",
+            Self::LastReportedAt => "lastReportedAt",
+            Self::ReportedRecordsCount => "reportedRecordsCount",
+            Self::TakendownRecordsCount => "takendownRecordsCount",
+            Self::PriorityScore => "priorityScore",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "lastReviewedAt" => Self::LastReviewedAt,
+            "lastReportedAt" => Self::LastReportedAt,
+            "reportedRecordsCount" => Self::ReportedRecordsCount,
+            "takendownRecordsCount" => Self::TakendownRecordsCount,
+            "priorityScore" => Self::PriorityScore,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryStatusesSortField<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryStatusesSortField<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryStatusesSortField<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryStatusesSortField<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryStatusesSortField<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryStatusesSortField<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryStatusesSortField<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryStatusesSortField::LastReviewedAt => QueryStatusesSortField::LastReviewedAt,
+            QueryStatusesSortField::LastReportedAt => QueryStatusesSortField::LastReportedAt,
+            QueryStatusesSortField::ReportedRecordsCount => {
+                QueryStatusesSortField::ReportedRecordsCount
+            }
+            QueryStatusesSortField::TakendownRecordsCount => {
+                QueryStatusesSortField::TakendownRecordsCount
+            }
+            QueryStatusesSortField::PriorityScore => QueryStatusesSortField::PriorityScore,
+            QueryStatusesSortField::Other(v) => QueryStatusesSortField::Other(v.into_static()),
+        }
+    }
+}
+
+/// If specified, subjects of the given type (account, record, or conversation) will be returned. When this is set to 'account' the 'collections' parameter will be ignored. When includeAllUserRecords or subject is set, this will be ignored.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryStatusesSubjectType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Account,
+    Record,
+    Conversation,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryStatusesSubjectType<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Account => "account",
+            Self::Record => "record",
+            Self::Conversation => "conversation",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "account" => Self::Account,
+            "record" => Self::Record,
+            "conversation" => Self::Conversation,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryStatusesSubjectType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryStatusesSubjectType<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryStatusesSubjectType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryStatusesSubjectType<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryStatusesSubjectType<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryStatusesSubjectType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryStatusesSubjectType<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryStatusesSubjectType::Account => QueryStatusesSubjectType::Account,
+            QueryStatusesSubjectType::Record => QueryStatusesSubjectType::Record,
+            QueryStatusesSubjectType::Conversation => QueryStatusesSubjectType::Conversation,
+            QueryStatusesSubjectType::Other(v) => QueryStatusesSubjectType::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct QueryStatuses<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub age_assurance_state: core::option::Option<S>,
+    pub age_assurance_state: core::option::Option<QueryStatusesAgeAssuranceState<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub appealed: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -33,27 +471,17 @@ pub struct QueryStatuses<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub exclude_tags: core::option::Option<Vec<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_deleted_after: core::option::Option<
-        jacquard_common::types::string::Datetime,
-    >,
+    pub hosting_deleted_after: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_deleted_before: core::option::Option<
-        jacquard_common::types::string::Datetime,
-    >,
+    pub hosting_deleted_before: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub hosting_statuses: core::option::Option<Vec<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_updated_after: core::option::Option<
-        jacquard_common::types::string::Datetime,
-    >,
+    pub hosting_updated_after: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub hosting_updated_before: core::option::Option<
-        jacquard_common::types::string::Datetime,
-    >,
+    pub hosting_updated_before: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub ignore_subjects: core::option::Option<
-        Vec<jacquard_common::types::string::UriValue<S>>,
-    >,
+    pub ignore_subjects: core::option::Option<Vec<jacquard_common::types::string::UriValue<S>>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub include_all_user_records: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -89,7 +517,7 @@ pub struct QueryStatuses<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reported_before: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub review_state: core::option::Option<S>,
+    pub review_state: core::option::Option<QueryStatusesReviewState<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reviewed_after: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -97,45 +525,37 @@ pub struct QueryStatuses<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     /// Defaults to `"desc"`.
     #[serde(default = "_default_sort_direction")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort_direction: core::option::Option<S>,
+    pub sort_direction: core::option::Option<QueryStatusesSortDirection<S>>,
     /// Defaults to `"lastReportedAt"`.
     #[serde(default = "_default_sort_field")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort_field: core::option::Option<S>,
+    pub sort_field: core::option::Option<QueryStatusesSortField<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject: core::option::Option<jacquard_common::types::string::UriValue<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_type: core::option::Option<S>,
+    pub subject_type: core::option::Option<QueryStatusesSubjectType<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub tags: core::option::Option<Vec<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub takendown: core::option::Option<bool>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct QueryStatusesOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct QueryStatusesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub subject_statuses: Vec<
-        crate::generated::tools_ozone::moderation::SubjectStatusView<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_statuses: Vec<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -155,8 +575,7 @@ impl jacquard_common::xrpc::XrpcResp for QueryStatusesResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for QueryStatuses<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for QueryStatuses<S> {
     const NSID: &'static str = "tools.ozone.moderation.queryStatuses";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = QueryStatusesResponse;
@@ -177,19 +596,25 @@ fn _default_limit() -> core::option::Option<i64> {
     Some(50i64)
 }
 
-fn _default_sort_direction<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("desc"))
+fn _default_sort_direction<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<QueryStatusesSortDirection<S>> {
+    Some(<QueryStatusesSortDirection<S>>::from_value(S::from_static(
+        "desc",
+    )))
 }
 
-fn _default_sort_field<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("lastReportedAt"))
+fn _default_sort_field<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<QueryStatusesSortField<S>> {
+    Some(<QueryStatusesSortField<S>>::from_value(S::from_static(
+        "lastReportedAt",
+    )))
 }
 
 pub mod query_statuses_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -211,7 +636,7 @@ pub struct QueryStatusesBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<S>,
+        core::option::Option<QueryStatusesAgeAssuranceState<S>>,
         core::option::Option<bool>,
         core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
         core::option::Option<S>,
@@ -238,13 +663,13 @@ pub struct QueryStatusesBuilder<
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<S>,
+        core::option::Option<QueryStatusesReviewState<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<QueryStatusesSortDirection<S>>,
+        core::option::Option<QueryStatusesSortField<S>>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
-        core::option::Option<S>,
+        core::option::Option<QueryStatusesSubjectType<S>>,
         core::option::Option<Vec<S>>,
         core::option::Option<bool>,
     ),
@@ -253,10 +678,7 @@ pub struct QueryStatusesBuilder<
 
 impl QueryStatuses<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> QueryStatusesBuilder<
-        query_statuses_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> QueryStatusesBuilder<query_statuses_state::Empty, jacquard_common::DefaultStr> {
         QueryStatusesBuilder::new()
     }
 }
@@ -274,42 +696,9 @@ impl QueryStatusesBuilder<query_statuses_state::Empty, jacquard_common::DefaultS
         QueryStatusesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -322,68 +711,35 @@ impl<S: jacquard_common::BosStr> QueryStatusesBuilder<query_statuses_state::Empt
         QueryStatusesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `ageAssuranceState` field (optional)
-    pub fn age_assurance_state(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn age_assurance_state(
+        mut self,
+        value: impl Into<Option<QueryStatusesAgeAssuranceState<S>>>,
+    ) -> Self {
         self._fields.0 = value.into();
         self
     }
     /// Set the `ageAssuranceState` field to an Option value (optional)
-    pub fn maybe_age_assurance_state(mut self, value: Option<S>) -> Self {
+    pub fn maybe_age_assurance_state(
+        mut self,
+        value: Option<QueryStatusesAgeAssuranceState<S>>,
+    ) -> Self {
         self._fields.0 = value;
         self
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `appealed` field (optional)
     pub fn appealed(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.1 = value.into();
@@ -396,10 +752,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `collections` field (optional)
     pub fn collections(
         mut self,
@@ -418,10 +771,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();
@@ -434,10 +784,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();
@@ -450,10 +797,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `excludeTags` field (optional)
     pub fn exclude_tags(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.5 = value.into();
@@ -466,10 +810,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `hostingDeletedAfter` field (optional)
     pub fn hosting_deleted_after(
         mut self,
@@ -488,10 +829,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `hostingDeletedBefore` field (optional)
     pub fn hosting_deleted_before(
         mut self,
@@ -510,10 +848,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `hostingStatuses` field (optional)
     pub fn hosting_statuses(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.8 = value.into();
@@ -526,10 +861,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `hostingUpdatedAfter` field (optional)
     pub fn hosting_updated_after(
         mut self,
@@ -548,10 +880,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `hostingUpdatedBefore` field (optional)
     pub fn hosting_updated_before(
         mut self,
@@ -570,10 +899,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `ignoreSubjects` field (optional)
     pub fn ignore_subjects(
         mut self,
@@ -592,10 +918,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `includeAllUserRecords` field (optional)
     pub fn include_all_user_records(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.12 = value.into();
@@ -608,10 +931,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `includeMuted` field (optional)
     pub fn include_muted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.13 = value.into();
@@ -624,10 +944,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `lastReviewedBy` field (optional)
     pub fn last_reviewed_by(
         mut self,
@@ -646,10 +963,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.15 = value.into();
@@ -662,10 +976,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `minAccountSuspendCount` field (optional)
     pub fn min_account_suspend_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.16 = value.into();
@@ -678,10 +989,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `minPriorityScore` field (optional)
     pub fn min_priority_score(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.17 = value.into();
@@ -694,10 +1002,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `minReportedRecordsCount` field (optional)
     pub fn min_reported_records_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.18 = value.into();
@@ -710,10 +1015,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `minStrikeCount` field (optional)
     pub fn min_strike_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.19 = value.into();
@@ -726,10 +1028,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `minTakendownRecordsCount` field (optional)
     pub fn min_takendown_records_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.20 = value.into();
@@ -742,10 +1041,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `onlyMuted` field (optional)
     pub fn only_muted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.21 = value.into();
@@ -758,10 +1054,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `queueCount` field (optional)
     pub fn queue_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.22 = value.into();
@@ -774,10 +1067,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `queueIndex` field (optional)
     pub fn queue_index(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.23 = value.into();
@@ -790,10 +1080,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `queueSeed` field (optional)
     pub fn queue_seed(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.24 = value.into();
@@ -806,10 +1093,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `reportedAfter` field (optional)
     pub fn reported_after(
         mut self,
@@ -828,10 +1112,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `reportedBefore` field (optional)
     pub fn reported_before(
         mut self,
@@ -850,26 +1131,20 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `reviewState` field (optional)
-    pub fn review_state(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn review_state(mut self, value: impl Into<Option<QueryStatusesReviewState<S>>>) -> Self {
         self._fields.27 = value.into();
         self
     }
     /// Set the `reviewState` field to an Option value (optional)
-    pub fn maybe_review_state(mut self, value: Option<S>) -> Self {
+    pub fn maybe_review_state(mut self, value: Option<QueryStatusesReviewState<S>>) -> Self {
         self._fields.27 = value;
         self
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `reviewedAfter` field (optional)
     pub fn reviewed_after(
         mut self,
@@ -888,10 +1163,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `reviewedBefore` field (optional)
     pub fn reviewed_before(
         mut self,
@@ -910,42 +1182,36 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `sortDirection` field (optional)
-    pub fn sort_direction(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort_direction(
+        mut self,
+        value: impl Into<Option<QueryStatusesSortDirection<S>>>,
+    ) -> Self {
         self._fields.30 = value.into();
         self
     }
     /// Set the `sortDirection` field to an Option value (optional)
-    pub fn maybe_sort_direction(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort_direction(mut self, value: Option<QueryStatusesSortDirection<S>>) -> Self {
         self._fields.30 = value;
         self
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `sortField` field (optional)
-    pub fn sort_field(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort_field(mut self, value: impl Into<Option<QueryStatusesSortField<S>>>) -> Self {
         self._fields.31 = value.into();
         self
     }
     /// Set the `sortField` field to an Option value (optional)
-    pub fn maybe_sort_field(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort_field(mut self, value: Option<QueryStatusesSortField<S>>) -> Self {
         self._fields.31 = value;
         self
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `subject` field (optional)
     pub fn subject(
         mut self,
@@ -964,26 +1230,20 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `subjectType` field (optional)
-    pub fn subject_type(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn subject_type(mut self, value: impl Into<Option<QueryStatusesSubjectType<S>>>) -> Self {
         self._fields.33 = value.into();
         self
     }
     /// Set the `subjectType` field to an Option value (optional)
-    pub fn maybe_subject_type(mut self, value: Option<S>) -> Self {
+    pub fn maybe_subject_type(mut self, value: Option<QueryStatusesSubjectType<S>>) -> Self {
         self._fields.33 = value;
         self
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `tags` field (optional)
     pub fn tags(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.34 = value.into();
@@ -996,10 +1256,7 @@ impl<
     }
 }
 
-impl<
-    St: query_statuses_state::State,
-    S: jacquard_common::BosStr,
-> QueryStatusesBuilder<St, S> {
+impl<St: query_statuses_state::State, S: jacquard_common::BosStr> QueryStatusesBuilder<St, S> {
     /// Set the `takendown` field (optional)
     pub fn takendown(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.35 = value.into();

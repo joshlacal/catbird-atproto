@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct NotifyOfUpdate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Hostname of the current service (usually a PDS) that is notifying of update.
+    /// Hostname of the current service (usually a PDS) that is notifying of update.
     pub hostname: S,
     #[serde(
         flatten,
@@ -44,6 +44,18 @@ impl jacquard_common::xrpc::XrpcResp for NotifyOfUpdateResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for NotifyOfUpdate<S> {

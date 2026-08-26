@@ -19,7 +19,7 @@ pub struct ListMembers<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
-    pub space: S,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
 
 #[derive(
@@ -59,11 +59,15 @@ pub struct ListMembersOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 #[serde(tag = "error", content = "message")]
 pub enum ListMembersError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -101,6 +105,7 @@ pub struct Member<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_member_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -162,7 +167,7 @@ pub mod list_members_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -199,7 +204,7 @@ pub struct ListMembersBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -274,7 +279,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> ListMembersBuilder<list_members_state::SetSpace<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         ListMembersBuilder {
@@ -300,11 +305,35 @@ where
     }
 }
 
+fn deserialize_member_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod member_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -469,6 +498,9 @@ fn lexicon_doc_com_atproto_simplespace_listMembers(
                                             ::jacquard_common::CowStr::new_static(
                                                 "Reference to the space.",
                                             ),
+                                        ),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                         ),
                                         ..Default::default()
                                     }),

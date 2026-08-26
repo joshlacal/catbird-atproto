@@ -13,14 +13,14 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The NSID of the record collection.
+    /// The NSID of the record collection.
     pub collection: jacquard_common::types::string::Nsid<S>,
-    ///The DID of the repo to delete from (the authenticated member).
+    /// The DID of the repo to delete from (the authenticated member).
     pub repo: jacquard_common::types::string::Did<S>,
-    ///The Record Key.
+    /// The Record Key.
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    ///Reference to the space.
-    pub space: S,
+    /// Reference to the space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -75,11 +75,15 @@ pub struct DeleteRecordOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 #[serde(tag = "error", content = "message")]
 pub enum DeleteRecordError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -139,7 +143,7 @@ pub mod delete_record_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -221,7 +225,7 @@ pub struct DeleteRecordBuilder<
         core::option::Option<
             jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -329,7 +333,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> DeleteRecordBuilder<delete_record_state::SetSpace<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         DeleteRecordBuilder {

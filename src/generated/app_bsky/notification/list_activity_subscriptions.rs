@@ -6,22 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListActivitySubscriptions<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ListActivitySubscriptions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     /// Defaults to `50`. Min: 1. Max: 100.
@@ -30,28 +21,23 @@ pub struct ListActivitySubscriptions<
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListActivitySubscriptionsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ListActivitySubscriptionsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
+{
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub subscriptions: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -72,7 +58,8 @@ impl jacquard_common::xrpc::XrpcResp for ListActivitySubscriptionsResponse {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for ListActivitySubscriptions<S> {
+    for ListActivitySubscriptions<S>
+{
     const NSID: &'static str = "app.bsky.notification.listActivitySubscriptions";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListActivitySubscriptionsResponse;
@@ -95,9 +82,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod list_activity_subscriptions_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -134,18 +121,18 @@ impl ListActivitySubscriptions<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> ListActivitySubscriptions<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ListActivitySubscriptionsBuilder<
-        list_activity_subscriptions_state::Empty,
-        S,
-    > {
+    pub fn builder() -> ListActivitySubscriptionsBuilder<list_activity_subscriptions_state::Empty, S>
+    {
         ListActivitySubscriptionsBuilder::builder()
     }
 }
 
-impl ListActivitySubscriptionsBuilder<
-    list_activity_subscriptions_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ListActivitySubscriptionsBuilder<
+        list_activity_subscriptions_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListActivitySubscriptionsBuilder {
@@ -156,9 +143,9 @@ impl ListActivitySubscriptionsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ListActivitySubscriptionsBuilder<list_activity_subscriptions_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    ListActivitySubscriptionsBuilder<list_activity_subscriptions_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ListActivitySubscriptionsBuilder {
@@ -169,10 +156,9 @@ impl<
     }
 }
 
-impl<
-    St: list_activity_subscriptions_state::State,
-    S: jacquard_common::BosStr,
-> ListActivitySubscriptionsBuilder<St, S> {
+impl<St: list_activity_subscriptions_state::State, S: jacquard_common::BosStr>
+    ListActivitySubscriptionsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -185,10 +171,9 @@ impl<
     }
 }
 
-impl<
-    St: list_activity_subscriptions_state::State,
-    S: jacquard_common::BosStr,
-> ListActivitySubscriptionsBuilder<St, S> {
+impl<St: list_activity_subscriptions_state::State, S: jacquard_common::BosStr>
+    ListActivitySubscriptionsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

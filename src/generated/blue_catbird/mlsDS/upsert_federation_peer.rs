@@ -20,15 +20,15 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpsertFederationPeer<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///DID of the peer delivery service
+    /// DID of the peer delivery service
     pub ds_did: S,
-    ///Per-peer rate limit override
+    /// Per-peer rate limit override
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub max_requests_per_minute: core::option::Option<i64>,
-    ///Admin note
+    /// Admin note
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub note: core::option::Option<S>,
-    ///Peer status to set (trusted, blocked, probation)
+    /// Peer status to set (trusted, blocked, probation)
     pub status: S,
     #[serde(
         flatten,
@@ -52,7 +52,7 @@ pub struct UpsertFederationPeer<S: jacquard_common::BosStr = jacquard_common::De
 )]
 pub struct UpsertFederationPeerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub peer: crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<S>,
-    ///Whether the upsert succeeded
+    /// Whether the upsert succeeded
     pub updated: bool,
     #[serde(
         flatten,

@@ -13,9 +13,8 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,7 +22,11 @@
 pub struct EditGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub name: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -32,24 +35,20 @@ pub struct EditGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct EditGroupOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,7 +56,6 @@ pub struct EditGroupOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -67,21 +65,30 @@ pub struct EditGroupOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum EditGroupError {
     #[serde(rename = "ConvoLocked")]
-    ConvoLocked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConvoLocked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidConvo(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InsufficientRole")]
-    InsufficientRole(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InsufficientRole(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -134,9 +141,8 @@ impl jacquard_common::xrpc::XrpcResp for EditGroupResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for EditGroup<S> {
     const NSID: &'static str = "chat.bsky.group.editGroup";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = EditGroupResponse;
 }
 
@@ -146,9 +152,8 @@ Path: `/xrpc/chat.bsky.group.editGroup`. The request payload type is `EditGroup<
 pub struct EditGroupRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for EditGroupRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.editGroup";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = EditGroup<S>;
     type Response = EditGroupResponse;
 }

@@ -6,25 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ImportContacts<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///List of phone numbers in global E.164 format (e.g., '+12125550123'). Phone numbers that cannot be normalized into a valid phone number will be discarded. Should not repeat the 'phone' input used in `app.bsky.contact.verifyPhone`.
+    /// List of phone numbers in global E.164 format (e.g., '+12125550123'). Phone numbers that cannot be normalized into a valid phone number will be discarded. Should not repeat the 'phone' input used in `app.bsky.contact.verifyPhone`.
     pub contacts: Vec<S>,
-    ///JWT to authenticate the call. Use the JWT received as a response to the call to `app.bsky.contact.verifyPhone`.
+    /// JWT to authenticate the call. Use the JWT received as a response to the call to `app.bsky.contact.verifyPhone`.
     pub token: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,29 +30,22 @@ pub struct ImportContacts<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ImportContactsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The users that matched during import and their indexes on the input contacts, so the client can correlate with its local list.
-    pub matches_and_contact_indexes: Vec<
-        crate::generated::app_bsky::contact::MatchAndContactIndex<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+pub struct ImportContactsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The users that matched during import and their indexes on the input contacts, so the client can correlate with its local list.
+    pub matches_and_contact_indexes:
+        Vec<crate::generated::app_bsky::contact::MatchAndContactIndex<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -63,7 +53,6 @@ pub struct ImportContactsOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -73,25 +62,40 @@ pub struct ImportContactsOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum ImportContactsError {
     #[serde(rename = "InvalidDid")]
-    InvalidDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidDid(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidContacts")]
-    InvalidContacts(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidContacts(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "TooManyContacts")]
-    TooManyContacts(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TooManyContacts(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidToken")]
-    InvalidToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidToken(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InternalError")]
-    InternalError(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InternalError(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -156,12 +160,10 @@ impl jacquard_common::xrpc::XrpcResp for ImportContactsResponse {
     type Err = ImportContactsError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for ImportContacts<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ImportContacts<S> {
     const NSID: &'static str = "app.bsky.contact.importContacts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ImportContactsResponse;
 }
 
@@ -171,18 +173,17 @@ Path: `/xrpc/app.bsky.contact.importContacts`. The request payload type is `Impo
 pub struct ImportContactsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ImportContactsRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.importContacts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = ImportContacts<S>;
     type Response = ImportContactsResponse;
 }
 
 pub mod import_contacts_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -234,10 +235,8 @@ pub struct ImportContactsBuilder<
 
 impl ImportContacts<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ImportContactsBuilder<
-        import_contacts_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ImportContactsBuilder<import_contacts_state::Empty, jacquard_common::DefaultStr>
+    {
         ImportContactsBuilder::new()
     }
 }

@@ -13,7 +13,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub space: S,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
 
 #[derive(
@@ -24,12 +24,12 @@ pub struct GetSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSpaceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///How the authority decides whether to authorize a requesting app.
+    /// How the authority decides whether to authorize a requesting app.
     pub app_access: GetSpaceOutputAppAccess<S>,
-    ///How the authority decides whether to authorize a requesting user.
+    /// How the authority decides whether to authorize a requesting user.
     pub policy: GetSpaceOutputPolicy<S>,
-    ///URI of the space.
-    pub uri: S,
+    /// URI of the space.
+    pub uri: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -88,11 +88,15 @@ pub enum GetSpaceOutputPolicy<S: jacquard_common::BosStr = jacquard_common::Defa
 #[serde(tag = "error", content = "message")]
 pub enum GetSpaceError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -150,7 +154,7 @@ pub mod get_space_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -184,7 +188,7 @@ pub struct GetSpaceBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<S>,),
+    _fields: (core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -232,7 +236,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> GetSpaceBuilder<get_space_state::SetSpace<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         GetSpaceBuilder {

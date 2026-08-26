@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -22,11 +15,15 @@
 pub struct CreateJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub join_rule: crate::generated::chat_bsky::group::JoinRule<S>,
-    /// Defaults to `false`.
+    ///  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_create_join_link_require_approval")]
     pub require_approval: core::option::Option<bool>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,26 +32,20 @@ pub struct CreateJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CreateJoinLinkOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct CreateJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub join_link: crate::generated::chat_bsky::group::JoinLinkView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -62,7 +53,6 @@ pub struct CreateJoinLinkOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -72,23 +62,30 @@ pub struct CreateJoinLinkOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum CreateJoinLinkError {
     #[serde(rename = "EnabledJoinLinkAlreadyExists")]
     EnabledJoinLinkAlreadyExists(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidConvo(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InsufficientRole")]
-    InsufficientRole(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InsufficientRole(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -139,12 +136,10 @@ impl jacquard_common::xrpc::XrpcResp for CreateJoinLinkResponse {
     type Err = CreateJoinLinkError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for CreateJoinLink<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateJoinLink<S> {
     const NSID: &'static str = "chat.bsky.group.createJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateJoinLinkResponse;
 }
 
@@ -154,9 +149,8 @@ Path: `/xrpc/chat.bsky.group.createJoinLink`. The request payload type is `Creat
 pub struct CreateJoinLinkRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateJoinLinkRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.createJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = CreateJoinLink<S>;
     type Response = CreateJoinLinkResponse;
 }
@@ -167,9 +161,9 @@ fn _default_create_join_link_require_approval() -> core::option::Option<bool> {
 
 pub mod create_join_link_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -225,10 +219,8 @@ pub struct CreateJoinLinkBuilder<
 
 impl CreateJoinLink<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreateJoinLinkBuilder<
-        create_join_link_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> CreateJoinLinkBuilder<create_join_link_state::Empty, jacquard_common::DefaultStr>
+    {
         CreateJoinLinkBuilder::new()
     }
 }
@@ -251,9 +243,7 @@ impl CreateJoinLinkBuilder<create_join_link_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> CreateJoinLinkBuilder<create_join_link_state::Empty, S> {
+impl<S: jacquard_common::BosStr> CreateJoinLinkBuilder<create_join_link_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         CreateJoinLinkBuilder {
@@ -302,10 +292,7 @@ where
     }
 }
 
-impl<
-    St: create_join_link_state::State,
-    S: jacquard_common::BosStr,
-> CreateJoinLinkBuilder<St, S> {
+impl<St: create_join_link_state::State, S: jacquard_common::BosStr> CreateJoinLinkBuilder<St, S> {
     /// Set the `requireApproval` field (optional)
     pub fn require_approval(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.2 = value.into();

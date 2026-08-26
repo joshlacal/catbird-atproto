@@ -5,6 +5,85 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetInviteCodesSort<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Recent,
+    Usage,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetInviteCodesSort<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Recent => "recent",
+            Self::Usage => "usage",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "recent" => Self::Recent,
+            "usage" => Self::Usage,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetInviteCodesSort<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetInviteCodesSort<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetInviteCodesSort<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetInviteCodesSort<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetInviteCodesSort<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetInviteCodesSort<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetInviteCodesSort<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetInviteCodesSort::Recent => GetInviteCodesSort::Recent,
+            GetInviteCodesSort::Usage => GetInviteCodesSort::Usage,
+            GetInviteCodesSort::Other(v) => GetInviteCodesSort::Other(v.into_static()),
+        }
+    }
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
@@ -22,7 +101,7 @@ pub struct GetInviteCodes<S: jacquard_common::BosStr = jacquard_common::DefaultS
     /// Defaults to `"recent"`.
     #[serde(default = "_default_sort")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort: core::option::Option<S>,
+    pub sort: core::option::Option<GetInviteCodesSort<S>>,
 }
 
 #[derive(
@@ -81,15 +160,18 @@ fn _default_limit() -> core::option::Option<i64> {
     Some(100i64)
 }
 
-fn _default_sort<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("recent"))
+fn _default_sort<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<GetInviteCodesSort<S>> {
+    Some(<GetInviteCodesSort<S>>::from_value(S::from_static(
+        "recent",
+    )))
 }
 
 pub mod get_invite_codes_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -113,7 +195,7 @@ pub struct GetInviteCodesBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<S>,
+        core::option::Option<GetInviteCodesSort<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -183,12 +265,12 @@ impl<St: get_invite_codes_state::State, S: jacquard_common::BosStr> GetInviteCod
 
 impl<St: get_invite_codes_state::State, S: jacquard_common::BosStr> GetInviteCodesBuilder<St, S> {
     /// Set the `sort` field (optional)
-    pub fn sort(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort(mut self, value: impl Into<Option<GetInviteCodesSort<S>>>) -> Self {
         self._fields.2 = value.into();
         self
     }
     /// Set the `sort` field to an Option value (optional)
-    pub fn maybe_sort(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort(mut self, value: Option<GetInviteCodesSort<S>>) -> Self {
         self._fields.2 = value;
         self
     }

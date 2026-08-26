@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,26 +16,20 @@ pub struct GetStarterPack<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub starter_pack: jacquard_common::types::string::AtUri<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetStarterPackOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetStarterPackOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub starter_pack: crate::generated::app_bsky::graph::StarterPackView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -62,8 +49,7 @@ impl jacquard_common::xrpc::XrpcResp for GetStarterPackResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetStarterPack<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetStarterPack<S> {
     const NSID: &'static str = "app.bsky.graph.getStarterPack";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetStarterPackResponse;
@@ -82,9 +68,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetStarterPackRequest {
 
 pub mod get_starter_pack_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -124,10 +110,8 @@ pub struct GetStarterPackBuilder<
 
 impl GetStarterPack<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetStarterPackBuilder<
-        get_starter_pack_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetStarterPackBuilder<get_starter_pack_state::Empty, jacquard_common::DefaultStr>
+    {
         GetStarterPackBuilder::new()
     }
 }
@@ -150,9 +134,7 @@ impl GetStarterPackBuilder<get_starter_pack_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetStarterPackBuilder<get_starter_pack_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetStarterPackBuilder<get_starter_pack_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetStarterPackBuilder {

@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,7 +17,11 @@ pub struct UpdateActorAccess<S: jacquard_common::BosStr = jacquard_common::Defau
     pub allow_access: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub r#ref: core::option::Option<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,14 +39,24 @@ impl jacquard_common::xrpc::XrpcResp for UpdateActorAccessResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for UpdateActorAccess<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateActorAccess<S> {
     const NSID: &'static str = "chat.bsky.moderation.updateActorAccess";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateActorAccessResponse;
 }
 
@@ -59,18 +66,17 @@ Path: `/xrpc/chat.bsky.moderation.updateActorAccess`. The request payload type i
 pub struct UpdateActorAccessRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateActorAccessRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.moderation.updateActorAccess";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UpdateActorAccess<S>;
     type Response = UpdateActorAccessResponse;
 }
 
 pub mod update_actor_access_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -126,10 +132,9 @@ pub struct UpdateActorAccessBuilder<
 
 impl UpdateActorAccess<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UpdateActorAccessBuilder<
-        update_actor_access_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> UpdateActorAccessBuilder<update_actor_access_state::Empty, jacquard_common::DefaultStr>
+    {
         UpdateActorAccessBuilder::new()
     }
 }
@@ -141,10 +146,7 @@ impl<S: jacquard_common::BosStr> UpdateActorAccess<S> {
     }
 }
 
-impl UpdateActorAccessBuilder<
-    update_actor_access_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl UpdateActorAccessBuilder<update_actor_access_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateActorAccessBuilder {
@@ -155,9 +157,7 @@ impl UpdateActorAccessBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> UpdateActorAccessBuilder<update_actor_access_state::Empty, S> {
+impl<S: jacquard_common::BosStr> UpdateActorAccessBuilder<update_actor_access_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         UpdateActorAccessBuilder {
@@ -206,10 +206,9 @@ where
     }
 }
 
-impl<
-    St: update_actor_access_state::State,
-    S: jacquard_common::BosStr,
-> UpdateActorAccessBuilder<St, S> {
+impl<St: update_actor_access_state::State, S: jacquard_common::BosStr>
+    UpdateActorAccessBuilder<St, S>
+{
     /// Set the `ref` field (optional)
     pub fn r#ref(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();

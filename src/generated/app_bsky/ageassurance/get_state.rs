@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -25,17 +18,9 @@ pub struct GetState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub region_code: core::option::Option<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -43,7 +28,11 @@ pub struct GetState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 pub struct GetStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub metadata: crate::generated::app_bsky::ageassurance::StateMetadata<S>,
     pub state: crate::generated::app_bsky::ageassurance::State<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -82,9 +71,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetStateRequest {
 
 pub mod get_state_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -124,10 +113,7 @@ pub struct GetStateBuilder<
 
 impl GetState<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetStateBuilder<
-        get_state_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetStateBuilder<get_state_state::Empty, jacquard_common::DefaultStr> {
         GetStateBuilder::new()
     }
 }

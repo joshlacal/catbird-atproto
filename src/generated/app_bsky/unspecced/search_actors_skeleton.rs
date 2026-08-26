@@ -6,22 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SearchActorsSkeleton<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct SearchActorsSkeleton<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     /// Defaults to `25`. Min: 1. Max: 100.
@@ -35,31 +26,25 @@ pub struct SearchActorsSkeleton<
     pub viewer: core::option::Option<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SearchActorsSkeletonOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct SearchActorsSkeletonOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actors: Vec<crate::generated::app_bsky::unspecced::SkeletonSearchActor<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    ///Count of search hits. Optional, may be rounded/truncated, and may not be possible to paginate through all hits.
+    /// Count of search hits. Optional, may be rounded/truncated, and may not be possible to paginate through all hits.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub hits_total: core::option::Option<i64>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -67,7 +52,6 @@ pub struct SearchActorsSkeletonOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -77,17 +61,20 @@ pub struct SearchActorsSkeletonOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum SearchActorsSkeletonError {
     #[serde(rename = "BadQueryString")]
-    BadQueryString(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BadQueryString(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -124,8 +111,7 @@ impl jacquard_common::xrpc::XrpcResp for SearchActorsSkeletonResponse {
     type Err = SearchActorsSkeletonError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for SearchActorsSkeleton<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchActorsSkeleton<S> {
     const NSID: &'static str = "app.bsky.unspecced.searchActorsSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = SearchActorsSkeletonResponse;
@@ -148,9 +134,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod search_actors_skeleton_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -196,28 +182,21 @@ pub struct SearchActorsSkeletonBuilder<
 
 impl SearchActorsSkeleton<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SearchActorsSkeletonBuilder<
-        search_actors_skeleton_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> SearchActorsSkeletonBuilder<search_actors_skeleton_state::Empty, jacquard_common::DefaultStr>
+    {
         SearchActorsSkeletonBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> SearchActorsSkeleton<S> {
     /// Create a new builder for this type
-    pub fn builder() -> SearchActorsSkeletonBuilder<
-        search_actors_skeleton_state::Empty,
-        S,
-    > {
+    pub fn builder() -> SearchActorsSkeletonBuilder<search_actors_skeleton_state::Empty, S> {
         SearchActorsSkeletonBuilder::builder()
     }
 }
 
-impl SearchActorsSkeletonBuilder<
-    search_actors_skeleton_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl SearchActorsSkeletonBuilder<search_actors_skeleton_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchActorsSkeletonBuilder {
@@ -228,9 +207,9 @@ impl SearchActorsSkeletonBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> SearchActorsSkeletonBuilder<search_actors_skeleton_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    SearchActorsSkeletonBuilder<search_actors_skeleton_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SearchActorsSkeletonBuilder {
@@ -241,10 +220,9 @@ impl<
     }
 }
 
-impl<
-    St: search_actors_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> SearchActorsSkeletonBuilder<St, S> {
+impl<St: search_actors_skeleton_state::State, S: jacquard_common::BosStr>
+    SearchActorsSkeletonBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -257,10 +235,9 @@ impl<
     }
 }
 
-impl<
-    St: search_actors_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> SearchActorsSkeletonBuilder<St, S> {
+impl<St: search_actors_skeleton_state::State, S: jacquard_common::BosStr>
+    SearchActorsSkeletonBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
@@ -292,10 +269,9 @@ where
     }
 }
 
-impl<
-    St: search_actors_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> SearchActorsSkeletonBuilder<St, S> {
+impl<St: search_actors_skeleton_state::State, S: jacquard_common::BosStr>
+    SearchActorsSkeletonBuilder<St, S>
+{
     /// Set the `typeahead` field (optional)
     pub fn typeahead(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.3 = value.into();
@@ -308,10 +284,9 @@ impl<
     }
 }
 
-impl<
-    St: search_actors_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> SearchActorsSkeletonBuilder<St, S> {
+impl<St: search_actors_skeleton_state::State, S: jacquard_common::BosStr>
+    SearchActorsSkeletonBuilder<St, S>
+{
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
@@ -321,10 +296,7 @@ impl<
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<S>>,
-    ) -> Self {
+    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
         self._fields.4 = value;
         self
     }

@@ -24,21 +24,21 @@ pub struct GetConvoDigest<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetConvoDigestOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Conversation ID
+    /// Conversation ID
     pub convo_id: S,
-    ///Hex-encoded SHA-256 digest over all messages
+    /// Hex-encoded SHA-256 digest over all messages
     pub digest_sha256: S,
-    ///Current MLS epoch
+    /// Current MLS epoch
     pub epoch: i64,
-    ///Total number of events/messages
+    /// Total number of events/messages
     pub event_count: i64,
-    ///Timestamp when the digest was generated
+    /// Timestamp when the digest was generated
     pub generated_at: jacquard_common::types::string::Datetime,
-    ///Highest sequence number
+    /// Highest sequence number
     pub last_seq: i64,
-    ///DID of the current sequencer DS
+    /// DID of the current sequencer DS
     pub sequencer_ds_did: S,
-    ///Current sequencer term
+    /// Current sequencer term
     pub sequencer_term: i64,
     #[serde(
         flatten,
@@ -66,13 +66,20 @@ pub struct GetConvoDigestOutput<S: jacquard_common::BosStr = jacquard_common::De
 #[serde(tag = "error", content = "message")]
 pub enum GetConvoDigestError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -137,7 +144,7 @@ pub mod get_convo_digest_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

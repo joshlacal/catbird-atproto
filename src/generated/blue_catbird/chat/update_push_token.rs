@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdatePushToken<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///APNs device token (e.g. hex-encoded). Omit to unregister/clear.
+    /// APNs device token (e.g. hex-encoded). Omit to unregister/clear.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub token: core::option::Option<S>,
     #[serde(
@@ -71,25 +71,50 @@ pub struct UpdatePushTokenOutput<S: jacquard_common::BosStr = jacquard_common::D
 #[serde(tag = "error", content = "message")]
 pub enum UpdatePushTokenError {
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
-    CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotRegistered")]
-    DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceRevoked")]
-    DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
-    InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
-    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }

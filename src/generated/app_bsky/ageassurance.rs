@@ -65,7 +65,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for Access<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for Access<S> {
+    for Access<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -92,25 +93,22 @@ where
     }
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Config<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The per-region Age Assurance configuration.
+    /// The per-region Age Assurance configuration.
     pub regions: Vec<crate::generated::app_bsky::ageassurance::ConfigRegion<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -122,36 +120,35 @@ pub struct Config<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// The Age Assurance configuration for a specific region.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ConfigRegion<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Verification methods permitted in this region in addition to the third-party (KWS) flow, which is always supported. `device` permits using the native on-device age APIs (e.g. Apple Declared Age Range, Google Play Age Signals).
+    /// Verification methods permitted in this region in addition to the third-party (KWS) flow, which is always supported. `device` permits using the native on-device age APIs (e.g. Apple Declared Age Range, Google Play Age Signals).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub additional_verification_methods: core::option::Option<Vec<S>>,
-    ///The ISO 3166-1 alpha-2 country code this configuration applies to.
+    pub additional_verification_methods:
+        core::option::Option<Vec<ConfigRegionAdditionalVerificationMethods<S>>>,
+    /// The ISO 3166-1 alpha-2 country code this configuration applies to.
     pub country_code: S,
-    ///The minimum age (as a whole integer) required to use Bluesky in this region.
+    /// The minimum age (as a whole integer) required to use Bluesky in this region.
     pub min_access_age: i64,
-    ///The platforms this configuration applies to. If omitted, the configuration applies to all platforms.
+    /// The platforms this configuration applies to. If omitted, the configuration applies to all platforms.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub platforms: core::option::Option<Vec<S>>,
-    ///The ISO 3166-2 region code this configuration applies to. If omitted, the configuration applies to the entire country.
+    pub platforms: core::option::Option<Vec<ConfigRegionPlatforms<S>>>,
+    /// The ISO 3166-2 region code this configuration applies to. If omitted, the configuration applies to the entire country.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub region_code: core::option::Option<S>,
-    ///The ordered list of Age Assurance rules that apply to this region. Rules should be applied in order, and the first matching rule determines the access level granted. The rules array should always include a default rule as the last item.
+    /// The ordered list of Age Assurance rules that apply to this region. Rules should be applied in order, and the first matching rule determines the access level granted. The rules array should always include a default rule as the last item.
     pub rules: Vec<ConfigRegionRulesItem<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -160,98 +157,231 @@ pub struct ConfigRegion<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ConfigRegionAdditionalVerificationMethods<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    Device,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ConfigRegionAdditionalVerificationMethods<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Device => "device",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "device" => Self::Device,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display
+    for ConfigRegionAdditionalVerificationMethods<S>
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ConfigRegionAdditionalVerificationMethods<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ConfigRegionAdditionalVerificationMethods<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ConfigRegionAdditionalVerificationMethods<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default
+    for ConfigRegionAdditionalVerificationMethods<S>
+{
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for ConfigRegionAdditionalVerificationMethods<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ConfigRegionAdditionalVerificationMethods<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ConfigRegionAdditionalVerificationMethods::Device => {
+                ConfigRegionAdditionalVerificationMethods::Device
+            }
+            ConfigRegionAdditionalVerificationMethods::Other(v) => {
+                ConfigRegionAdditionalVerificationMethods::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ConfigRegionPlatforms<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Web,
+    Ios,
+    Android,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ConfigRegionPlatforms<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Web => "web",
+            Self::Ios => "ios",
+            Self::Android => "android",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "web" => Self::Web,
+            "ios" => Self::Ios,
+            "android" => Self::Android,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ConfigRegionPlatforms<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ConfigRegionPlatforms<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ConfigRegionPlatforms<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ConfigRegionPlatforms<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ConfigRegionPlatforms<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ConfigRegionPlatforms<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ConfigRegionPlatforms<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ConfigRegionPlatforms::Web => ConfigRegionPlatforms::Web,
+            ConfigRegionPlatforms::Ios => ConfigRegionPlatforms::Ios,
+            ConfigRegionPlatforms::Android => ConfigRegionPlatforms::Android,
+            ConfigRegionPlatforms::Other(v) => ConfigRegionPlatforms::Other(v.into_static()),
+        }
+    }
+}
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum ConfigRegionRulesItem<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum ConfigRegionRulesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleDefault")]
     ConfigRegionRuleDefault(
         Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleDefault<S>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfDeclaredOverAge")]
     ConfigRegionRuleIfDeclaredOverAge(
-        Box<
-            crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredOverAge<
-                S,
-            >,
-        >,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredOverAge<S>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfDeclaredUnderAge")]
     ConfigRegionRuleIfDeclaredUnderAge(
-        Box<
-            crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredUnderAge<
-                S,
-            >,
-        >,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredUnderAge<S>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAssuredOverAge")]
     ConfigRegionRuleIfAssuredOverAge(
-        Box<
-            crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAssuredOverAge<S>,
-        >,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAssuredOverAge<S>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAssuredUnderAge")]
     ConfigRegionRuleIfAssuredUnderAge(
-        Box<
-            crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAssuredUnderAge<
-                S,
-            >,
-        >,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAssuredUnderAge<S>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAccountNewerThan")]
     ConfigRegionRuleIfAccountNewerThan(
-        Box<
-            crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAccountNewerThan<
-                S,
-            >,
-        >,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAccountNewerThan<S>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAccountOlderThan")]
     ConfigRegionRuleIfAccountOlderThan(
-        Box<
-            crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAccountOlderThan<
-                S,
-            >,
-        >,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAccountOlderThan<S>>,
     ),
 }
 
 /// Age Assurance rule that applies by default.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ConfigRegionRuleDefault<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ConfigRegionRuleDefault<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_rule_default_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -263,15 +393,8 @@ pub struct ConfigRegionRuleDefault<
 /// Age Assurance rule that applies if the account is equal-to or newer than a certain date.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -280,9 +403,14 @@ pub struct ConfigRegionRuleIfAccountNewerThan<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    ///The date threshold as a datetime string.
+    /// The date threshold as a datetime string.
     pub date: jacquard_common::types::string::Datetime,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_rule_if_account_newer_than_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -294,15 +422,8 @@ pub struct ConfigRegionRuleIfAccountNewerThan<
 /// Age Assurance rule that applies if the account is older than a certain date.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -311,9 +432,14 @@ pub struct ConfigRegionRuleIfAccountOlderThan<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    ///The date threshold as a datetime string.
+    /// The date threshold as a datetime string.
     pub date: jacquard_common::types::string::Datetime,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_rule_if_account_older_than_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -325,15 +451,8 @@ pub struct ConfigRegionRuleIfAccountOlderThan<
 /// Age Assurance rule that applies if the user has been assured to be equal-to or over a certain age.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -342,9 +461,14 @@ pub struct ConfigRegionRuleIfAssuredOverAge<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    ///The age threshold as a whole integer.
+    /// The age threshold as a whole integer.
     pub age: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_rule_if_assured_over_age_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -356,15 +480,8 @@ pub struct ConfigRegionRuleIfAssuredOverAge<
 /// Age Assurance rule that applies if the user has been assured to be under a certain age.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -373,9 +490,14 @@ pub struct ConfigRegionRuleIfAssuredUnderAge<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    ///The age threshold as a whole integer.
+    /// The age threshold as a whole integer.
     pub age: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_rule_if_assured_under_age_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -387,15 +509,8 @@ pub struct ConfigRegionRuleIfAssuredUnderAge<
 /// Age Assurance rule that applies if the user has declared themselves equal-to or over a certain age.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -404,9 +519,14 @@ pub struct ConfigRegionRuleIfDeclaredOverAge<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    ///The age threshold as a whole integer.
+    /// The age threshold as a whole integer.
     pub age: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_rule_if_declared_over_age_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -418,15 +538,8 @@ pub struct ConfigRegionRuleIfDeclaredOverAge<
 /// Age Assurance rule that applies if the user has declared themselves under a certain age.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -435,9 +548,14 @@ pub struct ConfigRegionRuleIfDeclaredUnderAge<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    ///The age threshold as a whole integer.
+    /// The age threshold as a whole integer.
     pub age: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_config_region_rule_if_declared_under_age_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -449,49 +567,47 @@ pub struct ConfigRegionRuleIfDeclaredUnderAge<
 /// Object used to store Age Assurance data in stash.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Event<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The access level granted based on Age Assurance data we've processed.
+    /// The access level granted based on Age Assurance data we've processed.
     pub access: EventAccess<S>,
-    ///The unique identifier for this instance of the Age Assurance flow, in UUID format.
+    /// The unique identifier for this instance of the Age Assurance flow, in UUID format.
     pub attempt_id: S,
-    ///The IP address used when completing the Age Assurance flow.
+    /// The IP address used when completing the Age Assurance flow.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub complete_ip: core::option::Option<S>,
-    ///The user agent used when completing the Age Assurance flow.
+    /// The user agent used when completing the Age Assurance flow.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub complete_ua: core::option::Option<S>,
-    ///The ISO 3166-1 alpha-2 country code provided when beginning the Age Assurance flow.
+    /// The ISO 3166-1 alpha-2 country code provided when beginning the Age Assurance flow.
     pub country_code: S,
-    ///The date and time of this write operation.
+    /// The date and time of this write operation.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///The email used for Age Assurance.
+    /// The email used for Age Assurance.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub email: core::option::Option<S>,
-    ///The IP address used when initiating the Age Assurance flow.
+    /// The IP address used when initiating the Age Assurance flow.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub init_ip: core::option::Option<S>,
-    ///The user agent used when initiating the Age Assurance flow.
+    /// The user agent used when initiating the Age Assurance flow.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub init_ua: core::option::Option<S>,
-    ///The ISO 3166-2 region code provided when beginning the Age Assurance flow.
+    /// The ISO 3166-2 region code provided when beginning the Age Assurance flow.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub region_code: core::option::Option<S>,
-    ///The status of the Age Assurance process.
+    /// The status of the Age Assurance process.
     pub status: EventStatus<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -555,7 +671,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for EventAccess<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for EventAccess<S> {
+    for EventAccess<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -643,7 +760,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for EventStatus<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for EventStatus<S> {
+    for EventStatus<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -679,28 +797,24 @@ where
 /// The user's computed Age Assurance state.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct State<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub access: crate::generated::app_bsky::ageassurance::Access<S>,
-    ///The timestamp when this state was last updated.
+    /// The timestamp when this state was last updated.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub last_initiated_at: core::option::Option<
-        jacquard_common::types::string::Datetime,
-    >,
+    pub last_initiated_at: core::option::Option<jacquard_common::types::string::Datetime>,
     pub status: crate::generated::app_bsky::ageassurance::Status<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_state_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -719,20 +833,22 @@ pub struct State<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct StateMetadata<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The account creation timestamp.
+    /// The account creation timestamp.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub account_created_at: core::option::Option<
-        jacquard_common::types::string::Datetime,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub account_created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_state_metadata_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -796,7 +912,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for Status<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for Status<S> {
+    for Status<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -838,8 +955,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Con
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegion<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ConfigRegion<S> {
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -855,7 +971,8 @@ for ConfigRegion<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegionRuleDefault<S> {
+    for ConfigRegionRuleDefault<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -871,7 +988,8 @@ for ConfigRegionRuleDefault<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegionRuleIfAccountNewerThan<S> {
+    for ConfigRegionRuleIfAccountNewerThan<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -887,7 +1005,8 @@ for ConfigRegionRuleIfAccountNewerThan<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegionRuleIfAccountOlderThan<S> {
+    for ConfigRegionRuleIfAccountOlderThan<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -903,7 +1022,8 @@ for ConfigRegionRuleIfAccountOlderThan<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegionRuleIfAssuredOverAge<S> {
+    for ConfigRegionRuleIfAssuredOverAge<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -919,7 +1039,8 @@ for ConfigRegionRuleIfAssuredOverAge<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegionRuleIfAssuredUnderAge<S> {
+    for ConfigRegionRuleIfAssuredUnderAge<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -935,7 +1056,8 @@ for ConfigRegionRuleIfAssuredUnderAge<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegionRuleIfDeclaredOverAge<S> {
+    for ConfigRegionRuleIfDeclaredOverAge<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -951,7 +1073,8 @@ for ConfigRegionRuleIfDeclaredOverAge<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConfigRegionRuleIfDeclaredUnderAge<S> {
+    for ConfigRegionRuleIfDeclaredUnderAge<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -996,8 +1119,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sta
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for StateMetadata<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for StateMetadata<S> {
     fn nsid() -> &'static str {
         "app.bsky.ageassurance.defs"
     }
@@ -1012,11 +1134,35 @@ for StateMetadata<S> {
     }
 }
 
+fn deserialize_config_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1050,11 +1196,7 @@ pub struct ConfigBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<
-            Vec<crate::generated::app_bsky::ageassurance::ConfigRegion<S>>,
-        >,
-    ),
+    _fields: (core::option::Option<Vec<crate::generated::app_bsky::ageassurance::ConfigRegion<S>>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -1140,9 +1282,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.ageassurance.defs"),
@@ -1150,50 +1290,50 @@ fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::Lexico
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("access"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "The access level granted based on Age Assurance data we've processed.",
-                        ),
-                    ),
-                    ..Default::default()
-                }),
+                        )),
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("config"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(::jacquard_common::CowStr::new_static("")),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("regions")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "regions",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The per-region Age Assurance configuration.",
-                                    ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static("")),
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("regions"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("regions"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The per-region Age Assurance configuration.",
+                                        )),
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
+                                            ::jacquard_lexicon::lexicon::LexRef {
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "app.bsky.ageassurance.defs#configRegion",
+                                                ),
+                                                ..Default::default()
+                                            },
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    r#ref: ::jacquard_common::CowStr::new_static(
-                                        "app.bsky.ageassurance.defs#configRegion",
-                                    ),
-                                    ..Default::default()
-                                }),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("configRegion"),
@@ -1310,38 +1450,34 @@ fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::Lexico
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "configRegionRuleDefault",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("configRegionRuleDefault"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Age Assurance rule that applies by default.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("access")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "access",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "app.bsky.ageassurance.defs#access",
+                        )),
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("access"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("access"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.ageassurance.defs#access",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -1790,63 +1926,61 @@ fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::Lexico
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("state"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "The user's computed Age Assurance state.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("access")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "access",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "app.bsky.ageassurance.defs#access",
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("access"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("access"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.ageassurance.defs#access",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "lastInitiatedAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The timestamp when this state was last updated.",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "lastInitiatedAt",
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The timestamp when this state was last updated.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "status",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "app.bsky.ageassurance.defs#status",
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.ageassurance.defs#status",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("stateMetadata"),
@@ -1883,14 +2017,14 @@ fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::Lexico
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "The status of the Age Assurance process.",
-                        ),
-                    ),
-                    ..Default::default()
-                }),
+                        )),
+                        ..Default::default()
+                    },
+                ),
             );
             map
         },
@@ -1898,11 +2032,35 @@ fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::Lexico
     }
 }
 
+fn deserialize_config_region_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1963,10 +2121,10 @@ pub struct ConfigRegionBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<ConfigRegionAdditionalVerificationMethods<S>>>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<ConfigRegionPlatforms<S>>>,
         core::option::Option<S>,
         core::option::Option<Vec<ConfigRegionRulesItem<S>>>,
     ),
@@ -1975,10 +2133,7 @@ pub struct ConfigRegionBuilder<
 
 impl ConfigRegion<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ConfigRegionBuilder<
-        config_region_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ConfigRegionBuilder<config_region_state::Empty, jacquard_common::DefaultStr> {
         ConfigRegionBuilder::new()
     }
 }
@@ -2012,14 +2167,11 @@ impl<S: jacquard_common::BosStr> ConfigRegionBuilder<config_region_state::Empty,
     }
 }
 
-impl<
-    St: config_region_state::State,
-    S: jacquard_common::BosStr,
-> ConfigRegionBuilder<St, S> {
+impl<St: config_region_state::State, S: jacquard_common::BosStr> ConfigRegionBuilder<St, S> {
     /// Set the `additionalVerificationMethods` field (optional)
     pub fn additional_verification_methods(
         mut self,
-        value: impl Into<Option<Vec<S>>>,
+        value: impl Into<Option<Vec<ConfigRegionAdditionalVerificationMethods<S>>>>,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -2027,7 +2179,7 @@ impl<
     /// Set the `additionalVerificationMethods` field to an Option value (optional)
     pub fn maybe_additional_verification_methods(
         mut self,
-        value: Option<Vec<S>>,
+        value: Option<Vec<ConfigRegionAdditionalVerificationMethods<S>>>,
     ) -> Self {
         self._fields.0 = value;
         self
@@ -2072,26 +2224,20 @@ where
     }
 }
 
-impl<
-    St: config_region_state::State,
-    S: jacquard_common::BosStr,
-> ConfigRegionBuilder<St, S> {
+impl<St: config_region_state::State, S: jacquard_common::BosStr> ConfigRegionBuilder<St, S> {
     /// Set the `platforms` field (optional)
-    pub fn platforms(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+    pub fn platforms(mut self, value: impl Into<Option<Vec<ConfigRegionPlatforms<S>>>>) -> Self {
         self._fields.3 = value.into();
         self
     }
     /// Set the `platforms` field to an Option value (optional)
-    pub fn maybe_platforms(mut self, value: Option<Vec<S>>) -> Self {
+    pub fn maybe_platforms(mut self, value: Option<Vec<ConfigRegionPlatforms<S>>>) -> Self {
         self._fields.3 = value;
         self
     }
 }
 
-impl<
-    St: config_region_state::State,
-    S: jacquard_common::BosStr,
-> ConfigRegionBuilder<St, S> {
+impl<St: config_region_state::State, S: jacquard_common::BosStr> ConfigRegionBuilder<St, S> {
     /// Set the `regionCode` field (optional)
     pub fn region_code(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();
@@ -2162,11 +2308,35 @@ where
     }
 }
 
+fn deserialize_config_region_rule_default_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_rule_default_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2200,9 +2370,7 @@ pub struct ConfigRegionRuleDefaultBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<crate::generated::app_bsky::ageassurance::Access<S>>,
-    ),
+    _fields: (core::option::Option<crate::generated::app_bsky::ageassurance::Access<S>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -2218,18 +2386,17 @@ impl ConfigRegionRuleDefault<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> ConfigRegionRuleDefault<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ConfigRegionRuleDefaultBuilder<
-        config_region_rule_default_state::Empty,
-        S,
-    > {
+    pub fn builder() -> ConfigRegionRuleDefaultBuilder<config_region_rule_default_state::Empty, S> {
         ConfigRegionRuleDefaultBuilder::builder()
     }
 }
 
-impl ConfigRegionRuleDefaultBuilder<
-    config_region_rule_default_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ConfigRegionRuleDefaultBuilder<
+        config_region_rule_default_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigRegionRuleDefaultBuilder {
@@ -2240,9 +2407,9 @@ impl ConfigRegionRuleDefaultBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ConfigRegionRuleDefaultBuilder<config_region_rule_default_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    ConfigRegionRuleDefaultBuilder<config_region_rule_default_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConfigRegionRuleDefaultBuilder {
@@ -2262,10 +2429,7 @@ where
     pub fn access(
         mut self,
         value: impl Into<crate::generated::app_bsky::ageassurance::Access<S>>,
-    ) -> ConfigRegionRuleDefaultBuilder<
-        config_region_rule_default_state::SetAccess<St>,
-        S,
-    > {
+    ) -> ConfigRegionRuleDefaultBuilder<config_region_rule_default_state::SetAccess<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ConfigRegionRuleDefaultBuilder {
             _state: ::core::marker::PhantomData,
@@ -2302,11 +2466,35 @@ where
     }
 }
 
+fn deserialize_config_region_rule_if_account_newer_than_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_rule_if_account_newer_than_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2379,10 +2567,12 @@ impl<S: jacquard_common::BosStr> ConfigRegionRuleIfAccountNewerThan<S> {
     }
 }
 
-impl ConfigRegionRuleIfAccountNewerThanBuilder<
-    config_region_rule_if_account_newer_than_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ConfigRegionRuleIfAccountNewerThanBuilder<
+        config_region_rule_if_account_newer_than_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigRegionRuleIfAccountNewerThanBuilder {
@@ -2393,12 +2583,12 @@ impl ConfigRegionRuleIfAccountNewerThanBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ConfigRegionRuleIfAccountNewerThanBuilder<
-    config_region_rule_if_account_newer_than_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    ConfigRegionRuleIfAccountNewerThanBuilder<
+        config_region_rule_if_account_newer_than_state::Empty,
+        S,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConfigRegionRuleIfAccountNewerThanBuilder {
@@ -2483,11 +2673,35 @@ where
     }
 }
 
+fn deserialize_config_region_rule_if_account_older_than_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_rule_if_account_older_than_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2560,10 +2774,12 @@ impl<S: jacquard_common::BosStr> ConfigRegionRuleIfAccountOlderThan<S> {
     }
 }
 
-impl ConfigRegionRuleIfAccountOlderThanBuilder<
-    config_region_rule_if_account_older_than_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ConfigRegionRuleIfAccountOlderThanBuilder<
+        config_region_rule_if_account_older_than_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigRegionRuleIfAccountOlderThanBuilder {
@@ -2574,12 +2790,12 @@ impl ConfigRegionRuleIfAccountOlderThanBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ConfigRegionRuleIfAccountOlderThanBuilder<
-    config_region_rule_if_account_older_than_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    ConfigRegionRuleIfAccountOlderThanBuilder<
+        config_region_rule_if_account_older_than_state::Empty,
+        S,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConfigRegionRuleIfAccountOlderThanBuilder {
@@ -2664,11 +2880,35 @@ where
     }
 }
 
+fn deserialize_config_region_rule_if_assured_over_age_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_rule_if_assured_over_age_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2741,10 +2981,12 @@ impl<S: jacquard_common::BosStr> ConfigRegionRuleIfAssuredOverAge<S> {
     }
 }
 
-impl ConfigRegionRuleIfAssuredOverAgeBuilder<
-    config_region_rule_if_assured_over_age_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ConfigRegionRuleIfAssuredOverAgeBuilder<
+        config_region_rule_if_assured_over_age_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigRegionRuleIfAssuredOverAgeBuilder {
@@ -2755,12 +2997,9 @@ impl ConfigRegionRuleIfAssuredOverAgeBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ConfigRegionRuleIfAssuredOverAgeBuilder<
-    config_region_rule_if_assured_over_age_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    ConfigRegionRuleIfAssuredOverAgeBuilder<config_region_rule_if_assured_over_age_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConfigRegionRuleIfAssuredOverAgeBuilder {
@@ -2845,11 +3084,35 @@ where
     }
 }
 
+fn deserialize_config_region_rule_if_assured_under_age_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_rule_if_assured_under_age_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2922,10 +3185,12 @@ impl<S: jacquard_common::BosStr> ConfigRegionRuleIfAssuredUnderAge<S> {
     }
 }
 
-impl ConfigRegionRuleIfAssuredUnderAgeBuilder<
-    config_region_rule_if_assured_under_age_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ConfigRegionRuleIfAssuredUnderAgeBuilder<
+        config_region_rule_if_assured_under_age_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigRegionRuleIfAssuredUnderAgeBuilder {
@@ -2936,12 +3201,12 @@ impl ConfigRegionRuleIfAssuredUnderAgeBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ConfigRegionRuleIfAssuredUnderAgeBuilder<
-    config_region_rule_if_assured_under_age_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    ConfigRegionRuleIfAssuredUnderAgeBuilder<
+        config_region_rule_if_assured_under_age_state::Empty,
+        S,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConfigRegionRuleIfAssuredUnderAgeBuilder {
@@ -3026,11 +3291,35 @@ where
     }
 }
 
+fn deserialize_config_region_rule_if_declared_over_age_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_rule_if_declared_over_age_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -3103,10 +3392,12 @@ impl<S: jacquard_common::BosStr> ConfigRegionRuleIfDeclaredOverAge<S> {
     }
 }
 
-impl ConfigRegionRuleIfDeclaredOverAgeBuilder<
-    config_region_rule_if_declared_over_age_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ConfigRegionRuleIfDeclaredOverAgeBuilder<
+        config_region_rule_if_declared_over_age_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigRegionRuleIfDeclaredOverAgeBuilder {
@@ -3117,12 +3408,12 @@ impl ConfigRegionRuleIfDeclaredOverAgeBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ConfigRegionRuleIfDeclaredOverAgeBuilder<
-    config_region_rule_if_declared_over_age_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    ConfigRegionRuleIfDeclaredOverAgeBuilder<
+        config_region_rule_if_declared_over_age_state::Empty,
+        S,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConfigRegionRuleIfDeclaredOverAgeBuilder {
@@ -3207,11 +3498,35 @@ where
     }
 }
 
+fn deserialize_config_region_rule_if_declared_under_age_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod config_region_rule_if_declared_under_age_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -3284,10 +3599,12 @@ impl<S: jacquard_common::BosStr> ConfigRegionRuleIfDeclaredUnderAge<S> {
     }
 }
 
-impl ConfigRegionRuleIfDeclaredUnderAgeBuilder<
-    config_region_rule_if_declared_under_age_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    ConfigRegionRuleIfDeclaredUnderAgeBuilder<
+        config_region_rule_if_declared_under_age_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigRegionRuleIfDeclaredUnderAgeBuilder {
@@ -3298,12 +3615,12 @@ impl ConfigRegionRuleIfDeclaredUnderAgeBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ConfigRegionRuleIfDeclaredUnderAgeBuilder<
-    config_region_rule_if_declared_under_age_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    ConfigRegionRuleIfDeclaredUnderAgeBuilder<
+        config_region_rule_if_declared_under_age_state::Empty,
+        S,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConfigRegionRuleIfDeclaredUnderAgeBuilder {
@@ -3388,11 +3705,35 @@ where
     }
 }
 
+fn deserialize_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -3521,7 +3862,9 @@ impl EventBuilder<event_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         EventBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -3532,7 +3875,9 @@ impl<S: jacquard_common::BosStr> EventBuilder<event_state::Empty, S> {
     pub fn builder() -> Self {
         EventBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -3762,11 +4107,35 @@ where
     }
 }
 
+fn deserialize_state_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod state_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -3943,4 +4312,28 @@ where
             extra_data: Some(extra_data),
         }
     }
+}
+
+fn deserialize_state_metadata_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }

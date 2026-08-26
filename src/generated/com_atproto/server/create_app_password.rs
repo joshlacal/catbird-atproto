@@ -21,6 +21,7 @@ pub struct AppPassword<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_app_password_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -46,9 +47,9 @@ pub struct AppPassword<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateAppPassword<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///A short name for the App Password, to help distinguish them.
+    /// A short name for the App Password, to help distinguish them.
     pub name: S,
-    ///If an app password has 'privileged' access to possibly sensitive account state. Meant for use with trusted clients.
+    /// If an app password has 'privileged' access to possibly sensitive account state. Meant for use with trusted clients.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub privileged: core::option::Option<bool>,
     #[serde(
@@ -100,11 +101,15 @@ pub struct CreateAppPasswordOutput<S: jacquard_common::BosStr = jacquard_common:
 #[serde(tag = "error", content = "message")]
 pub enum CreateAppPasswordError {
     #[serde(rename = "AccountTakedown")]
-    AccountTakedown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountTakedown(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -175,11 +180,35 @@ impl jacquard_common::xrpc::XrpcEndpoint for CreateAppPasswordRequest {
     type Response = CreateAppPasswordResponse;
 }
 
+fn deserialize_app_password_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod app_password_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

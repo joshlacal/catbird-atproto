@@ -6,32 +6,29 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdateRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub action: crate::generated::tools_ozone::safelink::ActionType<S>,
-    ///Optional comment about the update
+    /// Optional comment about the update
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    ///Optional DID to credit as the creator. Only respected for admin_token authentication.
+    /// Optional DID to credit as the creator. Only respected for admin_token authentication.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_by: core::option::Option<jacquard_common::types::string::Did<S>>,
     pub pattern: crate::generated::tools_ozone::safelink::PatternType<S>,
     pub reason: crate::generated::tools_ozone::safelink::ReasonType<S>,
-    ///The URL or domain to update the rule for
+    /// The URL or domain to update the rule for
     pub url: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -40,17 +37,9 @@ pub struct UpdateRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -58,7 +47,11 @@ pub struct UpdateRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 pub struct UpdateRuleOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::tools_ozone::safelink::Event<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -66,7 +59,6 @@ pub struct UpdateRuleOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -76,18 +68,21 @@ pub struct UpdateRuleOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum UpdateRuleError {
     /// No active rule found for this URL/domain
     #[serde(rename = "RuleNotFound")]
-    RuleNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RuleNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -126,9 +121,8 @@ impl jacquard_common::xrpc::XrpcResp for UpdateRuleResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateRule<S> {
     const NSID: &'static str = "tools.ozone.safelink.updateRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateRuleResponse;
 }
 
@@ -138,18 +132,17 @@ Path: `/xrpc/tools.ozone.safelink.updateRule`. The request payload type is `Upda
 pub struct UpdateRuleRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateRuleRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.safelink.updateRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UpdateRule<S>;
     type Response = UpdateRuleResponse;
 }
 
 pub mod update_rule_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -238,10 +231,7 @@ pub struct UpdateRuleBuilder<
 
 impl UpdateRule<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UpdateRuleBuilder<
-        update_rule_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> UpdateRuleBuilder<update_rule_state::Empty, jacquard_common::DefaultStr> {
         UpdateRuleBuilder::new()
     }
 }

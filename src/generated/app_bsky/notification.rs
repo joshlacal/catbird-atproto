@@ -18,27 +18,22 @@ pub mod register_push;
 pub mod unregister_push;
 pub mod update_seen;
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ActivitySubscription<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ActivitySubscription<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub post: bool,
     pub reply: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_activity_subscription_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,15 +45,8 @@ pub struct ActivitySubscription<
 /// Deprecated: use chat.bsky.notification preferences instead. This will only return a default value.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -66,7 +54,12 @@ pub struct ActivitySubscription<
 pub struct ChatPreference<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub include: ChatPreferenceInclude<S>,
     pub push: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_chat_preference_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -75,11 +68,8 @@ pub struct ChatPreference<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum ChatPreferenceInclude<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum ChatPreferenceInclude<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     All,
     Accepted,
     Other(S),
@@ -125,7 +115,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for ChatPreferenceInclude<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for ChatPreferenceInclude<S> {
+    for ChatPreferenceInclude<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -151,35 +142,28 @@ where
         match self {
             ChatPreferenceInclude::All => ChatPreferenceInclude::All,
             ChatPreferenceInclude::Accepted => ChatPreferenceInclude::Accepted,
-            ChatPreferenceInclude::Other(v) => {
-                ChatPreferenceInclude::Other(v.into_static())
-            }
+            ChatPreferenceInclude::Other(v) => ChatPreferenceInclude::Other(v.into_static()),
         }
     }
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct FilterablePreference<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct FilterablePreference<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub include: FilterablePreferenceInclude<S>,
     pub list: bool,
     pub push: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_filterable_preference_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -188,11 +172,8 @@ pub struct FilterablePreference<
     >,
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum FilterablePreferenceInclude<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum FilterablePreferenceInclude<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     All,
     Follows,
     Other(S),
@@ -238,7 +219,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for FilterablePreferenceInclud
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for FilterablePreferenceInclude<S> {
+    for FilterablePreferenceInclude<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -254,8 +236,7 @@ impl<S: jacquard_common::BosStr + Default> Default for FilterablePreferenceInclu
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for FilterablePreferenceInclude<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for FilterablePreferenceInclude<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -272,17 +253,9 @@ where
     }
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -290,7 +263,12 @@ where
 pub struct Preference<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub list: bool,
     pub push: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_preference_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -299,41 +277,34 @@ pub struct Preference<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Preferences<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Deprecated: use chat.bsky.notification preferences instead. This will only return a default value.
+    /// Deprecated: use chat.bsky.notification preferences instead. This will only return a default value.
     pub chat: crate::generated::app_bsky::notification::ChatPreference<S>,
     pub follow: crate::generated::app_bsky::notification::FilterablePreference<S>,
     pub like: crate::generated::app_bsky::notification::FilterablePreference<S>,
-    pub like_via_repost: crate::generated::app_bsky::notification::FilterablePreference<
-        S,
-    >,
+    pub like_via_repost: crate::generated::app_bsky::notification::FilterablePreference<S>,
     pub mention: crate::generated::app_bsky::notification::FilterablePreference<S>,
     pub quote: crate::generated::app_bsky::notification::FilterablePreference<S>,
     pub reply: crate::generated::app_bsky::notification::FilterablePreference<S>,
     pub repost: crate::generated::app_bsky::notification::FilterablePreference<S>,
-    pub repost_via_repost: crate::generated::app_bsky::notification::FilterablePreference<
-        S,
-    >,
+    pub repost_via_repost: crate::generated::app_bsky::notification::FilterablePreference<S>,
     pub starterpack_joined: crate::generated::app_bsky::notification::Preference<S>,
     pub subscribed_post: crate::generated::app_bsky::notification::Preference<S>,
     pub unverified: crate::generated::app_bsky::notification::Preference<S>,
     pub verified: crate::generated::app_bsky::notification::Preference<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_preferences_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -341,7 +312,6 @@ pub struct Preferences<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -351,15 +321,19 @@ pub struct Preferences<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RecordDeleted<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_record_deleted_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -371,27 +345,21 @@ pub struct RecordDeleted<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 /// Object used to store activity subscription data in stash.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SubjectActivitySubscription<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    pub activity_subscription: crate::generated::app_bsky::notification::ActivitySubscription<
-        S,
-    >,
+pub struct SubjectActivitySubscription<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub activity_subscription: crate::generated::app_bsky::notification::ActivitySubscription<S>,
     pub subject: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_subject_activity_subscription_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -401,7 +369,8 @@ pub struct SubjectActivitySubscription<
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ActivitySubscription<S> {
+    for ActivitySubscription<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.notification.defs"
     }
@@ -416,8 +385,7 @@ for ActivitySubscription<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ChatPreference<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ChatPreference<S> {
     fn nsid() -> &'static str {
         "app.bsky.notification.defs"
     }
@@ -433,7 +401,8 @@ for ChatPreference<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for FilterablePreference<S> {
+    for FilterablePreference<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.notification.defs"
     }
@@ -448,8 +417,7 @@ for FilterablePreference<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Preference<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Preference<S> {
     fn nsid() -> &'static str {
         "app.bsky.notification.defs"
     }
@@ -464,8 +432,7 @@ for Preference<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Preferences<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Preferences<S> {
     fn nsid() -> &'static str {
         "app.bsky.notification.defs"
     }
@@ -480,8 +447,7 @@ for Preferences<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for RecordDeleted<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordDeleted<S> {
     fn nsid() -> &'static str {
         "app.bsky.notification.defs"
     }
@@ -497,7 +463,8 @@ for RecordDeleted<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for SubjectActivitySubscription<S> {
+    for SubjectActivitySubscription<S>
+{
     fn nsid() -> &'static str {
         "app.bsky.notification.defs"
     }
@@ -512,11 +479,35 @@ for SubjectActivitySubscription<S> {
     }
 }
 
+fn deserialize_activity_subscription_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod activity_subscription_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -568,28 +559,21 @@ pub struct ActivitySubscriptionBuilder<
 
 impl ActivitySubscription<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ActivitySubscriptionBuilder<
-        activity_subscription_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> ActivitySubscriptionBuilder<activity_subscription_state::Empty, jacquard_common::DefaultStr>
+    {
         ActivitySubscriptionBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> ActivitySubscription<S> {
     /// Create a new builder for this type
-    pub fn builder() -> ActivitySubscriptionBuilder<
-        activity_subscription_state::Empty,
-        S,
-    > {
+    pub fn builder() -> ActivitySubscriptionBuilder<activity_subscription_state::Empty, S> {
         ActivitySubscriptionBuilder::builder()
     }
 }
 
-impl ActivitySubscriptionBuilder<
-    activity_subscription_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl ActivitySubscriptionBuilder<activity_subscription_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ActivitySubscriptionBuilder {
@@ -600,9 +584,9 @@ impl ActivitySubscriptionBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ActivitySubscriptionBuilder<activity_subscription_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    ActivitySubscriptionBuilder<activity_subscription_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ActivitySubscriptionBuilder {
@@ -681,48 +665,44 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_notification_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_notification_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.notification.defs"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "activitySubscription",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("activitySubscription"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("post"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reply")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "post",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "reply",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reply"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("post"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("reply"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("chatPreference"),
@@ -763,87 +743,85 @@ fn lexicon_doc_app_bsky_notification_defs() -> jacquard_lexicon::lexicon::Lexico
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "filterablePreference",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("filterablePreference"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("include"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("list"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("push")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "include",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "list",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "push",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("push"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("include"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("list"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("push"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("preference"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("list"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("push")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "list",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "push",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("push"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("list"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("push"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("preferences"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("chat"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("follow"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("like"),
@@ -852,212 +830,232 @@ fn lexicon_doc_app_bsky_notification_defs() -> jacquard_lexicon::lexicon::Lexico
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("quote"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("reply"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("repost"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repostViaRepost"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("starterpackJoined"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subscribedPost"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("unverified"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("verified")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "chat",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#chatPreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "follow",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "like",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "likeViaRepost",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "mention",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "quote",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "reply",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "repost",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "repostViaRepost",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#filterablePreference",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "starterpackJoined",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static("#preference"),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subscribedPost",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static("#preference"),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "unverified",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static("#preference"),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "verified",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static("#preference"),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("unverified"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("verified"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("chat"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#chatPreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("follow"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("like"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "likeViaRepost",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("mention"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("quote"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("reply"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("repost"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "repostViaRepost",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#filterablePreference",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "starterpackJoined",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#preference"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "subscribedPost",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#preference"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "unverified",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#preference"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("verified"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#preference"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("recordDeleted"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "subjectActivitySubscription",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Object used to store activity subscription data in stash.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("activitySubscription")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "activitySubscription",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#activitySubscription",
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "activitySubscription",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "subject",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#activitySubscription",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map
         },
@@ -1065,11 +1063,35 @@ fn lexicon_doc_app_bsky_notification_defs() -> jacquard_lexicon::lexicon::Lexico
     }
 }
 
+fn deserialize_chat_preference_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod chat_preference_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1124,10 +1146,8 @@ pub struct ChatPreferenceBuilder<
 
 impl ChatPreference<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ChatPreferenceBuilder<
-        chat_preference_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ChatPreferenceBuilder<chat_preference_state::Empty, jacquard_common::DefaultStr>
+    {
         ChatPreferenceBuilder::new()
     }
 }
@@ -1229,11 +1249,35 @@ where
     }
 }
 
+fn deserialize_filterable_preference_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod filterable_preference_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1303,28 +1347,21 @@ pub struct FilterablePreferenceBuilder<
 
 impl FilterablePreference<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> FilterablePreferenceBuilder<
-        filterable_preference_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> FilterablePreferenceBuilder<filterable_preference_state::Empty, jacquard_common::DefaultStr>
+    {
         FilterablePreferenceBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> FilterablePreference<S> {
     /// Create a new builder for this type
-    pub fn builder() -> FilterablePreferenceBuilder<
-        filterable_preference_state::Empty,
-        S,
-    > {
+    pub fn builder() -> FilterablePreferenceBuilder<filterable_preference_state::Empty, S> {
         FilterablePreferenceBuilder::builder()
     }
 }
 
-impl FilterablePreferenceBuilder<
-    filterable_preference_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl FilterablePreferenceBuilder<filterable_preference_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FilterablePreferenceBuilder {
@@ -1335,9 +1372,9 @@ impl FilterablePreferenceBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> FilterablePreferenceBuilder<filterable_preference_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    FilterablePreferenceBuilder<filterable_preference_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         FilterablePreferenceBuilder {
@@ -1438,11 +1475,35 @@ where
     }
 }
 
+fn deserialize_preference_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod preference_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1494,10 +1555,7 @@ pub struct PreferenceBuilder<
 
 impl Preference<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> PreferenceBuilder<
-        preference_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> PreferenceBuilder<preference_state::Empty, jacquard_common::DefaultStr> {
         PreferenceBuilder::new()
     }
 }
@@ -1599,11 +1657,35 @@ where
     }
 }
 
+fn deserialize_preferences_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod preferences_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1914,33 +1996,15 @@ pub struct PreferencesBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<
-            crate::generated::app_bsky::notification::ChatPreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
-        core::option::Option<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        core::option::Option<crate::generated::app_bsky::notification::ChatPreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
+        core::option::Option<crate::generated::app_bsky::notification::FilterablePreference<S>>,
         core::option::Option<crate::generated::app_bsky::notification::Preference<S>>,
         core::option::Option<crate::generated::app_bsky::notification::Preference<S>>,
         core::option::Option<crate::generated::app_bsky::notification::Preference<S>>,
@@ -1951,10 +2015,7 @@ pub struct PreferencesBuilder<
 
 impl Preferences<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> PreferencesBuilder<
-        preferences_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> PreferencesBuilder<preferences_state::Empty, jacquard_common::DefaultStr> {
         PreferencesBuilder::new()
     }
 }
@@ -1972,19 +2033,7 @@ impl PreferencesBuilder<preferences_state::Empty, jacquard_common::DefaultStr> {
         PreferencesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -1997,19 +2046,7 @@ impl<S: jacquard_common::BosStr> PreferencesBuilder<preferences_state::Empty, S>
         PreferencesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -2043,9 +2080,7 @@ where
     /// Set the `follow` field (required)
     pub fn follow(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetFollow<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2064,9 +2099,7 @@ where
     /// Set the `like` field (required)
     pub fn like(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetLike<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2085,9 +2118,7 @@ where
     /// Set the `likeViaRepost` field (required)
     pub fn like_via_repost(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetLikeViaRepost<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2106,9 +2137,7 @@ where
     /// Set the `mention` field (required)
     pub fn mention(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetMention<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2127,9 +2156,7 @@ where
     /// Set the `quote` field (required)
     pub fn quote(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetQuote<St>, S> {
         self._fields.5 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2148,9 +2175,7 @@ where
     /// Set the `reply` field (required)
     pub fn reply(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetReply<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2169,9 +2194,7 @@ where
     /// Set the `repost` field (required)
     pub fn repost(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetRepost<St>, S> {
         self._fields.7 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2190,9 +2213,7 @@ where
     /// Set the `repostViaRepost` field (required)
     pub fn repost_via_repost(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::FilterablePreference<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::FilterablePreference<S>>,
     ) -> PreferencesBuilder<preferences_state::SetRepostViaRepost<St>, S> {
         self._fields.8 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
@@ -2342,11 +2363,59 @@ where
     }
 }
 
+fn deserialize_record_deleted_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_subject_activity_subscription_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod subject_activity_subscription_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2393,9 +2462,7 @@ pub struct SubjectActivitySubscriptionBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<
-            crate::generated::app_bsky::notification::ActivitySubscription<S>,
-        >,
+        core::option::Option<crate::generated::app_bsky::notification::ActivitySubscription<S>>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -2413,18 +2480,18 @@ impl SubjectActivitySubscription<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> SubjectActivitySubscription<S> {
     /// Create a new builder for this type
-    pub fn builder() -> SubjectActivitySubscriptionBuilder<
-        subject_activity_subscription_state::Empty,
-        S,
-    > {
+    pub fn builder(
+    ) -> SubjectActivitySubscriptionBuilder<subject_activity_subscription_state::Empty, S> {
         SubjectActivitySubscriptionBuilder::builder()
     }
 }
 
-impl SubjectActivitySubscriptionBuilder<
-    subject_activity_subscription_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    SubjectActivitySubscriptionBuilder<
+        subject_activity_subscription_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubjectActivitySubscriptionBuilder {
@@ -2435,9 +2502,9 @@ impl SubjectActivitySubscriptionBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> SubjectActivitySubscriptionBuilder<subject_activity_subscription_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    SubjectActivitySubscriptionBuilder<subject_activity_subscription_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SubjectActivitySubscriptionBuilder {
@@ -2456,9 +2523,7 @@ where
     /// Set the `activitySubscription` field (required)
     pub fn activity_subscription(
         mut self,
-        value: impl Into<
-            crate::generated::app_bsky::notification::ActivitySubscription<S>,
-        >,
+        value: impl Into<crate::generated::app_bsky::notification::ActivitySubscription<S>>,
     ) -> SubjectActivitySubscriptionBuilder<
         subject_activity_subscription_state::SetActivitySubscription<St>,
         S,
@@ -2481,10 +2546,8 @@ where
     pub fn subject(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> SubjectActivitySubscriptionBuilder<
-        subject_activity_subscription_state::SetSubject<St>,
-        S,
-    > {
+    ) -> SubjectActivitySubscriptionBuilder<subject_activity_subscription_state::SetSubject<St>, S>
+    {
         self._fields.1 = ::core::option::Option::Some(value.into());
         SubjectActivitySubscriptionBuilder {
             _state: ::core::marker::PhantomData,

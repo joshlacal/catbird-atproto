@@ -8,15 +8,8 @@
 /// Current viewer count for a livestream on a particular server. Record keys are streamer_did::server_did by convention.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.live.viewerCount",
@@ -24,16 +17,21 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ViewerCount<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The current view count for the livestream.
+    /// The current view count for the livestream.
     pub count: i64,
-    ///The DID of the server to get the view count for.
+    /// The DID of the server to get the view count for.
     pub server: jacquard_common::types::string::Did<S>,
-    ///The DID of the streamer to teleport to.
+    /// The DID of the streamer to teleport to.
     pub streamer: jacquard_common::types::string::Did<S>,
-    ///The time the view count was last updated.
+    /// The time the view count was last updated.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_viewer_count_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -45,19 +43,10 @@ pub struct ViewerCount<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct ViewerCountGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ViewerCountGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -94,8 +83,7 @@ impl<S: jacquard_common::BosStr> From<ViewerCountGetRecordOutput<S>> for ViewerC
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for ViewerCount<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for ViewerCount<S> {
     const NSID: &'static str = "place.stream.live.viewerCount";
     type Record = ViewerCountRecord;
 }
@@ -105,8 +93,7 @@ impl jacquard_common::types::collection::Collection for ViewerCountRecord {
     type Record = ViewerCountRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ViewerCount<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewerCount<S> {
     fn nsid() -> &'static str {
         "place.stream.live.viewerCount"
     }
@@ -121,11 +108,41 @@ for ViewerCount<S> {
     }
 }
 
+fn deserialize_viewer_count_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod viewer_count_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -196,10 +213,7 @@ pub struct ViewerCountBuilder<
 
 impl ViewerCount<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ViewerCountBuilder<
-        viewer_count_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ViewerCountBuilder<viewer_count_state::Empty, jacquard_common::DefaultStr> {
         ViewerCountBuilder::new()
     }
 }
@@ -290,10 +304,7 @@ where
     }
 }
 
-impl<
-    St: viewer_count_state::State,
-    S: jacquard_common::BosStr,
-> ViewerCountBuilder<St, S> {
+impl<St: viewer_count_state::State, S: jacquard_common::BosStr> ViewerCountBuilder<St, S> {
     /// Set the `updatedAt` field (optional)
     pub fn updated_at(
         mut self,
@@ -347,9 +358,7 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_live_viewerCount() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_live_viewerCount() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.live.viewerCount"),

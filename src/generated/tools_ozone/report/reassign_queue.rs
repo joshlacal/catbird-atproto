@@ -6,28 +6,25 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReassignQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Optional moderator-only note recorded on the resulting queueActivity as internalNote.
+    /// Optional moderator-only note recorded on the resulting queueActivity as internalNote.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub comment: core::option::Option<S>,
-    ///Target queue ID. Use -1 to unassign from any queue.
+    /// Target queue ID. Use -1 to unassign from any queue.
     pub queue_id: i64,
-    ///ID of the report to reassign
+    /// ID of the report to reassign
     pub report_id: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -36,26 +33,20 @@ pub struct ReassignQueue<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ReassignQueueOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ReassignQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub report: crate::generated::tools_ozone::report::ReportView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -63,7 +54,6 @@ pub struct ReassignQueueOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -73,30 +63,45 @@ pub struct ReassignQueueOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum ReassignQueueError {
     /// No report exists with the given reportId
     #[serde(rename = "ReportNotFound")]
-    ReportNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReportNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The report is closed and cannot be reassigned
     #[serde(rename = "ReportClosed")]
-    ReportClosed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReportClosed(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The report is already assigned to the target queue
     #[serde(rename = "AlreadyInTargetQueue")]
-    AlreadyInTargetQueue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AlreadyInTargetQueue(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// No active queue exists with the given queueId
     #[serde(rename = "QueueNotFound")]
-    QueueNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    QueueNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The target queue is disabled and cannot receive new assignments
     #[serde(rename = "QueueDisabled")]
-    QueueDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    QueueDisabled(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -161,12 +166,10 @@ impl jacquard_common::xrpc::XrpcResp for ReassignQueueResponse {
     type Err = ReassignQueueError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for ReassignQueue<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ReassignQueue<S> {
     const NSID: &'static str = "tools.ozone.report.reassignQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReassignQueueResponse;
 }
 
@@ -176,18 +179,17 @@ Path: `/xrpc/tools.ozone.report.reassignQueue`. The request payload type is `Rea
 pub struct ReassignQueueRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReassignQueueRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.report.reassignQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = ReassignQueue<S>;
     type Response = ReassignQueueResponse;
 }
 
 pub mod reassign_queue_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -243,10 +245,7 @@ pub struct ReassignQueueBuilder<
 
 impl ReassignQueue<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ReassignQueueBuilder<
-        reassign_queue_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ReassignQueueBuilder<reassign_queue_state::Empty, jacquard_common::DefaultStr> {
         ReassignQueueBuilder::new()
     }
 }
@@ -280,10 +279,7 @@ impl<S: jacquard_common::BosStr> ReassignQueueBuilder<reassign_queue_state::Empt
     }
 }
 
-impl<
-    St: reassign_queue_state::State,
-    S: jacquard_common::BosStr,
-> ReassignQueueBuilder<St, S> {
+impl<St: reassign_queue_state::State, S: jacquard_common::BosStr> ReassignQueueBuilder<St, S> {
     /// Set the `comment` field (optional)
     pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();

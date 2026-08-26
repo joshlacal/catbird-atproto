@@ -13,7 +13,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdateAccountEmail<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The handle or DID of the repo.
+    /// The handle or DID of the repo.
     pub account: jacquard_common::types::ident::AtIdentifier<S>,
     pub email: S,
     #[serde(
@@ -38,6 +38,18 @@ impl jacquard_common::xrpc::XrpcResp for UpdateAccountEmailResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateAccountEmail<S> {
@@ -63,7 +75,7 @@ pub mod update_account_email_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

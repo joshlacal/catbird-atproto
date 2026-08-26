@@ -8,15 +8,8 @@
 /// Record granting moderation permissions to a user for this streamer's content.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.moderation.permission",
@@ -24,16 +17,21 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Permission<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Client-declared timestamp when this moderator was added.
+    /// Client-declared timestamp when this moderator was added.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Optional expiration time for this delegation. If set, the delegation is invalid after this time.
+    /// Optional expiration time for this delegation. If set, the delegation is invalid after this time.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub expiration_time: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///The DID of the user granted moderator permissions.
+    /// The DID of the user granted moderator permissions.
     pub moderator: jacquard_common::types::string::Did<S>,
-    ///Array of permissions granted to this moderator. 'ban' covers blocks/bans (with optional expiration), 'hide' covers message gates, 'livestream.manage' allows updating livestream metadata.
-    pub permissions: Vec<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    /// Array of permissions granted to this moderator. 'ban' covers blocks/bans (with optional expiration), 'hide' covers message gates, 'livestream.manage' allows updating livestream metadata.
+    pub permissions: Vec<PermissionPermissions<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_permission_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,22 +40,100 @@ pub struct Permission<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum PermissionPermissions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Ban,
+    Hide,
+    LivestreamManage,
+    MessagePin,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> PermissionPermissions<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Ban => "ban",
+            Self::Hide => "hide",
+            Self::LivestreamManage => "livestream.manage",
+            Self::MessagePin => "message.pin",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "ban" => Self::Ban,
+            "hide" => Self::Hide,
+            "livestream.manage" => Self::LivestreamManage,
+            "message.pin" => Self::MessagePin,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for PermissionPermissions<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for PermissionPermissions<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for PermissionPermissions<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for PermissionPermissions<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for PermissionPermissions<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for PermissionPermissions<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = PermissionPermissions<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            PermissionPermissions::Ban => PermissionPermissions::Ban,
+            PermissionPermissions::Hide => PermissionPermissions::Hide,
+            PermissionPermissions::LivestreamManage => PermissionPermissions::LivestreamManage,
+            PermissionPermissions::MessagePin => PermissionPermissions::MessagePin,
+            PermissionPermissions::Other(v) => PermissionPermissions::Other(v.into_static()),
+        }
+    }
+}
+
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct PermissionGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct PermissionGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -94,8 +170,7 @@ impl<S: jacquard_common::BosStr> From<PermissionGetRecordOutput<S>> for Permissi
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Permission<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Permission<S> {
     const NSID: &'static str = "place.stream.moderation.permission";
     type Record = PermissionRecord;
 }
@@ -105,8 +180,7 @@ impl jacquard_common::types::collection::Collection for PermissionRecord {
     type Record = PermissionRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Permission<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Permission<S> {
     fn nsid() -> &'static str {
         "place.stream.moderation.permission"
     }
@@ -121,11 +195,41 @@ for Permission<S> {
     }
 }
 
+fn deserialize_permission_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod permission_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -189,17 +293,14 @@ pub struct PermissionBuilder<
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
-        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<PermissionPermissions<S>>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl Permission<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> PermissionBuilder<
-        permission_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> PermissionBuilder<permission_state::Empty, jacquard_common::DefaultStr> {
         PermissionBuilder::new()
     }
 }
@@ -298,7 +399,7 @@ where
     /// Set the `permissions` field (required)
     pub fn permissions(
         mut self,
-        value: impl Into<Vec<S>>,
+        value: impl Into<Vec<PermissionPermissions<S>>>,
     ) -> PermissionBuilder<permission_state::SetPermissions<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         PermissionBuilder {
@@ -344,9 +445,8 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_moderation_permission() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_moderation_permission() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.moderation.permission"),

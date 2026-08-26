@@ -14,7 +14,7 @@
 )]
 pub struct UpdateAccountSigningKey<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
-    ///Did-key formatted public key
+    /// Did-key formatted public key
     pub signing_key: jacquard_common::types::string::Did<S>,
     #[serde(
         flatten,
@@ -38,6 +38,18 @@ impl jacquard_common::xrpc::XrpcResp for UpdateAccountSigningKeyResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateAccountSigningKey<S> {
@@ -63,7 +75,7 @@ pub mod update_account_signing_key_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

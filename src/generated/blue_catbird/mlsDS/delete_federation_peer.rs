@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteFederationPeer<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///DID of the peer delivery service to remove
+    /// DID of the peer delivery service to remove
     pub ds_did: S,
     #[serde(
         flatten,
@@ -43,9 +43,9 @@ pub struct DeleteFederationPeer<S: jacquard_common::BosStr = jacquard_common::De
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteFederationPeerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the peer was deleted
+    /// Whether the peer was deleted
     pub deleted: bool,
-    ///DID that was deleted
+    /// DID that was deleted
     pub ds_did: S,
     #[serde(
         flatten,

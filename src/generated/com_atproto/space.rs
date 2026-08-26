@@ -36,25 +36,26 @@ pub mod unregister_notify;
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SignedCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///sha256 digest of the LtHash state (32 bytes).
+    /// sha256 digest of the LtHash state (32 bytes).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub hash: jacquard_common::deps::bytes::Bytes,
-    ///Per-signature input keying material (32 random bytes)
+    /// Per-signature input keying material (32 random bytes)
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ikm: jacquard_common::deps::bytes::Bytes,
-    ///HMAC-SHA256 over hash, keyed by HKDF-SHA256(ikm, info=ctx). Binds the repo hash to this commit's context.
+    /// HMAC-SHA256 over hash, keyed by HKDF-SHA256(ikm, info=ctx). Binds the repo hash to this commit's context.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub mac: jacquard_common::deps::bytes::Bytes,
-    ///Commit revision (TID), also bound into ctx.
+    /// Commit revision (TID), also bound into ctx.
     pub rev: jacquard_common::types::string::Tid,
-    ///Signature over ctx (space, author DID, rev, ikm) by the user's atproto signing key. Does not cover the repo hash.
+    /// Signature over ctx (space, author DID, rev, ikm) by the user's atproto signing key. Does not cover the repo hash.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sig: jacquard_common::deps::bytes::Bytes,
-    ///Commit format version, currently 1. Corresponds to the version in the ctx protocol tag (atproto-space-v1).
+    /// Commit format version, currently 1. Corresponds to the version in the ctx protocol tag (atproto-space-v1).
     pub ver: i64,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_commit_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -80,11 +81,35 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sig
     }
 }
 
+fn deserialize_signed_commit_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_commit_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RequestCrawl<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Hostname of the current service (eg, PDS) that is requesting to be crawled.
+    /// Hostname of the current service (eg, PDS) that is requesting to be crawled.
     pub hostname: S,
     #[serde(
         flatten,
@@ -48,11 +48,15 @@ pub struct RequestCrawl<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 #[serde(tag = "error", content = "message")]
 pub enum RequestCrawlError {
     #[serde(rename = "HostBanned")]
-    HostBanned(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    HostBanned(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -87,6 +91,18 @@ impl jacquard_common::xrpc::XrpcResp for RequestCrawlResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = RequestCrawlError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RequestCrawl<S> {

@@ -17,17 +17,18 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Declaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Incoming message consent policy: 'all', 'following', or 'none'.
+    /// Incoming message consent policy: 'all', 'following', or 'none'.
     pub allow_incoming: DeclarationAllowIncoming<S>,
-    ///Timestamp when this declaration record was created.
+    /// Timestamp when this declaration record was created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///DID of the delivery service that serves this actor (e.g. did:web:chat.catbird.blue).
+    /// DID of the delivery service that serves this actor (e.g. did:web:chat.catbird.blue).
     pub delivery_service: jacquard_common::types::string::Did<S>,
-    ///Secure chat protocol version.
+    /// Secure chat protocol version.
     pub protocol_version: DeclarationProtocolVersion<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_declaration_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -270,11 +271,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dec
     }
 }
 
+fn deserialize_declaration_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod declaration_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

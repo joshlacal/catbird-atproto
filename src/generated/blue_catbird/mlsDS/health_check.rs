@@ -13,13 +13,13 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct HealthCheckOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Service DID of this delivery service
+    /// Service DID of this delivery service
     pub did: S,
-    ///List of supported federation capabilities
+    /// List of supported federation capabilities
     pub federation_capabilities: Vec<S>,
-    ///Server uptime in seconds
+    /// Server uptime in seconds
     pub uptime: i64,
-    ///Server version
+    /// Server version
     pub version: S,
     #[serde(
         flatten,
@@ -64,6 +64,9 @@ impl jacquard_common::xrpc::XrpcRequest for HealthCheck {
     const NSID: &'static str = "blue.catbird.mlsDS.healthCheck";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = HealthCheckResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `blue.catbird.mlsDS.healthCheck` query.

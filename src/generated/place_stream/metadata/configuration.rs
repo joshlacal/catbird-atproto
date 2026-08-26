@@ -8,15 +8,8 @@
 /// Default metadata record for livestream including content warnings, rights, and distribution policy
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.metadata.configuration",
@@ -34,11 +27,14 @@ pub struct Configuration<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub distribution_policy: core::option::Option<
-        crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<
-            S,
-        >,
+        crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<S>,
     >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_configuration_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,19 +46,10 @@ pub struct Configuration<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct ConfigurationGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ConfigurationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -93,15 +80,15 @@ impl jacquard_common::xrpc::XrpcResp for ConfigurationRecord {
     type Err = jacquard_common::types::collection::RecordError;
 }
 
-impl<S: jacquard_common::BosStr> From<ConfigurationGetRecordOutput<S>>
-for Configuration<S> {
+impl<S: jacquard_common::BosStr> From<ConfigurationGetRecordOutput<S>> for Configuration<S> {
     fn from(output: ConfigurationGetRecordOutput<S>) -> Self {
         output.value
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Configuration<S> {
+    for Configuration<S>
+{
     const NSID: &'static str = "place.stream.metadata.configuration";
     type Record = ConfigurationRecord;
 }
@@ -111,8 +98,7 @@ impl jacquard_common::types::collection::Collection for ConfigurationRecord {
     type Record = ConfigurationRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Configuration<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Configuration<S> {
     fn nsid() -> &'static str {
         "place.stream.metadata.configuration"
     }
@@ -127,11 +113,41 @@ for Configuration<S> {
     }
 }
 
+fn deserialize_configuration_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod configuration_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -157,14 +173,10 @@ pub struct ConfigurationBuilder<
             crate::generated::place_stream::metadata::content_rights::ContentRights<S>,
         >,
         core::option::Option<
-            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<
-                S,
-            >,
+            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<S>,
         >,
         core::option::Option<
-            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<
-                S,
-            >,
+            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<S>,
         >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -172,10 +184,7 @@ pub struct ConfigurationBuilder<
 
 impl Configuration<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ConfigurationBuilder<
-        configuration_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ConfigurationBuilder<configuration_state::Empty, jacquard_common::DefaultStr> {
         ConfigurationBuilder::new()
     }
 }
@@ -209,19 +218,12 @@ impl<S: jacquard_common::BosStr> ConfigurationBuilder<configuration_state::Empty
     }
 }
 
-impl<
-    St: configuration_state::State,
-    S: jacquard_common::BosStr,
-> ConfigurationBuilder<St, S> {
+impl<St: configuration_state::State, S: jacquard_common::BosStr> ConfigurationBuilder<St, S> {
     /// Set the `contentRights` field (optional)
     pub fn content_rights(
         mut self,
         value: impl Into<
-            Option<
-                crate::generated::place_stream::metadata::content_rights::ContentRights<
-                    S,
-                >,
-            >,
+            Option<crate::generated::place_stream::metadata::content_rights::ContentRights<S>>,
         >,
     ) -> Self {
         self._fields.0 = value.into();
@@ -230,28 +232,19 @@ impl<
     /// Set the `contentRights` field to an Option value (optional)
     pub fn maybe_content_rights(
         mut self,
-        value: Option<
-            crate::generated::place_stream::metadata::content_rights::ContentRights<S>,
-        >,
+        value: Option<crate::generated::place_stream::metadata::content_rights::ContentRights<S>>,
     ) -> Self {
         self._fields.0 = value;
         self
     }
 }
 
-impl<
-    St: configuration_state::State,
-    S: jacquard_common::BosStr,
-> ConfigurationBuilder<St, S> {
+impl<St: configuration_state::State, S: jacquard_common::BosStr> ConfigurationBuilder<St, S> {
     /// Set the `contentWarnings` field (optional)
     pub fn content_warnings(
         mut self,
         value: impl Into<
-            Option<
-                crate::generated::place_stream::metadata::content_warnings::ContentWarnings<
-                    S,
-                >,
-            >,
+            Option<crate::generated::place_stream::metadata::content_warnings::ContentWarnings<S>>,
         >,
     ) -> Self {
         self._fields.1 = value.into();
@@ -261,9 +254,7 @@ impl<
     pub fn maybe_content_warnings(
         mut self,
         value: Option<
-            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<
-                S,
-            >,
+            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<S>,
         >,
     ) -> Self {
         self._fields.1 = value;
@@ -271,10 +262,7 @@ impl<
     }
 }
 
-impl<
-    St: configuration_state::State,
-    S: jacquard_common::BosStr,
-> ConfigurationBuilder<St, S> {
+impl<St: configuration_state::State, S: jacquard_common::BosStr> ConfigurationBuilder<St, S> {
     /// Set the `distributionPolicy` field (optional)
     pub fn distribution_policy(
         mut self,
@@ -293,9 +281,7 @@ impl<
     pub fn maybe_distribution_policy(
         mut self,
         value: Option<
-            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<
-                S,
-            >,
+            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<S>,
         >,
     ) -> Self {
         self._fields.2 = value;
@@ -333,9 +319,8 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_metadata_configuration() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_metadata_configuration(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.metadata.configuration"),

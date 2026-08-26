@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -27,7 +20,11 @@ pub struct UpsertOption<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub manager_role: core::option::Option<UpsertOptionManagerRole<S>>,
     pub scope: UpsertOptionScope<S>,
     pub value: jacquard_common::types::value::Data<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -36,11 +33,8 @@ pub struct UpsertOption<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum UpsertOptionManagerRole<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum UpsertOptionManagerRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     RoleModerator,
     RoleTriage,
     RoleVerifier,
@@ -92,7 +86,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for UpsertOptionManagerRole<S>
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for UpsertOptionManagerRole<S> {
+    for UpsertOptionManagerRole<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -108,8 +103,7 @@ impl<S: jacquard_common::BosStr + Default> Default for UpsertOptionManagerRole<S
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for UpsertOptionManagerRole<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for UpsertOptionManagerRole<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -117,21 +111,14 @@ where
     type Output = UpsertOptionManagerRole<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
-            UpsertOptionManagerRole::RoleModerator => {
-                UpsertOptionManagerRole::RoleModerator
-            }
+            UpsertOptionManagerRole::RoleModerator => UpsertOptionManagerRole::RoleModerator,
             UpsertOptionManagerRole::RoleTriage => UpsertOptionManagerRole::RoleTriage,
-            UpsertOptionManagerRole::RoleVerifier => {
-                UpsertOptionManagerRole::RoleVerifier
-            }
+            UpsertOptionManagerRole::RoleVerifier => UpsertOptionManagerRole::RoleVerifier,
             UpsertOptionManagerRole::RoleAdmin => UpsertOptionManagerRole::RoleAdmin,
-            UpsertOptionManagerRole::Other(v) => {
-                UpsertOptionManagerRole::Other(v.into_static())
-            }
+            UpsertOptionManagerRole::Other(v) => UpsertOptionManagerRole::Other(v.into_static()),
         }
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum UpsertOptionScope<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -180,7 +167,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for UpsertOptionScope<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for UpsertOptionScope<S> {
+    for UpsertOptionScope<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -211,24 +199,20 @@ where
     }
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpsertOptionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub option: crate::generated::tools_ozone::setting::DefsOption<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -250,9 +234,8 @@ impl jacquard_common::xrpc::XrpcResp for UpsertOptionResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpsertOption<S> {
     const NSID: &'static str = "tools.ozone.setting.upsertOption";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpsertOptionResponse;
 }
 
@@ -262,18 +245,17 @@ Path: `/xrpc/tools.ozone.setting.upsertOption`. The request payload type is `Ups
 pub struct UpsertOptionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpsertOptionRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.setting.upsertOption";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UpsertOption<S>;
     type Response = UpsertOptionResponse;
 }
 
 pub mod upsert_option_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -345,10 +327,7 @@ pub struct UpsertOptionBuilder<
 
 impl UpsertOption<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UpsertOptionBuilder<
-        upsert_option_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> UpsertOptionBuilder<upsert_option_state::Empty, jacquard_common::DefaultStr> {
         UpsertOptionBuilder::new()
     }
 }
@@ -382,10 +361,7 @@ impl<S: jacquard_common::BosStr> UpsertOptionBuilder<upsert_option_state::Empty,
     }
 }
 
-impl<
-    St: upsert_option_state::State,
-    S: jacquard_common::BosStr,
-> UpsertOptionBuilder<St, S> {
+impl<St: upsert_option_state::State, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S> {
     /// Set the `description` field (optional)
     pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -417,23 +393,14 @@ where
     }
 }
 
-impl<
-    St: upsert_option_state::State,
-    S: jacquard_common::BosStr,
-> UpsertOptionBuilder<St, S> {
+impl<St: upsert_option_state::State, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S> {
     /// Set the `managerRole` field (optional)
-    pub fn manager_role(
-        mut self,
-        value: impl Into<Option<UpsertOptionManagerRole<S>>>,
-    ) -> Self {
+    pub fn manager_role(mut self, value: impl Into<Option<UpsertOptionManagerRole<S>>>) -> Self {
         self._fields.2 = value.into();
         self
     }
     /// Set the `managerRole` field to an Option value (optional)
-    pub fn maybe_manager_role(
-        mut self,
-        value: Option<UpsertOptionManagerRole<S>>,
-    ) -> Self {
+    pub fn maybe_manager_role(mut self, value: Option<UpsertOptionManagerRole<S>>) -> Self {
         self._fields.2 = value;
         self
     }

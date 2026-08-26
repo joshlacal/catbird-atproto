@@ -8,15 +8,8 @@
 /// Record indicating a livestream is published and available for replication at a given address. By convention, the record key is streamer::server
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.broadcast.origin",
@@ -24,22 +17,27 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Origin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///did of the broadcaster that operates the server syndicating the livestream
+    /// did of the broadcaster that operates the server syndicating the livestream
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub broadcaster: core::option::Option<jacquard_common::types::string::Did<S>>,
-    ///Iroh ticket that can be used to access the livestream from the server
+    /// Iroh ticket that can be used to access the livestream from the server
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub iroh_ticket: core::option::Option<S>,
-    ///did of the server that's currently rebroadcasting the livestream
+    /// did of the server that's currently rebroadcasting the livestream
     pub server: jacquard_common::types::string::Did<S>,
-    ///DID of the streamer whose livestream is being published
+    /// DID of the streamer whose livestream is being published
     pub streamer: jacquard_common::types::string::Did<S>,
-    ///Periodically updated timestamp when this origin last saw a livestream
+    /// Periodically updated timestamp when this origin last saw a livestream
     pub updated_at: jacquard_common::types::string::Datetime,
-    ///URL of the websocket endpoint for the livestream
+    /// URL of the websocket endpoint for the livestream
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub websocket_url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_origin_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -51,19 +49,10 @@ pub struct Origin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct OriginGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct OriginGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -100,8 +89,7 @@ impl<S: jacquard_common::BosStr> From<OriginGetRecordOutput<S>> for Origin<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Origin<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Origin<S> {
     const NSID: &'static str = "place.stream.broadcast.origin";
     type Record = OriginRecord;
 }
@@ -126,9 +114,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ori
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 2048usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "iroh_ticket",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("iroh_ticket"),
                     max: 2048usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -138,11 +124,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ori
     }
 }
 
+fn deserialize_origin_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod origin_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -396,9 +412,7 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_broadcast_origin() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_broadcast_origin() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.broadcast.origin"),

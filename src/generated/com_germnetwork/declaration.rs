@@ -8,15 +8,8 @@
 /// A declaration of a Germ Network account
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "com.germnetwork.declaration",
@@ -24,26 +17,28 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Declaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Array of opaque values to allow for key rolling
+    /// Array of opaque values to allow for key rolling
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub continuity_proofs: core::option::Option<
-        Vec<jacquard_common::deps::bytes::Bytes>,
-    >,
-    ///Opaque value, an ed25519 public key prefixed with a byte enum
+    pub continuity_proofs: core::option::Option<Vec<jacquard_common::deps::bytes::Bytes>>,
+    /// Opaque value, an ed25519 public key prefixed with a byte enum
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub current_key: jacquard_common::deps::bytes::Bytes,
-    ///Opaque value, contains MLS KeyPackage(s), and other signature data, and is signed by the currentKey
+    /// Opaque value, contains MLS KeyPackage(s), and other signature data, and is signed by the currentKey
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
     pub key_package: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    ///Controls who can message this account
+    /// Controls who can message this account
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub message_me: core::option::Option<
-        crate::generated::com_germnetwork::declaration::MessageMe<S>,
-    >,
-    ///Semver version number, without pre-release or build information, for the format of opaque content
+    pub message_me:
+        core::option::Option<crate::generated::com_germnetwork::declaration::MessageMe<S>>,
+    /// Semver version number, without pre-release or build information, for the format of opaque content
     pub version: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_declaration_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -55,46 +50,34 @@ pub struct Declaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct DeclarationGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct DeclarationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     pub value: Declaration<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MessageMe<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///A URL to present to an account that does not have its own com.germnetwork.declaration record, must have an empty fragment component, where the app should fill in the fragment component with the DIDs of the two accounts who wish to message each other
+    /// A URL to present to an account that does not have its own com.germnetwork.declaration record, must have an empty fragment component, where the app should fill in the fragment component with the DIDs of the two accounts who wish to message each other
     pub message_me_url: jacquard_common::types::string::UriValue<S>,
-    ///The policy of who can message the account, this value is included in the keyPackage, but is duplicated here to allow applications to decide if they should show a 'Message on Germ' button to the viewer.
+    /// The policy of who can message the account, this value is included in the keyPackage, but is duplicated here to allow applications to decide if they should show a 'Message on Germ' button to the viewer.
     pub show_button_to: MessageMeShowButtonTo<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_message_me_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -106,9 +89,7 @@ pub struct MessageMe<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// The policy of who can message the account, this value is included in the keyPackage, but is duplicated here to allow applications to decide if they should show a 'Message on Germ' button to the viewer.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum MessageMeShowButtonTo<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum MessageMeShowButtonTo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     None,
     UsersIFollow,
     Everyone,
@@ -157,7 +138,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for MessageMeShowButtonTo<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for MessageMeShowButtonTo<S> {
+    for MessageMeShowButtonTo<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -184,9 +166,7 @@ where
             MessageMeShowButtonTo::None => MessageMeShowButtonTo::None,
             MessageMeShowButtonTo::UsersIFollow => MessageMeShowButtonTo::UsersIFollow,
             MessageMeShowButtonTo::Everyone => MessageMeShowButtonTo::Everyone,
-            MessageMeShowButtonTo::Other(v) => {
-                MessageMeShowButtonTo::Other(v.into_static())
-            }
+            MessageMeShowButtonTo::Other(v) => MessageMeShowButtonTo::Other(v.into_static()),
         }
     }
 }
@@ -221,8 +201,7 @@ impl<S: jacquard_common::BosStr> From<DeclarationGetRecordOutput<S>> for Declara
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Declaration<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Declaration<S> {
     const NSID: &'static str = "com.germnetwork.declaration";
     type Record = DeclarationRecord;
 }
@@ -232,8 +211,7 @@ impl jacquard_common::types::collection::Collection for DeclarationRecord {
     type Record = DeclarationRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Declaration<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Declaration<S> {
     fn nsid() -> &'static str {
         "com.germnetwork.declaration"
     }
@@ -261,9 +239,7 @@ for Declaration<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 14usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "version",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("version"),
                     max: 14usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -274,9 +250,7 @@ for Declaration<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 5usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "version",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("version"),
                     min: 5usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -286,8 +260,7 @@ for Declaration<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for MessageMe<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageMe<S> {
     fn nsid() -> &'static str {
         "com.germnetwork.declaration"
     }
@@ -354,11 +327,41 @@ for MessageMe<S> {
     }
 }
 
+fn deserialize_declaration_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod declaration_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -408,9 +411,7 @@ pub struct DeclarationBuilder<
         core::option::Option<Vec<jacquard_common::deps::bytes::Bytes>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<
-            crate::generated::com_germnetwork::declaration::MessageMe<S>,
-        >,
+        core::option::Option<crate::generated::com_germnetwork::declaration::MessageMe<S>>,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -418,10 +419,7 @@ pub struct DeclarationBuilder<
 
 impl Declaration<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeclarationBuilder<
-        declaration_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> DeclarationBuilder<declaration_state::Empty, jacquard_common::DefaultStr> {
         DeclarationBuilder::new()
     }
 }
@@ -455,10 +453,7 @@ impl<S: jacquard_common::BosStr> DeclarationBuilder<declaration_state::Empty, S>
     }
 }
 
-impl<
-    St: declaration_state::State,
-    S: jacquard_common::BosStr,
-> DeclarationBuilder<St, S> {
+impl<St: declaration_state::State, S: jacquard_common::BosStr> DeclarationBuilder<St, S> {
     /// Set the `continuityProofs` field (optional)
     pub fn continuity_proofs(
         mut self,
@@ -496,10 +491,7 @@ where
     }
 }
 
-impl<
-    St: declaration_state::State,
-    S: jacquard_common::BosStr,
-> DeclarationBuilder<St, S> {
+impl<St: declaration_state::State, S: jacquard_common::BosStr> DeclarationBuilder<St, S> {
     /// Set the `keyPackage` field (optional)
     pub fn key_package(
         mut self,
@@ -509,25 +501,17 @@ impl<
         self
     }
     /// Set the `keyPackage` field to an Option value (optional)
-    pub fn maybe_key_package(
-        mut self,
-        value: Option<jacquard_common::deps::bytes::Bytes>,
-    ) -> Self {
+    pub fn maybe_key_package(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
         self._fields.2 = value;
         self
     }
 }
 
-impl<
-    St: declaration_state::State,
-    S: jacquard_common::BosStr,
-> DeclarationBuilder<St, S> {
+impl<St: declaration_state::State, S: jacquard_common::BosStr> DeclarationBuilder<St, S> {
     /// Set the `messageMe` field (optional)
     pub fn message_me(
         mut self,
-        value: impl Into<
-            Option<crate::generated::com_germnetwork::declaration::MessageMe<S>>,
-        >,
+        value: impl Into<Option<crate::generated::com_germnetwork::declaration::MessageMe<S>>>,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -597,9 +581,7 @@ where
     }
 }
 
-fn lexicon_doc_com_germnetwork_declaration() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_com_germnetwork_declaration() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.germnetwork.declaration"),
@@ -744,11 +726,35 @@ fn lexicon_doc_com_germnetwork_declaration() -> jacquard_lexicon::lexicon::Lexic
     }
 }
 
+fn deserialize_message_me_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod message_me_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -803,10 +809,7 @@ pub struct MessageMeBuilder<
 
 impl MessageMe<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> MessageMeBuilder<
-        message_me_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> MessageMeBuilder<message_me_state::Empty, jacquard_common::DefaultStr> {
         MessageMeBuilder::new()
     }
 }

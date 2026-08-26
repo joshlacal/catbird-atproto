@@ -52,17 +52,30 @@ pub struct GetLatestCommitOutput<S: jacquard_common::BosStr = jacquard_common::D
 #[serde(tag = "error", content = "message")]
 pub enum GetLatestCommitError {
     #[serde(rename = "RepoNotFound")]
-    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RepoTakendown")]
-    RepoTakendown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoTakendown(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RepoSuspended")]
-    RepoSuspended(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoSuspended(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RepoDeactivated")]
-    RepoDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoDeactivated(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -141,7 +154,7 @@ pub mod get_latest_commit_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

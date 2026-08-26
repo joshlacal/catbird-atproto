@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,7 +17,6 @@ pub struct GetFollowingUser<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub user_did: jacquard_common::types::string::Did<S>,
 }
 
-
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -33,21 +25,20 @@ pub struct GetFollowingUser<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetFollowingUserOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetFollowingUserOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub follow: core::option::Option<
-        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub follow: core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -67,8 +58,7 @@ impl jacquard_common::xrpc::XrpcResp for GetFollowingUserResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetFollowingUser<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetFollowingUser<S> {
     const NSID: &'static str = "place.stream.graph.getFollowingUser";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetFollowingUserResponse;
@@ -87,9 +77,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetFollowingUserRequest {
 
 pub mod get_following_user_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -144,10 +134,8 @@ pub struct GetFollowingUserBuilder<
 
 impl GetFollowingUser<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetFollowingUserBuilder<
-        get_following_user_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetFollowingUserBuilder<get_following_user_state::Empty, jacquard_common::DefaultStr> {
         GetFollowingUserBuilder::new()
     }
 }
@@ -159,10 +147,7 @@ impl<S: jacquard_common::BosStr> GetFollowingUser<S> {
     }
 }
 
-impl GetFollowingUserBuilder<
-    get_following_user_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetFollowingUserBuilder<get_following_user_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetFollowingUserBuilder {
@@ -173,9 +158,7 @@ impl GetFollowingUserBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetFollowingUserBuilder<get_following_user_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetFollowingUserBuilder<get_following_user_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetFollowingUserBuilder {

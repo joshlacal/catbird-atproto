@@ -6,25 +6,20 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetAgeAssuranceStateOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetAgeAssuranceStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -45,7 +40,7 @@ This endpoint has no request parameters or input body; send this marker with `ja
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Copy
+    Copy,
 )]
 pub struct GetAgeAssuranceState;
 /** Response marker for the `app.bsky.unspecced.getAgeAssuranceState` query.
@@ -63,6 +58,9 @@ impl jacquard_common::xrpc::XrpcRequest for GetAgeAssuranceState {
     const NSID: &'static str = "app.bsky.unspecced.getAgeAssuranceState";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetAgeAssuranceStateResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `app.bsky.unspecced.getAgeAssuranceState` query.

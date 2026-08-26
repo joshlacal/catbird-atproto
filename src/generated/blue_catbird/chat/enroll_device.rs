@@ -63,40 +63,84 @@ pub struct EnrollDeviceOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 pub enum EnrollDeviceError {
     #[serde(rename = "AuthenticationGenerationConflict")]
     AuthenticationGenerationConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     #[serde(rename = "CutoverRequired")]
-    CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceAlreadyExists")]
-    DeviceAlreadyExists(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceAlreadyExists(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceLimitReached")]
-    DeviceLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceTombstoned")]
-    DeviceTombstoned(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceTombstoned(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "IdempotencyConflict")]
-    IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    IdempotencyConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidKeyPackage")]
-    InvalidKeyPackage(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidKeyPackage(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
-    InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidSignature")]
-    InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidSignature(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "KeyPackageInventoryLimitReached")]
-    KeyPackageInventoryLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    KeyPackageInventoryLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
-    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -254,7 +298,7 @@ pub mod enroll_device_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

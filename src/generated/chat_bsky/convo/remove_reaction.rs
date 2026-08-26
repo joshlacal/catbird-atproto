@@ -13,9 +13,8 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,7 +23,11 @@ pub struct RemoveReaction<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub convo_id: S,
     pub message_id: S,
     pub value: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,26 +36,20 @@ pub struct RemoveReaction<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct RemoveReactionOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct RemoveReactionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub message: crate::generated::chat_bsky::convo::MessageView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -60,7 +57,6 @@ pub struct RemoveReactionOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -70,28 +66,38 @@ pub struct RemoveReactionOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum RemoveReactionError {
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidConvo(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Indicates that reactions are not allowed on this message, e.g. because it is a system message.
     #[serde(rename = "ReactionNotAllowed")]
-    ReactionNotAllowed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReactionNotAllowed(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Indicates that the message has been deleted and reactions can no longer be added/removed.
     #[serde(rename = "ReactionMessageDeleted")]
     ReactionMessageDeleted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// Indicates the value for the reaction is not acceptable. In general, this means it is not an emoji.
     #[serde(rename = "ReactionInvalidValue")]
-    ReactionInvalidValue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReactionInvalidValue(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -149,12 +155,10 @@ impl jacquard_common::xrpc::XrpcResp for RemoveReactionResponse {
     type Err = RemoveReactionError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for RemoveReaction<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RemoveReaction<S> {
     const NSID: &'static str = "chat.bsky.convo.removeReaction";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RemoveReactionResponse;
 }
 
@@ -164,9 +168,8 @@ Path: `/xrpc/chat.bsky.convo.removeReaction`. The request payload type is `Remov
 pub struct RemoveReactionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveReactionRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.removeReaction";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = RemoveReaction<S>;
     type Response = RemoveReactionResponse;
 }

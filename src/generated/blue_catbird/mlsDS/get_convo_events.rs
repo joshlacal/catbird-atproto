@@ -15,24 +15,25 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ConvoEventEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Encrypted message payload
+    /// Encrypted message payload
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext: jacquard_common::deps::bytes::Bytes,
-    ///Creation timestamp
+    /// Creation timestamp
     pub created_at: jacquard_common::types::string::Datetime,
-    ///MLS epoch
+    /// MLS epoch
     pub epoch: i64,
-    ///Message type (e.g., 'app')
+    /// Message type (e.g., 'app')
     pub message_type: S,
-    ///Message ID
+    /// Message ID
     pub msg_id: S,
-    ///Padded plaintext size
+    /// Padded plaintext size
     pub padded_size: i64,
-    ///Sequence number
+    /// Sequence number
     pub seq: i64,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_convo_event_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -68,13 +69,13 @@ pub struct GetConvoEvents<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetConvoEventsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Conversation ID
+    /// Conversation ID
     pub convo_id: S,
-    ///Ordered list of conversation events
+    /// Ordered list of conversation events
     pub events: Vec<crate::generated::blue_catbird::mlsDS::get_convo_events::ConvoEventEntry<S>>,
-    ///Lower bound sequence number (exclusive)
+    /// Lower bound sequence number (exclusive)
     pub from_seq_exclusive: i64,
-    ///Upper bound sequence number (inclusive)
+    /// Upper bound sequence number (inclusive)
     pub to_seq_inclusive: i64,
     #[serde(
         flatten,
@@ -102,13 +103,20 @@ pub struct GetConvoEventsOutput<S: jacquard_common::BosStr = jacquard_common::De
 #[serde(tag = "error", content = "message")]
 pub enum GetConvoEventsError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -184,11 +192,35 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetConvoEventsRequest {
     type Response = GetConvoEventsResponse;
 }
 
+fn deserialize_convo_event_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod convo_event_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -719,7 +751,7 @@ pub mod get_convo_events_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

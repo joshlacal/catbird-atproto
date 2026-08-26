@@ -5,16 +5,88 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ListOptionsScope<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Instance,
+    Personal,
+    Other(S),
+}
 
+impl<S: jacquard_common::BosStr> ListOptionsScope<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Instance => "instance",
+            Self::Personal => "personal",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "instance" => Self::Instance,
+            "personal" => Self::Personal,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ListOptionsScope<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ListOptionsScope<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ListOptionsScope<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ListOptionsScope<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ListOptionsScope<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ListOptionsScope<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ListOptionsScope<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ListOptionsScope::Instance => ListOptionsScope::Instance,
+            ListOptionsScope::Personal => ListOptionsScope::Personal,
+            ListOptionsScope::Other(v) => ListOptionsScope::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -33,20 +105,12 @@ pub struct ListOptions<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     /// Defaults to `"instance"`.
     #[serde(default = "_default_scope")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub scope: core::option::Option<S>,
+    pub scope: core::option::Option<ListOptionsScope<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -55,7 +119,11 @@ pub struct ListOptionsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub options: Vec<crate::generated::tools_ozone::setting::DefsOption<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -96,15 +164,18 @@ fn _default_limit() -> core::option::Option<i64> {
     Some(50i64)
 }
 
-fn _default_scope<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("instance"))
+fn _default_scope<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<ListOptionsScope<S>> {
+    Some(<ListOptionsScope<S>>::from_value(S::from_static(
+        "instance",
+    )))
 }
 
 pub mod list_options_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -130,17 +201,14 @@ pub struct ListOptionsBuilder<
         core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
         core::option::Option<i64>,
         core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<ListOptionsScope<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl ListOptions<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ListOptionsBuilder<
-        list_options_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ListOptionsBuilder<list_options_state::Empty, jacquard_common::DefaultStr> {
         ListOptionsBuilder::new()
     }
 }
@@ -174,10 +242,7 @@ impl<S: jacquard_common::BosStr> ListOptionsBuilder<list_options_state::Empty, S
     }
 }
 
-impl<
-    St: list_options_state::State,
-    S: jacquard_common::BosStr,
-> ListOptionsBuilder<St, S> {
+impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -190,10 +255,7 @@ impl<
     }
 }
 
-impl<
-    St: list_options_state::State,
-    S: jacquard_common::BosStr,
-> ListOptionsBuilder<St, S> {
+impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
     /// Set the `keys` field (optional)
     pub fn keys(
         mut self,
@@ -212,10 +274,7 @@ impl<
     }
 }
 
-impl<
-    St: list_options_state::State,
-    S: jacquard_common::BosStr,
-> ListOptionsBuilder<St, S> {
+impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();
@@ -228,10 +287,7 @@ impl<
     }
 }
 
-impl<
-    St: list_options_state::State,
-    S: jacquard_common::BosStr,
-> ListOptionsBuilder<St, S> {
+impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
     /// Set the `prefix` field (optional)
     pub fn prefix(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.3 = value.into();
@@ -244,17 +300,14 @@ impl<
     }
 }
 
-impl<
-    St: list_options_state::State,
-    S: jacquard_common::BosStr,
-> ListOptionsBuilder<St, S> {
+impl<St: list_options_state::State, S: jacquard_common::BosStr> ListOptionsBuilder<St, S> {
     /// Set the `scope` field (optional)
-    pub fn scope(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn scope(mut self, value: impl Into<Option<ListOptionsScope<S>>>) -> Self {
         self._fields.4 = value.into();
         self
     }
     /// Set the `scope` field to an Option value (optional)
-    pub fn maybe_scope(mut self, value: Option<S>) -> Self {
+    pub fn maybe_scope(mut self, value: Option<ListOptionsScope<S>>) -> Self {
         self._fields.4 = value;
         self
     }

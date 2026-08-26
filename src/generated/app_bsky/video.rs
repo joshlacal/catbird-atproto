@@ -15,17 +15,9 @@ pub mod start_upload;
 pub mod upload_part;
 pub mod upload_video;
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -36,18 +28,23 @@ pub struct JobStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub error: core::option::Option<S>,
-    ///A machine-readable code for why the video processing job failed.
+    /// A machine-readable code for why the video processing job failed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub failure_code: core::option::Option<JobStatusFailureCode<S>>,
     pub job_id: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub message: core::option::Option<S>,
-    ///Progress within the current processing state.
+    /// Progress within the current processing state.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub progress: core::option::Option<i64>,
-    ///The state of the video processing job. All values not listed as a known value indicate that the job is in process.
+    /// The state of the video processing job. All values not listed as a known value indicate that the job is in process.
     pub state: JobStatusState<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_job_status_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -114,7 +111,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for JobStatusFailureCode<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for JobStatusFailureCode<S> {
+    for JobStatusFailureCode<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -138,22 +136,14 @@ where
     type Output = JobStatusFailureCode<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
-            JobStatusFailureCode::ValidationFailure => {
-                JobStatusFailureCode::ValidationFailure
-            }
-            JobStatusFailureCode::EncodingFailure => {
-                JobStatusFailureCode::EncodingFailure
-            }
-            JobStatusFailureCode::PdsUploadFailure => {
-                JobStatusFailureCode::PdsUploadFailure
-            }
+            JobStatusFailureCode::ValidationFailure => JobStatusFailureCode::ValidationFailure,
+            JobStatusFailureCode::EncodingFailure => JobStatusFailureCode::EncodingFailure,
+            JobStatusFailureCode::PdsUploadFailure => JobStatusFailureCode::PdsUploadFailure,
             JobStatusFailureCode::PdsUploadUnsupportedBlobSize => {
                 JobStatusFailureCode::PdsUploadUnsupportedBlobSize
             }
             JobStatusFailureCode::GenericFailure => JobStatusFailureCode::GenericFailure,
-            JobStatusFailureCode::Other(v) => {
-                JobStatusFailureCode::Other(v.into_static())
-            }
+            JobStatusFailureCode::Other(v) => JobStatusFailureCode::Other(v.into_static()),
         }
     }
 }
@@ -228,7 +218,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for JobStatusState<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for JobStatusState<S> {
+    for JobStatusState<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -266,8 +257,7 @@ where
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for JobStatus<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for JobStatus<S> {
     fn nsid() -> &'static str {
         "app.bsky.video.defs"
     }
@@ -281,9 +271,7 @@ for JobStatus<S> {
         if let Some(ref value) = self.progress {
             if *value > 100i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "progress",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("progress"),
                     max: 100i64,
                     actual: *value,
                 });
@@ -292,9 +280,7 @@ for JobStatus<S> {
         if let Some(ref value) = self.progress {
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "progress",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("progress"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -304,11 +290,35 @@ for JobStatus<S> {
     }
 }
 
+fn deserialize_job_status_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod job_status_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -383,10 +393,7 @@ pub struct JobStatusBuilder<
 
 impl JobStatus<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> JobStatusBuilder<
-        job_status_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> JobStatusBuilder<job_status_state::Empty, jacquard_common::DefaultStr> {
         JobStatusBuilder::new()
     }
 }
@@ -430,10 +437,7 @@ impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<S
         self
     }
     /// Set the `blob` field to an Option value (optional)
-    pub fn maybe_blob(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_blob(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.0 = value;
         self
     }
@@ -473,10 +477,7 @@ impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<S
 
 impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `failureCode` field (optional)
-    pub fn failure_code(
-        mut self,
-        value: impl Into<Option<JobStatusFailureCode<S>>>,
-    ) -> Self {
+    pub fn failure_code(mut self, value: impl Into<Option<JobStatusFailureCode<S>>>) -> Self {
         self._fields.3 = value.into();
         self
     }

@@ -13,17 +13,17 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct PutRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The NSID of the record collection.
+    /// The NSID of the record collection.
     pub collection: jacquard_common::types::string::Nsid<S>,
-    ///The record to write.
+    /// The record to write.
     pub record: jacquard_common::types::value::Data<S>,
-    ///The DID of the repo to write to (the authenticated member).
+    /// The DID of the repo to write to (the authenticated member).
     pub repo: jacquard_common::types::string::Did<S>,
-    ///The Record Key.
+    /// The Record Key.
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    ///Reference to the space.
-    pub space: S,
-    ///Can be set to 'false' to skip Lexicon schema validation of record data, 'true' to require it, or leave unset to validate only for known Lexicons.
+    /// Reference to the space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// Can be set to 'false' to skip Lexicon schema validation of record data, 'true' to require it, or leave unset to validate only for known Lexicons.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub validate: core::option::Option<bool>,
     #[serde(
@@ -48,7 +48,7 @@ pub struct PutRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 )]
 pub struct PutRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cid: jacquard_common::types::string::Cid<S>,
-    ///URI of the written record.
+    /// URI of the written record.
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub validation_status: core::option::Option<PutRecordOutputValidationStatus<S>>,
@@ -159,11 +159,15 @@ where
 #[serde(tag = "error", content = "message")]
 pub enum PutRecordError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -223,7 +227,7 @@ pub mod put_record_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -324,7 +328,7 @@ pub struct PutRecordBuilder<
         core::option::Option<
             jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<bool>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -452,7 +456,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> PutRecordBuilder<put_record_state::SetSpace<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         PutRecordBuilder {

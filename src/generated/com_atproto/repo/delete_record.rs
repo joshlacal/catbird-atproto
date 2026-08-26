@@ -13,16 +13,16 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The NSID of the record collection.
+    /// The NSID of the record collection.
     pub collection: jacquard_common::types::string::Nsid<S>,
-    ///The handle or DID of the repo (aka, current account).
+    /// The handle or DID of the repo (aka, current account).
     pub repo: jacquard_common::types::ident::AtIdentifier<S>,
-    ///The Record Key.
+    /// The Record Key.
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    ///Compare and swap with the previous commit by CID.
+    /// Compare and swap with the previous commit by CID.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub swap_commit: core::option::Option<jacquard_common::types::string::Cid<S>>,
-    ///Compare and swap with the previous record by CID.
+    /// Compare and swap with the previous record by CID.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub swap_record: core::option::Option<jacquard_common::types::string::Cid<S>>,
     #[serde(
@@ -81,11 +81,15 @@ pub struct DeleteRecordOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 #[serde(tag = "error", content = "message")]
 pub enum DeleteRecordError {
     #[serde(rename = "InvalidSwap")]
-    InvalidSwap(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidSwap(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -145,7 +149,7 @@ pub mod delete_record_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

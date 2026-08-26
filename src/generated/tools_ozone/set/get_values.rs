@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,17 +22,9 @@ pub struct GetValues<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub name: S,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -49,7 +34,11 @@ pub struct GetValuesOutput<S: jacquard_common::BosStr = jacquard_common::Default
     pub cursor: core::option::Option<S>,
     pub set: crate::generated::tools_ozone::set::SetView<S>,
     pub values: Vec<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,7 +46,6 @@ pub struct GetValuesOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -67,18 +55,21 @@ pub struct GetValuesOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetValuesError {
     /// set with the given name does not exist
     #[serde(rename = "SetNotFound")]
-    SetNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SetNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -138,9 +129,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_values_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -184,10 +175,7 @@ pub struct GetValuesBuilder<
 
 impl GetValues<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetValuesBuilder<
-        get_values_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetValuesBuilder<get_values_state::Empty, jacquard_common::DefaultStr> {
         GetValuesBuilder::new()
     }
 }

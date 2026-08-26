@@ -15,7 +15,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Pii;
 impl core::fmt::Display for Pii {
@@ -34,7 +34,7 @@ impl core::fmt::Display for Pii {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Death;
 impl core::fmt::Display for Death {
@@ -53,7 +53,7 @@ impl core::fmt::Display for Death {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct DrugUse;
 impl core::fmt::Display for DrugUse {
@@ -72,7 +72,7 @@ impl core::fmt::Display for DrugUse {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct FantasyViolence;
 impl core::fmt::Display for FantasyViolence {
@@ -91,7 +91,7 @@ impl core::fmt::Display for FantasyViolence {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct FlashingLights;
 impl core::fmt::Display for FlashingLights {
@@ -110,7 +110,7 @@ impl core::fmt::Display for FlashingLights {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Language;
 impl core::fmt::Display for Language {
@@ -129,23 +129,138 @@ impl core::fmt::Display for Language {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ContentWarnings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub warnings: core::option::Option<Vec<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub warnings: core::option::Option<Vec<ContentWarningsWarnings<S>>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_content_warnings_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ContentWarningsWarnings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Death,
+    DrugUse,
+    FantasyViolence,
+    FlashingLights,
+    Language,
+    Nudity,
+    Pii,
+    Sexuality,
+    Suffering,
+    Violence,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ContentWarningsWarnings<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Death => "place.stream.metadata.contentWarnings#death",
+            Self::DrugUse => "place.stream.metadata.contentWarnings#drugUse",
+            Self::FantasyViolence => "place.stream.metadata.contentWarnings#fantasyViolence",
+            Self::FlashingLights => "place.stream.metadata.contentWarnings#flashingLights",
+            Self::Language => "place.stream.metadata.contentWarnings#language",
+            Self::Nudity => "place.stream.metadata.contentWarnings#nudity",
+            Self::Pii => "place.stream.metadata.contentWarnings#PII",
+            Self::Sexuality => "place.stream.metadata.contentWarnings#sexuality",
+            Self::Suffering => "place.stream.metadata.contentWarnings#suffering",
+            Self::Violence => "place.stream.metadata.contentWarnings#violence",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "place.stream.metadata.contentWarnings#death" => Self::Death,
+            "place.stream.metadata.contentWarnings#drugUse" => Self::DrugUse,
+            "place.stream.metadata.contentWarnings#fantasyViolence" => Self::FantasyViolence,
+            "place.stream.metadata.contentWarnings#flashingLights" => Self::FlashingLights,
+            "place.stream.metadata.contentWarnings#language" => Self::Language,
+            "place.stream.metadata.contentWarnings#nudity" => Self::Nudity,
+            "place.stream.metadata.contentWarnings#PII" => Self::Pii,
+            "place.stream.metadata.contentWarnings#sexuality" => Self::Sexuality,
+            "place.stream.metadata.contentWarnings#suffering" => Self::Suffering,
+            "place.stream.metadata.contentWarnings#violence" => Self::Violence,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ContentWarningsWarnings<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ContentWarningsWarnings<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ContentWarningsWarnings<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ContentWarningsWarnings<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ContentWarningsWarnings<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ContentWarningsWarnings<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ContentWarningsWarnings<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ContentWarningsWarnings::Death => ContentWarningsWarnings::Death,
+            ContentWarningsWarnings::DrugUse => ContentWarningsWarnings::DrugUse,
+            ContentWarningsWarnings::FantasyViolence => ContentWarningsWarnings::FantasyViolence,
+            ContentWarningsWarnings::FlashingLights => ContentWarningsWarnings::FlashingLights,
+            ContentWarningsWarnings::Language => ContentWarningsWarnings::Language,
+            ContentWarningsWarnings::Nudity => ContentWarningsWarnings::Nudity,
+            ContentWarningsWarnings::Pii => ContentWarningsWarnings::Pii,
+            ContentWarningsWarnings::Sexuality => ContentWarningsWarnings::Sexuality,
+            ContentWarningsWarnings::Suffering => ContentWarningsWarnings::Suffering,
+            ContentWarningsWarnings::Violence => ContentWarningsWarnings::Violence,
+            ContentWarningsWarnings::Other(v) => ContentWarningsWarnings::Other(v.into_static()),
+        }
+    }
 }
 
 /// The content could be perceived as offensive due to nudity.
@@ -158,7 +273,7 @@ pub struct ContentWarnings<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Nudity;
 impl core::fmt::Display for Nudity {
@@ -177,7 +292,7 @@ impl core::fmt::Display for Nudity {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Sexuality;
 impl core::fmt::Display for Sexuality {
@@ -196,7 +311,7 @@ impl core::fmt::Display for Sexuality {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Suffering;
 impl core::fmt::Display for Suffering {
@@ -215,7 +330,7 @@ impl core::fmt::Display for Suffering {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Violence;
 impl core::fmt::Display for Violence {
@@ -224,8 +339,7 @@ impl core::fmt::Display for Violence {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ContentWarnings<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ContentWarnings<S> {
     fn nsid() -> &'static str {
         "place.stream.metadata.contentWarnings"
     }
@@ -240,104 +354,145 @@ for ContentWarnings<S> {
     }
 }
 
-fn lexicon_doc_place_stream_metadata_contentWarnings() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn deserialize_content_warnings_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn lexicon_doc_place_stream_metadata_contentWarnings(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "place.stream.metadata.contentWarnings",
-        ),
+        id: ::jacquard_common::CowStr::new_static("place.stream.metadata.contentWarnings"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("PII"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("death"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("drugUse"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "fantasyViolence",
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("fantasyViolence"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("flashingLights"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("language"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Content warnings for a stream.",
-                        ),
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "warnings",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    ..Default::default()
-                                }),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                        )),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("warnings"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::String(
+                                            ::jacquard_lexicon::lexicon::LexString {
+                                                ..Default::default()
+                                            },
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("nudity"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("sexuality"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("suffering"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("violence"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map
         },

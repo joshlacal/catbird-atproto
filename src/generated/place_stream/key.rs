@@ -8,15 +8,8 @@
 /// Record linking an atproto identity with a stream signing key
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.key",
@@ -24,14 +17,19 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Key<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Client-declared timestamp when this key was created.
+    /// Client-declared timestamp when this key was created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///The name of the client that created this key.
+    /// The name of the client that created this key.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_by: core::option::Option<S>,
-    ///The did:key signing key for the stream.
+    /// The did:key signing key for the stream.
     pub signing_key: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_key_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -43,15 +41,8 @@ pub struct Key<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct KeyGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -90,8 +81,7 @@ impl<S: jacquard_common::BosStr> From<KeyGetRecordOutput<S>> for Key<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Key<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Key<S> {
     const NSID: &'static str = "place.stream.key";
     type Record = KeyRecord;
 }
@@ -117,9 +107,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Key
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 57usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "signing_key",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("signing_key"),
                     max: 57usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -130,9 +118,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Key
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 57usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "signing_key",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("signing_key"),
                     min: 57usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -142,11 +128,41 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Key
     }
 }
 
+fn deserialize_key_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod key_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

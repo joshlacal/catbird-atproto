@@ -13,9 +13,9 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdateMuteStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The conversation identifier
+    /// The conversation identifier
     pub convo_id: S,
-    ///Whether the conversation should be muted
+    /// Whether the conversation should be muted
     pub muted: bool,
     #[serde(
         flatten,
@@ -86,7 +86,7 @@ pub mod update_mute_status_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

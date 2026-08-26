@@ -26,7 +26,7 @@ pub struct SignPlcOperation<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub rotation_keys: core::option::Option<Vec<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub services: core::option::Option<jacquard_common::types::value::Data<S>>,
-    ///A token received through com.atproto.identity.requestPlcOperationSignature
+    /// A token received through com.atproto.identity.requestPlcOperationSignature
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub token: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -52,7 +52,7 @@ pub struct SignPlcOperation<S: jacquard_common::BosStr = jacquard_common::Defaul
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SignPlcOperationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///A signed DID PLC operation.
+    /// A signed DID PLC operation.
     pub operation: jacquard_common::types::value::Data<S>,
     #[serde(
         flatten,

@@ -6,24 +6,17 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UnregisterNotify<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Service identifier of the subscriber to remove, as passed to registerNotify.
+    /// Service identifier of the subscriber to remove, as passed to registerNotify.
     pub service: S,
-    ///Reference to the space.
-    pub space: S,
+    /// Reference to the space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -50,11 +43,15 @@ pub struct UnregisterNotify<S: jacquard_common::BosStr = jacquard_common::Defaul
 #[serde(tag = "error", content = "message")]
 pub enum UnregisterNotifyError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -89,6 +86,18 @@ impl jacquard_common::xrpc::XrpcResp for UnregisterNotifyResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = UnregisterNotifyError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UnregisterNotify<S> {
@@ -108,4 +117,166 @@ impl jacquard_common::xrpc::XrpcEndpoint for UnregisterNotifyRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UnregisterNotify<S>;
     type Response = UnregisterNotifyResponse;
+}
+
+pub mod unregister_notify_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Service;
+        type Space;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Service = Unset;
+        type Space = Unset;
+    }
+    ///State transition - sets the `service` field to Set
+    pub struct SetService<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetService<St> {}
+    impl<St: State> State for SetService<St> {
+        type Service = Set<members::service>;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Service = St::Service;
+        type Space = Set<members::space>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `service` field
+        pub struct service(());
+        ///Marker type for the `space` field
+        pub struct space(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct UnregisterNotifyBuilder<
+    St: unregister_notify_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl UnregisterNotify<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> UnregisterNotifyBuilder<unregister_notify_state::Empty, jacquard_common::DefaultStr> {
+        UnregisterNotifyBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> UnregisterNotify<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UnregisterNotifyBuilder<unregister_notify_state::Empty, S> {
+        UnregisterNotifyBuilder::builder()
+    }
+}
+
+impl UnregisterNotifyBuilder<unregister_notify_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        UnregisterNotifyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> UnregisterNotifyBuilder<unregister_notify_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UnregisterNotifyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UnregisterNotifyBuilder<St, S>
+where
+    St: unregister_notify_state::State,
+    St::Service: unregister_notify_state::IsUnset,
+{
+    /// Set the `service` field (required)
+    pub fn service(
+        mut self,
+        value: impl Into<S>,
+    ) -> UnregisterNotifyBuilder<unregister_notify_state::SetService<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        UnregisterNotifyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UnregisterNotifyBuilder<St, S>
+where
+    St: unregister_notify_state::State,
+    St::Space: unregister_notify_state::IsUnset,
+{
+    /// Set the `space` field (required)
+    pub fn space(
+        mut self,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> UnregisterNotifyBuilder<unregister_notify_state::SetSpace<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        UnregisterNotifyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UnregisterNotifyBuilder<St, S>
+where
+    St: unregister_notify_state::State,
+    St::Service: unregister_notify_state::IsSet,
+    St::Space: unregister_notify_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> UnregisterNotify<S> {
+        UnregisterNotify {
+            service: self._fields.0.unwrap(),
+            space: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> UnregisterNotify<S> {
+        UnregisterNotify {
+            service: self._fields.0.unwrap(),
+            space: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

@@ -13,18 +13,18 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SubmitCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Serialized MLS commit
+    /// Serialized MLS commit
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub commit_data: jacquard_common::deps::bytes::Bytes,
-    ///Conversation ID
+    /// Conversation ID
     pub convo_id: S,
-    ///Current expected epoch
+    /// Current expected epoch
     pub epoch: i64,
-    ///Proposed next epoch
+    /// Proposed next epoch
     pub proposed_epoch: i64,
-    ///DID of the submitting delivery service
+    /// DID of the submitting delivery service
     pub sender_ds_did: S,
-    ///Current sequencer term for CAS validation
+    /// Current sequencer term for CAS validation
     pub sequencer_term: i64,
     #[serde(
         flatten,
@@ -47,14 +47,14 @@ pub struct SubmitCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the commit was accepted
+    /// Whether the commit was accepted
     pub accepted: bool,
-    ///Epoch assigned by the sequencer
+    /// Epoch assigned by the sequencer
     pub assigned_epoch: i64,
-    ///Sequencer receipt for the commit
+    /// Sequencer receipt for the commit
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub receipt: core::option::Option<S>,
-    ///Current sequencer term
+    /// Current sequencer term
     pub sequencer_term: i64,
     #[serde(
         flatten,
@@ -82,17 +82,30 @@ pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 #[serde(tag = "error", content = "message")]
 pub enum SubmitCommitError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotSequencer")]
-    NotSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotSequencer(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "TermStale")]
-    TermStale(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TermStale(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CommitConflict")]
-    CommitConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CommitConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -173,7 +186,7 @@ pub mod submit_commit_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

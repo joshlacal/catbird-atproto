@@ -21,6 +21,7 @@ pub struct Contributor<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_contributor_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -43,49 +44,50 @@ pub struct Contributor<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Document<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Strong reference to a Bluesky post. Useful to keep track of comments off-platform.
+    /// Strong reference to a Bluesky post. Useful to keep track of comments off-platform.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub bsky_post_ref:
         core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-    ///Open union used to define the record's content. Each entry must specify a $type and may be extended with other lexicons to support additional content formats.
+    /// Open union used to define the record's content. Each entry must specify a $type and may be extended with other lexicons to support additional content formats.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub content: core::option::Option<jacquard_common::types::value::Data<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub contributors:
         core::option::Option<Vec<crate::generated::site_standard::document::Contributor<S>>>,
-    ///Image to used for thumbnail or cover image. Less than 1MB is size.
+    /// Image to used for thumbnail or cover image. Less than 1MB is size.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cover_image: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
-    ///A brief description or excerpt from the document.
+    /// A brief description or excerpt from the document.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///Self-label values for this post. Effectively content warnings.
+    /// Self-label values for this post. Effectively content warnings.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
-    ///Array of values describing relationships between this document and external resources
+    /// Array of values describing relationships between this document and external resources
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub links: core::option::Option<jacquard_common::types::value::Data<S>>,
-    ///Combine with site or publication url to construct a canonical URL to the document. Prepend with a leading slash.
+    /// Combine with site or publication url to construct a canonical URL to the document. Prepend with a leading slash.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub path: core::option::Option<S>,
-    ///Timestamp of the documents publish time.
+    /// Timestamp of the documents publish time.
     pub published_at: jacquard_common::types::string::Datetime,
-    ///Points to a publication record (at://) or a publication url (https://) for loose documents. Avoid trailing slashes.
+    /// Points to a publication record (at://) or a publication url (https://) for loose documents. Avoid trailing slashes.
     pub site: jacquard_common::types::string::UriValue<S>,
-    ///Array of strings used to tag or categorize the document. Avoid prepending tags with hashtags.
+    /// Array of strings used to tag or categorize the document. Avoid prepending tags with hashtags.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub tags: core::option::Option<Vec<S>>,
-    ///Plaintext representation of the documents contents. Should not contain markdown or other formatting.
+    /// Plaintext representation of the documents contents. Should not contain markdown or other formatting.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub text_content: core::option::Option<S>,
-    ///Title of the document.
+    /// Title of the document.
     pub title: S,
-    ///Timestamp of the documents last edit.
+    /// Timestamp of the documents last edit.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_document_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -306,6 +308,40 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Doc
                 }
             }
         }
+        if let Some(values) = &self.tags {
+            for value in values {
+                #[allow(unused_comparisons)]
+                if <str>::len(value.as_ref()) > 1280usize {
+                    return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                        path: jacquard_lexicon::validation::ValidationPath::from_field("tags"),
+                        max: 1280usize,
+                        actual: <str>::len(value.as_ref()),
+                    });
+                }
+            }
+        }
+        if let Some(values) = &self.tags {
+            for value in values {
+                {
+                    let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                            value.as_ref(),
+                            true,
+                        )
+                        .count();
+                    if count > 128usize {
+                        return Err(
+                            jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                                path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                    "tags",
+                                ),
+                                max: 128usize,
+                                actual: count,
+                            },
+                        );
+                    }
+                }
+            }
+        }
         {
             let value = &self.title;
             #[allow(unused_comparisons)]
@@ -340,11 +376,35 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Doc
     }
 }
 
+fn deserialize_contributor_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod contributor_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -786,11 +846,41 @@ fn lexicon_doc_site_standard_document() -> jacquard_lexicon::lexicon::LexiconDoc
     }
 }
 
+fn deserialize_document_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod document_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

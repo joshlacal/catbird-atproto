@@ -13,16 +13,16 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///How the authority decides whether to authorize a requesting app.
+    /// How the authority decides whether to authorize a requesting app.
     pub app_access: CreateSpaceAppAccess<S>,
-    ///How the authority decides whether to authorize a requesting user.
+    /// How the authority decides whether to authorize a requesting user.
     pub policy: CreateSpacePolicy<S>,
-    ///The space key. Used to differentiate multiple spaces of the same type under the same owner. Same syntax requirements as a record key. If not provided, one will be auto-generated (TID).
+    /// The space key. Used to differentiate multiple spaces of the same type under the same owner. Same syntax requirements as a record key. If not provided, one will be auto-generated (TID).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub skey: core::option::Option<
         jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
     >,
-    ///The NSID of the space type, describing the modality of the space (e.g. app.bsky.group, app.bsky.personal).
+    /// The NSID of the space type, describing the modality of the space (e.g. app.bsky.group, app.bsky.personal).
     pub r#type: jacquard_common::types::string::Nsid<S>,
     #[serde(
         flatten,
@@ -70,22 +70,15 @@ pub enum CreateSpacePolicy<S: jacquard_common::BosStr = jacquard_common::Default
 }
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateSpaceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///URI of the created space.
-    pub uri: S,
+    /// URI of the created space.
+    pub uri: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -113,17 +106,27 @@ pub struct CreateSpaceOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 pub enum CreateSpaceError {
     /// A space with this owner, type, and skey already exists. A space that was previously deleted may be created again.
     #[serde(rename = "SpaceAlreadyExists")]
-    SpaceAlreadyExists(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceAlreadyExists(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The requested policy is not one the host implements.
     #[serde(rename = "UnsupportedPolicy")]
-    UnsupportedPolicy(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedPolicy(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The requested appAccess variant is not one the host implements. A host will not store an app access policy it cannot enforce.
     #[serde(rename = "UnsupportedAppAccess")]
-    UnsupportedAppAccess(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedAppAccess(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -197,7 +200,7 @@ pub mod create_space_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

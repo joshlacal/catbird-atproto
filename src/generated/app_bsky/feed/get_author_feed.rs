@@ -5,16 +5,104 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
-)]
+/// Combinations of post/repost types to include in response.
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetAuthorFeedFilter<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    PostsWithReplies,
+    PostsNoReplies,
+    PostsWithMedia,
+    PostsAndAuthorThreads,
+    PostsWithVideo,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetAuthorFeedFilter<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::PostsWithReplies => "posts_with_replies",
+            Self::PostsNoReplies => "posts_no_replies",
+            Self::PostsWithMedia => "posts_with_media",
+            Self::PostsAndAuthorThreads => "posts_and_author_threads",
+            Self::PostsWithVideo => "posts_with_video",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "posts_with_replies" => Self::PostsWithReplies,
+            "posts_no_replies" => Self::PostsNoReplies,
+            "posts_with_media" => Self::PostsWithMedia,
+            "posts_and_author_threads" => Self::PostsAndAuthorThreads,
+            "posts_with_video" => Self::PostsWithVideo,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetAuthorFeedFilter<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetAuthorFeedFilter<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetAuthorFeedFilter<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetAuthorFeedFilter<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetAuthorFeedFilter<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetAuthorFeedFilter<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetAuthorFeedFilter<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetAuthorFeedFilter::PostsWithReplies => GetAuthorFeedFilter::PostsWithReplies,
+            GetAuthorFeedFilter::PostsNoReplies => GetAuthorFeedFilter::PostsNoReplies,
+            GetAuthorFeedFilter::PostsWithMedia => GetAuthorFeedFilter::PostsWithMedia,
+            GetAuthorFeedFilter::PostsAndAuthorThreads => {
+                GetAuthorFeedFilter::PostsAndAuthorThreads
+            }
+            GetAuthorFeedFilter::PostsWithVideo => GetAuthorFeedFilter::PostsWithVideo,
+            GetAuthorFeedFilter::Other(v) => GetAuthorFeedFilter::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -26,7 +114,7 @@ pub struct GetAuthorFeed<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     /// Defaults to `"posts_with_replies"`.
     #[serde(default = "_default_filter")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub filter: core::option::Option<S>,
+    pub filter: core::option::Option<GetAuthorFeedFilter<S>>,
     ///  Defaults to `false`.
     #[serde(default = "_default_include_pins")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -37,28 +125,22 @@ pub struct GetAuthorFeed<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetAuthorFeedOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetAuthorFeedOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub feed: Vec<crate::generated::app_bsky::feed::FeedViewPost<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -66,7 +148,6 @@ pub struct GetAuthorFeedOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -76,19 +157,25 @@ pub struct GetAuthorFeedOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetAuthorFeedError {
     #[serde(rename = "BlockedActor")]
-    BlockedActor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BlockedActor(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "BlockedByActor")]
-    BlockedByActor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BlockedByActor(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -132,8 +219,7 @@ impl jacquard_common::xrpc::XrpcResp for GetAuthorFeedResponse {
     type Err = GetAuthorFeedError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetAuthorFeed<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetAuthorFeed<S> {
     const NSID: &'static str = "app.bsky.feed.getAuthorFeed";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetAuthorFeedResponse;
@@ -150,8 +236,11 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetAuthorFeedRequest {
     type Response = GetAuthorFeedResponse;
 }
 
-fn _default_filter<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("posts_with_replies"))
+fn _default_filter<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<GetAuthorFeedFilter<S>> {
+    Some(<GetAuthorFeedFilter<S>>::from_value(S::from_static(
+        "posts_with_replies",
+    )))
 }
 
 fn _default_include_pins() -> core::option::Option<bool> {
@@ -164,9 +253,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_author_feed_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -203,7 +292,7 @@ pub struct GetAuthorFeedBuilder<
     _fields: (
         core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
         core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<GetAuthorFeedFilter<S>>,
         core::option::Option<bool>,
         core::option::Option<i64>,
     ),
@@ -212,10 +301,8 @@ pub struct GetAuthorFeedBuilder<
 
 impl GetAuthorFeed<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetAuthorFeedBuilder<
-        get_author_feed_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetAuthorFeedBuilder<get_author_feed_state::Empty, jacquard_common::DefaultStr>
+    {
         GetAuthorFeedBuilder::new()
     }
 }
@@ -268,10 +355,7 @@ where
     }
 }
 
-impl<
-    St: get_author_feed_state::State,
-    S: jacquard_common::BosStr,
-> GetAuthorFeedBuilder<St, S> {
+impl<St: get_author_feed_state::State, S: jacquard_common::BosStr> GetAuthorFeedBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -284,26 +368,20 @@ impl<
     }
 }
 
-impl<
-    St: get_author_feed_state::State,
-    S: jacquard_common::BosStr,
-> GetAuthorFeedBuilder<St, S> {
+impl<St: get_author_feed_state::State, S: jacquard_common::BosStr> GetAuthorFeedBuilder<St, S> {
     /// Set the `filter` field (optional)
-    pub fn filter(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn filter(mut self, value: impl Into<Option<GetAuthorFeedFilter<S>>>) -> Self {
         self._fields.2 = value.into();
         self
     }
     /// Set the `filter` field to an Option value (optional)
-    pub fn maybe_filter(mut self, value: Option<S>) -> Self {
+    pub fn maybe_filter(mut self, value: Option<GetAuthorFeedFilter<S>>) -> Self {
         self._fields.2 = value;
         self
     }
 }
 
-impl<
-    St: get_author_feed_state::State,
-    S: jacquard_common::BosStr,
-> GetAuthorFeedBuilder<St, S> {
+impl<St: get_author_feed_state::State, S: jacquard_common::BosStr> GetAuthorFeedBuilder<St, S> {
     /// Set the `includePins` field (optional)
     pub fn include_pins(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.3 = value.into();
@@ -316,10 +394,7 @@ impl<
     }
 }
 
-impl<
-    St: get_author_feed_state::State,
-    S: jacquard_common::BosStr,
-> GetAuthorFeedBuilder<St, S> {
+impl<St: get_author_feed_state::State, S: jacquard_common::BosStr> GetAuthorFeedBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.4 = value.into();

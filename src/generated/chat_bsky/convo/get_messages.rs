@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,17 +22,9 @@ pub struct GetMessages<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -48,12 +33,15 @@ pub struct GetMessagesOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub messages: Vec<GetMessagesOutputMessagesItem<S>>,
-    ///Set of all members who authored or reacted to the returned messages. Members referred to by system messages are also included.
+    /// Set of all members who authored or reacted to the returned messages. Members referred to by system messages are also included.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub related_profiles: core::option::Option<
-        Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub related_profiles:
+        core::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -62,25 +50,15 @@ pub struct GetMessagesOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum GetMessagesOutputMessagesItem<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum GetMessagesOutputMessagesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
     MessageView(Box<crate::generated::chat_bsky::convo::MessageView<S>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
@@ -88,7 +66,6 @@ pub enum GetMessagesOutputMessagesItem<
     #[serde(rename = "chat.bsky.convo.defs#systemMessageView")]
     SystemMessageView(Box<crate::generated::chat_bsky::convo::SystemMessageView<S>>),
 }
-
 
 #[derive(
     serde::Serialize,
@@ -98,17 +75,20 @@ pub enum GetMessagesOutputMessagesItem<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetMessagesError {
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidConvo(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -168,9 +148,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_messages_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -214,10 +194,7 @@ pub struct GetMessagesBuilder<
 
 impl GetMessages<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetMessagesBuilder<
-        get_messages_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetMessagesBuilder<get_messages_state::Empty, jacquard_common::DefaultStr> {
         GetMessagesBuilder::new()
     }
 }
@@ -270,10 +247,7 @@ where
     }
 }
 
-impl<
-    St: get_messages_state::State,
-    S: jacquard_common::BosStr,
-> GetMessagesBuilder<St, S> {
+impl<St: get_messages_state::State, S: jacquard_common::BosStr> GetMessagesBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -286,10 +260,7 @@ impl<
     }
 }
 
-impl<
-    St: get_messages_state::State,
-    S: jacquard_common::BosStr,
-> GetMessagesBuilder<St, S> {
+impl<St: get_messages_state::State, S: jacquard_common::BosStr> GetMessagesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();

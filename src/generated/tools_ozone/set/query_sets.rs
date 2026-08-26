@@ -5,16 +5,173 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QuerySetsSortBy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Name,
+    CreatedAt,
+    UpdatedAt,
+    Other(S),
+}
 
+impl<S: jacquard_common::BosStr> QuerySetsSortBy<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Name => "name",
+            Self::CreatedAt => "createdAt",
+            Self::UpdatedAt => "updatedAt",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "name" => Self::Name,
+            "createdAt" => Self::CreatedAt,
+            "updatedAt" => Self::UpdatedAt,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QuerySetsSortBy<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QuerySetsSortBy<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QuerySetsSortBy<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QuerySetsSortBy<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QuerySetsSortBy<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QuerySetsSortBy<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QuerySetsSortBy<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QuerySetsSortBy::Name => QuerySetsSortBy::Name,
+            QuerySetsSortBy::CreatedAt => QuerySetsSortBy::CreatedAt,
+            QuerySetsSortBy::UpdatedAt => QuerySetsSortBy::UpdatedAt,
+            QuerySetsSortBy::Other(v) => QuerySetsSortBy::Other(v.into_static()),
+        }
+    }
+}
+
+/// Defaults to ascending order of name field.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QuerySetsSortDirection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Asc,
+    Desc,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QuerySetsSortDirection<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "asc" => Self::Asc,
+            "desc" => Self::Desc,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QuerySetsSortDirection<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QuerySetsSortDirection<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QuerySetsSortDirection<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QuerySetsSortDirection<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QuerySetsSortDirection<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QuerySetsSortDirection<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QuerySetsSortDirection<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QuerySetsSortDirection::Asc => QuerySetsSortDirection::Asc,
+            QuerySetsSortDirection::Desc => QuerySetsSortDirection::Desc,
+            QuerySetsSortDirection::Other(v) => QuerySetsSortDirection::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -31,24 +188,16 @@ pub struct QuerySets<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// Defaults to `"name"`.
     #[serde(default = "_default_sort_by")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort_by: core::option::Option<S>,
+    pub sort_by: core::option::Option<QuerySetsSortBy<S>>,
     /// Defaults to `"asc"`.
     #[serde(default = "_default_sort_direction")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort_direction: core::option::Option<S>,
+    pub sort_direction: core::option::Option<QuerySetsSortDirection<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -57,7 +206,11 @@ pub struct QuerySetsOutput<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub sets: Vec<crate::generated::tools_ozone::set::SetView<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -98,19 +251,23 @@ fn _default_limit() -> core::option::Option<i64> {
     Some(50i64)
 }
 
-fn _default_sort_by<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("name"))
+fn _default_sort_by<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<QuerySetsSortBy<S>> {
+    Some(<QuerySetsSortBy<S>>::from_value(S::from_static("name")))
 }
 
-fn _default_sort_direction<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("asc"))
+fn _default_sort_direction<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<QuerySetsSortDirection<S>> {
+    Some(<QuerySetsSortDirection<S>>::from_value(S::from_static(
+        "asc",
+    )))
 }
 
 pub mod query_sets_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -135,18 +292,15 @@ pub struct QuerySetsBuilder<
         core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<S>,
-        core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<QuerySetsSortBy<S>>,
+        core::option::Option<QuerySetsSortDirection<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl QuerySets<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> QuerySetsBuilder<
-        query_sets_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> QuerySetsBuilder<query_sets_state::Empty, jacquard_common::DefaultStr> {
         QuerySetsBuilder::new()
     }
 }
@@ -221,12 +375,12 @@ impl<St: query_sets_state::State, S: jacquard_common::BosStr> QuerySetsBuilder<S
 
 impl<St: query_sets_state::State, S: jacquard_common::BosStr> QuerySetsBuilder<St, S> {
     /// Set the `sortBy` field (optional)
-    pub fn sort_by(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort_by(mut self, value: impl Into<Option<QuerySetsSortBy<S>>>) -> Self {
         self._fields.3 = value.into();
         self
     }
     /// Set the `sortBy` field to an Option value (optional)
-    pub fn maybe_sort_by(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort_by(mut self, value: Option<QuerySetsSortBy<S>>) -> Self {
         self._fields.3 = value;
         self
     }
@@ -234,12 +388,12 @@ impl<St: query_sets_state::State, S: jacquard_common::BosStr> QuerySetsBuilder<S
 
 impl<St: query_sets_state::State, S: jacquard_common::BosStr> QuerySetsBuilder<St, S> {
     /// Set the `sortDirection` field (optional)
-    pub fn sort_direction(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort_direction(mut self, value: impl Into<Option<QuerySetsSortDirection<S>>>) -> Self {
         self._fields.4 = value.into();
         self
     }
     /// Set the `sortDirection` field to an Option value (optional)
-    pub fn maybe_sort_direction(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort_direction(mut self, value: Option<QuerySetsSortDirection<S>>) -> Self {
         self._fields.4 = value;
         self
     }

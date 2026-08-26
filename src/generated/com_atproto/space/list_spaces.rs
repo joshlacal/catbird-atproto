@@ -50,25 +50,19 @@ pub struct ListSpacesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
 }
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SpaceView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///URI of the space.
-    pub uri: S,
+    /// URI of the space.
+    pub uri: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_space_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -130,7 +124,7 @@ pub mod list_spaces_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -266,6 +260,154 @@ where
     }
 }
 
+fn deserialize_space_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod space_view_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Uri;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Uri = Unset;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Uri = Set<members::uri>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `uri` field
+        pub struct uri(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct SpaceViewBuilder<
+    St: space_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl SpaceView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SpaceViewBuilder<space_view_state::Empty, jacquard_common::DefaultStr> {
+        SpaceViewBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> SpaceView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SpaceViewBuilder<space_view_state::Empty, S> {
+        SpaceViewBuilder::builder()
+    }
+}
+
+impl SpaceViewBuilder<space_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        SpaceViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> SpaceViewBuilder<space_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SpaceViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceViewBuilder<St, S>
+where
+    St: space_view_state::State,
+    St::Uri: space_view_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> SpaceViewBuilder<space_view_state::SetUri<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        SpaceViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceViewBuilder<St, S>
+where
+    St: space_view_state::State,
+    St::Uri: space_view_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> SpaceView<S> {
+        SpaceView {
+            uri: self._fields.0.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> SpaceView<S> {
+        SpaceView {
+            uri: self._fields.0.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 fn lexicon_doc_com_atproto_space_listSpaces() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
@@ -353,6 +495,9 @@ fn lexicon_doc_com_atproto_space_listSpaces() -> jacquard_lexicon::lexicon::Lexi
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "URI of the space.",
                                         )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                        ),
                                         ..Default::default()
                                     },
                                 ),

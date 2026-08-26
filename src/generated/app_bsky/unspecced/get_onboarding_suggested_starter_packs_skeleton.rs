@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -30,17 +23,9 @@ pub struct GetOnboardingSuggestedStarterPacksSkeleton<
     pub viewer: core::option::Option<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -49,7 +34,11 @@ pub struct GetOnboardingSuggestedStarterPacksSkeletonOutput<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub starter_packs: Vec<jacquard_common::types::string::AtUri<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -62,18 +51,16 @@ pub struct GetOnboardingSuggestedStarterPacksSkeletonOutput<
 
 Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetOnboardingSuggestedStarterPacksSkeletonOutput<S>` for this endpoint.*/
 pub struct GetOnboardingSuggestedStarterPacksSkeletonResponse;
-impl jacquard_common::xrpc::XrpcResp
-for GetOnboardingSuggestedStarterPacksSkeletonResponse {
+impl jacquard_common::xrpc::XrpcResp for GetOnboardingSuggestedStarterPacksSkeletonResponse {
     const NSID: &'static str = "app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton";
     const ENCODING: &'static str = "application/json";
-    type Output<S: jacquard_common::BosStr> = GetOnboardingSuggestedStarterPacksSkeletonOutput<
-        S,
-    >;
+    type Output<S: jacquard_common::BosStr> = GetOnboardingSuggestedStarterPacksSkeletonOutput<S>;
     type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetOnboardingSuggestedStarterPacksSkeleton<S> {
+    for GetOnboardingSuggestedStarterPacksSkeleton<S>
+{
     const NSID: &'static str = "app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetOnboardingSuggestedStarterPacksSkeletonResponse;
@@ -83,13 +70,11 @@ for GetOnboardingSuggestedStarterPacksSkeleton<S> {
 
 Path: `/xrpc/app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton`. The request payload type is `GetOnboardingSuggestedStarterPacksSkeleton<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetOnboardingSuggestedStarterPacksSkeletonRequest;
-impl jacquard_common::xrpc::XrpcEndpoint
-for GetOnboardingSuggestedStarterPacksSkeletonRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton";
+impl jacquard_common::xrpc::XrpcEndpoint for GetOnboardingSuggestedStarterPacksSkeletonRequest {
+    const PATH: &'static str =
+        "/xrpc/app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<S: jacquard_common::BosStr> = GetOnboardingSuggestedStarterPacksSkeleton<
-        S,
-    >;
+    type Request<S: jacquard_common::BosStr> = GetOnboardingSuggestedStarterPacksSkeleton<S>;
     type Response = GetOnboardingSuggestedStarterPacksSkeletonResponse;
 }
 
@@ -99,9 +84,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_onboarding_suggested_starter_packs_skeleton_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -149,10 +134,12 @@ impl<S: jacquard_common::BosStr> GetOnboardingSuggestedStarterPacksSkeleton<S> {
     }
 }
 
-impl GetOnboardingSuggestedStarterPacksSkeletonBuilder<
-    get_onboarding_suggested_starter_packs_skeleton_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    GetOnboardingSuggestedStarterPacksSkeletonBuilder<
+        get_onboarding_suggested_starter_packs_skeleton_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetOnboardingSuggestedStarterPacksSkeletonBuilder {
@@ -163,12 +150,12 @@ impl GetOnboardingSuggestedStarterPacksSkeletonBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetOnboardingSuggestedStarterPacksSkeletonBuilder<
-    get_onboarding_suggested_starter_packs_skeleton_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    GetOnboardingSuggestedStarterPacksSkeletonBuilder<
+        get_onboarding_suggested_starter_packs_skeleton_state::Empty,
+        S,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetOnboardingSuggestedStarterPacksSkeletonBuilder {
@@ -180,9 +167,10 @@ impl<
 }
 
 impl<
-    St: get_onboarding_suggested_starter_packs_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> GetOnboardingSuggestedStarterPacksSkeletonBuilder<St, S> {
+        St: get_onboarding_suggested_starter_packs_skeleton_state::State,
+        S: jacquard_common::BosStr,
+    > GetOnboardingSuggestedStarterPacksSkeletonBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();
@@ -196,9 +184,10 @@ impl<
 }
 
 impl<
-    St: get_onboarding_suggested_starter_packs_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> GetOnboardingSuggestedStarterPacksSkeletonBuilder<St, S> {
+        St: get_onboarding_suggested_starter_packs_skeleton_state::State,
+        S: jacquard_common::BosStr,
+    > GetOnboardingSuggestedStarterPacksSkeletonBuilder<St, S>
+{
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
@@ -208,19 +197,13 @@ impl<
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<S>>,
-    ) -> Self {
+    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
         self._fields.1 = value;
         self
     }
 }
 
-impl<
-    St,
-    S: jacquard_common::BosStr,
-> GetOnboardingSuggestedStarterPacksSkeletonBuilder<St, S>
+impl<St, S: jacquard_common::BosStr> GetOnboardingSuggestedStarterPacksSkeletonBuilder<St, S>
 where
     St: get_onboarding_suggested_starter_packs_skeleton_state::State,
 {

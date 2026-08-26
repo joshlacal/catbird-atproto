@@ -6,25 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RouteReports<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///End of report ID range (inclusive). Difference between start and end must be less than 5,000.
+    /// End of report ID range (inclusive). Difference between start and end must be less than 5,000.
     pub end_report_id: i64,
-    ///Start of report ID range (inclusive).
+    /// Start of report ID range (inclusive).
     pub start_report_id: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,27 +30,23 @@ pub struct RouteReports<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RouteReportsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The number of reports assigned to a queue.
+    /// The number of reports assigned to a queue.
     pub assigned: i64,
-    ///The number of reports with no matching queue.
+    /// The number of reports with no matching queue.
     pub unmatched: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -61,7 +54,6 @@ pub struct RouteReportsOutput<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -71,18 +63,21 @@ pub struct RouteReportsOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum RouteReportsError {
     /// The request is invalid, such as missing required fields or invalid field values.
     #[serde(rename = "OutOfRange")]
-    OutOfRange(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    OutOfRange(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -121,9 +116,8 @@ impl jacquard_common::xrpc::XrpcResp for RouteReportsResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RouteReports<S> {
     const NSID: &'static str = "tools.ozone.queue.routeReports";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RouteReportsResponse;
 }
 
@@ -133,18 +127,17 @@ Path: `/xrpc/tools.ozone.queue.routeReports`. The request payload type is `Route
 pub struct RouteReportsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RouteReportsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.queue.routeReports";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = RouteReports<S>;
     type Response = RouteReportsResponse;
 }
 
 pub mod route_reports_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -196,10 +189,7 @@ pub struct RouteReportsBuilder<
 
 impl RouteReports<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RouteReportsBuilder<
-        route_reports_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> RouteReportsBuilder<route_reports_state::Empty, jacquard_common::DefaultStr> {
         RouteReportsBuilder::new()
     }
 }

@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeactivateAccount<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///A recommendation to server as to how long they should hold onto the deactivated account before deleting.
+    /// A recommendation to server as to how long they should hold onto the deactivated account before deleting.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub delete_after: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(
@@ -45,6 +45,18 @@ impl jacquard_common::xrpc::XrpcResp for DeactivateAccountResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeactivateAccount<S> {

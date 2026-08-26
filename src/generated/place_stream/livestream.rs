@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -25,12 +18,16 @@ pub struct LivestreamView<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub indexed_at: jacquard_common::types::string::Datetime,
     pub record: jacquard_common::types::value::Data<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
-    ///The number of viewers watching this livestream. Use when you can't reasonably use #viewerCount directly.
+    /// The number of viewers watching this livestream. Use when you can't reasonably use #viewerCount directly.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub viewer_count: core::option::Option<
-        crate::generated::place_stream::livestream::ViewerCount<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub viewer_count:
+        core::option::Option<crate::generated::place_stream::livestream::ViewerCount<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_livestream_view_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,15 +39,8 @@ pub struct LivestreamView<S: jacquard_common::BosStr = jacquard_common::DefaultS
 /// Record announcing a livestream is happening
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.livestream",
@@ -58,40 +48,42 @@ pub struct LivestreamView<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Livestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The source of the livestream, if available, in a User Agent format: `<product> / <product-version> <comment>` e.g. Streamplace/0.7.5 iOS
+    /// The source of the livestream, if available, in a User Agent format: `<product> / <product-version> <comment>` e.g. Streamplace/0.7.5 iOS
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub agent: core::option::Option<S>,
-    ///The primary URL where this livestream can be viewed, if available.
+    /// The primary URL where this livestream can be viewed, if available.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub canonical_url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
-    ///Client-declared timestamp when this livestream started.
+    /// Client-declared timestamp when this livestream started.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Client-declared timestamp when this livestream ended. Ended livestreams are not supposed to start up again.
+    /// Client-declared timestamp when this livestream ended. Ended livestreams are not supposed to start up again.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub ended_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    ///Time in seconds after which this livestream should be automatically ended if idle. Zero means no timeout.
+    /// Time in seconds after which this livestream should be automatically ended if idle. Zero means no timeout.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub idle_timeout_seconds: core::option::Option<i64>,
-    ///Client-declared timestamp when this livestream was last seen by the Streamplace station.
+    /// Client-declared timestamp when this livestream was last seen by the Streamplace station.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub last_seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub notification_settings: core::option::Option<
-        crate::generated::place_stream::livestream::NotificationSettings<S>,
-    >,
-    ///The post that announced this livestream.
+    pub notification_settings:
+        core::option::Option<crate::generated::place_stream::livestream::NotificationSettings<S>>,
+    /// The post that announced this livestream.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub post: core::option::Option<
-        crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-    >,
+    pub post: core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub thumb: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
-    ///The title of the livestream, as it will be announced to followers.
+    /// The title of the livestream, as it will be announced to followers.
     pub title: S,
-    ///The URL where this stream can be found. This is primarily a hint for other Streamplace nodes to locate and replicate the stream.
+    /// The URL where this stream can be found. This is primarily a hint for other Streamplace nodes to locate and replicate the stream.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_livestream_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -103,25 +95,15 @@ pub struct Livestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct LivestreamGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct LivestreamGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     pub value: Livestream<S>,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -131,20 +113,22 @@ pub struct LivestreamGetRecordOutput<
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct NotificationSettings<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///Whether this livestream should trigger a push notification to followers.
+pub struct NotificationSettings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Whether this livestream should trigger a push notification to followers.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub push_notification: core::option::Option<bool>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_notification_settings_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -153,26 +137,21 @@ pub struct NotificationSettings<
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct StreamplaceAnything<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct StreamplaceAnything<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub livestream: StreamplaceAnythingLivestream<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_streamplace_anything_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -180,26 +159,16 @@ pub struct StreamplaceAnything<
         >,
     >,
 }
-
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum StreamplaceAnythingLivestream<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum StreamplaceAnythingLivestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "place.stream.livestream#livestreamView")]
     LivestreamView(Box<crate::generated::place_stream::livestream::LivestreamView<S>>),
     #[serde(rename = "place.stream.livestream#viewerCount")]
@@ -207,9 +176,7 @@ pub enum StreamplaceAnythingLivestream<
     #[serde(rename = "place.stream.livestream#teleportArrival")]
     TeleportArrival(Box<crate::generated::place_stream::livestream::TeleportArrival<S>>),
     #[serde(rename = "place.stream.livestream#teleportCanceled")]
-    TeleportCanceled(
-        Box<crate::generated::place_stream::livestream::TeleportCanceled<S>>,
-    ),
+    TeleportCanceled(Box<crate::generated::place_stream::livestream::TeleportCanceled<S>>),
     #[serde(rename = "place.stream.defs#blockView")]
     BlockView(Box<crate::generated::place_stream::BlockView<S>>),
     #[serde(rename = "place.stream.defs#renditions")]
@@ -222,36 +189,32 @@ pub enum StreamplaceAnythingLivestream<
     PinnedRecordView(Box<crate::generated::place_stream::chat::PinnedRecordView<S>>),
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct TeleportArrival<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The chat profile of the source streamer
+    /// The chat profile of the source streamer
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub chat_profile: core::option::Option<
-        crate::generated::place_stream::chat::profile::Profile<S>,
-    >,
-    ///The streamer who is teleporting their viewers here
+    pub chat_profile:
+        core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+    /// The streamer who is teleporting their viewers here
     pub source: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
-    ///When this teleport started
+    /// When this teleport started
     pub starts_at: jacquard_common::types::string::Datetime,
-    ///The URI of the teleport record
+    /// The URI of the teleport record
     pub teleport_uri: jacquard_common::types::string::AtUri<S>,
-    ///How many viewers are arriving from this teleport
+    /// How many viewers are arriving from this teleport
     pub viewer_count: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_teleport_arrival_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -260,27 +223,24 @@ pub struct TeleportArrival<S: jacquard_common::BosStr = jacquard_common::Default
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct TeleportCanceled<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Why this teleport was canceled
-    pub reason: S,
-    ///The URI of the teleport record that was canceled
+    /// Why this teleport was canceled
+    pub reason: TeleportCanceledReason<S>,
+    /// The URI of the teleport record that was canceled
     pub teleport_uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_teleport_canceled_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -289,24 +249,106 @@ pub struct TeleportCanceled<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+/// Why this teleport was canceled
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum TeleportCanceledReason<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Deleted,
+    Denied,
+    Expired,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> TeleportCanceledReason<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Deleted => "deleted",
+            Self::Denied => "denied",
+            Self::Expired => "expired",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "deleted" => Self::Deleted,
+            "denied" => Self::Denied,
+            "expired" => Self::Expired,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for TeleportCanceledReason<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for TeleportCanceledReason<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for TeleportCanceledReason<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for TeleportCanceledReason<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for TeleportCanceledReason<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for TeleportCanceledReason<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = TeleportCanceledReason<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            TeleportCanceledReason::Deleted => TeleportCanceledReason::Deleted,
+            TeleportCanceledReason::Denied => TeleportCanceledReason::Denied,
+            TeleportCanceledReason::Expired => TeleportCanceledReason::Expired,
+            TeleportCanceledReason::Other(v) => TeleportCanceledReason::Other(v.into_static()),
+        }
+    }
+}
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ViewerCount<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub count: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_viewer_count_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -328,8 +370,7 @@ impl<S: jacquard_common::BosStr> Livestream<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for LivestreamView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LivestreamView<S> {
     fn nsid() -> &'static str {
         "place.stream.livestream"
     }
@@ -361,8 +402,7 @@ impl<S: jacquard_common::BosStr> From<LivestreamGetRecordOutput<S>> for Livestre
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Livestream<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Livestream<S> {
     const NSID: &'static str = "place.stream.livestream";
     type Record = LivestreamRecord;
 }
@@ -372,8 +412,7 @@ impl jacquard_common::types::collection::Collection for LivestreamRecord {
     type Record = LivestreamRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Livestream<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Livestream<S> {
     fn nsid() -> &'static str {
         "place.stream.livestream"
     }
@@ -388,13 +427,13 @@ for Livestream<S> {
             {
                 let size = value.blob().size;
                 if size > 1000000usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "thumb",
-                        ),
-                        max: 1000000usize,
-                        actual: size,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
                 }
             }
         }
@@ -402,27 +441,24 @@ for Livestream<S> {
             {
                 let mime = value.blob().mime_type.as_str();
                 let accepted: &[&str] = &["image/*"];
-                let matched = accepted
-                    .iter()
-                    .any(|pattern| {
-                        if *pattern == "*/*" {
-                            true
-                        } else if pattern.ends_with("/*") {
-                            let prefix = &pattern[..pattern.len() - 2];
-                            mime.starts_with(prefix)
-                                && mime.as_bytes().get(prefix.len()) == Some(&b'/')
-                        } else {
-                            mime == *pattern
-                        }
-                    });
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
                 if !matched {
-                    return Err(jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "thumb",
-                        ),
-                        accepted: vec!["image/*".to_string()],
-                        actual: mime.to_string(),
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            accepted: vec!["image/*".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
                 }
             }
         }
@@ -431,9 +467,7 @@ for Livestream<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 1400usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "title",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("title"),
                     max: 1400usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -448,13 +482,13 @@ for Livestream<S> {
                     )
                     .count();
                 if count > 140usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "title",
-                        ),
-                        max: 140usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("title"),
+                            max: 140usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -463,7 +497,8 @@ for Livestream<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for NotificationSettings<S> {
+    for NotificationSettings<S>
+{
     fn nsid() -> &'static str {
         "place.stream.livestream"
     }
@@ -479,7 +514,8 @@ for NotificationSettings<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for StreamplaceAnything<S> {
+    for StreamplaceAnything<S>
+{
     fn nsid() -> &'static str {
         "place.stream.livestream"
     }
@@ -494,8 +530,7 @@ for StreamplaceAnything<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for TeleportArrival<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TeleportArrival<S> {
     fn nsid() -> &'static str {
         "place.stream.livestream"
     }
@@ -510,8 +545,7 @@ for TeleportArrival<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for TeleportCanceled<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TeleportCanceled<S> {
     fn nsid() -> &'static str {
         "place.stream.livestream"
     }
@@ -526,8 +560,7 @@ for TeleportCanceled<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ViewerCount<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewerCount<S> {
     fn nsid() -> &'static str {
         "place.stream.livestream"
     }
@@ -542,11 +575,35 @@ for ViewerCount<S> {
     }
 }
 
+fn deserialize_livestream_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod livestream_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -653,10 +710,8 @@ pub struct LivestreamViewBuilder<
 
 impl LivestreamView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LivestreamViewBuilder<
-        livestream_view_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> LivestreamViewBuilder<livestream_view_state::Empty, jacquard_common::DefaultStr>
+    {
         LivestreamViewBuilder::new()
     }
 }
@@ -785,16 +840,11 @@ where
     }
 }
 
-impl<
-    St: livestream_view_state::State,
-    S: jacquard_common::BosStr,
-> LivestreamViewBuilder<St, S> {
+impl<St: livestream_view_state::State, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S> {
     /// Set the `viewerCount` field (optional)
     pub fn viewer_count(
         mut self,
-        value: impl Into<
-            Option<crate::generated::place_stream::livestream::ViewerCount<S>>,
-        >,
+        value: impl Into<Option<crate::generated::place_stream::livestream::ViewerCount<S>>>,
     ) -> Self {
         self._fields.5 = value.into();
         self
@@ -850,9 +900,7 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_livestream() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_livestream() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.livestream"),
@@ -860,86 +908,88 @@ fn lexicon_doc_place_stream_livestream() -> jacquard_lexicon::lexicon::LexiconDo
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("livestreamView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "author",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "app.bsky.actor.defs#profileViewBasic",
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.actor.defs#profileViewBasic",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "cid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "indexedAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "record",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "uri",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(
+                                    ::jacquard_lexicon::lexicon::LexUnknown {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "viewerCount",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#viewerCount",
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "viewerCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#viewerCount",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -1114,218 +1164,232 @@ fn lexicon_doc_place_stream_livestream() -> jacquard_lexicon::lexicon::LexiconDo
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "notificationSettings",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(vec![]),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "pushNotification",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("notificationSettings"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "pushNotification",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "streamplaceAnything",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("livestream")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "livestream",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                refs: vec![
-                                    ::jacquard_common::CowStr::new_static("#livestreamView"),
-                                    ::jacquard_common::CowStr::new_static("#viewerCount"),
-                                    ::jacquard_common::CowStr::new_static("#teleportArrival"),
-                                    ::jacquard_common::CowStr::new_static("#teleportCanceled"),
-                                    ::jacquard_common::CowStr::new_static("place.stream.defs#blockView"),
-                                    ::jacquard_common::CowStr::new_static("place.stream.defs#renditions"),
-                                    ::jacquard_common::CowStr::new_static("place.stream.defs#rendition"),
-                                    ::jacquard_common::CowStr::new_static("place.stream.chat.defs#messageView"),
-                                    ::jacquard_common::CowStr::new_static("place.stream.chat.defs#pinnedRecordView")
-                                ],
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("streamplaceAnything"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("livestream"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "livestream",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
+                                    ::jacquard_lexicon::lexicon::LexRefUnion {
+                                        refs: vec![
+                                            ::jacquard_common::CowStr::new_static(
+                                                "#livestreamView",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static("#viewerCount"),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "#teleportArrival",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "#teleportCanceled",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "place.stream.defs#blockView",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "place.stream.defs#renditions",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "place.stream.defs#rendition",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "place.stream.chat.defs#messageView",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "place.stream.chat.defs#pinnedRecordView",
+                                            ),
+                                        ],
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "teleportArrival",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportArrival"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportUri"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("viewerCount"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("startsAt")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "chatProfile",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "place.stream.chat.profile",
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("startsAt"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "chatProfile",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "source",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "app.bsky.actor.defs#profileViewBasic",
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "place.stream.chat.profile",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "startsAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "When this teleport started",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.actor.defs#profileViewBasic",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("startsAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "When this teleport started",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "teleportUri",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The URI of the teleport record",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "teleportUri",
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The URI of the teleport record",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "viewerCount",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "viewerCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "teleportCanceled",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportCanceled"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportUri"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reason")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "reason",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Why this teleport was canceled",
-                                    ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reason"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("reason"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Why this teleport was canceled",
+                                        )),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "teleportUri",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The URI of the teleport record that was canceled",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "teleportUri",
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The URI of the teleport record that was canceled",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("viewerCount"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("count")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "count",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("count"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("count"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map
         },
@@ -1333,11 +1397,41 @@ fn lexicon_doc_place_stream_livestream() -> jacquard_lexicon::lexicon::LexiconDo
     }
 }
 
+fn deserialize_livestream_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod livestream_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1390,12 +1484,8 @@ pub struct LivestreamBuilder<
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<
-            crate::generated::place_stream::livestream::NotificationSettings<S>,
-        >,
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
+        core::option::Option<crate::generated::place_stream::livestream::NotificationSettings<S>>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
         core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
@@ -1405,10 +1495,7 @@ pub struct LivestreamBuilder<
 
 impl Livestream<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> LivestreamBuilder<
-        livestream_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> LivestreamBuilder<livestream_state::Empty, jacquard_common::DefaultStr> {
         LivestreamBuilder::new()
     }
 }
@@ -1425,7 +1512,9 @@ impl LivestreamBuilder<livestream_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         LivestreamBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1436,7 +1525,9 @@ impl<S: jacquard_common::BosStr> LivestreamBuilder<livestream_state::Empty, S> {
     pub fn builder() -> Self {
         LivestreamBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1548,9 +1639,7 @@ impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<
     /// Set the `notificationSettings` field (optional)
     pub fn notification_settings(
         mut self,
-        value: impl Into<
-            Option<crate::generated::place_stream::livestream::NotificationSettings<S>>,
-        >,
+        value: impl Into<Option<crate::generated::place_stream::livestream::NotificationSettings<S>>>,
     ) -> Self {
         self._fields.6 = value.into();
         self
@@ -1558,9 +1647,7 @@ impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<
     /// Set the `notificationSettings` field to an Option value (optional)
     pub fn maybe_notification_settings(
         mut self,
-        value: Option<
-            crate::generated::place_stream::livestream::NotificationSettings<S>,
-        >,
+        value: Option<crate::generated::place_stream::livestream::NotificationSettings<S>>,
     ) -> Self {
         self._fields.6 = value;
         self
@@ -1571,9 +1658,7 @@ impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<
     /// Set the `post` field (optional)
     pub fn post(
         mut self,
-        value: impl Into<
-            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
-        >,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
         self._fields.7 = value.into();
         self
@@ -1598,10 +1683,7 @@ impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<
         self
     }
     /// Set the `thumb` field to an Option value (optional)
-    pub fn maybe_thumb(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<S>>,
-    ) -> Self {
+    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
         self._fields.8 = value;
         self
     }
@@ -1636,10 +1718,7 @@ impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<
         self
     }
     /// Set the `url` field to an Option value (optional)
-    pub fn maybe_url(
-        mut self,
-        value: Option<jacquard_common::types::string::UriValue<S>>,
-    ) -> Self {
+    pub fn maybe_url(mut self, value: Option<jacquard_common::types::string::UriValue<S>>) -> Self {
         self._fields.10 = value;
         self
     }
@@ -1693,11 +1772,59 @@ where
     }
 }
 
+fn deserialize_notification_settings_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_streamplace_anything_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod streamplace_anything_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1737,28 +1864,21 @@ pub struct StreamplaceAnythingBuilder<
 
 impl StreamplaceAnything<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> StreamplaceAnythingBuilder<
-        streamplace_anything_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> StreamplaceAnythingBuilder<streamplace_anything_state::Empty, jacquard_common::DefaultStr>
+    {
         StreamplaceAnythingBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> StreamplaceAnything<S> {
     /// Create a new builder for this type
-    pub fn builder() -> StreamplaceAnythingBuilder<
-        streamplace_anything_state::Empty,
-        S,
-    > {
+    pub fn builder() -> StreamplaceAnythingBuilder<streamplace_anything_state::Empty, S> {
         StreamplaceAnythingBuilder::builder()
     }
 }
 
-impl StreamplaceAnythingBuilder<
-    streamplace_anything_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl StreamplaceAnythingBuilder<streamplace_anything_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         StreamplaceAnythingBuilder {
@@ -1769,9 +1889,7 @@ impl StreamplaceAnythingBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> StreamplaceAnythingBuilder<streamplace_anything_state::Empty, S> {
+impl<S: jacquard_common::BosStr> StreamplaceAnythingBuilder<streamplace_anything_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         StreamplaceAnythingBuilder {
@@ -1828,11 +1946,35 @@ where
     }
 }
 
+fn deserialize_teleport_arrival_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod teleport_arrival_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1920,10 +2062,8 @@ pub struct TeleportArrivalBuilder<
 
 impl TeleportArrival<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> TeleportArrivalBuilder<
-        teleport_arrival_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> TeleportArrivalBuilder<teleport_arrival_state::Empty, jacquard_common::DefaultStr> {
         TeleportArrivalBuilder::new()
     }
 }
@@ -1946,9 +2086,7 @@ impl TeleportArrivalBuilder<teleport_arrival_state::Empty, jacquard_common::Defa
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> TeleportArrivalBuilder<teleport_arrival_state::Empty, S> {
+impl<S: jacquard_common::BosStr> TeleportArrivalBuilder<teleport_arrival_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         TeleportArrivalBuilder {
@@ -1959,16 +2097,11 @@ impl<
     }
 }
 
-impl<
-    St: teleport_arrival_state::State,
-    S: jacquard_common::BosStr,
-> TeleportArrivalBuilder<St, S> {
+impl<St: teleport_arrival_state::State, S: jacquard_common::BosStr> TeleportArrivalBuilder<St, S> {
     /// Set the `chatProfile` field (optional)
     pub fn chat_profile(
         mut self,
-        value: impl Into<
-            Option<crate::generated::place_stream::chat::profile::Profile<S>>,
-        >,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<S>>>,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -2097,11 +2230,35 @@ where
     }
 }
 
+fn deserialize_teleport_canceled_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod teleport_canceled_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2148,7 +2305,7 @@ pub struct TeleportCanceledBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<S>,
+        core::option::Option<TeleportCanceledReason<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -2156,10 +2313,8 @@ pub struct TeleportCanceledBuilder<
 
 impl TeleportCanceled<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> TeleportCanceledBuilder<
-        teleport_canceled_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> TeleportCanceledBuilder<teleport_canceled_state::Empty, jacquard_common::DefaultStr> {
         TeleportCanceledBuilder::new()
     }
 }
@@ -2171,10 +2326,7 @@ impl<S: jacquard_common::BosStr> TeleportCanceled<S> {
     }
 }
 
-impl TeleportCanceledBuilder<
-    teleport_canceled_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl TeleportCanceledBuilder<teleport_canceled_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TeleportCanceledBuilder {
@@ -2185,9 +2337,7 @@ impl TeleportCanceledBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> TeleportCanceledBuilder<teleport_canceled_state::Empty, S> {
+impl<S: jacquard_common::BosStr> TeleportCanceledBuilder<teleport_canceled_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         TeleportCanceledBuilder {
@@ -2206,7 +2356,7 @@ where
     /// Set the `reason` field (required)
     pub fn reason(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<TeleportCanceledReason<S>>,
     ) -> TeleportCanceledBuilder<teleport_canceled_state::SetReason<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         TeleportCanceledBuilder {
@@ -2266,11 +2416,35 @@ where
     }
 }
 
+fn deserialize_viewer_count_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod viewer_count_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2310,10 +2484,7 @@ pub struct ViewerCountBuilder<
 
 impl ViewerCount<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ViewerCountBuilder<
-        viewer_count_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ViewerCountBuilder<viewer_count_state::Empty, jacquard_common::DefaultStr> {
         ViewerCountBuilder::new()
     }
 }

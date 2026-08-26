@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,24 +16,20 @@ pub struct GetRepos<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub dids: Vec<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetReposOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub repos: Vec<GetReposOutputReposItem<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -49,31 +38,19 @@ pub struct GetReposOutput<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum GetReposOutputReposItem<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum GetReposOutputReposItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
     RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(
-        Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>,
-    ),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>),
 }
 
 /** Response marker for the `tools.ozone.moderation.getRepos` query.
@@ -106,9 +83,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetReposRequest {
 
 pub mod get_repos_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -148,10 +125,7 @@ pub struct GetReposBuilder<
 
 impl GetRepos<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetReposBuilder<
-        get_repos_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetReposBuilder<get_repos_state::Empty, jacquard_common::DefaultStr> {
         GetReposBuilder::new()
     }
 }

@@ -5,16 +5,88 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetListsPurposes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Modlist,
+    Curatelist,
+    Other(S),
+}
 
+impl<S: jacquard_common::BosStr> GetListsPurposes<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Modlist => "modlist",
+            Self::Curatelist => "curatelist",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "modlist" => Self::Modlist,
+            "curatelist" => Self::Curatelist,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetListsPurposes<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetListsPurposes<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetListsPurposes<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetListsPurposes<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetListsPurposes<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetListsPurposes<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetListsPurposes<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetListsPurposes::Modlist => GetListsPurposes::Modlist,
+            GetListsPurposes::Curatelist => GetListsPurposes::Curatelist,
+            GetListsPurposes::Other(v) => GetListsPurposes::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -28,20 +100,12 @@ pub struct GetLists<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub purposes: core::option::Option<Vec<S>>,
+    pub purposes: core::option::Option<Vec<GetListsPurposes<S>>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -50,7 +114,11 @@ pub struct GetListsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub lists: Vec<crate::generated::app_bsky::graph::ListView<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -93,9 +161,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_lists_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -133,17 +201,14 @@ pub struct GetListsBuilder<
         core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<GetListsPurposes<S>>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl GetLists<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetListsBuilder<
-        get_lists_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetListsBuilder<get_lists_state::Empty, jacquard_common::DefaultStr> {
         GetListsBuilder::new()
     }
 }
@@ -224,12 +289,12 @@ impl<St: get_lists_state::State, S: jacquard_common::BosStr> GetListsBuilder<St,
 
 impl<St: get_lists_state::State, S: jacquard_common::BosStr> GetListsBuilder<St, S> {
     /// Set the `purposes` field (optional)
-    pub fn purposes(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+    pub fn purposes(mut self, value: impl Into<Option<Vec<GetListsPurposes<S>>>>) -> Self {
         self._fields.3 = value.into();
         self
     }
     /// Set the `purposes` field to an Option value (optional)
-    pub fn maybe_purposes(mut self, value: Option<Vec<S>>) -> Self {
+    pub fn maybe_purposes(mut self, value: Option<Vec<GetListsPurposes<S>>>) -> Self {
         self._fields.3 = value;
         self
     }

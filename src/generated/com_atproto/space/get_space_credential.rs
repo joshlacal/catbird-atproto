@@ -6,25 +6,18 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSpaceCredential<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Optional client attestation JWT establishing the app's identity. Required only when the space gates on app identity.
+    /// Optional client attestation JWT establishing the app's identity. Required only when the space gates on app identity.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub client_attestation: core::option::Option<S>,
-    ///Reference to the space.
-    pub space: S,
+    /// Reference to the space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -53,7 +46,7 @@ pub struct GetSpaceCredential<S: jacquard_common::BosStr = jacquard_common::Defa
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSpaceCredentialOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///A signed JWT space credential, bound through its cnf.jkt claim to the key that signed the request's DPoP proof.
+    /// A signed JWT space credential, bound through its cnf.jkt claim to the key that signed the request's DPoP proof.
     pub credential: S,
     #[serde(
         flatten,
@@ -81,26 +74,48 @@ pub struct GetSpaceCredentialOutput<S: jacquard_common::BosStr = jacquard_common
 #[serde(tag = "error", content = "message")]
 pub enum GetSpaceCredentialError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "SpaceDeleted")]
-    SpaceDeleted(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceDeleted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Refused on the basis of the requesting user.
     #[serde(rename = "UserNotAuthorized")]
-    UserNotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UserNotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Refused on the basis of the requesting app.
     #[serde(rename = "AppNotAuthorized")]
-    AppNotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AppNotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Refused without attributing the refusal to the user or the app. Authorities that do not wish to disclose which perimeter failed may return this in place of UserNotAuthorized or AppNotAuthorized.
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidDelegationToken")]
-    InvalidDelegationToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidDelegationToken(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidClientAttestation")]
-    InvalidClientAttestation(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidClientAttestation(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -196,4 +211,150 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetSpaceCredentialRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = GetSpaceCredential<S>;
     type Response = GetSpaceCredentialResponse;
+}
+
+pub mod get_space_credential_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Space;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Space = Unset;
+    }
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Space = Set<members::space>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `space` field
+        pub struct space(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct GetSpaceCredentialBuilder<
+    St: get_space_credential_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl GetSpaceCredential<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetSpaceCredentialBuilder<get_space_credential_state::Empty, jacquard_common::DefaultStr>
+    {
+        GetSpaceCredentialBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetSpaceCredential<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetSpaceCredentialBuilder<get_space_credential_state::Empty, S> {
+        GetSpaceCredentialBuilder::builder()
+    }
+}
+
+impl GetSpaceCredentialBuilder<get_space_credential_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        GetSpaceCredentialBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetSpaceCredentialBuilder<get_space_credential_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetSpaceCredentialBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_space_credential_state::State, S: jacquard_common::BosStr>
+    GetSpaceCredentialBuilder<St, S>
+{
+    /// Set the `clientAttestation` field (optional)
+    pub fn client_attestation(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `clientAttestation` field to an Option value (optional)
+    pub fn maybe_client_attestation(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetSpaceCredentialBuilder<St, S>
+where
+    St: get_space_credential_state::State,
+    St::Space: get_space_credential_state::IsUnset,
+{
+    /// Set the `space` field (required)
+    pub fn space(
+        mut self,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> GetSpaceCredentialBuilder<get_space_credential_state::SetSpace<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        GetSpaceCredentialBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetSpaceCredentialBuilder<St, S>
+where
+    St: get_space_credential_state::State,
+    St::Space: get_space_credential_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> GetSpaceCredential<S> {
+        GetSpaceCredential {
+            client_attestation: self._fields.0,
+            space: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> GetSpaceCredential<S> {
+        GetSpaceCredential {
+            client_attestation: self._fields.0,
+            space: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

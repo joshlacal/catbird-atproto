@@ -6,31 +6,24 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct PutTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub multistream_target: crate::generated::place_stream::multistream::target::Target<
-        S,
-    >,
-    ///The Record Key.
+    pub multistream_target: crate::generated::place_stream::multistream::target::Target<S>,
+    /// The Record Key.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rkey: core::option::Option<
-        jacquard_common::types::string::RecordKey<
-            jacquard_common::types::string::Rkey<S>,
-        >,
+        jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
     >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -39,17 +32,9 @@ pub struct PutTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -57,7 +42,11 @@ pub struct PutTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 pub struct PutTargetOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::place_stream::multistream::TargetView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -65,7 +54,6 @@ pub struct PutTargetOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -75,18 +63,21 @@ pub struct PutTargetOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum PutTargetError {
     /// The provided target URL is invalid or unreachable.
     #[serde(rename = "InvalidTargetUrl")]
-    InvalidTargetUrl(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidTargetUrl(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -125,9 +116,8 @@ impl jacquard_common::xrpc::XrpcResp for PutTargetResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for PutTarget<S> {
     const NSID: &'static str = "place.stream.multistream.putTarget";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = PutTargetResponse;
 }
 
@@ -137,18 +127,17 @@ Path: `/xrpc/place.stream.multistream.putTarget`. The request payload type is `P
 pub struct PutTargetRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PutTargetRequest {
     const PATH: &'static str = "/xrpc/place.stream.multistream.putTarget";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = PutTarget<S>;
     type Response = PutTargetResponse;
 }
 
 pub mod put_target_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -183,13 +172,9 @@ pub struct PutTargetBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<crate::generated::place_stream::multistream::target::Target<S>>,
         core::option::Option<
-            crate::generated::place_stream::multistream::target::Target<S>,
-        >,
-        core::option::Option<
-            jacquard_common::types::string::RecordKey<
-                jacquard_common::types::string::Rkey<S>,
-            >,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -197,10 +182,7 @@ pub struct PutTargetBuilder<
 
 impl PutTarget<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> PutTargetBuilder<
-        put_target_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> PutTargetBuilder<put_target_state::Empty, jacquard_common::DefaultStr> {
         PutTargetBuilder::new()
     }
 }
@@ -259,9 +241,7 @@ impl<St: put_target_state::State, S: jacquard_common::BosStr> PutTargetBuilder<S
         mut self,
         value: impl Into<
             Option<
-                jacquard_common::types::string::RecordKey<
-                    jacquard_common::types::string::Rkey<S>,
-                >,
+                jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
             >,
         >,
     ) -> Self {
@@ -272,9 +252,7 @@ impl<St: put_target_state::State, S: jacquard_common::BosStr> PutTargetBuilder<S
     pub fn maybe_rkey(
         mut self,
         value: Option<
-            jacquard_common::types::string::RecordKey<
-                jacquard_common::types::string::Rkey<S>,
-            >,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
     ) -> Self {
         self._fields.1 = value;

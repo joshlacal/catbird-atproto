@@ -58,6 +58,9 @@ impl jacquard_common::xrpc::XrpcRequest for RequestEmailUpdate {
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RequestEmailUpdateResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `com.atproto.server.requestEmailUpdate` procedure.

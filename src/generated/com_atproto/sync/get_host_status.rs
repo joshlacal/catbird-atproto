@@ -31,11 +31,11 @@ pub struct GetHostStatus<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetHostStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Number of accounts on the server which are associated with the upstream host. Note that the upstream may actually have more accounts.
+    /// Number of accounts on the server which are associated with the upstream host. Note that the upstream may actually have more accounts.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub account_count: core::option::Option<i64>,
     pub hostname: S,
-    ///Recent repo stream event sequence number. May be delayed from actual stream processing (eg, persisted cursor not in-memory cursor).
+    /// Recent repo stream event sequence number. May be delayed from actual stream processing (eg, persisted cursor not in-memory cursor).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub seq: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -66,11 +66,15 @@ pub struct GetHostStatusOutput<S: jacquard_common::BosStr = jacquard_common::Def
 #[serde(tag = "error", content = "message")]
 pub enum GetHostStatusError {
     #[serde(rename = "HostNotFound")]
-    HostNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    HostNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -128,7 +132,7 @@ pub mod get_host_status_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -31,7 +31,7 @@ pub struct DereferenceScope<S: jacquard_common::BosStr = jacquard_common::Defaul
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DereferenceScopeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The full oauth permission scope
+    /// The full oauth permission scope
     pub scope: S,
     #[serde(
         flatten,
@@ -60,11 +60,15 @@ pub struct DereferenceScopeOutput<S: jacquard_common::BosStr = jacquard_common::
 pub enum DereferenceScopeError {
     /// An invalid scope reference was provided.
     #[serde(rename = "InvalidScopeReference")]
-    InvalidScopeReference(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidScopeReference(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -122,7 +126,7 @@ pub mod dereference_scope_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

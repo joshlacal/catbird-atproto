@@ -5,16 +5,351 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryReportsSortDirection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Asc,
+    Desc,
+    Other(S),
+}
 
+impl<S: jacquard_common::BosStr> QueryReportsSortDirection<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "asc" => Self::Asc,
+            "desc" => Self::Desc,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryReportsSortDirection<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryReportsSortDirection<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryReportsSortDirection<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryReportsSortDirection<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryReportsSortDirection<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryReportsSortDirection<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryReportsSortDirection<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryReportsSortDirection::Asc => QueryReportsSortDirection::Asc,
+            QueryReportsSortDirection::Desc => QueryReportsSortDirection::Desc,
+            QueryReportsSortDirection::Other(v) => {
+                QueryReportsSortDirection::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryReportsSortField<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    CreatedAt,
+    UpdatedAt,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryReportsSortField<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::CreatedAt => "createdAt",
+            Self::UpdatedAt => "updatedAt",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "createdAt" => Self::CreatedAt,
+            "updatedAt" => Self::UpdatedAt,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryReportsSortField<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryReportsSortField<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryReportsSortField<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryReportsSortField<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryReportsSortField<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryReportsSortField<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryReportsSortField<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryReportsSortField::CreatedAt => QueryReportsSortField::CreatedAt,
+            QueryReportsSortField::UpdatedAt => QueryReportsSortField::UpdatedAt,
+            QueryReportsSortField::Other(v) => QueryReportsSortField::Other(v.into_static()),
+        }
+    }
+}
+
+/// Filter by report status.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryReportsStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Open,
+    Closed,
+    Escalated,
+    Queued,
+    Assigned,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryReportsStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Open => "open",
+            Self::Closed => "closed",
+            Self::Escalated => "escalated",
+            Self::Queued => "queued",
+            Self::Assigned => "assigned",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "open" => Self::Open,
+            "closed" => Self::Closed,
+            "escalated" => Self::Escalated,
+            "queued" => Self::Queued,
+            "assigned" => Self::Assigned,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryReportsStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryReportsStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryReportsStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryReportsStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryReportsStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryReportsStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryReportsStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryReportsStatus::Open => QueryReportsStatus::Open,
+            QueryReportsStatus::Closed => QueryReportsStatus::Closed,
+            QueryReportsStatus::Escalated => QueryReportsStatus::Escalated,
+            QueryReportsStatus::Queued => QueryReportsStatus::Queued,
+            QueryReportsStatus::Assigned => QueryReportsStatus::Assigned,
+            QueryReportsStatus::Other(v) => QueryReportsStatus::Other(v.into_static()),
+        }
+    }
+}
+
+/// If specified, reports of the given subject type will be returned.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum QueryReportsSubjectType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Account,
+    Record,
+    Message,
+    Conversation,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> QueryReportsSubjectType<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Account => "account",
+            Self::Record => "record",
+            Self::Message => "message",
+            Self::Conversation => "conversation",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "account" => Self::Account,
+            "record" => Self::Record,
+            "message" => Self::Message,
+            "conversation" => Self::Conversation,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for QueryReportsSubjectType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for QueryReportsSubjectType<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for QueryReportsSubjectType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for QueryReportsSubjectType<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for QueryReportsSubjectType<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for QueryReportsSubjectType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = QueryReportsSubjectType<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            QueryReportsSubjectType::Account => QueryReportsSubjectType::Account,
+            QueryReportsSubjectType::Record => QueryReportsSubjectType::Record,
+            QueryReportsSubjectType::Message => QueryReportsSubjectType::Message,
+            QueryReportsSubjectType::Conversation => QueryReportsSubjectType::Conversation,
+            QueryReportsSubjectType::Other(v) => QueryReportsSubjectType::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -47,29 +382,21 @@ pub struct QueryReports<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     /// Defaults to `"desc"`.
     #[serde(default = "_default_sort_direction")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort_direction: core::option::Option<S>,
+    pub sort_direction: core::option::Option<QueryReportsSortDirection<S>>,
     /// Defaults to `"createdAt"`.
     #[serde(default = "_default_sort_field")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort_field: core::option::Option<S>,
-    pub status: S,
+    pub sort_field: core::option::Option<QueryReportsSortField<S>>,
+    pub status: QueryReportsStatus<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject: core::option::Option<jacquard_common::types::string::UriValue<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_type: core::option::Option<S>,
+    pub subject_type: core::option::Option<QueryReportsSubjectType<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -78,7 +405,11 @@ pub struct QueryReportsOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub reports: Vec<crate::generated::tools_ozone::report::ReportView<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -123,19 +454,25 @@ fn _default_limit() -> core::option::Option<i64> {
     Some(50i64)
 }
 
-fn _default_sort_direction<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("desc"))
+fn _default_sort_direction<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<QueryReportsSortDirection<S>> {
+    Some(<QueryReportsSortDirection<S>>::from_value(S::from_static(
+        "desc",
+    )))
 }
 
-fn _default_sort_field<S: jacquard_common::FromStaticStr>() -> Option<S> {
-    Some(S::from_static("createdAt"))
+fn _default_sort_field<S: jacquard_common::BosStr + jacquard_common::FromStaticStr>(
+) -> core::option::Option<QueryReportsSortField<S>> {
+    Some(<QueryReportsSortField<S>>::from_value(S::from_static(
+        "createdAt",
+    )))
 }
 
 pub mod query_reports_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -180,21 +517,18 @@ pub struct QueryReportsBuilder<
         core::option::Option<Vec<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<S>,
-        core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<QueryReportsSortDirection<S>>,
+        core::option::Option<QueryReportsSortField<S>>,
+        core::option::Option<QueryReportsStatus<S>>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
-        core::option::Option<S>,
+        core::option::Option<QueryReportsSubjectType<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl QueryReports<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> QueryReportsBuilder<
-        query_reports_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> QueryReportsBuilder<query_reports_state::Empty, jacquard_common::DefaultStr> {
         QueryReportsBuilder::new()
     }
 }
@@ -212,20 +546,7 @@ impl QueryReportsBuilder<query_reports_state::Empty, jacquard_common::DefaultStr
         QueryReportsBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None,
             ),
             _type: ::core::marker::PhantomData,
@@ -239,20 +560,7 @@ impl<S: jacquard_common::BosStr> QueryReportsBuilder<query_reports_state::Empty,
         QueryReportsBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None,
             ),
             _type: ::core::marker::PhantomData,
@@ -260,10 +568,7 @@ impl<S: jacquard_common::BosStr> QueryReportsBuilder<query_reports_state::Empty,
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `assignedTo` field (optional)
     pub fn assigned_to(
         mut self,
@@ -282,10 +587,7 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `collections` field (optional)
     pub fn collections(
         mut self,
@@ -304,10 +606,7 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -320,32 +619,20 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `did` field (optional)
-    pub fn did(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
-    ) -> Self {
+    pub fn did(mut self, value: impl Into<Option<jacquard_common::types::string::Did<S>>>) -> Self {
         self._fields.3 = value.into();
         self
     }
     /// Set the `did` field to an Option value (optional)
-    pub fn maybe_did(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<S>>,
-    ) -> Self {
+    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
         self._fields.3 = value;
         self
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `isMuted` field (optional)
     pub fn is_muted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.4 = value.into();
@@ -358,10 +645,7 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.5 = value.into();
@@ -374,10 +658,7 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `queueId` field (optional)
     pub fn queue_id(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.6 = value.into();
@@ -390,10 +671,7 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `reportTypes` field (optional)
     pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.7 = value.into();
@@ -406,10 +684,7 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `reportedAfter` field (optional)
     pub fn reported_after(
         mut self,
@@ -428,10 +703,7 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `reportedBefore` field (optional)
     pub fn reported_before(
         mut self,
@@ -450,33 +722,30 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `sortDirection` field (optional)
-    pub fn sort_direction(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort_direction(
+        mut self,
+        value: impl Into<Option<QueryReportsSortDirection<S>>>,
+    ) -> Self {
         self._fields.10 = value.into();
         self
     }
     /// Set the `sortDirection` field to an Option value (optional)
-    pub fn maybe_sort_direction(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort_direction(mut self, value: Option<QueryReportsSortDirection<S>>) -> Self {
         self._fields.10 = value;
         self
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `sortField` field (optional)
-    pub fn sort_field(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort_field(mut self, value: impl Into<Option<QueryReportsSortField<S>>>) -> Self {
         self._fields.11 = value.into();
         self
     }
     /// Set the `sortField` field to an Option value (optional)
-    pub fn maybe_sort_field(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort_field(mut self, value: Option<QueryReportsSortField<S>>) -> Self {
         self._fields.11 = value;
         self
     }
@@ -490,7 +759,7 @@ where
     /// Set the `status` field (required)
     pub fn status(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<QueryReportsStatus<S>>,
     ) -> QueryReportsBuilder<query_reports_state::SetStatus<St>, S> {
         self._fields.12 = ::core::option::Option::Some(value.into());
         QueryReportsBuilder {
@@ -501,10 +770,7 @@ where
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `subject` field (optional)
     pub fn subject(
         mut self,
@@ -523,17 +789,14 @@ impl<
     }
 }
 
-impl<
-    St: query_reports_state::State,
-    S: jacquard_common::BosStr,
-> QueryReportsBuilder<St, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `subjectType` field (optional)
-    pub fn subject_type(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn subject_type(mut self, value: impl Into<Option<QueryReportsSubjectType<S>>>) -> Self {
         self._fields.14 = value.into();
         self
     }
     /// Set the `subjectType` field to an Option value (optional)
-    pub fn maybe_subject_type(mut self, value: Option<S>) -> Self {
+    pub fn maybe_subject_type(mut self, value: Option<QueryReportsSubjectType<S>>) -> Self {
         self._fields.14 = value;
         self
     }

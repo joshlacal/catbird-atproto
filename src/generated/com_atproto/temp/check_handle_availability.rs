@@ -28,7 +28,7 @@ pub struct CheckHandleAvailability<S: jacquard_common::BosStr = jacquard_common:
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CheckHandleAvailabilityOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Echo of the input handle.
+    /// Echo of the input handle.
     pub handle: jacquard_common::types::string::Handle<S>,
     pub result: CheckHandleAvailabilityOutputResult<S>,
     #[serde(
@@ -79,11 +79,15 @@ pub enum CheckHandleAvailabilityOutputResult<
 pub enum CheckHandleAvailabilityError {
     /// An invalid email was provided.
     #[serde(rename = "InvalidEmail")]
-    InvalidEmail(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidEmail(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -129,6 +133,7 @@ pub struct ResultAvailable<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_result_available_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -149,12 +154,13 @@ pub struct ResultAvailable<S: jacquard_common::BosStr = jacquard_common::Default
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ResultUnavailable<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///List of suggested handles based on the provided inputs.
+    /// List of suggested handles based on the provided inputs.
     pub suggestions:
         Vec<crate::generated::com_atproto::temp::check_handle_availability::Suggestion<S>>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_result_unavailable_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -174,11 +180,12 @@ pub struct ResultUnavailable<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 pub struct Suggestion<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub handle: jacquard_common::types::string::Handle<S>,
-    ///Method used to build this suggestion. Should be considered opaque to clients. Can be used for metrics.
+    /// Method used to build this suggestion. Should be considered opaque to clients. Can be used for metrics.
     pub method: S,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_suggestion_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -266,7 +273,7 @@ pub mod check_handle_availability_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -422,6 +429,30 @@ where
             handle: self._fields.2.unwrap(),
         }
     }
+}
+
+fn deserialize_result_available_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn lexicon_doc_com_atproto_temp_checkHandleAvailability(
@@ -600,11 +631,35 @@ fn lexicon_doc_com_atproto_temp_checkHandleAvailability(
     }
 }
 
+fn deserialize_result_unavailable_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod result_unavailable_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -732,11 +787,35 @@ where
     }
 }
 
+fn deserialize_suggestion_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod suggestion_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

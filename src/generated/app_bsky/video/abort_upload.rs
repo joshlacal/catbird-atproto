@@ -13,16 +13,19 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AbortUpload<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub job_id: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,7 +33,6 @@ pub struct AbortUpload<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -40,22 +42,25 @@ pub struct AbortUpload<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AbortUploadOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Present only when state is completed.
+    /// Present only when state is completed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub completed_job_id: core::option::Option<S>,
-    ///Present only when state is failed.
+    /// Present only when state is failed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub failure_reason: core::option::Option<S>,
     pub state: AbortUploadOutputState<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -64,11 +69,8 @@ pub struct AbortUploadOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum AbortUploadOutputState<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum AbortUploadOutputState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Aborted,
     Completed,
     Failed,
@@ -120,7 +122,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for AbortUploadOutputState<S> 
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for AbortUploadOutputState<S> {
+    for AbortUploadOutputState<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -136,8 +139,7 @@ impl<S: jacquard_common::BosStr + Default> Default for AbortUploadOutputState<S>
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for AbortUploadOutputState<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for AbortUploadOutputState<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -149,13 +151,10 @@ where
             AbortUploadOutputState::Completed => AbortUploadOutputState::Completed,
             AbortUploadOutputState::Failed => AbortUploadOutputState::Failed,
             AbortUploadOutputState::Expired => AbortUploadOutputState::Expired,
-            AbortUploadOutputState::Other(v) => {
-                AbortUploadOutputState::Other(v.into_static())
-            }
+            AbortUploadOutputState::Other(v) => AbortUploadOutputState::Other(v.into_static()),
         }
     }
 }
-
 
 #[derive(
     serde::Serialize,
@@ -165,21 +164,27 @@ where
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum AbortUploadError {
     /// The job ID is unknown or aged out of retention; known terminal sessions return their outcome and are never reported as not found.
     #[serde(rename = "UploadNotFound")]
-    UploadNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// A finish is in progress; check getUploadStatus and retry.
     #[serde(rename = "UploadNotReady")]
-    UploadNotReady(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UploadNotReady(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -225,9 +230,8 @@ impl jacquard_common::xrpc::XrpcResp for AbortUploadResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AbortUpload<S> {
     const NSID: &'static str = "app.bsky.video.abortUpload";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AbortUploadResponse;
 }
 
@@ -237,9 +241,8 @@ Path: `/xrpc/app.bsky.video.abortUpload`. The request payload type is `AbortUplo
 pub struct AbortUploadRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AbortUploadRequest {
     const PATH: &'static str = "/xrpc/app.bsky.video.abortUpload";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = AbortUpload<S>;
     type Response = AbortUploadResponse;
 }

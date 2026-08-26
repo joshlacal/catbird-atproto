@@ -6,25 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AddValues<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Name of the set to add values to
+    /// Name of the set to add values to
     pub name: S,
-    ///Array of string values to add to the set
+    /// Array of string values to add to the set
     pub values: Vec<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,13 +39,24 @@ impl jacquard_common::xrpc::XrpcResp for AddValuesResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AddValues<S> {
     const NSID: &'static str = "tools.ozone.set.addValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AddValuesResponse;
 }
 
@@ -58,18 +66,17 @@ Path: `/xrpc/tools.ozone.set.addValues`. The request payload type is `AddValues<
 pub struct AddValuesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AddValuesRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.set.addValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = AddValues<S>;
     type Response = AddValuesResponse;
 }
 
 pub mod add_values_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -121,10 +128,7 @@ pub struct AddValuesBuilder<
 
 impl AddValues<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> AddValuesBuilder<
-        add_values_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> AddValuesBuilder<add_values_state::Empty, jacquard_common::DefaultStr> {
         AddValuesBuilder::new()
     }
 }

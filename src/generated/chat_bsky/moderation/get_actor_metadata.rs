@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,28 +16,22 @@ pub struct GetActorMetadata<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub actor: jacquard_common::types::string::Did<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetActorMetadataOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetActorMetadataOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub all: crate::generated::chat_bsky::moderation::get_actor_metadata::Metadata<S>,
     pub day: crate::generated::chat_bsky::moderation::get_actor_metadata::Metadata<S>,
     pub month: crate::generated::chat_bsky::moderation::get_actor_metadata::Metadata<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -53,17 +40,9 @@ pub struct GetActorMetadataOutput<
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -73,7 +52,12 @@ pub struct Metadata<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convos_started: i64,
     pub messages_received: i64,
     pub messages_sent: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_metadata_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -93,8 +77,7 @@ impl jacquard_common::xrpc::XrpcResp for GetActorMetadataResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetActorMetadata<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetActorMetadata<S> {
     const NSID: &'static str = "chat.bsky.moderation.getActorMetadata";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetActorMetadataResponse;
@@ -111,8 +94,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetActorMetadataRequest {
     type Response = GetActorMetadataResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Metadata<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Metadata<S> {
     fn nsid() -> &'static str {
         "chat.bsky.moderation.getActorMetadata"
     }
@@ -129,9 +111,9 @@ for Metadata<S> {
 
 pub mod get_actor_metadata_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -171,10 +153,8 @@ pub struct GetActorMetadataBuilder<
 
 impl GetActorMetadata<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetActorMetadataBuilder<
-        get_actor_metadata_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetActorMetadataBuilder<get_actor_metadata_state::Empty, jacquard_common::DefaultStr> {
         GetActorMetadataBuilder::new()
     }
 }
@@ -186,10 +166,7 @@ impl<S: jacquard_common::BosStr> GetActorMetadata<S> {
     }
 }
 
-impl GetActorMetadataBuilder<
-    get_actor_metadata_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetActorMetadataBuilder<get_actor_metadata_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetActorMetadataBuilder {
@@ -200,9 +177,7 @@ impl GetActorMetadataBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetActorMetadataBuilder<get_actor_metadata_state::Empty, S> {
+impl<S: jacquard_common::BosStr> GetActorMetadataBuilder<get_actor_metadata_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetActorMetadataBuilder {
@@ -245,11 +220,35 @@ where
     }
 }
 
+fn deserialize_metadata_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -482,14 +481,11 @@ where
     }
 }
 
-fn lexicon_doc_chat_bsky_moderation_getActorMetadata() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_chat_bsky_moderation_getActorMetadata(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "chat.bsky.moderation.getActorMetadata",
-        ),
+        id: ::jacquard_common::CowStr::new_static("chat.bsky.moderation.getActorMetadata"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
@@ -526,54 +522,62 @@ fn lexicon_doc_chat_bsky_moderation_getActorMetadata() -> jacquard_lexicon::lexi
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("metadata"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("messagesSent"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messagesReceived"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convos"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convosStarted")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "convos",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "convosStarted",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "messagesReceived",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "messagesSent",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convos"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convosStarted"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convos"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "convosStarted",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "messagesReceived",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "messagesSent",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map
         },

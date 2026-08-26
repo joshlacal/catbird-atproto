@@ -6,39 +6,36 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateActivity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The type of activity to record.
+    /// The type of activity to record.
     pub activity: CreateActivityActivity<S>,
-    ///ID of the report moderation event. Resolves to the report created from that event. Exactly one of reportId or eventId must be provided.
+    /// ID of the report moderation event. Resolves to the report created from that event. Exactly one of reportId or eventId must be provided.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub event_id: core::option::Option<i64>,
-    ///Optional moderator-only note. Not visible to reporters.
+    /// Optional moderator-only note. Not visible to reporters.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub internal_note: core::option::Option<S>,
-    ///Set true when this activity is triggered by an automated process. Defaults to false.  Defaults to `false`.
+    /// Set true when this activity is triggered by an automated process. Defaults to false.  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_create_activity_is_automated")]
     pub is_automated: core::option::Option<bool>,
-    ///Optional public-facing note, potentially visible to the reporter.
+    /// Optional public-facing note, potentially visible to the reporter.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub public_note: core::option::Option<S>,
-    ///ID of the report to record activity on. Exactly one of reportId or eventId must be provided.
+    /// ID of the report to record activity on. Exactly one of reportId or eventId must be provided.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub report_id: core::option::Option<i64>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,35 +44,21 @@ pub struct CreateActivity<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum CreateActivityActivity<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum CreateActivityActivity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.report.defs#queueActivity")]
     QueueActivity(Box<crate::generated::tools_ozone::report::QueueActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#assignmentActivity")]
-    AssignmentActivity(
-        Box<crate::generated::tools_ozone::report::AssignmentActivity<S>>,
-    ),
+    AssignmentActivity(Box<crate::generated::tools_ozone::report::AssignmentActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#escalationActivity")]
-    EscalationActivity(
-        Box<crate::generated::tools_ozone::report::EscalationActivity<S>>,
-    ),
+    EscalationActivity(Box<crate::generated::tools_ozone::report::EscalationActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#closeActivity")]
     CloseActivity(Box<crate::generated::tools_ozone::report::CloseActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#reopenActivity")]
@@ -84,26 +67,20 @@ pub enum CreateActivityActivity<
     NoteActivity(Box<crate::generated::tools_ozone::report::NoteActivity<S>>),
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CreateActivityOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct CreateActivityOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub activity: crate::generated::tools_ozone::report::ReportActivityView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -111,7 +88,6 @@ pub struct CreateActivityOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -121,26 +97,33 @@ pub struct CreateActivityOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum CreateActivityError {
     /// No report exists with the given reportId or eventId
     #[serde(rename = "ReportNotFound")]
-    ReportNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ReportNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The requested state transition is not permitted from the report's current status
     #[serde(rename = "InvalidStateTransition")]
     InvalidStateTransition(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// The report is already in the status implied by this activity type
     #[serde(rename = "AlreadyInTargetState")]
-    AlreadyInTargetState(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AlreadyInTargetState(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -191,12 +174,10 @@ impl jacquard_common::xrpc::XrpcResp for CreateActivityResponse {
     type Err = CreateActivityError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for CreateActivity<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateActivity<S> {
     const NSID: &'static str = "tools.ozone.report.createActivity";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateActivityResponse;
 }
 
@@ -206,9 +187,8 @@ Path: `/xrpc/tools.ozone.report.createActivity`. The request payload type is `Cr
 pub struct CreateActivityRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateActivityRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.report.createActivity";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = CreateActivity<S>;
     type Response = CreateActivityResponse;
 }
@@ -219,9 +199,9 @@ fn _default_create_activity_is_automated() -> core::option::Option<bool> {
 
 pub mod create_activity_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -268,10 +248,8 @@ pub struct CreateActivityBuilder<
 
 impl CreateActivity<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreateActivityBuilder<
-        create_activity_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> CreateActivityBuilder<create_activity_state::Empty, jacquard_common::DefaultStr>
+    {
         CreateActivityBuilder::new()
     }
 }
@@ -324,10 +302,7 @@ where
     }
 }
 
-impl<
-    St: create_activity_state::State,
-    S: jacquard_common::BosStr,
-> CreateActivityBuilder<St, S> {
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
     /// Set the `eventId` field (optional)
     pub fn event_id(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
@@ -340,10 +315,7 @@ impl<
     }
 }
 
-impl<
-    St: create_activity_state::State,
-    S: jacquard_common::BosStr,
-> CreateActivityBuilder<St, S> {
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
     /// Set the `internalNote` field (optional)
     pub fn internal_note(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -356,10 +328,7 @@ impl<
     }
 }
 
-impl<
-    St: create_activity_state::State,
-    S: jacquard_common::BosStr,
-> CreateActivityBuilder<St, S> {
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
     /// Set the `isAutomated` field (optional)
     pub fn is_automated(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.3 = value.into();
@@ -372,10 +341,7 @@ impl<
     }
 }
 
-impl<
-    St: create_activity_state::State,
-    S: jacquard_common::BosStr,
-> CreateActivityBuilder<St, S> {
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
     /// Set the `publicNote` field (optional)
     pub fn public_note(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();
@@ -388,10 +354,7 @@ impl<
     }
 }
 
-impl<
-    St: create_activity_state::State,
-    S: jacquard_common::BosStr,
-> CreateActivityBuilder<St, S> {
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
     /// Set the `reportId` field (optional)
     pub fn report_id(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.5 = value.into();

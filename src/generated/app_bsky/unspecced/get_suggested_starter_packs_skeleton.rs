@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -30,17 +23,9 @@ pub struct GetSuggestedStarterPacksSkeleton<
     pub viewer: core::option::Option<jacquard_common::types::string::Did<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -49,7 +34,11 @@ pub struct GetSuggestedStarterPacksSkeletonOutput<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     pub starter_packs: Vec<jacquard_common::types::string::AtUri<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,7 +59,8 @@ impl jacquard_common::xrpc::XrpcResp for GetSuggestedStarterPacksSkeletonRespons
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetSuggestedStarterPacksSkeleton<S> {
+    for GetSuggestedStarterPacksSkeleton<S>
+{
     const NSID: &'static str = "app.bsky.unspecced.getSuggestedStarterPacksSkeleton";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetSuggestedStarterPacksSkeletonResponse;
@@ -93,9 +83,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_suggested_starter_packs_skeleton_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -135,18 +125,19 @@ impl GetSuggestedStarterPacksSkeleton<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> GetSuggestedStarterPacksSkeleton<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetSuggestedStarterPacksSkeletonBuilder<
-        get_suggested_starter_packs_skeleton_state::Empty,
-        S,
-    > {
+    pub fn builder(
+    ) -> GetSuggestedStarterPacksSkeletonBuilder<get_suggested_starter_packs_skeleton_state::Empty, S>
+    {
         GetSuggestedStarterPacksSkeletonBuilder::builder()
     }
 }
 
-impl GetSuggestedStarterPacksSkeletonBuilder<
-    get_suggested_starter_packs_skeleton_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    GetSuggestedStarterPacksSkeletonBuilder<
+        get_suggested_starter_packs_skeleton_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSuggestedStarterPacksSkeletonBuilder {
@@ -157,12 +148,9 @@ impl GetSuggestedStarterPacksSkeletonBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetSuggestedStarterPacksSkeletonBuilder<
-    get_suggested_starter_packs_skeleton_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    GetSuggestedStarterPacksSkeletonBuilder<get_suggested_starter_packs_skeleton_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetSuggestedStarterPacksSkeletonBuilder {
@@ -173,10 +161,9 @@ impl<
     }
 }
 
-impl<
-    St: get_suggested_starter_packs_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> GetSuggestedStarterPacksSkeletonBuilder<St, S> {
+impl<St: get_suggested_starter_packs_skeleton_state::State, S: jacquard_common::BosStr>
+    GetSuggestedStarterPacksSkeletonBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();
@@ -189,10 +176,9 @@ impl<
     }
 }
 
-impl<
-    St: get_suggested_starter_packs_skeleton_state::State,
-    S: jacquard_common::BosStr,
-> GetSuggestedStarterPacksSkeletonBuilder<St, S> {
+impl<St: get_suggested_starter_packs_skeleton_state::State, S: jacquard_common::BosStr>
+    GetSuggestedStarterPacksSkeletonBuilder<St, S>
+{
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
@@ -202,10 +188,7 @@ impl<
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<S>>,
-    ) -> Self {
+    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
         self._fields.1 = value;
         self
     }

@@ -62,6 +62,7 @@ pub struct AccessEndedEvent<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_access_ended_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -88,6 +89,7 @@ pub struct AddLeafByRecovery<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_add_leaf_by_recovery_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -115,6 +117,7 @@ pub struct AddParticipant<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_add_participant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -141,6 +144,7 @@ pub struct AddressableDevice<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_addressable_device_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -169,6 +173,7 @@ pub struct ApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_application_aad_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -196,6 +201,7 @@ pub struct ApplicationAttachmentBinding<S: jacquard_common::BosStr = jacquard_co
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_application_attachment_binding_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -250,6 +256,7 @@ pub struct ApplicationEntry<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_application_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -278,6 +285,7 @@ pub struct ApplicationFrame<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_application_frame_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -330,6 +338,7 @@ pub struct ApplicationFrameContext<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_application_frame_context_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -364,6 +373,7 @@ pub struct ApplicationSendBody<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_application_send_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -390,6 +400,7 @@ pub struct AtprotoRecordEmbed<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_atproto_record_embed_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -412,6 +423,7 @@ pub struct AtprotoRecordEmbedVariant<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_atproto_record_embed_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -445,6 +457,7 @@ pub struct BlobAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_blob_aad_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -474,6 +487,7 @@ pub struct BlobDeletionBody<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_blob_deletion_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -512,6 +526,7 @@ pub struct BlobUploadPreparationBody<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_blob_upload_preparation_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -539,6 +554,7 @@ pub struct BlobUploadView<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_blob_upload_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -565,6 +581,7 @@ pub struct BlobUsageView<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_blob_usage_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -592,6 +609,7 @@ pub struct ChangeParticipantRole<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_change_participant_role_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -621,6 +639,7 @@ pub struct CommitAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_commit_aad_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -647,6 +666,7 @@ pub struct CommitEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_commit_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -684,6 +704,7 @@ pub struct CommitTransitionBody<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_commit_transition_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -706,6 +727,7 @@ pub struct ConversationChangedEvent<S: jacquard_common::BosStr = jacquard_common
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_changed_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -740,6 +762,7 @@ pub struct ConversationCloseBody<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_close_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -767,6 +790,7 @@ pub struct ConversationCloseEntry<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_close_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -790,6 +814,7 @@ pub struct ConversationCloseResult<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_close_result_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -820,6 +845,7 @@ pub struct ConversationCloseTombstone<S: jacquard_common::BosStr = jacquard_comm
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_close_tombstone_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -844,6 +870,7 @@ pub struct ConversationClosedEvent<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_closed_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -876,6 +903,7 @@ pub struct ConversationCoordinates<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_coordinates_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -899,6 +927,7 @@ pub struct ConversationCreatedResult<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_created_result_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1007,6 +1036,7 @@ pub struct ConversationInventoryState<S: jacquard_common::BosStr = jacquard_comm
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_inventory_state_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1037,6 +1067,7 @@ pub struct ConversationRemovalTombstone<S: jacquard_common::BosStr = jacquard_co
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_removal_tombstone_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1067,6 +1098,7 @@ pub struct ConversationState<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_conversation_state_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1105,6 +1137,7 @@ pub struct CreationBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_creation_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1131,6 +1164,7 @@ pub struct CreationEntry<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_creation_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1156,6 +1190,7 @@ pub struct CreationManifest<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_creation_manifest_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1193,6 +1228,7 @@ pub struct DeviceCapability<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_device_capability_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1228,6 +1264,7 @@ pub struct DeviceEnrollmentBody<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_device_enrollment_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1259,6 +1296,7 @@ pub struct DeviceLeaf<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_device_leaf_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1290,6 +1328,7 @@ pub struct DeviceLeafView<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_device_leaf_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1320,6 +1359,7 @@ pub struct DeviceRevocationBody<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_device_revocation_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1354,6 +1394,7 @@ pub struct DeviceView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_device_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1377,6 +1418,7 @@ pub struct DurableLeaveRequestResult<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_durable_leave_request_result_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1402,6 +1444,7 @@ pub struct EditFrameBody<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_edit_frame_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1424,6 +1467,7 @@ pub struct EditFrameVariant<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_edit_frame_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1451,7 +1495,7 @@ pub struct EncryptedAudioEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub duration_millis: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key: jacquard_common::deps::bytes::Bytes,
-    pub mime_type: S,
+    pub mime_type: EncryptedAudioEmbedMimeType<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub nonce: jacquard_common::deps::bytes::Bytes,
     pub plaintext_size: i64,
@@ -1463,6 +1507,7 @@ pub struct EncryptedAudioEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_encrypted_audio_embed_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1471,6 +1516,95 @@ pub struct EncryptedAudioEmbed<S: jacquard_common::BosStr = jacquard_common::Def
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum EncryptedAudioEmbedMimeType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    AudioAac,
+    AudioMp4,
+    AudioOgg,
+    AudioOpus,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> EncryptedAudioEmbedMimeType<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::AudioAac => "audio/aac",
+            Self::AudioMp4 => "audio/mp4",
+            Self::AudioOgg => "audio/ogg",
+            Self::AudioOpus => "audio/opus",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "audio/aac" => Self::AudioAac,
+            "audio/mp4" => Self::AudioMp4,
+            "audio/ogg" => Self::AudioOgg,
+            "audio/opus" => Self::AudioOpus,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for EncryptedAudioEmbedMimeType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for EncryptedAudioEmbedMimeType<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for EncryptedAudioEmbedMimeType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for EncryptedAudioEmbedMimeType<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for EncryptedAudioEmbedMimeType<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EncryptedAudioEmbedMimeType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = EncryptedAudioEmbedMimeType<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            EncryptedAudioEmbedMimeType::AudioAac => EncryptedAudioEmbedMimeType::AudioAac,
+            EncryptedAudioEmbedMimeType::AudioMp4 => EncryptedAudioEmbedMimeType::AudioMp4,
+            EncryptedAudioEmbedMimeType::AudioOgg => EncryptedAudioEmbedMimeType::AudioOgg,
+            EncryptedAudioEmbedMimeType::AudioOpus => EncryptedAudioEmbedMimeType::AudioOpus,
+            EncryptedAudioEmbedMimeType::Other(v) => {
+                EncryptedAudioEmbedMimeType::Other(v.into_static())
+            }
+        }
+    }
 }
 
 #[derive(
@@ -1485,6 +1619,7 @@ pub struct EncryptedAudioEmbedVariant<S: jacquard_common::BosStr = jacquard_comm
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_encrypted_audio_embed_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1516,7 +1651,7 @@ pub struct EncryptedImageEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub height: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key: jacquard_common::deps::bytes::Bytes,
-    pub mime_type: S,
+    pub mime_type: EncryptedImageEmbedMimeType<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub nonce: jacquard_common::deps::bytes::Bytes,
     pub plaintext_size: i64,
@@ -1525,6 +1660,7 @@ pub struct EncryptedImageEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_encrypted_image_embed_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1533,6 +1669,99 @@ pub struct EncryptedImageEmbed<S: jacquard_common::BosStr = jacquard_common::Def
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum EncryptedImageEmbedMimeType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ImageHeic,
+    ImageJpeg,
+    ImagePng,
+    ImageWebp,
+    ImageGif,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> EncryptedImageEmbedMimeType<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ImageHeic => "image/heic",
+            Self::ImageJpeg => "image/jpeg",
+            Self::ImagePng => "image/png",
+            Self::ImageWebp => "image/webp",
+            Self::ImageGif => "image/gif",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "image/heic" => Self::ImageHeic,
+            "image/jpeg" => Self::ImageJpeg,
+            "image/png" => Self::ImagePng,
+            "image/webp" => Self::ImageWebp,
+            "image/gif" => Self::ImageGif,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for EncryptedImageEmbedMimeType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for EncryptedImageEmbedMimeType<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for EncryptedImageEmbedMimeType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for EncryptedImageEmbedMimeType<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for EncryptedImageEmbedMimeType<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EncryptedImageEmbedMimeType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = EncryptedImageEmbedMimeType<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            EncryptedImageEmbedMimeType::ImageHeic => EncryptedImageEmbedMimeType::ImageHeic,
+            EncryptedImageEmbedMimeType::ImageJpeg => EncryptedImageEmbedMimeType::ImageJpeg,
+            EncryptedImageEmbedMimeType::ImagePng => EncryptedImageEmbedMimeType::ImagePng,
+            EncryptedImageEmbedMimeType::ImageWebp => EncryptedImageEmbedMimeType::ImageWebp,
+            EncryptedImageEmbedMimeType::ImageGif => EncryptedImageEmbedMimeType::ImageGif,
+            EncryptedImageEmbedMimeType::Other(v) => {
+                EncryptedImageEmbedMimeType::Other(v.into_static())
+            }
+        }
+    }
 }
 
 #[derive(
@@ -1547,6 +1776,7 @@ pub struct EncryptedImageEmbedVariant<S: jacquard_common::BosStr = jacquard_comm
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_encrypted_image_embed_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1572,6 +1802,7 @@ pub struct EventEnvelope<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_event_envelope_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1600,6 +1831,7 @@ pub struct ExistingDirectConversationResult<
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_existing_direct_conversation_result_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1628,6 +1860,7 @@ pub struct ExternalLinkEmbed<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_external_link_embed_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1650,6 +1883,7 @@ pub struct ExternalLinkEmbedVariant<S: jacquard_common::BosStr = jacquard_common
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_external_link_embed_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1678,6 +1912,7 @@ pub struct GroupInfoArtifact<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_group_info_artifact_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1706,6 +1941,7 @@ pub struct InvitationProvenance<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_invitation_provenance_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1738,6 +1974,7 @@ pub struct KeyPackageArtifact<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_key_package_artifact_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1771,6 +2008,7 @@ pub struct KeyPackageReplenishmentBody<S: jacquard_common::BosStr = jacquard_com
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_key_package_replenishment_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1816,6 +2054,7 @@ pub struct LeafRecoveryCancellationBody<S: jacquard_common::BosStr = jacquard_co
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leaf_recovery_cancellation_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1840,6 +2079,7 @@ pub struct LeafRecoveryEvent<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leaf_recovery_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1878,6 +2118,7 @@ pub struct LeafRecoveryFulfillmentBody<S: jacquard_common::BosStr = jacquard_com
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leaf_recovery_fulfillment_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1904,6 +2145,7 @@ pub struct LeafRecoveryFulfillmentEntry<S: jacquard_common::BosStr = jacquard_co
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leaf_recovery_fulfillment_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1966,6 +2208,7 @@ pub struct LeafRecoveryRequestBody<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leaf_recovery_request_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2003,6 +2246,7 @@ pub struct LeafRecoveryReservation<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leaf_recovery_reservation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2036,6 +2280,7 @@ pub struct LeafRecoveryView<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leaf_recovery_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2068,6 +2313,7 @@ pub struct LeaveCancellationBody<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_cancellation_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2094,6 +2340,7 @@ pub struct LeaveCancellationEntry<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_cancellation_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2132,6 +2379,7 @@ pub struct LeaveCommitFulfillmentBody<S: jacquard_common::BosStr = jacquard_comm
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_commit_fulfillment_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2158,6 +2406,7 @@ pub struct LeaveCommitFulfillmentEntry<S: jacquard_common::BosStr = jacquard_com
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_commit_fulfillment_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2206,6 +2455,7 @@ pub struct LeaveRequestBody<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_request_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2232,6 +2482,7 @@ pub struct LeaveRequestEntry<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_request_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2256,6 +2507,7 @@ pub struct LeaveRequestEvent<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_request_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2287,6 +2539,7 @@ pub struct LeaveRequestView<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_leave_request_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2313,6 +2566,7 @@ pub struct MessageAvailableEvent<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_message_available_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2349,6 +2603,7 @@ pub struct MessageFrameBody<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_message_frame_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2371,6 +2626,7 @@ pub struct MessageFrameVariant<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_message_frame_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2396,6 +2652,7 @@ pub struct MessageTarget<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_message_target_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2428,6 +2685,7 @@ pub struct MetadataAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_aad_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2453,6 +2711,7 @@ pub struct MetadataAadAvatarBinding<S: jacquard_common::BosStr = jacquard_common
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_aad_avatar_binding_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2486,6 +2745,7 @@ pub struct MetadataAuthorProof<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_author_proof_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2513,6 +2773,7 @@ pub struct MetadataAvatarBinding<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_avatar_binding_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2544,6 +2805,7 @@ pub struct MetadataAvatarBlobAad<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_avatar_blob_aad_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2575,7 +2837,7 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub height: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key: jacquard_common::deps::bytes::Bytes,
-    pub mime_type: S,
+    pub mime_type: MetadataAvatarEmbedMimeType<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub nonce: jacquard_common::deps::bytes::Bytes,
     pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
@@ -2586,6 +2848,7 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_avatar_embed_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2594,6 +2857,95 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum MetadataAvatarEmbedMimeType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ImageHeic,
+    ImageJpeg,
+    ImagePng,
+    ImageWebp,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> MetadataAvatarEmbedMimeType<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ImageHeic => "image/heic",
+            Self::ImageJpeg => "image/jpeg",
+            Self::ImagePng => "image/png",
+            Self::ImageWebp => "image/webp",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "image/heic" => Self::ImageHeic,
+            "image/jpeg" => Self::ImageJpeg,
+            "image/png" => Self::ImagePng,
+            "image/webp" => Self::ImageWebp,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for MetadataAvatarEmbedMimeType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for MetadataAvatarEmbedMimeType<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for MetadataAvatarEmbedMimeType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for MetadataAvatarEmbedMimeType<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for MetadataAvatarEmbedMimeType<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for MetadataAvatarEmbedMimeType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = MetadataAvatarEmbedMimeType<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            MetadataAvatarEmbedMimeType::ImageHeic => MetadataAvatarEmbedMimeType::ImageHeic,
+            MetadataAvatarEmbedMimeType::ImageJpeg => MetadataAvatarEmbedMimeType::ImageJpeg,
+            MetadataAvatarEmbedMimeType::ImagePng => MetadataAvatarEmbedMimeType::ImagePng,
+            MetadataAvatarEmbedMimeType::ImageWebp => MetadataAvatarEmbedMimeType::ImageWebp,
+            MetadataAvatarEmbedMimeType::Other(v) => {
+                MetadataAvatarEmbedMimeType::Other(v.into_static())
+            }
+        }
+    }
 }
 
 #[derive(
@@ -2619,6 +2971,7 @@ pub struct MetadataContentProjection<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_content_projection_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2649,6 +3002,7 @@ pub struct MetadataCryptoContext<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_crypto_context_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2675,6 +3029,7 @@ pub struct MetadataEntry<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2705,6 +3060,7 @@ pub struct MetadataExporterContext<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_exporter_context_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2731,6 +3087,7 @@ pub struct MetadataPlaintext<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_plaintext_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2767,6 +3124,7 @@ pub struct MetadataSnapshot<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_snapshot_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2801,6 +3159,7 @@ pub struct MetadataTransitionBody<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_metadata_transition_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2835,6 +3194,7 @@ pub struct MlsAadPriorContext<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_mls_aad_prior_context_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2860,6 +3220,7 @@ pub struct OwnDeviceView<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_own_device_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2890,6 +3251,7 @@ pub struct Participant<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_participant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2925,6 +3287,7 @@ pub struct ParticipantAcceptanceBody<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_participant_acceptance_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2954,6 +3317,7 @@ pub struct ParticipantAcceptanceEntry<S: jacquard_common::BosStr = jacquard_comm
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_participant_acceptance_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3001,6 +3365,7 @@ pub struct ParticipantView<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_participant_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3027,6 +3392,7 @@ pub struct PolicyEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_policy_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3061,6 +3427,7 @@ pub struct PolicyTransitionBody<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_policy_transition_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3087,6 +3454,7 @@ pub struct PrivateApplicationMessage<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_private_application_message_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3148,6 +3516,7 @@ pub struct PublicCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_public_commit_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3169,11 +3538,12 @@ pub struct PublicCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 )]
 pub struct ReactionFrameBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub emoji: S,
-    pub operation: S,
+    pub operation: ReactionFrameBodyOperation<S>,
     pub target: crate::generated::blue_catbird::chat::MessageTarget<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reaction_frame_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3182,6 +3552,87 @@ pub struct ReactionFrameBody<S: jacquard_common::BosStr = jacquard_common::Defau
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ReactionFrameBodyOperation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Add,
+    Remove,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ReactionFrameBodyOperation<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Add => "add",
+            Self::Remove => "remove",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "add" => Self::Add,
+            "remove" => Self::Remove,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ReactionFrameBodyOperation<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ReactionFrameBodyOperation<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ReactionFrameBodyOperation<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ReactionFrameBodyOperation<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ReactionFrameBodyOperation<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ReactionFrameBodyOperation<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ReactionFrameBodyOperation<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ReactionFrameBodyOperation::Add => ReactionFrameBodyOperation::Add,
+            ReactionFrameBodyOperation::Remove => ReactionFrameBodyOperation::Remove,
+            ReactionFrameBodyOperation::Other(v) => {
+                ReactionFrameBodyOperation::Other(v.into_static())
+            }
+        }
+    }
 }
 
 #[derive(
@@ -3196,6 +3647,7 @@ pub struct ReactionFrameVariant<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reaction_frame_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3221,6 +3673,7 @@ pub struct ReadStateFrameBody<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_read_state_frame_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3243,6 +3696,7 @@ pub struct ReadStateFrameVariant<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_read_state_frame_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3267,6 +3721,7 @@ pub struct RecoveryWelcomeProvenance<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_recovery_welcome_provenance_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3303,6 +3758,7 @@ pub struct RecoveryWorkCompletedByTransitionView<
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_recovery_work_completed_by_transition_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3335,6 +3791,7 @@ pub struct RecoveryWorkPendingView<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_recovery_work_pending_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3373,6 +3830,7 @@ pub struct RecoveryWorkSupersededByRevocationView<
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_recovery_work_superseded_by_revocation_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3409,6 +3867,7 @@ pub struct RecoveryWorkSupersededByTransitionView<
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_recovery_work_superseded_by_transition_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3458,6 +3917,7 @@ pub struct RemoveLeaf<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_remove_leaf_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3480,6 +3940,7 @@ pub struct RemoveParticipant<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_remove_participant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3520,6 +3981,7 @@ pub struct ResetActivationBody<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reset_activation_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3546,6 +4008,7 @@ pub struct ResetActivationEntry<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reset_activation_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3571,6 +4034,7 @@ pub struct ResetActivationManifest<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reset_activation_manifest_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3604,6 +4068,7 @@ pub struct ResetRequestBody<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reset_request_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3630,6 +4095,7 @@ pub struct ResetRequestEntry<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reset_request_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3656,10 +4122,11 @@ pub struct ResetRequestView<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub requester_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     pub requester_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub reset_request_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub status: S,
+    pub status: ResetRequestViewStatus<S>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reset_request_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3668,6 +4135,97 @@ pub struct ResetRequestView<S: jacquard_common::BosStr = jacquard_common::Defaul
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ResetRequestViewStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Pending,
+    Stale,
+    Consumed,
+    Expired,
+    Revoked,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ResetRequestViewStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Pending => "pending",
+            Self::Stale => "stale",
+            Self::Consumed => "consumed",
+            Self::Expired => "expired",
+            Self::Revoked => "revoked",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "pending" => Self::Pending,
+            "stale" => Self::Stale,
+            "consumed" => Self::Consumed,
+            "expired" => Self::Expired,
+            "revoked" => Self::Revoked,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ResetRequestViewStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ResetRequestViewStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ResetRequestViewStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ResetRequestViewStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ResetRequestViewStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ResetRequestViewStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ResetRequestViewStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ResetRequestViewStatus::Pending => ResetRequestViewStatus::Pending,
+            ResetRequestViewStatus::Stale => ResetRequestViewStatus::Stale,
+            ResetRequestViewStatus::Consumed => ResetRequestViewStatus::Consumed,
+            ResetRequestViewStatus::Expired => ResetRequestViewStatus::Expired,
+            ResetRequestViewStatus::Revoked => ResetRequestViewStatus::Revoked,
+            ResetRequestViewStatus::Other(v) => ResetRequestViewStatus::Other(v.into_static()),
+        }
+    }
 }
 
 #[derive(
@@ -3683,6 +4241,7 @@ pub struct ResetRequestedEvent<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_reset_requested_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3707,6 +4266,7 @@ pub struct SignedApplicationSend<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_application_send_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3731,6 +4291,7 @@ pub struct SignedBlobDeletion<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_blob_deletion_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3755,6 +4316,7 @@ pub struct SignedBlobUploadPreparation<S: jacquard_common::BosStr = jacquard_com
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_blob_upload_preparation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3779,6 +4341,7 @@ pub struct SignedCommitTransition<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_commit_transition_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3803,6 +4366,7 @@ pub struct SignedConversationClose<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_conversation_close_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3827,6 +4391,7 @@ pub struct SignedCreation<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_creation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3851,6 +4416,7 @@ pub struct SignedDeviceEnrollment<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_device_enrollment_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3875,6 +4441,7 @@ pub struct SignedDeviceRevocation<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_device_revocation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3899,6 +4466,7 @@ pub struct SignedKeyPackageReplenishment<S: jacquard_common::BosStr = jacquard_c
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_key_package_replenishment_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3924,6 +4492,7 @@ pub struct SignedLeafRecoveryCancellation<S: jacquard_common::BosStr = jacquard_
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_leaf_recovery_cancellation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3948,6 +4517,7 @@ pub struct SignedLeafRecoveryFulfillment<S: jacquard_common::BosStr = jacquard_c
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_leaf_recovery_fulfillment_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3972,6 +4542,7 @@ pub struct SignedLeafRecoveryRequest<S: jacquard_common::BosStr = jacquard_commo
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_leaf_recovery_request_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -3996,6 +4567,7 @@ pub struct SignedLeaveCancellation<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_leave_cancellation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4020,6 +4592,7 @@ pub struct SignedLeaveCommitFulfillment<S: jacquard_common::BosStr = jacquard_co
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_leave_commit_fulfillment_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4058,6 +4631,7 @@ pub struct SignedLeaveRequest<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_leave_request_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4082,6 +4656,7 @@ pub struct SignedMetadataTransition<S: jacquard_common::BosStr = jacquard_common
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_metadata_transition_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4106,6 +4681,7 @@ pub struct SignedParticipantAcceptance<S: jacquard_common::BosStr = jacquard_com
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_participant_acceptance_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4130,6 +4706,7 @@ pub struct SignedPolicyTransition<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_policy_transition_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4154,6 +4731,7 @@ pub struct SignedResetActivation<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_reset_activation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4178,6 +4756,7 @@ pub struct SignedResetRequest<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_reset_request_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4228,6 +4807,7 @@ pub struct SignedTyping<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_typing_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4252,6 +4832,7 @@ pub struct SignedWelcomeAcknowledgement<S: jacquard_common::BosStr = jacquard_co
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_welcome_acknowledgement_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4276,6 +4857,7 @@ pub struct SignedWelcomeRejection<S: jacquard_common::BosStr = jacquard_common::
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_welcome_rejection_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4300,6 +4882,7 @@ pub struct SignedZeroLeafLeave<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_signed_zero_leaf_leave_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4338,6 +4921,7 @@ pub struct TombstoneFrameBody<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_tombstone_frame_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4360,6 +4944,7 @@ pub struct TombstoneFrameVariant<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_tombstone_frame_variant_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4391,6 +4976,7 @@ pub struct TransitionManifest<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_transition_manifest_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4423,6 +5009,7 @@ pub struct TypingBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_typing_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4452,6 +5039,7 @@ pub struct TypingEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_typing_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4479,6 +5067,7 @@ pub struct UploadedBlobBinding<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_uploaded_blob_binding_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4501,6 +5090,7 @@ pub struct WatermarkEvent<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_watermark_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4532,6 +5122,7 @@ pub struct WelcomeAcknowledgementBody<S: jacquard_common::BosStr = jacquard_comm
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_welcome_acknowledgement_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4555,6 +5146,7 @@ pub struct WelcomeAvailableEvent<S: jacquard_common::BosStr = jacquard_common::D
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_welcome_available_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4585,6 +5177,7 @@ pub struct WelcomeBundle<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_welcome_bundle_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4611,6 +5204,7 @@ pub struct WelcomeDelivery<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_welcome_delivery_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4634,6 +5228,7 @@ pub struct WelcomeDispositionEvent<S: jacquard_common::BosStr = jacquard_common:
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_welcome_disposition_event_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4666,6 +5261,7 @@ pub struct WelcomeRejectionBody<S: jacquard_common::BosStr = jacquard_common::De
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_welcome_rejection_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4703,6 +5299,7 @@ pub struct WelcomeView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_welcome_view_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4736,6 +5333,7 @@ pub struct ZeroLeafLeaveBody<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_zero_leaf_leave_body_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4762,6 +5360,7 @@ pub struct ZeroLeafLeaveEntry<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_zero_leaf_leave_entry_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4785,6 +5384,7 @@ pub struct ZeroLeafLeaveResult<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_zero_leaf_leave_result_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -4807,6 +5407,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Acc
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.membership_interval_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "membership_interval_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.membership_interval_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "membership_interval_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.terminal_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -4826,6 +5500,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Acc
                 });
             }
         }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -4841,6 +5537,76 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Add
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -4856,6 +5622,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Add
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -4892,6 +5680,72 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Add
                     ),
                     min: 0i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -4948,6 +5802,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.ciphertext_size;
             if *value > 10485760i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -4986,6 +5862,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for App
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -5116,6 +6040,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -5158,6 +6130,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     path: jacquard_lexicon::validation::ValidationPath::from_field("blob_bindings"),
                     min: 0usize,
                     actual: value.len(),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.message_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("message_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.message_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("message_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -5314,6 +6330,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Blo
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -5334,6 +6398,76 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Blo
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -5355,6 +6489,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -5375,6 +6557,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -5399,6 +6603,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 17i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -5463,6 +6741,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Blo
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.ciphertext_size;
             if *value > 10485760i64 {
@@ -5629,6 +6929,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -5680,6 +7002,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Com
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -5717,6 +7087,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -5737,6 +7155,76 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -5757,6 +7245,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -5774,6 +7288,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
@@ -5798,6 +7360,76 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                 });
             }
         }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -5815,6 +7447,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -5870,6 +7550,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.closed_by_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closed_by_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.closed_by_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closed_by_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.closed_by_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("closed_by_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.closed_by_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("closed_by_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.terminal_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -5907,6 +7661,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.terminal_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -5943,6 +7723,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.epoch;
             if *value > 9007199254740991i64 {
@@ -6055,6 +7861,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.membership_interval_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "membership_interval_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.membership_interval_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "membership_interval_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.terminal_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -6071,6 +7951,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     path: jacquard_lexicon::validation::ValidationPath::from_field("terminal_seq"),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -6169,6 +8071,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Cre
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -6192,6 +8142,102 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Cre
                 });
             }
         }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -6207,6 +8253,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Cre
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -6297,6 +8391,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.device_name;
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 128usize {
@@ -6314,6 +8452,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("device_name"),
                     min: 1usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -6355,6 +8541,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dev
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -6370,6 +8600,72 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dev
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -6388,6 +8684,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -6412,6 +8756,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             }
         }
         {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.target_auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -6432,6 +8824,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.target_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "target_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.target_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "target_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -6495,6 +8913,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dev
                     ),
                     min: 0i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -6963,6 +9425,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7089,6 +9577,84 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.invitation_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "invitation_transition_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.invitation_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "invitation_transition_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.invited_by_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "invited_by_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.invited_by_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "invited_by_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.invited_by_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "invited_by_did",
+                    ),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.invited_by_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "invited_by_did",
+                    ),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7122,6 +9688,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -7142,6 +9756,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -7185,6 +9847,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -7205,6 +9915,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -7223,6 +10007,58 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lea
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7240,6 +10076,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
@@ -7261,6 +10145,102 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -7281,6 +10261,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -7319,6 +10347,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -7339,6 +10415,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -7360,6 +10510,58 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.requester_auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -7380,6 +10582,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_key_id",
+                    ),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_key_id",
+                    ),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -7398,6 +10674,106 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lea
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7415,6 +10791,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
@@ -7436,6 +10860,106 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -7456,6 +10980,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -7494,6 +11066,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -7517,6 +11137,102 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                 });
             }
         }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7534,6 +11250,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -7570,6 +11334,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lea
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -7593,6 +11405,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lea
                 });
             }
         }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7608,6 +11494,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lea
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -7643,6 +11577,58 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lea
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7658,6 +11644,106 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Lea
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.leave_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leave_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -7675,6 +11761,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -7928,6 +12040,76 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             }
         }
         {
+            let value = &self.author_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "author_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "author_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.origin_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -7944,6 +12126,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     path: jacquard_lexicon::validation::ValidationPath::from_field("origin_seq"),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.origin_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "origin_transition_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.origin_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "origin_transition_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -7964,6 +12172,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.ciphertext_size;
             if *value > 10485760i64 {
@@ -8261,6 +12491,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.author_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.author_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("author_key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         if let Some(ref value) = self.description {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 2048usize {
@@ -8399,6 +12673,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Met
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -8578,6 +12900,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Met
                 });
             }
         }
+        {
+            let value = &self.origin_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "origin_transition_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.origin_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "origin_transition_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -8595,6 +12943,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
@@ -8616,6 +13012,76 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -8724,6 +13190,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Par
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -8741,6 +13229,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
@@ -8765,6 +13301,102 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                 });
             }
         }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -8782,6 +13414,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -8837,6 +13517,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Par
                 });
             }
         }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -8852,6 +13554,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pol
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -8890,6 +13640,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -8910,6 +13708,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -8936,6 +13782,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1usize,
                     actual: value.len(),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -9132,6 +14000,32 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9149,6 +14043,154 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.terminal_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "terminal_transition_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.terminal_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "terminal_transition_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9166,6 +14208,128 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9183,6 +14347,154 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.terminal_revocation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "terminal_revocation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.terminal_revocation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "terminal_revocation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9200,6 +14512,154 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recovery_work_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recovery_work_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.source_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("source_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.terminal_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "terminal_transition_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.terminal_transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "terminal_transition_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9215,6 +14675,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rem
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9230,6 +14734,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rem
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.user_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("user_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9247,6 +14773,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
@@ -9271,6 +14845,102 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                 });
             }
         }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9288,6 +14958,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -9363,6 +15081,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Res
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -9386,6 +15152,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Res
                 });
             }
         }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9401,6 +15241,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Res
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -9436,6 +15324,106 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Res
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "requester_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.requester_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("requester_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9453,6 +15441,58 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.reset_request_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -9920,6 +15960,30 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Tra
                 });
             }
         }
+        if let Some(ref value) = self.leaf_recovery_request_id {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leaf_recovery_request_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.leaf_recovery_request_id {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "leaf_recovery_request_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.participant_changes;
             #[allow(unused_comparisons)]
@@ -9962,6 +16026,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Typ
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -9985,6 +16097,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Typ
                 });
             }
         }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.typing_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("typing_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.typing_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("typing_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -10000,6 +16156,102 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Typ
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.typing_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("typing_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.typing_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("typing_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -10017,6 +16269,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.blob_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blob_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.ciphertext_size;
             if *value > 10485760i64 {
@@ -10074,6 +16348,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -10098,6 +16420,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             }
         }
         {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.transition_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -10118,6 +16488,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -10138,6 +16530,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -10175,6 +16615,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Wel
                 });
             }
         }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -10190,6 +16652,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Wel
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -10207,6 +16717,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -10225,6 +16757,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -10249,6 +16829,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
             }
         }
         {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.transition_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -10269,6 +16897,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -10288,6 +16938,80 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Wel
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "recipient_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.recipient_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("recipient_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.transition_seq;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -10308,6 +17032,28 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Wel
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.welcome_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("welcome_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -10327,6 +17073,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Zer
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
             let value = &self.auth_generation;
             if *value > 9007199254740991i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
@@ -10350,6 +17144,76 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Zer
                 });
             }
         }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.transition_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("transition_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -10365,6 +17229,54 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Zer
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.entry_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("entry_id"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.seq;
             if *value > 9007199254740991i64 {
@@ -10406,11 +17318,35 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
+fn deserialize_access_ended_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod access_ended_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -23993,11 +30929,35 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
     }
 }
 
+fn deserialize_add_leaf_by_recovery_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod add_leaf_by_recovery_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -24232,11 +31192,35 @@ where
     }
 }
 
+fn deserialize_add_participant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod add_participant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -24470,11 +31454,35 @@ where
     }
 }
 
+fn deserialize_addressable_device_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod addressable_device_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -24750,11 +31758,35 @@ where
     }
 }
 
+fn deserialize_application_aad_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod application_aad_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -25029,11 +32061,35 @@ where
     }
 }
 
+fn deserialize_application_attachment_binding_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod application_attachment_binding_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -25285,11 +32341,35 @@ where
     }
 }
 
+fn deserialize_application_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod application_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -25564,11 +32644,35 @@ where
     }
 }
 
+fn deserialize_application_frame_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod application_frame_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -25843,11 +32947,35 @@ where
     }
 }
 
+fn deserialize_application_frame_context_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod application_frame_context_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -26270,11 +33398,35 @@ where
     }
 }
 
+fn deserialize_application_send_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod application_send_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -26844,11 +33996,35 @@ where
     }
 }
 
+fn deserialize_atproto_record_embed_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod atproto_record_embed_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -27007,11 +34183,35 @@ where
     }
 }
 
+fn deserialize_atproto_record_embed_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod atproto_record_embed_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -27143,11 +34343,35 @@ where
     }
 }
 
+fn deserialize_blob_aad_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod blob_aad_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -27556,11 +34780,35 @@ where
     }
 }
 
+fn deserialize_blob_deletion_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod blob_deletion_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -27970,11 +35218,35 @@ where
     }
 }
 
+fn deserialize_blob_upload_preparation_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod blob_upload_preparation_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -28810,11 +36082,35 @@ where
     }
 }
 
+fn deserialize_blob_upload_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod blob_upload_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -29132,11 +36428,35 @@ where
     }
 }
 
+fn deserialize_blob_usage_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod blob_usage_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -29411,11 +36731,35 @@ where
     }
 }
 
+fn deserialize_change_participant_role_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod change_participant_role_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -29579,11 +36923,35 @@ where
     }
 }
 
+fn deserialize_commit_aad_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod commit_aad_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -29857,11 +37225,35 @@ where
     }
 }
 
+fn deserialize_commit_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod commit_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -30135,11 +37527,35 @@ where
     }
 }
 
+fn deserialize_commit_transition_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod commit_transition_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -30880,11 +38296,35 @@ where
     }
 }
 
+fn deserialize_conversation_changed_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_changed_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -31016,11 +38456,35 @@ where
     }
 }
 
+fn deserialize_conversation_close_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_close_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -31595,11 +39059,35 @@ where
     }
 }
 
+fn deserialize_conversation_close_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_close_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -31928,11 +39416,35 @@ where
     }
 }
 
+fn deserialize_conversation_close_result_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_close_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -32099,11 +39611,35 @@ where
     }
 }
 
+fn deserialize_conversation_close_tombstone_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_close_tombstone_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -32489,11 +40025,35 @@ where
     }
 }
 
+fn deserialize_conversation_closed_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_closed_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -32700,11 +40260,35 @@ where
     }
 }
 
+fn deserialize_conversation_coordinates_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_coordinates_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -33127,11 +40711,35 @@ where
     }
 }
 
+fn deserialize_conversation_created_result_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_created_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -33300,11 +40908,35 @@ where
     }
 }
 
+fn deserialize_conversation_inventory_state_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_inventory_state_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -33436,11 +41068,35 @@ where
     }
 }
 
+fn deserialize_conversation_removal_tombstone_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_removal_tombstone_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -33782,11 +41438,35 @@ where
     }
 }
 
+fn deserialize_conversation_state_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod conversation_state_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -34150,11 +41830,35 @@ where
     }
 }
 
+fn deserialize_creation_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod creation_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -34954,11 +42658,35 @@ where
     }
 }
 
+fn deserialize_creation_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod creation_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -35232,11 +42960,35 @@ where
     }
 }
 
+fn deserialize_creation_manifest_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod creation_manifest_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -35394,11 +43146,35 @@ where
     }
 }
 
+fn deserialize_device_capability_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod device_capability_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -36136,11 +43912,35 @@ where
     }
 }
 
+fn deserialize_device_enrollment_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod device_enrollment_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -36712,11 +44512,35 @@ where
     }
 }
 
+fn deserialize_device_leaf_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod device_leaf_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -36932,11 +44756,35 @@ where
     }
 }
 
+fn deserialize_device_leaf_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod device_leaf_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -37233,11 +45081,35 @@ where
     }
 }
 
+fn deserialize_device_revocation_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod device_revocation_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -37700,11 +45572,35 @@ where
     }
 }
 
+fn deserialize_device_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod device_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -38162,11 +46058,35 @@ where
     }
 }
 
+fn deserialize_durable_leave_request_result_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod durable_leave_request_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -38335,11 +46255,35 @@ where
     }
 }
 
+fn deserialize_edit_frame_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod edit_frame_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -38497,11 +46441,35 @@ where
     }
 }
 
+fn deserialize_edit_frame_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod edit_frame_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -38622,11 +46590,35 @@ where
     }
 }
 
+fn deserialize_encrypted_audio_embed_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod encrypted_audio_embed_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -38877,7 +46869,7 @@ pub struct EncryptedAudioEmbedBuilder<
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<S>,
+        core::option::Option<EncryptedAudioEmbedMimeType<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
@@ -39051,7 +47043,7 @@ where
     /// Set the `mimeType` field (required)
     pub fn mime_type(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<EncryptedAudioEmbedMimeType<S>>,
     ) -> EncryptedAudioEmbedBuilder<encrypted_audio_embed_state::SetMimeType<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         EncryptedAudioEmbedBuilder {
@@ -39212,11 +47204,35 @@ where
     }
 }
 
+fn deserialize_encrypted_audio_embed_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod encrypted_audio_embed_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -39350,11 +47366,35 @@ where
     }
 }
 
+fn deserialize_encrypted_image_embed_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod encrypted_image_embed_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -39607,7 +47647,7 @@ pub struct EncryptedImageEmbedBuilder<
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<S>,
+        core::option::Option<EncryptedImageEmbedMimeType<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
@@ -39810,7 +47850,7 @@ where
     /// Set the `mimeType` field (required)
     pub fn mime_type(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<EncryptedImageEmbedMimeType<S>>,
     ) -> EncryptedImageEmbedBuilder<encrypted_image_embed_state::SetMimeType<St>, S> {
         self._fields.8 = ::core::option::Option::Some(value.into());
         EncryptedImageEmbedBuilder {
@@ -39958,11 +47998,35 @@ where
     }
 }
 
+fn deserialize_encrypted_image_embed_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod encrypted_image_embed_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -40096,11 +48160,35 @@ where
     }
 }
 
+fn deserialize_event_envelope_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_envelope_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -40333,11 +48421,35 @@ where
     }
 }
 
+fn deserialize_existing_direct_conversation_result_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod existing_direct_conversation_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -40552,11 +48664,35 @@ where
     }
 }
 
+fn deserialize_external_link_embed_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod external_link_embed_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -40716,11 +48852,35 @@ where
     }
 }
 
+fn deserialize_external_link_embed_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod external_link_embed_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -40852,11 +49012,35 @@ where
     }
 }
 
+fn deserialize_group_info_artifact_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod group_info_artifact_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -41091,11 +49275,35 @@ where
     }
 }
 
+fn deserialize_invitation_provenance_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod invitation_provenance_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -41294,11 +49502,35 @@ where
     }
 }
 
+fn deserialize_key_package_artifact_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod key_package_artifact_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -41574,11 +49806,35 @@ where
     }
 }
 
+fn deserialize_key_package_replenishment_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod key_package_replenishment_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -42068,11 +50324,35 @@ where
     }
 }
 
+fn deserialize_leaf_recovery_cancellation_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leaf_recovery_cancellation_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -42514,11 +50794,35 @@ where
     }
 }
 
+fn deserialize_leaf_recovery_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leaf_recovery_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -42714,11 +51018,35 @@ where
     }
 }
 
+fn deserialize_leaf_recovery_fulfillment_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leaf_recovery_fulfillment_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -43558,11 +51886,35 @@ where
     }
 }
 
+fn deserialize_leaf_recovery_fulfillment_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leaf_recovery_fulfillment_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -43860,11 +52212,35 @@ where
     }
 }
 
+fn deserialize_leaf_recovery_request_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leaf_recovery_request_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -44389,11 +52765,35 @@ where
     }
 }
 
+fn deserialize_leaf_recovery_reservation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leaf_recovery_reservation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -45092,11 +53492,35 @@ where
     }
 }
 
+fn deserialize_leaf_recovery_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leaf_recovery_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -45606,11 +54030,35 @@ where
     }
 }
 
+fn deserialize_leave_cancellation_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_cancellation_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -46076,11 +54524,35 @@ where
     }
 }
 
+fn deserialize_leave_cancellation_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_cancellation_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -46366,11 +54838,35 @@ where
     }
 }
 
+fn deserialize_leave_commit_fulfillment_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_commit_fulfillment_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -47209,11 +55705,35 @@ where
     }
 }
 
+fn deserialize_leave_commit_fulfillment_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_commit_fulfillment_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -47509,11 +56029,35 @@ where
     }
 }
 
+fn deserialize_leave_request_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_request_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -47972,11 +56516,35 @@ where
     }
 }
 
+fn deserialize_leave_request_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_request_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -48252,11 +56820,35 @@ where
     }
 }
 
+fn deserialize_leave_request_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_request_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -48452,11 +57044,35 @@ where
     }
 }
 
+fn deserialize_leave_request_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod leave_request_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -48866,11 +57482,35 @@ where
     }
 }
 
+fn deserialize_message_available_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod message_available_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -49034,11 +57674,59 @@ where
     }
 }
 
+fn deserialize_message_frame_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_message_frame_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod message_frame_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -49160,11 +57848,35 @@ where
     }
 }
 
+fn deserialize_message_target_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod message_target_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -49321,11 +58033,35 @@ where
     }
 }
 
+fn deserialize_metadata_aad_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_aad_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -49664,11 +58400,35 @@ where
     }
 }
 
+fn deserialize_metadata_aad_avatar_binding_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_aad_avatar_binding_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -49916,11 +58676,35 @@ where
     }
 }
 
+fn deserialize_metadata_author_proof_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_author_proof_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -50382,11 +59166,35 @@ where
     }
 }
 
+fn deserialize_metadata_avatar_binding_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_avatar_binding_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -50627,11 +59435,35 @@ where
     }
 }
 
+fn deserialize_metadata_avatar_blob_aad_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_avatar_blob_aad_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -51052,11 +59884,35 @@ where
     }
 }
 
+fn deserialize_metadata_avatar_embed_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_avatar_embed_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -51375,7 +60231,7 @@ pub struct MetadataAvatarEmbedBuilder<
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<S>,
+        core::option::Option<MetadataAvatarEmbedMimeType<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
         core::option::Option<i64>,
@@ -51582,7 +60438,7 @@ where
     /// Set the `mimeType` field (required)
     pub fn mime_type(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<MetadataAvatarEmbedMimeType<S>>,
     ) -> MetadataAvatarEmbedBuilder<metadata_avatar_embed_state::SetMimeType<St>, S> {
         self._fields.8 = ::core::option::Option::Some(value.into());
         MetadataAvatarEmbedBuilder {
@@ -51775,11 +60631,35 @@ where
     }
 }
 
+fn deserialize_metadata_content_projection_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_content_projection_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -52252,11 +61132,35 @@ where
     }
 }
 
+fn deserialize_metadata_crypto_context_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_crypto_context_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -52582,11 +61486,35 @@ where
     }
 }
 
+fn deserialize_metadata_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -52860,11 +61788,35 @@ where
     }
 }
 
+fn deserialize_metadata_exporter_context_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_exporter_context_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -53239,11 +62191,35 @@ where
     }
 }
 
+fn deserialize_metadata_plaintext_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_plaintext_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -53402,11 +62378,35 @@ where
     }
 }
 
+fn deserialize_metadata_snapshot_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_snapshot_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -53840,11 +62840,35 @@ where
     }
 }
 
+fn deserialize_metadata_transition_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod metadata_transition_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -54425,11 +63449,35 @@ where
     }
 }
 
+fn deserialize_mls_aad_prior_context_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod mls_aad_prior_context_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -54840,11 +63888,35 @@ where
     }
 }
 
+fn deserialize_own_device_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod own_device_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -54965,11 +64037,35 @@ where
     }
 }
 
+fn deserialize_participant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod participant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -55185,11 +64281,35 @@ where
     }
 }
 
+fn deserialize_participant_acceptance_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod participant_acceptance_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -55836,11 +64956,35 @@ where
     }
 }
 
+fn deserialize_participant_acceptance_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod participant_acceptance_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -56177,11 +65321,35 @@ where
     }
 }
 
+fn deserialize_participant_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod participant_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -56437,11 +65605,35 @@ where
     }
 }
 
+fn deserialize_policy_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod policy_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -56715,11 +65907,35 @@ where
     }
 }
 
+fn deserialize_policy_transition_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod policy_transition_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -57290,11 +66506,35 @@ where
     }
 }
 
+fn deserialize_private_application_message_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod private_application_message_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -57540,11 +66780,35 @@ where
     }
 }
 
+fn deserialize_public_commit_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod public_commit_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -57777,11 +67041,35 @@ where
     }
 }
 
+fn deserialize_reaction_frame_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reaction_frame_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -57843,7 +67131,7 @@ pub struct ReactionFrameBodyBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
-        core::option::Option<S>,
+        core::option::Option<ReactionFrameBodyOperation<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::MessageTarget<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -57914,7 +67202,7 @@ where
     /// Set the `operation` field (required)
     pub fn operation(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<ReactionFrameBodyOperation<S>>,
     ) -> ReactionFrameBodyBuilder<reaction_frame_body_state::SetOperation<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         ReactionFrameBodyBuilder {
@@ -57977,11 +67265,35 @@ where
     }
 }
 
+fn deserialize_reaction_frame_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reaction_frame_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -58105,11 +67417,35 @@ where
     }
 }
 
+fn deserialize_read_state_frame_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod read_state_frame_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -58268,11 +67604,35 @@ where
     }
 }
 
+fn deserialize_read_state_frame_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod read_state_frame_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -58399,11 +67759,35 @@ where
     }
 }
 
+fn deserialize_recovery_welcome_provenance_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod recovery_welcome_provenance_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -58575,11 +67959,35 @@ where
     }
 }
 
+fn deserialize_recovery_work_completed_by_transition_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod recovery_work_completed_by_transition_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -59194,11 +68602,35 @@ where
     }
 }
 
+fn deserialize_recovery_work_pending_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod recovery_work_pending_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -59672,11 +69104,35 @@ where
     }
 }
 
+fn deserialize_recovery_work_superseded_by_revocation_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod recovery_work_superseded_by_revocation_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -60291,11 +69747,35 @@ where
     }
 }
 
+fn deserialize_recovery_work_superseded_by_transition_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod recovery_work_superseded_by_transition_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -60910,11 +70390,35 @@ where
     }
 }
 
+fn deserialize_remove_leaf_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod remove_leaf_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -61071,11 +70575,35 @@ where
     }
 }
 
+fn deserialize_remove_participant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod remove_participant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -61197,11 +70725,35 @@ where
     }
 }
 
+fn deserialize_reset_activation_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reset_activation_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -62066,11 +71618,35 @@ where
     }
 }
 
+fn deserialize_reset_activation_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reset_activation_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -62348,11 +71924,35 @@ where
     }
 }
 
+fn deserialize_reset_activation_manifest_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reset_activation_manifest_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -62520,11 +72120,35 @@ where
     }
 }
 
+fn deserialize_reset_request_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reset_request_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -63034,11 +72658,35 @@ where
     }
 }
 
+fn deserialize_reset_request_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reset_request_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -63314,11 +72962,35 @@ where
     }
 }
 
+fn deserialize_reset_request_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reset_request_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -63513,7 +73185,7 @@ pub struct ResetRequestViewBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<S>,
+        core::option::Option<ResetRequestViewStatus<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -63715,7 +73387,7 @@ where
     /// Set the `status` field (required)
     pub fn status(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<ResetRequestViewStatus<S>>,
     ) -> ResetRequestViewBuilder<reset_request_view_state::SetStatus<St>, S> {
         self._fields.8 = ::core::option::Option::Some(value.into());
         ResetRequestViewBuilder {
@@ -63777,11 +73449,35 @@ where
     }
 }
 
+fn deserialize_reset_requested_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reset_requested_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -63940,11 +73636,35 @@ where
     }
 }
 
+fn deserialize_signed_application_send_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_application_send_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -64108,11 +73828,35 @@ where
     }
 }
 
+fn deserialize_signed_blob_deletion_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_blob_deletion_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -64271,11 +74015,35 @@ where
     }
 }
 
+fn deserialize_signed_blob_upload_preparation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_blob_upload_preparation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -64445,11 +74213,35 @@ where
     }
 }
 
+fn deserialize_signed_commit_transition_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_commit_transition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -64616,11 +74408,35 @@ where
     }
 }
 
+fn deserialize_signed_conversation_close_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_conversation_close_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -64787,11 +74603,35 @@ where
     }
 }
 
+fn deserialize_signed_creation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_creation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -64949,11 +74789,35 @@ where
     }
 }
 
+fn deserialize_signed_device_enrollment_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_device_enrollment_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -65120,11 +74984,35 @@ where
     }
 }
 
+fn deserialize_signed_device_revocation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_device_revocation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -65291,11 +75179,35 @@ where
     }
 }
 
+fn deserialize_signed_key_package_replenishment_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_key_package_replenishment_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -65468,11 +75380,35 @@ where
     }
 }
 
+fn deserialize_signed_leaf_recovery_cancellation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_leaf_recovery_cancellation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -65647,11 +75583,35 @@ where
     }
 }
 
+fn deserialize_signed_leaf_recovery_fulfillment_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_leaf_recovery_fulfillment_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -65824,11 +75784,35 @@ where
     }
 }
 
+fn deserialize_signed_leaf_recovery_request_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_leaf_recovery_request_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -65997,11 +75981,35 @@ where
     }
 }
 
+fn deserialize_signed_leave_cancellation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_leave_cancellation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -66168,11 +76176,35 @@ where
     }
 }
 
+fn deserialize_signed_leave_commit_fulfillment_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_leave_commit_fulfillment_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -66344,11 +76376,35 @@ where
     }
 }
 
+fn deserialize_signed_leave_request_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_leave_request_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -66507,11 +76563,35 @@ where
     }
 }
 
+fn deserialize_signed_metadata_transition_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_metadata_transition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -66680,11 +76760,35 @@ where
     }
 }
 
+fn deserialize_signed_participant_acceptance_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_participant_acceptance_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -66854,11 +76958,35 @@ where
     }
 }
 
+fn deserialize_signed_policy_transition_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_policy_transition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -67025,11 +77153,35 @@ where
     }
 }
 
+fn deserialize_signed_reset_activation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_reset_activation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -67193,11 +77345,35 @@ where
     }
 }
 
+fn deserialize_signed_reset_request_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_reset_request_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -67356,11 +77532,35 @@ where
     }
 }
 
+fn deserialize_signed_typing_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_typing_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -67517,11 +77717,35 @@ where
     }
 }
 
+fn deserialize_signed_welcome_acknowledgement_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_welcome_acknowledgement_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -67693,11 +77917,35 @@ where
     }
 }
 
+fn deserialize_signed_welcome_rejection_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_welcome_rejection_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -67864,11 +78112,35 @@ where
     }
 }
 
+fn deserialize_signed_zero_leaf_leave_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod signed_zero_leaf_leave_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -68029,11 +78301,35 @@ where
     }
 }
 
+fn deserialize_tombstone_frame_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod tombstone_frame_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -68155,11 +78451,35 @@ where
     }
 }
 
+fn deserialize_tombstone_frame_variant_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod tombstone_frame_variant_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -68286,11 +78606,35 @@ where
     }
 }
 
+fn deserialize_transition_manifest_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod transition_manifest_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -68497,11 +78841,35 @@ where
     }
 }
 
+fn deserialize_typing_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod typing_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -68959,11 +79327,35 @@ where
     }
 }
 
+fn deserialize_typing_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod typing_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -69280,11 +79672,35 @@ where
     }
 }
 
+fn deserialize_uploaded_blob_binding_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod uploaded_blob_binding_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -69519,11 +79935,35 @@ where
     }
 }
 
+fn deserialize_watermark_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod watermark_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -69644,11 +80084,35 @@ where
     }
 }
 
+fn deserialize_welcome_acknowledgement_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod welcome_acknowledgement_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -70188,11 +80652,35 @@ where
     }
 }
 
+fn deserialize_welcome_available_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod welcome_available_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -70356,11 +80844,35 @@ where
     }
 }
 
+fn deserialize_welcome_bundle_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod welcome_bundle_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -70677,11 +81189,35 @@ where
     }
 }
 
+fn deserialize_welcome_delivery_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod welcome_delivery_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -70876,11 +81412,35 @@ where
     }
 }
 
+fn deserialize_welcome_disposition_event_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod welcome_disposition_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -71047,11 +81607,35 @@ where
     }
 }
 
+fn deserialize_welcome_rejection_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod welcome_rejection_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -71621,11 +82205,35 @@ where
     }
 }
 
+fn deserialize_welcome_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod welcome_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -72191,11 +82799,35 @@ where
     }
 }
 
+fn deserialize_zero_leaf_leave_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod zero_leaf_leave_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -72706,11 +83338,35 @@ where
     }
 }
 
+fn deserialize_zero_leaf_leave_entry_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod zero_leaf_leave_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -72986,11 +83642,35 @@ where
     }
 }
 
+fn deserialize_zero_leaf_leave_result_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod zero_leaf_leave_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

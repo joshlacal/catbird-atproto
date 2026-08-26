@@ -20,11 +20,11 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetFederationModeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Currently effective federation mode
+    /// Currently effective federation mode
     pub effective_mode: S,
-    ///Federation mode from environment configuration
+    /// Federation mode from environment configuration
     pub env_mode: S,
-    ///Runtime override mode (if set)
+    /// Runtime override mode (if set)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub override_mode: core::option::Option<S>,
     #[serde(
@@ -70,6 +70,9 @@ impl jacquard_common::xrpc::XrpcRequest for GetFederationMode {
     const NSID: &'static str = "blue.catbird.mlsDS.getFederationMode";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetFederationModeResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `blue.catbird.mlsDS.getFederationMode` query.

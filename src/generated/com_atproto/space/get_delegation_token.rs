@@ -13,7 +13,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetDelegationToken<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub space: S,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
 
 #[derive(
@@ -31,7 +31,7 @@ pub struct GetDelegationToken<S: jacquard_common::BosStr = jacquard_common::Defa
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetDelegationTokenOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///A signed JWT delegation token.
+    /// A signed JWT delegation token.
     pub token: S,
     #[serde(
         flatten,
@@ -78,7 +78,7 @@ pub mod get_delegation_token_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -112,7 +112,7 @@ pub struct GetDelegationTokenBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<S>,),
+    _fields: (core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -162,7 +162,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> GetDelegationTokenBuilder<get_delegation_token_state::SetSpace<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         GetDelegationTokenBuilder {

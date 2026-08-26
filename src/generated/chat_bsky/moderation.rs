@@ -12,7 +12,6 @@ pub mod get_convo_members;
 pub mod get_convos;
 pub mod get_message_context;
 
-
 #[cfg(feature = "streaming")]
 pub mod subscribe_mod_events;
 pub mod update_actor_access;
@@ -27,20 +26,24 @@ pub mod update_actor_access;
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub id: S,
-    ///Union field that has data specific to different kinds of convos.
+    /// Union field that has data specific to different kinds of convos.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub kind: core::option::Option<ConvoViewKind<S>>,
     pub rev: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_convo_view_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -49,18 +52,10 @@ pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -82,15 +77,19 @@ pub enum ConvoViewKind<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_direct_convo_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -102,15 +101,8 @@ pub struct DirectConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// Data specific to a group conversation, for moderation purposes. Unlike chat.bsky.convo.defs#groupConvo, it does not include viewer-specific data (such as unreadJoinRequestCount), since the requester is a moderator and not a member of the conversation.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -118,20 +110,23 @@ pub struct DirectConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 pub struct GroupConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub join_link: core::option::Option<
-        crate::generated::chat_bsky::group::JoinLinkView<S>,
-    >,
-    ///The total number of pending join requests for the group conversation. This information is only visible to the owner and to moderators. Capped at 21.
+    pub join_link: core::option::Option<crate::generated::chat_bsky::group::JoinLinkView<S>>,
+    /// The total number of pending join requests for the group conversation. This information is only visible to the owner and to moderators. Capped at 21.
     pub join_request_count: i64,
-    ///The lock status of the conversation.
+    /// The lock status of the conversation.
     pub lock_status: crate::generated::chat_bsky::convo::ConvoLockStatus<S>,
-    ///The total number of members in the group conversation.
+    /// The total number of members in the group conversation.
     pub member_count: i64,
-    ///The maximum number of members allowed in the group conversation.
+    /// The maximum number of members allowed in the group conversation.
     pub member_limit: i64,
-    ///The display name of the group conversation.
+    /// The display name of the group conversation.
     pub name: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_group_convo_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -140,8 +135,7 @@ pub struct GroupConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ConvoView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ConvoView<S> {
     fn nsid() -> &'static str {
         "chat.bsky.moderation.defs"
     }
@@ -156,8 +150,7 @@ for ConvoView<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for DirectConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DirectConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.moderation.defs"
     }
@@ -172,8 +165,7 @@ for DirectConvo<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for GroupConvo<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for GroupConvo<S> {
     fn nsid() -> &'static str {
         "chat.bsky.moderation.defs"
     }
@@ -189,9 +181,7 @@ for GroupConvo<S> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 500usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "name",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     max: 500usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -206,13 +196,13 @@ for GroupConvo<S> {
                     )
                     .count();
                 if count > 50usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "name",
-                        ),
-                        max: 50usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                            max: 50usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -220,9 +210,31 @@ for GroupConvo<S> {
     }
 }
 
-fn lexicon_doc_chat_bsky_moderation_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn deserialize_convo_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn lexicon_doc_chat_bsky_moderation_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.moderation.defs"),
@@ -283,19 +295,19 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> jacquard_lexicon::lexicon::Lexicon
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("directConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Data specific to a direct conversation, for moderation purposes.",
-                        ),
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map
+                        )),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("groupConvo"),
@@ -401,11 +413,59 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> jacquard_lexicon::lexicon::Lexicon
     }
 }
 
+fn deserialize_direct_convo_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_group_convo_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod group_convo_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -533,10 +593,7 @@ pub struct GroupConvoBuilder<
 
 impl GroupConvo<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GroupConvoBuilder<
-        group_convo_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GroupConvoBuilder<group_convo_state::Empty, jacquard_common::DefaultStr> {
         GroupConvoBuilder::new()
     }
 }

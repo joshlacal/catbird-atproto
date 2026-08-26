@@ -6,22 +6,19 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UnmuteActorList<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub list: jacquard_common::types::string::AtUri<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -39,14 +36,24 @@ impl jacquard_common::xrpc::XrpcResp for UnmuteActorListResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = jacquard_common::xrpc::GenericError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for UnmuteActorList<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UnmuteActorList<S> {
     const NSID: &'static str = "app.bsky.graph.unmuteActorList";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UnmuteActorListResponse;
 }
 
@@ -56,18 +63,17 @@ Path: `/xrpc/app.bsky.graph.unmuteActorList`. The request payload type is `Unmut
 pub struct UnmuteActorListRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UnmuteActorListRequest {
     const PATH: &'static str = "/xrpc/app.bsky.graph.unmuteActorList";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UnmuteActorList<S>;
     type Response = UnmuteActorListResponse;
 }
 
 pub mod unmute_actor_list_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -107,10 +113,8 @@ pub struct UnmuteActorListBuilder<
 
 impl UnmuteActorList<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UnmuteActorListBuilder<
-        unmute_actor_list_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> UnmuteActorListBuilder<unmute_actor_list_state::Empty, jacquard_common::DefaultStr> {
         UnmuteActorListBuilder::new()
     }
 }
@@ -122,10 +126,7 @@ impl<S: jacquard_common::BosStr> UnmuteActorList<S> {
     }
 }
 
-impl UnmuteActorListBuilder<
-    unmute_actor_list_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl UnmuteActorListBuilder<unmute_actor_list_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UnmuteActorListBuilder {
@@ -136,9 +137,7 @@ impl UnmuteActorListBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> UnmuteActorListBuilder<unmute_actor_list_state::Empty, S> {
+impl<S: jacquard_common::BosStr> UnmuteActorListBuilder<unmute_actor_list_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         UnmuteActorListBuilder {

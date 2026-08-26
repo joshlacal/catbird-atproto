@@ -13,20 +13,20 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The NSID of the record collection.
+    /// The NSID of the record collection.
     pub collection: jacquard_common::types::string::Nsid<S>,
-    ///The record itself. Must contain a $type field.
+    /// The record itself. Must contain a $type field.
     pub record: jacquard_common::types::value::Data<S>,
-    ///The DID of the repo to write to (the authenticated member).
+    /// The DID of the repo to write to (the authenticated member).
     pub repo: jacquard_common::types::string::Did<S>,
-    ///The Record Key.
+    /// The Record Key.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rkey: core::option::Option<
         jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
     >,
-    ///Reference to the space.
-    pub space: S,
-    ///Can be set to 'false' to skip Lexicon schema validation of record data, 'true' to require it, or leave unset to validate only for known Lexicons.
+    /// Reference to the space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// Can be set to 'false' to skip Lexicon schema validation of record data, 'true' to require it, or leave unset to validate only for known Lexicons.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub validate: core::option::Option<bool>,
     #[serde(
@@ -51,7 +51,7 @@ pub struct CreateRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 )]
 pub struct CreateRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cid: jacquard_common::types::string::Cid<S>,
-    ///URI of the created record.
+    /// URI of the created record.
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub validation_status: core::option::Option<CreateRecordOutputValidationStatus<S>>,
@@ -167,14 +167,21 @@ where
 #[serde(tag = "error", content = "message")]
 pub enum CreateRecordError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// A record already exists at this collection and rkey. Retry with a different rkey, or use putRecord.
     #[serde(rename = "RecordAlreadyExists")]
-    RecordAlreadyExists(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RecordAlreadyExists(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -241,7 +248,7 @@ pub mod create_record_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -324,7 +331,7 @@ pub struct CreateRecordBuilder<
         core::option::Option<
             jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<bool>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -456,7 +463,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> CreateRecordBuilder<create_record_state::SetSpace<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         CreateRecordBuilder {

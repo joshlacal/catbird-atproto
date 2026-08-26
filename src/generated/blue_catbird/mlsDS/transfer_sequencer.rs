@@ -13,12 +13,12 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct TransferSequencer<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Conversation ID
+    /// Conversation ID
     pub convo_id: S,
-    ///Current epoch at time of transfer (informational)
+    /// Current epoch at time of transfer (informational)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub current_epoch: core::option::Option<i64>,
-    ///New sequencer term to establish
+    /// New sequencer term to establish
     pub new_sequencer_term: i64,
     #[serde(
         flatten,
@@ -41,9 +41,9 @@ pub struct TransferSequencer<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct TransferSequencerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Whether the transfer was accepted
+    /// Whether the transfer was accepted
     pub accepted: bool,
-    ///Confirmed new sequencer term
+    /// Confirmed new sequencer term
     pub new_sequencer_term: i64,
     #[serde(
         flatten,
@@ -71,17 +71,30 @@ pub struct TransferSequencerOutput<S: jacquard_common::BosStr = jacquard_common:
 #[serde(tag = "error", content = "message")]
 pub enum TransferSequencerError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotCurrentSequencer")]
-    NotCurrentSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotCurrentSequencer(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "TermStale")]
-    TermStale(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TermStale(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "TransferFailed")]
-    TransferFailed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    TransferFailed(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -162,7 +175,7 @@ pub mod transfer_sequencer_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

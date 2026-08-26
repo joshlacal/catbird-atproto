@@ -8,15 +8,8 @@
 /// Record containing a Streamplace chat message.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.chat.message",
@@ -24,22 +17,24 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Message<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Client-declared timestamp when this message was originally created.
+    /// Client-declared timestamp when this message was originally created.
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Annotations of text (mentions, URLs, etc)
+    /// Annotations of text (mentions, URLs, etc)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub facets: core::option::Option<
-        Vec<crate::generated::place_stream::richtext::facet::Facet<S>>,
-    >,
+    pub facets:
+        core::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub reply: core::option::Option<
-        crate::generated::place_stream::chat::message::ReplyRef<S>,
-    >,
-    ///The DID of the streamer whose chat this is.
+    pub reply: core::option::Option<crate::generated::place_stream::chat::message::ReplyRef<S>>,
+    /// The DID of the streamer whose chat this is.
     pub streamer: jacquard_common::types::string::Did<S>,
-    ///The primary message content. May be an empty string, if there are embeds.
+    /// The primary message content. May be an empty string, if there are embeds.
     pub text: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_message_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -51,36 +46,19 @@ pub struct Message<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
-pub struct MessageGetRecordOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct MessageGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     pub value: Message<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -88,7 +66,12 @@ pub struct MessageGetRecordOutput<
 pub struct ReplyRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub parent: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
     pub root: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_reply_ref_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -127,8 +110,7 @@ impl<S: jacquard_common::BosStr> From<MessageGetRecordOutput<S>> for Message<S> 
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-for Message<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Message<S> {
     const NSID: &'static str = "place.stream.chat.message";
     type Record = MessageRecord;
 }
@@ -154,9 +136,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 3000usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "text",
-                    ),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
                     max: 3000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -171,13 +151,13 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
                     )
                     .count();
                 if count > 300usize {
-                    return Err(jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: jacquard_lexicon::validation::ValidationPath::from_field(
-                            "text",
-                        ),
-                        max: 300usize,
-                        actual: count,
-                    });
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
+                            max: 300usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -185,8 +165,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ReplyRef<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReplyRef<S> {
     fn nsid() -> &'static str {
         "place.stream.chat.message"
     }
@@ -201,11 +180,41 @@ for ReplyRef<S> {
     }
 }
 
+fn deserialize_message_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let mut data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if let Some(extra_data) = &mut data {
+        extra_data.remove("$type");
+        if extra_data.is_empty() {
+            data = None;
+        }
+    }
+    Ok(data)
+}
+
 pub mod message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -267,9 +276,7 @@ pub struct MessageBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<
-            Vec<crate::generated::place_stream::richtext::facet::Facet<S>>,
-        >,
+        core::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>,
         core::option::Option<crate::generated::place_stream::chat::message::ReplyRef<S>>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<S>,
@@ -336,9 +343,7 @@ impl<St: message_state::State, S: jacquard_common::BosStr> MessageBuilder<St, S>
     /// Set the `facets` field (optional)
     pub fn facets(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>>,
     ) -> Self {
         self._fields.1 = value.into();
         self
@@ -357,9 +362,7 @@ impl<St: message_state::State, S: jacquard_common::BosStr> MessageBuilder<St, S>
     /// Set the `reply` field (optional)
     pub fn reply(
         mut self,
-        value: impl Into<
-            Option<crate::generated::place_stream::chat::message::ReplyRef<S>>,
-        >,
+        value: impl Into<Option<crate::generated::place_stream::chat::message::ReplyRef<S>>>,
     ) -> Self {
         self._fields.2 = value.into();
         self
@@ -399,10 +402,7 @@ where
     St::Text: message_state::IsUnset,
 {
     /// Set the `text` field (required)
-    pub fn text(
-        mut self,
-        value: impl Into<S>,
-    ) -> MessageBuilder<message_state::SetText<St>, S> {
+    pub fn text(mut self, value: impl Into<S>) -> MessageBuilder<message_state::SetText<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         MessageBuilder {
             _state: ::core::marker::PhantomData,
@@ -449,9 +449,7 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_chat_message() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_chat_message() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.message"),
@@ -561,42 +559,42 @@ fn lexicon_doc_place_stream_chat_message() -> jacquard_lexicon::lexicon::Lexicon
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("replyRef"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("root"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("parent")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "parent",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "com.atproto.repo.strongRef",
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("parent"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("parent"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "com.atproto.repo.strongRef",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "root",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "com.atproto.repo.strongRef",
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("root"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "com.atproto.repo.strongRef",
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map
         },
@@ -604,11 +602,35 @@ fn lexicon_doc_place_stream_chat_message() -> jacquard_lexicon::lexicon::Lexicon
     }
 }
 
+fn deserialize_reply_ref_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod reply_ref_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -655,22 +677,15 @@ pub struct ReplyRefBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
-        core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
-        >,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl ReplyRef<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ReplyRefBuilder<
-        reply_ref_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ReplyRefBuilder<reply_ref_state::Empty, jacquard_common::DefaultStr> {
         ReplyRefBuilder::new()
     }
 }

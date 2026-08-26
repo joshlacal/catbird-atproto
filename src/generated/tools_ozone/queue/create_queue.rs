@@ -13,32 +13,35 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Collection name for record subjects. Required if subjectTypes includes 'record'.
+    /// Collection name for record subjects. Required if subjectTypes includes 'record'.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub collection: core::option::Option<jacquard_common::types::string::Nsid<S>>,
-    ///Optional description of the queue
+    /// Optional description of the queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///Display name for the queue (must be unique)
+    /// Display name for the queue (must be unique)
     pub name: S,
-    ///Policy keys to recommend when actioning reports in this queue
+    /// Policy keys to recommend when actioning reports in this queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub recommended_policies: core::option::Option<Vec<S>>,
-    ///Report reason types (fully qualified NSIDs)
+    /// Report reason types (fully qualified NSIDs)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub report_types: core::option::Option<Vec<S>>,
-    ///Subject types this queue accepts
+    /// Subject types this queue accepts
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub subject_types: core::option::Option<Vec<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_types: core::option::Option<Vec<CreateQueueSubjectTypes<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,24 +50,107 @@ pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum CreateQueueSubjectTypes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Account,
+    Record,
+    Message,
+    Conversation,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> CreateQueueSubjectTypes<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Account => "account",
+            Self::Record => "record",
+            Self::Message => "message",
+            Self::Conversation => "conversation",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "account" => Self::Account,
+            "record" => Self::Record,
+            "message" => Self::Message,
+            "conversation" => Self::Conversation,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for CreateQueueSubjectTypes<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for CreateQueueSubjectTypes<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for CreateQueueSubjectTypes<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for CreateQueueSubjectTypes<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for CreateQueueSubjectTypes<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for CreateQueueSubjectTypes<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = CreateQueueSubjectTypes<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            CreateQueueSubjectTypes::Account => CreateQueueSubjectTypes::Account,
+            CreateQueueSubjectTypes::Record => CreateQueueSubjectTypes::Record,
+            CreateQueueSubjectTypes::Message => CreateQueueSubjectTypes::Message,
+            CreateQueueSubjectTypes::Conversation => CreateQueueSubjectTypes::Conversation,
+            CreateQueueSubjectTypes::Other(v) => CreateQueueSubjectTypes::Other(v.into_static()),
+        }
+    }
+}
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub queue: crate::generated::tools_ozone::queue::QueueView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -72,7 +158,6 @@ pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -82,23 +167,27 @@ pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum CreateQueueError {
     /// One or more recommended policy keys do not exist in the configured policy list
     #[serde(rename = "InvalidRecommendedPolicies")]
     InvalidRecommendedPolicies(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// The queue configuration conflicts with an existing queue
     #[serde(rename = "ConflictingQueue")]
-    ConflictingQueue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConflictingQueue(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -144,9 +233,8 @@ impl jacquard_common::xrpc::XrpcResp for CreateQueueResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateQueue<S> {
     const NSID: &'static str = "tools.ozone.queue.createQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateQueueResponse;
 }
 
@@ -156,9 +244,8 @@ Path: `/xrpc/tools.ozone.queue.createQueue`. The request payload type is `Create
 pub struct CreateQueueRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateQueueRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.queue.createQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = CreateQueue<S>;
     type Response = CreateQueueResponse;
 }

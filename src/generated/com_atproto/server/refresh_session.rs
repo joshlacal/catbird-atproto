@@ -27,7 +27,7 @@ pub struct RefreshSessionOutput<S: jacquard_common::BosStr = jacquard_common::De
     pub email_confirmed: core::option::Option<bool>,
     pub handle: jacquard_common::types::string::Handle<S>,
     pub refresh_jwt: S,
-    ///Hosting status of the account. If not specified, then assume 'active'.
+    /// Hosting status of the account. If not specified, then assume 'active'.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub status: core::option::Option<RefreshSessionOutputStatus<S>>,
     #[serde(
@@ -143,15 +143,25 @@ where
 #[serde(tag = "error", content = "message")]
 pub enum RefreshSessionError {
     #[serde(rename = "AccountTakedown")]
-    AccountTakedown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountTakedown(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidToken")]
-    InvalidToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidToken(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ExpiredToken")]
-    ExpiredToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ExpiredToken(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -222,6 +232,9 @@ impl jacquard_common::xrpc::XrpcRequest for RefreshSession {
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RefreshSessionResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `com.atproto.server.refreshSession` procedure.

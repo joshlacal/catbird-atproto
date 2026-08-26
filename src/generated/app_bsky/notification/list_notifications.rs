@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -34,34 +27,27 @@ pub struct ListNotifications<S: jacquard_common::BosStr = jacquard_common::Defau
     pub seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListNotificationsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ListNotificationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub notifications: Vec<
-        crate::generated::app_bsky::notification::list_notifications::Notification<S>,
-    >,
+    pub notifications:
+        Vec<crate::generated::app_bsky::notification::list_notifications::Notification<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub priority: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,17 +56,9 @@ pub struct ListNotificationsOutput<
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -91,21 +69,23 @@ pub struct Notification<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub indexed_at: jacquard_common::types::string::Datetime,
     pub is_read: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub labels: core::option::Option<
-        Vec<crate::generated::com_atproto::label::Label<S>>,
-    >,
-    ///The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    /// The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.
     pub reason: NotificationReason<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reason_subject: core::option::Option<jacquard_common::types::string::AtUri<S>>,
     pub record: jacquard_common::types::value::Data<S>,
-    ///The starter pack associated with this notification. Present when the notification is for a follow originating from a starter pack.
+    /// The starter pack associated with this notification. Present when the notification is for a follow originating from a starter pack.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub starter_pack: core::option::Option<
-        crate::generated::app_bsky::graph::StarterPackViewBasic<S>,
-    >,
+    pub starter_pack:
+        core::option::Option<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_notification_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -196,7 +176,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for NotificationReason<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for NotificationReason<S> {
+    for NotificationReason<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -226,9 +207,7 @@ where
             NotificationReason::Mention => NotificationReason::Mention,
             NotificationReason::Reply => NotificationReason::Reply,
             NotificationReason::Quote => NotificationReason::Quote,
-            NotificationReason::StarterpackJoined => {
-                NotificationReason::StarterpackJoined
-            }
+            NotificationReason::StarterpackJoined => NotificationReason::StarterpackJoined,
             NotificationReason::Verified => NotificationReason::Verified,
             NotificationReason::Unverified => NotificationReason::Unverified,
             NotificationReason::LikeViaRepost => NotificationReason::LikeViaRepost,
@@ -251,8 +230,7 @@ impl jacquard_common::xrpc::XrpcResp for ListNotificationsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for ListNotifications<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListNotifications<S> {
     const NSID: &'static str = "app.bsky.notification.listNotifications";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListNotificationsResponse;
@@ -269,8 +247,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for ListNotificationsRequest {
     type Response = ListNotificationsResponse;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for Notification<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Notification<S> {
     fn nsid() -> &'static str {
         "app.bsky.notification.listNotifications"
     }
@@ -291,9 +268,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod list_notifications_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -326,10 +303,9 @@ pub struct ListNotificationsBuilder<
 
 impl ListNotifications<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ListNotificationsBuilder<
-        list_notifications_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> ListNotificationsBuilder<list_notifications_state::Empty, jacquard_common::DefaultStr>
+    {
         ListNotificationsBuilder::new()
     }
 }
@@ -341,10 +317,7 @@ impl<S: jacquard_common::BosStr> ListNotifications<S> {
     }
 }
 
-impl ListNotificationsBuilder<
-    list_notifications_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl ListNotificationsBuilder<list_notifications_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListNotificationsBuilder {
@@ -355,9 +328,7 @@ impl ListNotificationsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> ListNotificationsBuilder<list_notifications_state::Empty, S> {
+impl<S: jacquard_common::BosStr> ListNotificationsBuilder<list_notifications_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ListNotificationsBuilder {
@@ -368,10 +339,9 @@ impl<
     }
 }
 
-impl<
-    St: list_notifications_state::State,
-    S: jacquard_common::BosStr,
-> ListNotificationsBuilder<St, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -384,10 +354,9 @@ impl<
     }
 }
 
-impl<
-    St: list_notifications_state::State,
-    S: jacquard_common::BosStr,
-> ListNotificationsBuilder<St, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
@@ -400,10 +369,9 @@ impl<
     }
 }
 
-impl<
-    St: list_notifications_state::State,
-    S: jacquard_common::BosStr,
-> ListNotificationsBuilder<St, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `priority` field (optional)
     pub fn priority(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.2 = value.into();
@@ -416,10 +384,9 @@ impl<
     }
 }
 
-impl<
-    St: list_notifications_state::State,
-    S: jacquard_common::BosStr,
-> ListNotificationsBuilder<St, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `reasons` field (optional)
     pub fn reasons(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.3 = value.into();
@@ -432,10 +399,9 @@ impl<
     }
 }
 
-impl<
-    St: list_notifications_state::State,
-    S: jacquard_common::BosStr,
-> ListNotificationsBuilder<St, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `seenAt` field (optional)
     pub fn seen_at(
         mut self,
@@ -470,11 +436,35 @@ where
     }
 }
 
+fn deserialize_notification_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod notification_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -627,10 +617,7 @@ pub struct NotificationBuilder<
 
 impl Notification<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> NotificationBuilder<
-        notification_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> NotificationBuilder<notification_state::Empty, jacquard_common::DefaultStr> {
         NotificationBuilder::new()
     }
 }
@@ -740,10 +727,7 @@ where
     }
 }
 
-impl<
-    St: notification_state::State,
-    S: jacquard_common::BosStr,
-> NotificationBuilder<St, S> {
+impl<St: notification_state::State, S: jacquard_common::BosStr> NotificationBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
@@ -781,10 +765,7 @@ where
     }
 }
 
-impl<
-    St: notification_state::State,
-    S: jacquard_common::BosStr,
-> NotificationBuilder<St, S> {
+impl<St: notification_state::State, S: jacquard_common::BosStr> NotificationBuilder<St, S> {
     /// Set the `reasonSubject` field (optional)
     pub fn reason_subject(
         mut self,
@@ -822,16 +803,11 @@ where
     }
 }
 
-impl<
-    St: notification_state::State,
-    S: jacquard_common::BosStr,
-> NotificationBuilder<St, S> {
+impl<St: notification_state::State, S: jacquard_common::BosStr> NotificationBuilder<St, S> {
     /// Set the `starterPack` field (optional)
     pub fn starter_pack(
         mut self,
-        value: impl Into<
-            Option<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
-        >,
+        value: impl Into<Option<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>>,
     ) -> Self {
         self._fields.8 = value.into();
         self
@@ -916,14 +892,11 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_notification_listNotifications() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_notification_listNotifications(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "app.bsky.notification.listNotifications",
-        ),
+        id: ::jacquard_common::CowStr::new_static("app.bsky.notification.listNotifications"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(

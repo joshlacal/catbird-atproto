@@ -8,39 +8,37 @@
 /// Fired when a user accepts a chat convo, either explicitly or by sending a message.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct EventChatAccepted<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The DID of the person accepting the convo.
+    /// The DID of the person accepting the convo.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the convo was originally created.
+    /// When the convo was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event. Only present for group convos.
+    /// Current member count at the time of the event. Only present for group convos.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub group_member_count: core::option::Option<i64>,
-    ///The name of the group chat. Only present for group convos.
+    /// The name of the group chat. Only present for group convos.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub group_name: core::option::Option<S>,
-    ///How the convo was accepted.
+    /// How the convo was accepted.
     pub method: EventChatAcceptedMethod<S>,
-    ///The DID of the group chat owner. Only present for group convos.
+    /// The DID of the group chat owner. Only present for group convos.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub owner_did: core::option::Option<jacquard_common::types::string::Did<S>>,
     pub rev: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_chat_accepted_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -52,9 +50,7 @@ pub struct EventChatAccepted<S: jacquard_common::BosStr = jacquard_common::Defau
 /// How the convo was accepted.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum EventChatAcceptedMethod<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum EventChatAcceptedMethod<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Explicit,
     Message,
     Other(S),
@@ -100,7 +96,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for EventChatAcceptedMethod<S>
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for EventChatAcceptedMethod<S> {
+    for EventChatAcceptedMethod<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -116,8 +113,7 @@ impl<S: jacquard_common::BosStr + Default> Default for EventChatAcceptedMethod<S
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for EventChatAcceptedMethod<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EventChatAcceptedMethod<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -127,9 +123,7 @@ where
         match self {
             EventChatAcceptedMethod::Explicit => EventChatAcceptedMethod::Explicit,
             EventChatAcceptedMethod::Message => EventChatAcceptedMethod::Message,
-            EventChatAcceptedMethod::Other(v) => {
-                EventChatAcceptedMethod::Other(v.into_static())
-            }
+            EventChatAcceptedMethod::Other(v) => EventChatAcceptedMethod::Other(v.into_static()),
         }
     }
 }
@@ -137,32 +131,28 @@ where
 /// Fired when the first message was sent on a convo.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventConvoFirstMessage<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct EventConvoFirstMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub message_id: core::option::Option<S>,
-    ///The list of DIDs message recipients. Does not include the sender, which is in the `user` field
+    /// The list of DIDs message recipients. Does not include the sender, which is in the `user` field
     pub recipients: Vec<jacquard_common::types::string::Did<S>>,
     pub rev: S,
-    ///The DID of the message author.
+    /// The DID of the message author.
     pub user: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_convo_first_message_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -174,38 +164,34 @@ pub struct EventConvoFirstMessage<
 /// Fire when a group chat is created.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventGroupChatCreated<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The DID of the actor performing the action. For this event, same as ownerDid.
+pub struct EventGroupChatCreated<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The DID of the actor performing the action. For this event, same as ownerDid.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
-    ///The name set at creation time.
+    /// The name set at creation time.
     pub group_name: S,
-    ///DIDs of everyone added at creation time.
+    /// DIDs of everyone added at creation time.
     pub initial_member_dids: Vec<jacquard_common::types::string::Did<S>>,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
     pub rev: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_created_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -217,39 +203,35 @@ pub struct EventGroupChatCreated<
 /// Fired when a user requests to join a group chat via an join link that requires approval.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventGroupChatJoinRequest<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The DID of the person requesting to join.
+pub struct EventGroupChatJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The DID of the person requesting to join.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
     pub group_name: S,
-    ///The code of the join link used to request joining.
+    /// The code of the join link used to request joining.
     pub join_link_code: S,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
     pub rev: S,
-    ///Whether the requesting member follows the group owner.
+    /// Whether the requesting member follows the group owner.
     pub subject_follows_owner: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_join_request_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -261,15 +243,8 @@ pub struct EventGroupChatJoinRequest<
 /// Fired when a join request is approved by the group owner.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -277,21 +252,26 @@ pub struct EventGroupChatJoinRequest<
 pub struct EventGroupChatJoinRequestApproved<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    ///The DID of the owner approving the request.
+    /// The DID of the owner approving the request.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
     pub group_name: S,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
     pub rev: S,
-    ///The DID of the member whose request was approved.
+    /// The DID of the member whose request was approved.
     pub subject_did: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_join_request_approved_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -303,15 +283,8 @@ pub struct EventGroupChatJoinRequestApproved<
 /// Fired when a join request is rejected by the group owner.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -319,21 +292,26 @@ pub struct EventGroupChatJoinRequestApproved<
 pub struct EventGroupChatJoinRequestRejected<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    ///The DID of the owner rejecting the request.
+    /// The DID of the owner rejecting the request.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
     pub group_name: S,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
     pub rev: S,
-    ///The DID of the member whose request was rejected.
+    /// The DID of the member whose request was rejected.
     pub subject_did: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_join_request_rejected_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -345,41 +323,37 @@ pub struct EventGroupChatJoinRequestRejected<
 /// Fired when a member is added to a group chat. Note that members are added in the 'request' state.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventGroupChatMemberAdded<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The DID of the actor performing the action. For this event, same as ownerDid.
+pub struct EventGroupChatMemberAdded<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The DID of the actor performing the action. For this event, same as ownerDid.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
     pub group_name: S,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
-    ///The number of members who have not yet accepted the convo.
+    /// The number of members who have not yet accepted the convo.
     pub request_members_count: i64,
     pub rev: S,
-    ///The DID of the member who was added.
+    /// The DID of the member who was added.
     pub subject_did: jacquard_common::types::string::Did<S>,
-    ///Whether the added member follows the group owner.
+    /// Whether the added member follows the group owner.
     pub subject_follows_owner: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_member_added_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -391,39 +365,35 @@ pub struct EventGroupChatMemberAdded<
 /// Fired when a member joins a group chat via an join link that does not require approval.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventGroupChatMemberJoined<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The DID of the person joining.
+pub struct EventGroupChatMemberJoined<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The DID of the person joining.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
     pub group_name: S,
-    ///The code of the join link used to join.
+    /// The code of the join link used to join.
     pub join_link_code: S,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
     pub rev: S,
-    ///Whether the joining member follows the group owner.
+    /// Whether the joining member follows the group owner.
     pub subject_follows_owner: bool,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_member_joined_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -435,39 +405,35 @@ pub struct EventGroupChatMemberJoined<
 /// Fired when a member leaves or is removed from a group chat.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventGroupChatMemberLeft<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The DID of the actor. For voluntary: the person leaving. For kicked: the owner.
+pub struct EventGroupChatMemberLeft<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The DID of the actor. For voluntary: the person leaving. For kicked: the owner.
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
     pub group_name: S,
-    ///How the member left.
+    /// How the member left.
     pub leave_method: EventGroupChatMemberLeftLeaveMethod<S>,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
     pub rev: S,
-    ///The DID of the member who left or was removed.
+    /// The DID of the member who left or was removed.
     pub subject_did: jacquard_common::types::string::Did<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_member_left_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -505,8 +471,7 @@ impl<S: jacquard_common::BosStr> EventGroupChatMemberLeftLeaveMethod<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> core::fmt::Display
-for EventGroupChatMemberLeftLeaveMethod<S> {
+impl<S: jacquard_common::BosStr> core::fmt::Display for EventGroupChatMemberLeftLeaveMethod<S> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -518,8 +483,7 @@ impl<S: jacquard_common::BosStr> AsRef<str> for EventGroupChatMemberLeftLeaveMet
     }
 }
 
-impl<S: jacquard_common::BosStr> serde::Serialize
-for EventGroupChatMemberLeftLeaveMethod<S> {
+impl<S: jacquard_common::BosStr> serde::Serialize for EventGroupChatMemberLeftLeaveMethod<S> {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: serde::Serializer,
@@ -529,7 +493,8 @@ for EventGroupChatMemberLeftLeaveMethod<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for EventGroupChatMemberLeftLeaveMethod<S> {
+    for EventGroupChatMemberLeftLeaveMethod<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -539,15 +504,14 @@ for EventGroupChatMemberLeftLeaveMethod<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr + Default> Default
-for EventGroupChatMemberLeftLeaveMethod<S> {
+impl<S: jacquard_common::BosStr + Default> Default for EventGroupChatMemberLeftLeaveMethod<S> {
     fn default() -> Self {
         Self::Other(Default::default())
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for EventGroupChatMemberLeftLeaveMethod<S>
+    for EventGroupChatMemberLeftLeaveMethod<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -571,56 +535,52 @@ where
 /// Fired when a group chat's metadata or status changes.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventGroupChatUpdated<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The DID of the actor performing the action (the owner).
+pub struct EventGroupChatUpdated<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The DID of the actor performing the action (the owner).
     pub actor_did: jacquard_common::types::string::Did<S>,
-    ///When the group was originally created.
+    /// When the group was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
     pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///Current member count at the time of the event.
+    /// Current member count at the time of the event.
     pub group_member_count: i64,
-    ///Current group name.
+    /// Current group name.
     pub group_name: S,
-    ///The code of the join link. Only present when updateType is join-link-related.
+    /// The code of the join link. Only present when updateType is join-link-related.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub join_link_code: core::option::Option<S>,
-    ///Whether the join link is restricted to followers of the owner. Only present when updateType is join-link-related.
+    /// Whether the join link is restricted to followers of the owner. Only present when updateType is join-link-related.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub join_link_followers_only: core::option::Option<bool>,
-    ///Whether the join link requires owner approval to join. Only present when updateType is join-link-related.
+    /// Whether the join link requires owner approval to join. Only present when updateType is join-link-related.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub join_link_requires_approval: core::option::Option<bool>,
-    ///Why the group was locked. Only present when updateType is 'locked'.
+    /// Why the group was locked. Only present when updateType is 'locked'.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub lock_reason: core::option::Option<EventGroupChatUpdatedLockReason<S>>,
-    ///The new group name. Only present when updateType is 'name_changed'.
+    /// The new group name. Only present when updateType is 'name_changed'.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub new_name: core::option::Option<S>,
-    ///The previous group name. Only present when updateType is 'name_changed'.
+    /// The previous group name. Only present when updateType is 'name_changed'.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub old_name: core::option::Option<S>,
-    ///The DID of the group chat owner.
+    /// The DID of the group chat owner.
     pub owner_did: jacquard_common::types::string::Did<S>,
     pub rev: S,
-    ///What changed.
+    /// What changed.
     pub update_type: EventGroupChatUpdatedUpdateType<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_group_chat_updated_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -632,9 +592,7 @@ pub struct EventGroupChatUpdated<
 /// Why the group was locked. Only present when updateType is 'locked'.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum EventGroupChatUpdatedLockReason<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum EventGroupChatUpdatedLockReason<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     OwnerAction,
     OwnerLeft,
     OwnerDeactivated,
@@ -676,8 +634,7 @@ impl<S: jacquard_common::BosStr> EventGroupChatUpdatedLockReason<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> core::fmt::Display
-for EventGroupChatUpdatedLockReason<S> {
+impl<S: jacquard_common::BosStr> core::fmt::Display for EventGroupChatUpdatedLockReason<S> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -689,8 +646,7 @@ impl<S: jacquard_common::BosStr> AsRef<str> for EventGroupChatUpdatedLockReason<
     }
 }
 
-impl<S: jacquard_common::BosStr> serde::Serialize
-for EventGroupChatUpdatedLockReason<S> {
+impl<S: jacquard_common::BosStr> serde::Serialize for EventGroupChatUpdatedLockReason<S> {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: serde::Serializer,
@@ -700,7 +656,8 @@ for EventGroupChatUpdatedLockReason<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for EventGroupChatUpdatedLockReason<S> {
+    for EventGroupChatUpdatedLockReason<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -710,15 +667,13 @@ for EventGroupChatUpdatedLockReason<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr + Default> Default
-for EventGroupChatUpdatedLockReason<S> {
+impl<S: jacquard_common::BosStr + Default> Default for EventGroupChatUpdatedLockReason<S> {
     fn default() -> Self {
         Self::Other(Default::default())
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for EventGroupChatUpdatedLockReason<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EventGroupChatUpdatedLockReason<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -760,9 +715,7 @@ where
 /// What changed.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum EventGroupChatUpdatedUpdateType<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub enum EventGroupChatUpdatedUpdateType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     NameChanged,
     Locked,
     LockedPermanently,
@@ -801,8 +754,7 @@ impl<S: jacquard_common::BosStr> EventGroupChatUpdatedUpdateType<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr> core::fmt::Display
-for EventGroupChatUpdatedUpdateType<S> {
+impl<S: jacquard_common::BosStr> core::fmt::Display for EventGroupChatUpdatedUpdateType<S> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -814,8 +766,7 @@ impl<S: jacquard_common::BosStr> AsRef<str> for EventGroupChatUpdatedUpdateType<
     }
 }
 
-impl<S: jacquard_common::BosStr> serde::Serialize
-for EventGroupChatUpdatedUpdateType<S> {
+impl<S: jacquard_common::BosStr> serde::Serialize for EventGroupChatUpdatedUpdateType<S> {
     fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
         Ser: serde::Serializer,
@@ -825,7 +776,8 @@ for EventGroupChatUpdatedUpdateType<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for EventGroupChatUpdatedUpdateType<S> {
+    for EventGroupChatUpdatedUpdateType<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -835,15 +787,13 @@ for EventGroupChatUpdatedUpdateType<S> {
     }
 }
 
-impl<S: jacquard_common::BosStr + Default> Default
-for EventGroupChatUpdatedUpdateType<S> {
+impl<S: jacquard_common::BosStr + Default> Default for EventGroupChatUpdatedUpdateType<S> {
     fn default() -> Self {
         Self::Other(Default::default())
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
-for EventGroupChatUpdatedUpdateType<S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EventGroupChatUpdatedUpdateType<S>
 where
     S: jacquard_common::BosStr + jacquard_common::IntoStatic,
     S::Output: jacquard_common::BosStr,
@@ -854,15 +804,11 @@ where
             EventGroupChatUpdatedUpdateType::NameChanged => {
                 EventGroupChatUpdatedUpdateType::NameChanged
             }
-            EventGroupChatUpdatedUpdateType::Locked => {
-                EventGroupChatUpdatedUpdateType::Locked
-            }
+            EventGroupChatUpdatedUpdateType::Locked => EventGroupChatUpdatedUpdateType::Locked,
             EventGroupChatUpdatedUpdateType::LockedPermanently => {
                 EventGroupChatUpdatedUpdateType::LockedPermanently
             }
-            EventGroupChatUpdatedUpdateType::Unlocked => {
-                EventGroupChatUpdatedUpdateType::Unlocked
-            }
+            EventGroupChatUpdatedUpdateType::Unlocked => EventGroupChatUpdatedUpdateType::Unlocked,
             EventGroupChatUpdatedUpdateType::JoinLinkCreated => {
                 EventGroupChatUpdatedUpdateType::JoinLinkCreated
             }
@@ -882,29 +828,25 @@ where
 /// Fired when a user exceeds a rate limit.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct EventRateLimitExceeded<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///The DID of the user who hit the rate limit.
+pub struct EventRateLimitExceeded<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The DID of the user who hit the rate limit.
     pub actor_did: jacquard_common::types::string::Did<S>,
     pub created_at: jacquard_common::types::string::Datetime,
-    ///The NSID of the endpoint that was rate limited.
+    /// The NSID of the endpoint that was rate limited.
     pub endpoint: S,
     pub rev: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_event_rate_limit_exceeded_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -913,17 +855,9 @@ pub struct EventRateLimitExceeded<
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -933,26 +867,16 @@ pub struct SubscribeModEvents<S: jacquard_common::BosStr = jacquard_common::Defa
     pub cursor: core::option::Option<S>,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum SubscribeModEventsMessage<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    #[serde(rename = "#eventConvoFirstMessage")]
+pub enum SubscribeModEventsMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "chat.bsky.moderation.subscribeModEvents#eventConvoFirstMessage")]
     EventConvoFirstMessage(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventConvoFirstMessage<
@@ -960,7 +884,7 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatCreated")]
+    #[serde(rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatCreated")]
     EventGroupChatCreated(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatCreated<
@@ -968,7 +892,9 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatMemberAdded")]
+    #[serde(
+        rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatMemberAdded"
+    )]
     EventGroupChatMemberAdded(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberAdded<
@@ -976,7 +902,9 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatMemberJoined")]
+    #[serde(
+        rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatMemberJoined"
+    )]
     EventGroupChatMemberJoined(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberJoined<
@@ -984,7 +912,9 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatJoinRequest")]
+    #[serde(
+        rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatJoinRequest"
+    )]
     EventGroupChatJoinRequest(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequest<
@@ -992,7 +922,9 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatJoinRequestApproved")]
+    #[serde(
+        rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatJoinRequestApproved"
+    )]
     EventGroupChatJoinRequestApproved(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequestApproved<
@@ -1000,7 +932,9 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatJoinRequestRejected")]
+    #[serde(
+        rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatJoinRequestRejected"
+    )]
     EventGroupChatJoinRequestRejected(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequestRejected<
@@ -1008,7 +942,7 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventChatAccepted")]
+    #[serde(rename = "chat.bsky.moderation.subscribeModEvents#eventChatAccepted")]
     EventChatAccepted(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventChatAccepted<
@@ -1016,7 +950,7 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatMemberLeft")]
+    #[serde(rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatMemberLeft")]
     EventGroupChatMemberLeft(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberLeft<
@@ -1024,7 +958,7 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventGroupChatUpdated")]
+    #[serde(rename = "chat.bsky.moderation.subscribeModEvents#eventGroupChatUpdated")]
     EventGroupChatUpdated(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatUpdated<
@@ -1032,7 +966,7 @@ pub enum SubscribeModEventsMessage<
             >,
         >,
     ),
-    #[serde(rename = "#eventRateLimitExceeded")]
+    #[serde(rename = "chat.bsky.moderation.subscribeModEvents#eventRateLimitExceeded")]
     EventRateLimitExceeded(
         Box<
             crate::generated::chat_bsky::moderation::subscribe_mod_events::EventRateLimitExceeded<
@@ -1050,85 +984,58 @@ impl<S: jacquard_common::BosStr> SubscribeModEventsMessage<S> {
     where
         S: serde::Deserialize<'de>,
     {
-        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(
-            bytes,
-        )?;
+        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
         match header.t.as_str() {
             "#eventConvoFirstMessage" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventConvoFirstMessage(Box::new(variant)))
             }
             "#eventGroupChatCreated" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatCreated(Box::new(variant)))
             }
             "#eventGroupChatMemberAdded" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatMemberAdded(Box::new(variant)))
             }
             "#eventGroupChatMemberJoined" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatMemberJoined(Box::new(variant)))
             }
             "#eventGroupChatJoinRequest" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatJoinRequest(Box::new(variant)))
             }
             "#eventGroupChatJoinRequestApproved" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatJoinRequestApproved(Box::new(variant)))
             }
             "#eventGroupChatJoinRequestRejected" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatJoinRequestRejected(Box::new(variant)))
             }
             "#eventChatAccepted" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventChatAccepted(Box::new(variant)))
             }
             "#eventGroupChatMemberLeft" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatMemberLeft(Box::new(variant)))
             }
             "#eventGroupChatUpdated" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventGroupChatUpdated(Box::new(variant)))
             }
             "#eventRateLimitExceeded" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
-                    body,
-                )?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventRateLimitExceeded(Box::new(variant)))
             }
-            unknown => {
-                Err(
-                    jacquard_common::error::DecodeError::UnknownEventType(unknown.into()),
-                )
-            }
+            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
+                unknown.into(),
+            )),
         }
     }
 }
-
 
 #[derive(
     serde::Serialize,
@@ -1138,20 +1045,26 @@ impl<S: jacquard_common::BosStr> SubscribeModEventsMessage<S> {
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum SubscribeModEventsError {
     #[serde(rename = "FutureCursor")]
-    FutureCursor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    FutureCursor(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// If the consumer of the stream can not keep up with events, and a backlog gets too large, the server will drop the connection.
     #[serde(rename = "ConsumerTooSlow")]
-    ConsumerTooSlow(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConsumerTooSlow(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -1184,8 +1097,7 @@ impl core::fmt::Display for SubscribeModEventsError {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventChatAccepted<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EventChatAccepted<S> {
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1201,7 +1113,8 @@ for EventChatAccepted<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventConvoFirstMessage<S> {
+    for EventConvoFirstMessage<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1217,7 +1130,8 @@ for EventConvoFirstMessage<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatCreated<S> {
+    for EventGroupChatCreated<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1233,7 +1147,8 @@ for EventGroupChatCreated<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatJoinRequest<S> {
+    for EventGroupChatJoinRequest<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1249,7 +1164,8 @@ for EventGroupChatJoinRequest<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatJoinRequestApproved<S> {
+    for EventGroupChatJoinRequestApproved<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1265,7 +1181,8 @@ for EventGroupChatJoinRequestApproved<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatJoinRequestRejected<S> {
+    for EventGroupChatJoinRequestRejected<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1281,7 +1198,8 @@ for EventGroupChatJoinRequestRejected<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatMemberAdded<S> {
+    for EventGroupChatMemberAdded<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1297,7 +1215,8 @@ for EventGroupChatMemberAdded<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatMemberJoined<S> {
+    for EventGroupChatMemberJoined<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1313,7 +1232,8 @@ for EventGroupChatMemberJoined<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatMemberLeft<S> {
+    for EventGroupChatMemberLeft<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1329,7 +1249,8 @@ for EventGroupChatMemberLeft<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventGroupChatUpdated<S> {
+    for EventGroupChatUpdated<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1345,7 +1266,8 @@ for EventGroupChatUpdated<S> {
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for EventRateLimitExceeded<S> {
+    for EventRateLimitExceeded<S>
+{
     fn nsid() -> &'static str {
         "chat.bsky.moderation.subscribeModEvents"
     }
@@ -1365,31 +1287,57 @@ for EventRateLimitExceeded<S> {
 pub struct SubscribeModEventsStream;
 impl jacquard_common::xrpc::SubscriptionResp for SubscribeModEventsStream {
     const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
     type Message<S: jacquard_common::BosStr> = SubscribeModEventsMessage<S>;
     type Error = SubscribeModEventsError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription
-for SubscribeModEvents<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription for SubscribeModEvents<S> {
     const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
     type Stream = SubscribeModEventsStream;
 }
 
 pub struct SubscribeModEventsEndpoint;
 impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeModEventsEndpoint {
     const PATH: &'static str = "/xrpc/chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
     type Params<S: jacquard_common::BosStr> = SubscribeModEvents<S>;
     type Stream = SubscribeModEventsStream;
 }
 
+fn deserialize_event_chat_accepted_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_chat_accepted_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1519,10 +1467,9 @@ pub struct EventChatAcceptedBuilder<
 
 impl EventChatAccepted<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> EventChatAcceptedBuilder<
-        event_chat_accepted_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::Empty, jacquard_common::DefaultStr>
+    {
         EventChatAcceptedBuilder::new()
     }
 }
@@ -1534,10 +1481,7 @@ impl<S: jacquard_common::BosStr> EventChatAccepted<S> {
     }
 }
 
-impl EventChatAcceptedBuilder<
-    event_chat_accepted_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl EventChatAcceptedBuilder<event_chat_accepted_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventChatAcceptedBuilder {
@@ -1548,9 +1492,7 @@ impl EventChatAcceptedBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventChatAcceptedBuilder<event_chat_accepted_state::Empty, S> {
+impl<S: jacquard_common::BosStr> EventChatAcceptedBuilder<event_chat_accepted_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventChatAcceptedBuilder {
@@ -1637,10 +1579,9 @@ where
     }
 }
 
-impl<
-    St: event_chat_accepted_state::State,
-    S: jacquard_common::BosStr,
-> EventChatAcceptedBuilder<St, S> {
+impl<St: event_chat_accepted_state::State, S: jacquard_common::BosStr>
+    EventChatAcceptedBuilder<St, S>
+{
     /// Set the `groupMemberCount` field (optional)
     pub fn group_member_count(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.4 = value.into();
@@ -1653,10 +1594,9 @@ impl<
     }
 }
 
-impl<
-    St: event_chat_accepted_state::State,
-    S: jacquard_common::BosStr,
-> EventChatAcceptedBuilder<St, S> {
+impl<St: event_chat_accepted_state::State, S: jacquard_common::BosStr>
+    EventChatAcceptedBuilder<St, S>
+{
     /// Set the `groupName` field (optional)
     pub fn group_name(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.5 = value.into();
@@ -1688,10 +1628,9 @@ where
     }
 }
 
-impl<
-    St: event_chat_accepted_state::State,
-    S: jacquard_common::BosStr,
-> EventChatAcceptedBuilder<St, S> {
+impl<St: event_chat_accepted_state::State, S: jacquard_common::BosStr>
+    EventChatAcceptedBuilder<St, S>
+{
     /// Set the `ownerDid` field (optional)
     pub fn owner_did(
         mut self,
@@ -1777,14 +1716,11 @@ where
     }
 }
 
-fn lexicon_doc_chat_bsky_moderation_subscribeModEvents() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "chat.bsky.moderation.subscribeModEvents",
-        ),
+        id: ::jacquard_common::CowStr::new_static("chat.bsky.moderation.subscribeModEvents"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
@@ -2315,277 +2251,277 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents() -> jacquard_lexicon::le
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatJoinRequestApproved",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Fired when a join request is approved by the group owner.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "actorDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The DID of the owner approving the request.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "When the group was originally created.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "convoId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "createdAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "groupName",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "ownerDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The DID of the group chat owner.",
-                                    ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The DID of the owner approving the request.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "convoCreatedAt",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "rev",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "subjectDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The DID of the member whose request was approved.",
-                                    ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "When the group was originally created.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "groupMemberCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The DID of the group chat owner.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "subjectDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The DID of the member whose request was approved.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatJoinRequestRejected",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Fired when a join request is rejected by the group owner.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "actorDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The DID of the owner rejecting the request.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "When the group was originally created.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "convoId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "createdAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "groupName",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "ownerDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The DID of the group chat owner.",
-                                    ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The DID of the owner rejecting the request.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "convoCreatedAt",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "rev",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "subjectDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The DID of the member whose request was rejected.",
-                                    ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "When the group was originally created.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "groupMemberCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The DID of the group chat owner.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "subjectDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The DID of the member whose request was rejected.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -3244,78 +3180,70 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents() -> jacquard_lexicon::le
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "eventRateLimitExceeded",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("eventRateLimitExceeded"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Fired when a user exceeds a rate limit.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "actorDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The DID of the user who hit the rate limit.",
-                                    ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The DID of the user who hit the rate limit.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "createdAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The NSID of the endpoint that was rate limited.",
+                                        )),
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "endpoint",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The NSID of the endpoint that was rate limited.",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "rev",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -3352,11 +3280,35 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents() -> jacquard_lexicon::le
     }
 }
 
+fn deserialize_event_convo_first_message_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_convo_first_message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -3473,18 +3425,17 @@ impl EventConvoFirstMessage<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventConvoFirstMessage<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventConvoFirstMessageBuilder<
-        event_convo_first_message_state::Empty,
-        S,
-    > {
+    pub fn builder() -> EventConvoFirstMessageBuilder<event_convo_first_message_state::Empty, S> {
         EventConvoFirstMessageBuilder::builder()
     }
 }
 
-impl EventConvoFirstMessageBuilder<
-    event_convo_first_message_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventConvoFirstMessageBuilder<
+        event_convo_first_message_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventConvoFirstMessageBuilder {
@@ -3495,9 +3446,9 @@ impl EventConvoFirstMessageBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventConvoFirstMessageBuilder<event_convo_first_message_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventConvoFirstMessageBuilder<event_convo_first_message_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventConvoFirstMessageBuilder {
@@ -3517,10 +3468,7 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> EventConvoFirstMessageBuilder<
-        event_convo_first_message_state::SetConvoId<St>,
-        S,
-    > {
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetConvoId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
             _state: ::core::marker::PhantomData,
@@ -3539,10 +3487,7 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventConvoFirstMessageBuilder<
-        event_convo_first_message_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetCreatedAt<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
             _state: ::core::marker::PhantomData,
@@ -3552,10 +3497,9 @@ where
     }
 }
 
-impl<
-    St: event_convo_first_message_state::State,
-    S: jacquard_common::BosStr,
-> EventConvoFirstMessageBuilder<St, S> {
+impl<St: event_convo_first_message_state::State, S: jacquard_common::BosStr>
+    EventConvoFirstMessageBuilder<St, S>
+{
     /// Set the `messageId` field (optional)
     pub fn message_id(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -3577,10 +3521,7 @@ where
     pub fn recipients(
         mut self,
         value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
-    ) -> EventConvoFirstMessageBuilder<
-        event_convo_first_message_state::SetRecipients<St>,
-        S,
-    > {
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetRecipients<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
             _state: ::core::marker::PhantomData,
@@ -3669,11 +3610,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_created_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_created_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -3885,18 +3850,14 @@ impl EventGroupChatCreated<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventGroupChatCreated<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::Empty,
-        S,
-    > {
+    pub fn builder() -> EventGroupChatCreatedBuilder<event_group_chat_created_state::Empty, S> {
         EventGroupChatCreatedBuilder::builder()
     }
 }
 
-impl EventGroupChatCreatedBuilder<
-    event_group_chat_created_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatCreatedBuilder<event_group_chat_created_state::Empty, jacquard_common::DefaultStr>
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatCreatedBuilder {
@@ -3907,9 +3868,9 @@ impl EventGroupChatCreatedBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatCreatedBuilder<event_group_chat_created_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatCreatedBuilder<event_group_chat_created_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatCreatedBuilder {
@@ -3929,10 +3890,7 @@ where
     pub fn actor_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetActorDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetActorDid<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -3951,10 +3909,8 @@ where
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetConvoCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetConvoCreatedAt<St>, S>
+    {
         self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -3973,10 +3929,7 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetConvoId<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetConvoId<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -3995,10 +3948,7 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetCreatedAt<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -4017,10 +3967,8 @@ where
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetGroupMemberCount<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetGroupMemberCount<St>, S>
+    {
         self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -4039,10 +3987,7 @@ where
     pub fn group_name(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetGroupName<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetGroupName<St>, S> {
         self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -4061,10 +4006,8 @@ where
     pub fn initial_member_dids(
         mut self,
         value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetInitialMemberDids<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetInitialMemberDids<St>, S>
+    {
         self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -4083,10 +4026,7 @@ where
     pub fn owner_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatCreatedBuilder<
-        event_group_chat_created_state::SetOwnerDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetOwnerDid<St>, S> {
         self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -4166,11 +4106,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_join_request_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_join_request_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -4411,18 +4375,18 @@ impl EventGroupChatJoinRequest<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventGroupChatJoinRequest<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::Empty,
-        S,
-    > {
+    pub fn builder(
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::Empty, S> {
         EventGroupChatJoinRequestBuilder::builder()
     }
 }
 
-impl EventGroupChatJoinRequestBuilder<
-    event_group_chat_join_request_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatJoinRequestBuilder<
+        event_group_chat_join_request_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatJoinRequestBuilder {
@@ -4433,9 +4397,9 @@ impl EventGroupChatJoinRequestBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatJoinRequestBuilder {
@@ -4455,10 +4419,8 @@ where
     pub fn actor_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::SetActorDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetActorDid<St>, S>
+    {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -4499,10 +4461,8 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::SetConvoId<St>,
-        S,
-    > {
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetConvoId<St>, S>
+    {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -4521,10 +4481,8 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetCreatedAt<St>, S>
+    {
         self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -4565,10 +4523,8 @@ where
     pub fn group_name(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::SetGroupName<St>,
-        S,
-    > {
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetGroupName<St>, S>
+    {
         self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -4587,10 +4543,8 @@ where
     pub fn join_link_code(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::SetJoinLinkCode<St>,
-        S,
-    > {
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetJoinLinkCode<St>, S>
+    {
         self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -4609,10 +4563,8 @@ where
     pub fn owner_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::SetOwnerDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetOwnerDid<St>, S>
+    {
         self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -4631,10 +4583,7 @@ where
     pub fn rev(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatJoinRequestBuilder<
-        event_group_chat_join_request_state::SetRev<St>,
-        S,
-    > {
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetRev<St>, S> {
         self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
             _state: ::core::marker::PhantomData,
@@ -4720,11 +4669,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_join_request_approved_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_join_request_approved_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -4944,10 +4917,12 @@ impl<S: jacquard_common::BosStr> EventGroupChatJoinRequestApproved<S> {
     }
 }
 
-impl EventGroupChatJoinRequestApprovedBuilder<
-    event_group_chat_join_request_approved_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatJoinRequestApprovedBuilder<
+        event_group_chat_join_request_approved_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatJoinRequestApprovedBuilder {
@@ -4958,12 +4933,9 @@ impl EventGroupChatJoinRequestApprovedBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatJoinRequestApprovedBuilder<
-    event_group_chat_join_request_approved_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatJoinRequestApprovedBuilder<event_group_chat_join_request_approved_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatJoinRequestApprovedBuilder {
@@ -5223,11 +5195,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_join_request_rejected_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_join_request_rejected_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -5447,10 +5443,12 @@ impl<S: jacquard_common::BosStr> EventGroupChatJoinRequestRejected<S> {
     }
 }
 
-impl EventGroupChatJoinRequestRejectedBuilder<
-    event_group_chat_join_request_rejected_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatJoinRequestRejectedBuilder<
+        event_group_chat_join_request_rejected_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatJoinRequestRejectedBuilder {
@@ -5461,12 +5459,9 @@ impl EventGroupChatJoinRequestRejectedBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatJoinRequestRejectedBuilder<
-    event_group_chat_join_request_rejected_state::Empty,
-    S,
-> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatJoinRequestRejectedBuilder<event_group_chat_join_request_rejected_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatJoinRequestRejectedBuilder {
@@ -5726,11 +5721,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_member_added_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_member_added_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6002,36 +6021,40 @@ impl EventGroupChatMemberAdded<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventGroupChatMemberAdded<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::Empty,
-        S,
-    > {
+    pub fn builder(
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::Empty, S> {
         EventGroupChatMemberAddedBuilder::builder()
     }
 }
 
-impl EventGroupChatMemberAddedBuilder<
-    event_group_chat_member_added_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatMemberAddedBuilder<
+        event_group_chat_member_added_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -6046,10 +6069,8 @@ where
     pub fn actor_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::SetActorDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetActorDid<St>, S>
+    {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6090,10 +6111,8 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::SetConvoId<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetConvoId<St>, S>
+    {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6112,10 +6131,8 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetCreatedAt<St>, S>
+    {
         self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6156,10 +6173,8 @@ where
     pub fn group_name(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::SetGroupName<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetGroupName<St>, S>
+    {
         self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6178,10 +6193,8 @@ where
     pub fn owner_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::SetOwnerDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetOwnerDid<St>, S>
+    {
         self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6222,10 +6235,7 @@ where
     pub fn rev(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::SetRev<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetRev<St>, S> {
         self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6244,10 +6254,8 @@ where
     pub fn subject_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberAddedBuilder<
-        event_group_chat_member_added_state::SetSubjectDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetSubjectDid<St>, S>
+    {
         self._fields.9 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6336,11 +6344,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_member_joined_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_member_joined_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6581,18 +6613,18 @@ impl EventGroupChatMemberJoined<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventGroupChatMemberJoined<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventGroupChatMemberJoinedBuilder<
-        event_group_chat_member_joined_state::Empty,
-        S,
-    > {
+    pub fn builder(
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::Empty, S> {
         EventGroupChatMemberJoinedBuilder::builder()
     }
 }
 
-impl EventGroupChatMemberJoinedBuilder<
-    event_group_chat_member_joined_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatMemberJoinedBuilder<
+        event_group_chat_member_joined_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatMemberJoinedBuilder {
@@ -6603,9 +6635,9 @@ impl EventGroupChatMemberJoinedBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatMemberJoinedBuilder {
@@ -6625,10 +6657,8 @@ where
     pub fn actor_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberJoinedBuilder<
-        event_group_chat_member_joined_state::SetActorDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetActorDid<St>, S>
+    {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6669,10 +6699,8 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberJoinedBuilder<
-        event_group_chat_member_joined_state::SetConvoId<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetConvoId<St>, S>
+    {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6691,10 +6719,8 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberJoinedBuilder<
-        event_group_chat_member_joined_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetCreatedAt<St>, S>
+    {
         self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6735,10 +6761,8 @@ where
     pub fn group_name(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberJoinedBuilder<
-        event_group_chat_member_joined_state::SetGroupName<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetGroupName<St>, S>
+    {
         self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6779,10 +6803,8 @@ where
     pub fn owner_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberJoinedBuilder<
-        event_group_chat_member_joined_state::SetOwnerDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetOwnerDid<St>, S>
+    {
         self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6801,10 +6823,8 @@ where
     pub fn rev(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberJoinedBuilder<
-        event_group_chat_member_joined_state::SetRev<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetRev<St>, S>
+    {
         self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
             _state: ::core::marker::PhantomData,
@@ -6890,11 +6910,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_member_left_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_member_left_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7135,18 +7179,18 @@ impl EventGroupChatMemberLeft<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventGroupChatMemberLeft<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::Empty,
-        S,
-    > {
+    pub fn builder() -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::Empty, S>
+    {
         EventGroupChatMemberLeftBuilder::builder()
     }
 }
 
-impl EventGroupChatMemberLeftBuilder<
-    event_group_chat_member_left_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatMemberLeftBuilder<
+        event_group_chat_member_left_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatMemberLeftBuilder {
@@ -7157,9 +7201,9 @@ impl EventGroupChatMemberLeftBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatMemberLeftBuilder {
@@ -7179,10 +7223,8 @@ where
     pub fn actor_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetActorDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetActorDid<St>, S>
+    {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7201,10 +7243,8 @@ where
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetConvoCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetConvoCreatedAt<St>, S>
+    {
         self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7223,10 +7263,8 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetConvoId<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetConvoId<St>, S>
+    {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7245,10 +7283,8 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetCreatedAt<St>, S>
+    {
         self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7289,10 +7325,8 @@ where
     pub fn group_name(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetGroupName<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetGroupName<St>, S>
+    {
         self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7311,10 +7345,8 @@ where
     pub fn leave_method(
         mut self,
         value: impl Into<EventGroupChatMemberLeftLeaveMethod<S>>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetLeaveMethod<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetLeaveMethod<St>, S>
+    {
         self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7333,10 +7365,8 @@ where
     pub fn owner_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetOwnerDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetOwnerDid<St>, S>
+    {
         self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7355,10 +7385,7 @@ where
     pub fn rev(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetRev<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetRev<St>, S> {
         self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7377,10 +7404,8 @@ where
     pub fn subject_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatMemberLeftBuilder<
-        event_group_chat_member_left_state::SetSubjectDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetSubjectDid<St>, S>
+    {
         self._fields.9 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
             _state: ::core::marker::PhantomData,
@@ -7444,11 +7469,35 @@ where
     }
 }
 
+fn deserialize_event_group_chat_updated_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_group_chat_updated_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7666,37 +7715,20 @@ impl EventGroupChatUpdated<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventGroupChatUpdated<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::Empty,
-        S,
-    > {
+    pub fn builder() -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::Empty, S> {
         EventGroupChatUpdatedBuilder::builder()
     }
 }
 
-impl EventGroupChatUpdatedBuilder<
-    event_group_chat_updated_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventGroupChatUpdatedBuilder<event_group_chat_updated_state::Empty, jacquard_common::DefaultStr>
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None,
             ),
             _type: ::core::marker::PhantomData,
@@ -7704,28 +7736,15 @@ impl EventGroupChatUpdatedBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<event_group_chat_updated_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None,
             ),
             _type: ::core::marker::PhantomData,
@@ -7742,10 +7761,7 @@ where
     pub fn actor_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetActorDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetActorDid<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -7764,10 +7780,8 @@ where
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetConvoCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetConvoCreatedAt<St>, S>
+    {
         self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -7786,10 +7800,7 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetConvoId<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetConvoId<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -7808,10 +7819,7 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetCreatedAt<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -7830,10 +7838,8 @@ where
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetGroupMemberCount<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetGroupMemberCount<St>, S>
+    {
         self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -7852,10 +7858,7 @@ where
     pub fn group_name(
         mut self,
         value: impl Into<S>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetGroupName<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetGroupName<St>, S> {
         self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -7865,10 +7868,9 @@ where
     }
 }
 
-impl<
-    St: event_group_chat_updated_state::State,
-    S: jacquard_common::BosStr,
-> EventGroupChatUpdatedBuilder<St, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `joinLinkCode` field (optional)
     pub fn join_link_code(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.6 = value.into();
@@ -7881,10 +7883,9 @@ impl<
     }
 }
 
-impl<
-    St: event_group_chat_updated_state::State,
-    S: jacquard_common::BosStr,
-> EventGroupChatUpdatedBuilder<St, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `joinLinkFollowersOnly` field (optional)
     pub fn join_link_followers_only(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.7 = value.into();
@@ -7897,15 +7898,11 @@ impl<
     }
 }
 
-impl<
-    St: event_group_chat_updated_state::State,
-    S: jacquard_common::BosStr,
-> EventGroupChatUpdatedBuilder<St, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `joinLinkRequiresApproval` field (optional)
-    pub fn join_link_requires_approval(
-        mut self,
-        value: impl Into<Option<bool>>,
-    ) -> Self {
+    pub fn join_link_requires_approval(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.8 = value.into();
         self
     }
@@ -7916,10 +7913,9 @@ impl<
     }
 }
 
-impl<
-    St: event_group_chat_updated_state::State,
-    S: jacquard_common::BosStr,
-> EventGroupChatUpdatedBuilder<St, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `lockReason` field (optional)
     pub fn lock_reason(
         mut self,
@@ -7929,19 +7925,15 @@ impl<
         self
     }
     /// Set the `lockReason` field to an Option value (optional)
-    pub fn maybe_lock_reason(
-        mut self,
-        value: Option<EventGroupChatUpdatedLockReason<S>>,
-    ) -> Self {
+    pub fn maybe_lock_reason(mut self, value: Option<EventGroupChatUpdatedLockReason<S>>) -> Self {
         self._fields.9 = value;
         self
     }
 }
 
-impl<
-    St: event_group_chat_updated_state::State,
-    S: jacquard_common::BosStr,
-> EventGroupChatUpdatedBuilder<St, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `newName` field (optional)
     pub fn new_name(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.10 = value.into();
@@ -7954,10 +7946,9 @@ impl<
     }
 }
 
-impl<
-    St: event_group_chat_updated_state::State,
-    S: jacquard_common::BosStr,
-> EventGroupChatUpdatedBuilder<St, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `oldName` field (optional)
     pub fn old_name(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.11 = value.into();
@@ -7979,10 +7970,7 @@ where
     pub fn owner_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetOwnerDid<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetOwnerDid<St>, S> {
         self._fields.12 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -8020,10 +8008,7 @@ where
     pub fn update_type(
         mut self,
         value: impl Into<EventGroupChatUpdatedUpdateType<S>>,
-    ) -> EventGroupChatUpdatedBuilder<
-        event_group_chat_updated_state::SetUpdateType<St>,
-        S,
-    > {
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetUpdateType<St>, S> {
         self._fields.14 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
             _state: ::core::marker::PhantomData,
@@ -8096,11 +8081,35 @@ where
     }
 }
 
+fn deserialize_event_rate_limit_exceeded_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod event_rate_limit_exceeded_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8197,18 +8206,17 @@ impl EventRateLimitExceeded<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> EventRateLimitExceeded<S> {
     /// Create a new builder for this type
-    pub fn builder() -> EventRateLimitExceededBuilder<
-        event_rate_limit_exceeded_state::Empty,
-        S,
-    > {
+    pub fn builder() -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::Empty, S> {
         EventRateLimitExceededBuilder::builder()
     }
 }
 
-impl EventRateLimitExceededBuilder<
-    event_rate_limit_exceeded_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    EventRateLimitExceededBuilder<
+        event_rate_limit_exceeded_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventRateLimitExceededBuilder {
@@ -8219,9 +8227,9 @@ impl EventRateLimitExceededBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         EventRateLimitExceededBuilder {
@@ -8241,10 +8249,7 @@ where
     pub fn actor_did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> EventRateLimitExceededBuilder<
-        event_rate_limit_exceeded_state::SetActorDid<St>,
-        S,
-    > {
+    ) -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::SetActorDid<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         EventRateLimitExceededBuilder {
             _state: ::core::marker::PhantomData,
@@ -8263,10 +8268,7 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventRateLimitExceededBuilder<
-        event_rate_limit_exceeded_state::SetCreatedAt<St>,
-        S,
-    > {
+    ) -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::SetCreatedAt<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         EventRateLimitExceededBuilder {
             _state: ::core::marker::PhantomData,
@@ -8285,10 +8287,7 @@ where
     pub fn endpoint(
         mut self,
         value: impl Into<S>,
-    ) -> EventRateLimitExceededBuilder<
-        event_rate_limit_exceeded_state::SetEndpoint<St>,
-        S,
-    > {
+    ) -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::SetEndpoint<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EventRateLimitExceededBuilder {
             _state: ::core::marker::PhantomData,
@@ -8355,9 +8354,9 @@ where
 
 pub mod subscribe_mod_events_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8384,10 +8383,9 @@ pub struct SubscribeModEventsBuilder<
 
 impl SubscribeModEvents<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SubscribeModEventsBuilder<
-        subscribe_mod_events_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, jacquard_common::DefaultStr>
+    {
         SubscribeModEventsBuilder::new()
     }
 }
@@ -8399,10 +8397,7 @@ impl<S: jacquard_common::BosStr> SubscribeModEvents<S> {
     }
 }
 
-impl SubscribeModEventsBuilder<
-    subscribe_mod_events_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubscribeModEventsBuilder {
@@ -8413,9 +8408,7 @@ impl SubscribeModEventsBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, S> {
+impl<S: jacquard_common::BosStr> SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SubscribeModEventsBuilder {
@@ -8426,10 +8419,9 @@ impl<
     }
 }
 
-impl<
-    St: subscribe_mod_events_state::State,
-    S: jacquard_common::BosStr,
-> SubscribeModEventsBuilder<St, S> {
+impl<St: subscribe_mod_events_state::State, S: jacquard_common::BosStr>
+    SubscribeModEventsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();

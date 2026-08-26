@@ -19,7 +19,7 @@ pub struct ListRepos<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
-    pub space: S,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
 
 #[derive(
@@ -59,11 +59,15 @@ pub struct ListReposOutput<S: jacquard_common::BosStr = jacquard_common::Default
 #[serde(tag = "error", content = "message")]
 pub enum ListReposError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -97,16 +101,17 @@ impl core::fmt::Display for ListReposError {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Repo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The DID of a repo that holds data in the space.
+    /// The DID of a repo that holds data in the space.
     pub did: jacquard_common::types::string::Did<S>,
-    ///The repo's current commit hash (sha256 of the LtHash state), as last reported to the authority.
+    /// The repo's current commit hash (sha256 of the LtHash state), as last reported to the authority.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub hash: jacquard_common::deps::bytes::Bytes,
-    ///The repo's current revision (TID), as last reported to the authority. May lag the repo host, which is the source of truth.
+    /// The repo's current revision (TID), as last reported to the authority. May lag the repo host, which is the source of truth.
     pub rev: jacquard_common::types::string::Tid,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_repo_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -168,7 +173,7 @@ pub mod list_repos_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -205,7 +210,7 @@ pub struct ListReposBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -280,7 +285,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> ListReposBuilder<list_repos_state::SetSpace<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         ListReposBuilder {
@@ -306,11 +311,35 @@ where
     }
 }
 
+fn deserialize_repo_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod repo_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -548,6 +577,9 @@ fn lexicon_doc_com_atproto_space_listRepos() -> jacquard_lexicon::lexicon::Lexic
                                             ::jacquard_common::CowStr::new_static(
                                                 "Reference to the space.",
                                             ),
+                                        ),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                         ),
                                         ..Default::default()
                                     }),

@@ -5,16 +5,88 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetFollowersSort<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Latest,
+    Top,
+    Other(S),
+}
 
+impl<S: jacquard_common::BosStr> GetFollowersSort<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Latest => "latest",
+            Self::Top => "top",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "latest" => Self::Latest,
+            "top" => Self::Top,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetFollowersSort<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetFollowersSort<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetFollowersSort<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetFollowersSort<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetFollowersSort<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetFollowersSort<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetFollowersSort<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetFollowersSort::Latest => GetFollowersSort::Latest,
+            GetFollowersSort::Top => GetFollowersSort::Top,
+            GetFollowersSort::Other(v) => GetFollowersSort::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -28,20 +100,12 @@ pub struct GetFollowers<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort: core::option::Option<S>,
+    pub sort: core::option::Option<GetFollowersSort<S>>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -51,7 +115,11 @@ pub struct GetFollowersOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     pub cursor: core::option::Option<S>,
     pub followers: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
     pub subject: crate::generated::app_bsky::actor::ProfileView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -94,9 +162,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_followers_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -134,17 +202,14 @@ pub struct GetFollowersBuilder<
         core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<S>,
+        core::option::Option<GetFollowersSort<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl GetFollowers<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetFollowersBuilder<
-        get_followers_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetFollowersBuilder<get_followers_state::Empty, jacquard_common::DefaultStr> {
         GetFollowersBuilder::new()
     }
 }
@@ -197,10 +262,7 @@ where
     }
 }
 
-impl<
-    St: get_followers_state::State,
-    S: jacquard_common::BosStr,
-> GetFollowersBuilder<St, S> {
+impl<St: get_followers_state::State, S: jacquard_common::BosStr> GetFollowersBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -213,10 +275,7 @@ impl<
     }
 }
 
-impl<
-    St: get_followers_state::State,
-    S: jacquard_common::BosStr,
-> GetFollowersBuilder<St, S> {
+impl<St: get_followers_state::State, S: jacquard_common::BosStr> GetFollowersBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();
@@ -229,17 +288,14 @@ impl<
     }
 }
 
-impl<
-    St: get_followers_state::State,
-    S: jacquard_common::BosStr,
-> GetFollowersBuilder<St, S> {
+impl<St: get_followers_state::State, S: jacquard_common::BosStr> GetFollowersBuilder<St, S> {
     /// Set the `sort` field (optional)
-    pub fn sort(mut self, value: impl Into<Option<S>>) -> Self {
+    pub fn sort(mut self, value: impl Into<Option<GetFollowersSort<S>>>) -> Self {
         self._fields.3 = value.into();
         self
     }
     /// Set the `sort` field to an Option value (optional)
-    pub fn maybe_sort(mut self, value: Option<S>) -> Self {
+    pub fn maybe_sort(mut self, value: Option<GetFollowersSort<S>>) -> Self {
         self._fields.3 = value;
         self
     }

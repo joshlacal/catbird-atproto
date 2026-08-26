@@ -6,28 +6,21 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///How the authority decides whether to authorize a requesting app. When supplied, replaces the current policy wholesale.
+    /// How the authority decides whether to authorize a requesting app. When supplied, replaces the current policy wholesale.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub app_access: core::option::Option<UpdateSpaceAppAccess<S>>,
-    ///How the authority decides whether to authorize a requesting user. When supplied, replaces the current policy wholesale.
+    /// How the authority decides whether to authorize a requesting user. When supplied, replaces the current policy wholesale.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub policy: core::option::Option<UpdateSpacePolicy<S>>,
-    ///Reference to the space to update.
-    pub space: S,
+    /// Reference to the space to update.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -86,19 +79,32 @@ pub enum UpdateSpacePolicy<S: jacquard_common::BosStr = jacquard_common::Default
 #[serde(tag = "error", content = "message")]
 pub enum UpdateSpaceError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotSpaceOwner")]
-    NotSpaceOwner(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotSpaceOwner(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The requested policy is not one the host implements.
     #[serde(rename = "UnsupportedPolicy")]
-    UnsupportedPolicy(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedPolicy(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The requested appAccess variant is not one the host implements. A host will not store an app access policy it cannot enforce.
     #[serde(rename = "UnsupportedAppAccess")]
-    UnsupportedAppAccess(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedAppAccess(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -154,6 +160,18 @@ impl jacquard_common::xrpc::XrpcResp for UpdateSpaceResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = UpdateSpaceError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateSpace<S> {
@@ -173,4 +191,162 @@ impl jacquard_common::xrpc::XrpcEndpoint for UpdateSpaceRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UpdateSpace<S>;
     type Response = UpdateSpaceResponse;
+}
+
+pub mod update_space_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Space;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Space = Unset;
+    }
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Space = Set<members::space>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `space` field
+        pub struct space(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct UpdateSpaceBuilder<
+    St: update_space_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<UpdateSpaceAppAccess<S>>,
+        core::option::Option<UpdateSpacePolicy<S>>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl UpdateSpace<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> UpdateSpaceBuilder<update_space_state::Empty, jacquard_common::DefaultStr> {
+        UpdateSpaceBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> UpdateSpace<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UpdateSpaceBuilder<update_space_state::Empty, S> {
+        UpdateSpaceBuilder::builder()
+    }
+}
+
+impl UpdateSpaceBuilder<update_space_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        UpdateSpaceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> UpdateSpaceBuilder<update_space_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UpdateSpaceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: update_space_state::State, S: jacquard_common::BosStr> UpdateSpaceBuilder<St, S> {
+    /// Set the `appAccess` field (optional)
+    pub fn app_access(mut self, value: impl Into<Option<UpdateSpaceAppAccess<S>>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `appAccess` field to an Option value (optional)
+    pub fn maybe_app_access(mut self, value: Option<UpdateSpaceAppAccess<S>>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: update_space_state::State, S: jacquard_common::BosStr> UpdateSpaceBuilder<St, S> {
+    /// Set the `policy` field (optional)
+    pub fn policy(mut self, value: impl Into<Option<UpdateSpacePolicy<S>>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `policy` field to an Option value (optional)
+    pub fn maybe_policy(mut self, value: Option<UpdateSpacePolicy<S>>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UpdateSpaceBuilder<St, S>
+where
+    St: update_space_state::State,
+    St::Space: update_space_state::IsUnset,
+{
+    /// Set the `space` field (required)
+    pub fn space(
+        mut self,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> UpdateSpaceBuilder<update_space_state::SetSpace<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        UpdateSpaceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UpdateSpaceBuilder<St, S>
+where
+    St: update_space_state::State,
+    St::Space: update_space_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> UpdateSpace<S> {
+        UpdateSpace {
+            app_access: self._fields.0,
+            policy: self._fields.1,
+            space: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> UpdateSpace<S> {
+        UpdateSpace {
+            app_access: self._fields.0,
+            policy: self._fields.1,
+            space: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

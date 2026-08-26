@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct GetTrends {
     /// Defaults to `10`. Min: 1. Max: 25.
@@ -23,27 +16,23 @@ pub struct GetTrends {
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetTrendsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Snowflake for this recommendation, use when submitting recommendation events.
+    /// Snowflake for this recommendation, use when submitting recommendation events.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rec_id_str: core::option::Option<S>,
     pub trends: Vec<crate::generated::app_bsky::unspecced::TrendView<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -86,9 +75,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_trends_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -155,6 +144,8 @@ where
 {
     /// Build the final struct.
     pub fn build(self) -> GetTrends {
-        GetTrends { limit: self._fields.0 }
+        GetTrends {
+            limit: self._fields.0,
+        }
     }
 }

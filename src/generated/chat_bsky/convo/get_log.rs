@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,17 +17,9 @@ pub struct GetLog<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cursor: core::option::Option<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -43,7 +28,11 @@ pub struct GetLogOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub logs: Vec<GetLogOutputLogsItem<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -52,18 +41,10 @@ pub struct GetLogOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -104,9 +85,7 @@ pub enum GetLogOutputLogsItem<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(rename = "chat.bsky.convo.defs#logUnlockConvo")]
     LogUnlockConvo(Box<crate::generated::chat_bsky::convo::LogUnlockConvo<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logLockConvoPermanently")]
-    LogLockConvoPermanently(
-        Box<crate::generated::chat_bsky::convo::LogLockConvoPermanently<S>>,
-    ),
+    LogLockConvoPermanently(Box<crate::generated::chat_bsky::convo::LogLockConvoPermanently<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logEditGroup")]
     LogEditGroup(Box<crate::generated::chat_bsky::convo::LogEditGroup<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logCreateJoinLink")]
@@ -118,21 +97,13 @@ pub enum GetLogOutputLogsItem<S: jacquard_common::BosStr = jacquard_common::Defa
     #[serde(rename = "chat.bsky.convo.defs#logDisableJoinLink")]
     LogDisableJoinLink(Box<crate::generated::chat_bsky::convo::LogDisableJoinLink<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logIncomingJoinRequest")]
-    LogIncomingJoinRequest(
-        Box<crate::generated::chat_bsky::convo::LogIncomingJoinRequest<S>>,
-    ),
+    LogIncomingJoinRequest(Box<crate::generated::chat_bsky::convo::LogIncomingJoinRequest<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logApproveJoinRequest")]
-    LogApproveJoinRequest(
-        Box<crate::generated::chat_bsky::convo::LogApproveJoinRequest<S>>,
-    ),
+    LogApproveJoinRequest(Box<crate::generated::chat_bsky::convo::LogApproveJoinRequest<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logRejectJoinRequest")]
-    LogRejectJoinRequest(
-        Box<crate::generated::chat_bsky::convo::LogRejectJoinRequest<S>>,
-    ),
+    LogRejectJoinRequest(Box<crate::generated::chat_bsky::convo::LogRejectJoinRequest<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logOutgoingJoinRequest")]
-    LogOutgoingJoinRequest(
-        Box<crate::generated::chat_bsky::convo::LogOutgoingJoinRequest<S>>,
-    ),
+    LogOutgoingJoinRequest(Box<crate::generated::chat_bsky::convo::LogOutgoingJoinRequest<S>>),
     #[serde(rename = "chat.bsky.convo.defs#logWithdrawIncomingJoinRequest")]
     LogWithdrawIncomingJoinRequest(
         Box<crate::generated::chat_bsky::convo::LogWithdrawIncomingJoinRequest<S>>,
@@ -175,9 +146,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetLogRequest {
 
 pub mod get_log_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -257,6 +228,8 @@ where
 {
     /// Build the final struct.
     pub fn build(self) -> GetLog<S> {
-        GetLog { cursor: self._fields.0 }
+        GetLog {
+            cursor: self._fields.0,
+        }
     }
 }

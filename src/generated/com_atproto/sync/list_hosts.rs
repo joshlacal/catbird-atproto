@@ -22,9 +22,9 @@
 pub struct Host<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub account_count: core::option::Option<i64>,
-    ///hostname of server; not a URL (no scheme)
+    /// hostname of server; not a URL (no scheme)
     pub hostname: S,
-    ///Recent repo stream event sequence number. May be delayed from actual stream processing (eg, persisted cursor not in-memory cursor).
+    /// Recent repo stream event sequence number. May be delayed from actual stream processing (eg, persisted cursor not in-memory cursor).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub seq: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -32,6 +32,7 @@ pub struct Host<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_host_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -68,7 +69,7 @@ pub struct ListHosts<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 pub struct ListHostsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    ///Sort order is not formally specified. Recommended order is by time host was first seen by the server, with oldest first.
+    /// Sort order is not formally specified. Recommended order is by time host was first seen by the server, with oldest first.
     pub hosts: Vec<crate::generated::com_atproto::sync::list_hosts::Host<S>>,
     #[serde(
         flatten,
@@ -124,6 +125,30 @@ impl jacquard_common::xrpc::XrpcEndpoint for ListHostsRequest {
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Request<S: jacquard_common::BosStr> = ListHosts<S>;
     type Response = ListHostsResponse;
+}
+
+fn deserialize_host_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn lexicon_doc_com_atproto_sync_listHosts() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
@@ -234,7 +259,7 @@ pub mod list_hosts_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

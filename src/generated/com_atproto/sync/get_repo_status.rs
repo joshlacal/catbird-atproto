@@ -26,10 +26,10 @@ pub struct GetRepoStatus<S: jacquard_common::BosStr = jacquard_common::DefaultSt
 pub struct GetRepoStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub active: bool,
     pub did: jacquard_common::types::string::Did<S>,
-    ///Optional field, the current rev of the repo, if active=true
+    /// Optional field, the current rev of the repo, if active=true
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rev: core::option::Option<jacquard_common::types::string::Tid>,
-    ///If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
+    /// If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub status: core::option::Option<GetRepoStatusOutputStatus<S>>,
     #[serde(
@@ -157,11 +157,15 @@ where
 #[serde(tag = "error", content = "message")]
 pub enum GetRepoStatusError {
     #[serde(rename = "RepoNotFound")]
-    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -219,7 +223,7 @@ pub mod get_repo_status_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

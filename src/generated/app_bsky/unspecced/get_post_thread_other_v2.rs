@@ -6,48 +6,31 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetPostThreadOtherV2<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetPostThreadOtherV2<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub anchor: jacquard_common::types::string::AtUri<S>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetPostThreadOtherV2Output<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    ///A flat list of other thread items. The depth of each item is indicated by the depth property inside the item.
-    pub thread: Vec<
-        crate::generated::app_bsky::unspecced::get_post_thread_other_v2::ThreadItem<S>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+pub struct GetPostThreadOtherV2Output<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// A flat list of other thread items. The depth of each item is indicated by the depth property inside the item.
+    pub thread: Vec<crate::generated::app_bsky::unspecced::get_post_thread_other_v2::ThreadItem<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -56,27 +39,24 @@ pub struct GetPostThreadOtherV2Output<
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ThreadItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The nesting level of this item in the thread. Depth 0 means the anchor item. Items above have negative depths, items below have positive depths.
+    /// The nesting level of this item in the thread. Depth 0 means the anchor item. Items above have negative depths, items below have positive depths.
     pub depth: i64,
     pub uri: jacquard_common::types::string::AtUri<S>,
     pub value: crate::generated::app_bsky::unspecced::ThreadItemPost<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_thread_item_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -96,8 +76,7 @@ impl jacquard_common::xrpc::XrpcResp for GetPostThreadOtherV2Response {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetPostThreadOtherV2<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetPostThreadOtherV2<S> {
     const NSID: &'static str = "app.bsky.unspecced.getPostThreadOtherV2";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetPostThreadOtherV2Response;
@@ -114,8 +93,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetPostThreadOtherV2Request {
     type Response = GetPostThreadOtherV2Response;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for ThreadItem<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ThreadItem<S> {
     fn nsid() -> &'static str {
         "app.bsky.unspecced.getPostThreadOtherV2"
     }
@@ -132,9 +110,9 @@ for ThreadItem<S> {
 
 pub mod get_post_thread_other_v2_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -184,18 +162,14 @@ impl GetPostThreadOtherV2<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> GetPostThreadOtherV2<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetPostThreadOtherV2Builder<
-        get_post_thread_other_v2_state::Empty,
-        S,
-    > {
+    pub fn builder() -> GetPostThreadOtherV2Builder<get_post_thread_other_v2_state::Empty, S> {
         GetPostThreadOtherV2Builder::builder()
     }
 }
 
-impl GetPostThreadOtherV2Builder<
-    get_post_thread_other_v2_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    GetPostThreadOtherV2Builder<get_post_thread_other_v2_state::Empty, jacquard_common::DefaultStr>
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetPostThreadOtherV2Builder {
@@ -206,9 +180,9 @@ impl GetPostThreadOtherV2Builder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetPostThreadOtherV2Builder<get_post_thread_other_v2_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    GetPostThreadOtherV2Builder<get_post_thread_other_v2_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetPostThreadOtherV2Builder {
@@ -251,11 +225,35 @@ where
     }
 }
 
+fn deserialize_thread_item_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod thread_item_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -325,10 +323,7 @@ pub struct ThreadItemBuilder<
 
 impl ThreadItem<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ThreadItemBuilder<
-        thread_item_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ThreadItemBuilder<thread_item_state::Empty, jacquard_common::DefaultStr> {
         ThreadItemBuilder::new()
     }
 }
@@ -452,14 +447,11 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_unspecced_getPostThreadOtherV2() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_unspecced_getPostThreadOtherV2(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "app.bsky.unspecced.getPostThreadOtherV2",
-        ),
+        id: ::jacquard_common::CowStr::new_static("app.bsky.unspecced.getPostThreadOtherV2"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
@@ -501,51 +493,51 @@ fn lexicon_doc_app_bsky_unspecced_getPostThreadOtherV2() -> jacquard_lexicon::le
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("threadItem"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("depth"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("value")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "depth",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "uri",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("value"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("depth"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "value",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                refs: vec![
-                                    ::jacquard_common::CowStr::new_static("app.bsky.unspecced.defs#threadItemPost")
-                                ],
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("value"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
+                                    ::jacquard_lexicon::lexicon::LexRefUnion {
+                                        refs: vec![::jacquard_common::CowStr::new_static(
+                                            "app.bsky.unspecced.defs#threadItemPost",
+                                        )],
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map
         },

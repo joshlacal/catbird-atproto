@@ -24,7 +24,7 @@ pub struct GetRecommendedDidCredentialsOutput<
 > {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub also_known_as: core::option::Option<Vec<S>>,
-    ///Recommended rotation keys for PLC dids. Should be undefined (or ignored) for did:webs.
+    /// Recommended rotation keys for PLC dids. Should be undefined (or ignored) for did:webs.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub rotation_keys: core::option::Option<Vec<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -74,6 +74,9 @@ impl jacquard_common::xrpc::XrpcRequest for GetRecommendedDidCredentials {
     const NSID: &'static str = "com.atproto.identity.getRecommendedDidCredentials";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetRecommendedDidCredentialsResponse;
+    fn encode_body(&self, _buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError> {
+        Ok(())
+    }
 }
 
 /** Endpoint marker for the `com.atproto.identity.getRecommendedDidCredentials` query.

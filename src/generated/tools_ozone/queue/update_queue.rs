@@ -6,35 +6,32 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Optional description of the queue
+    /// Optional description of the queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
-    ///Enable or disable the queue
+    /// Enable or disable the queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub enabled: core::option::Option<bool>,
-    ///New display name for the queue
+    /// New display name for the queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub name: core::option::Option<S>,
-    ///ID of the queue to update
+    /// ID of the queue to update
     pub queue_id: i64,
-    ///Policy keys to recommend when actioning reports in this queue
+    /// Policy keys to recommend when actioning reports in this queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub recommended_policies: core::option::Option<Vec<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -43,24 +40,20 @@ pub struct UpdateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdateQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub queue: crate::generated::tools_ozone::queue::QueueView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -68,7 +61,6 @@ pub struct UpdateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -78,20 +70,21 @@ pub struct UpdateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum UpdateQueueError {
     /// One or more recommended policy keys do not exist in the configured policy list
     #[serde(rename = "InvalidRecommendedPolicies")]
     InvalidRecommendedPolicies(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -130,9 +123,8 @@ impl jacquard_common::xrpc::XrpcResp for UpdateQueueResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateQueue<S> {
     const NSID: &'static str = "tools.ozone.queue.updateQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateQueueResponse;
 }
 
@@ -142,18 +134,17 @@ Path: `/xrpc/tools.ozone.queue.updateQueue`. The request payload type is `Update
 pub struct UpdateQueueRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateQueueRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.queue.updateQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UpdateQueue<S>;
     type Response = UpdateQueueResponse;
 }
 
 pub mod update_queue_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -199,10 +190,7 @@ pub struct UpdateQueueBuilder<
 
 impl UpdateQueue<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> UpdateQueueBuilder<
-        update_queue_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> UpdateQueueBuilder<update_queue_state::Empty, jacquard_common::DefaultStr> {
         UpdateQueueBuilder::new()
     }
 }
@@ -236,10 +224,7 @@ impl<S: jacquard_common::BosStr> UpdateQueueBuilder<update_queue_state::Empty, S
     }
 }
 
-impl<
-    St: update_queue_state::State,
-    S: jacquard_common::BosStr,
-> UpdateQueueBuilder<St, S> {
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `description` field (optional)
     pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -252,10 +237,7 @@ impl<
     }
 }
 
-impl<
-    St: update_queue_state::State,
-    S: jacquard_common::BosStr,
-> UpdateQueueBuilder<St, S> {
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `enabled` field (optional)
     pub fn enabled(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.1 = value.into();
@@ -268,10 +250,7 @@ impl<
     }
 }
 
-impl<
-    St: update_queue_state::State,
-    S: jacquard_common::BosStr,
-> UpdateQueueBuilder<St, S> {
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `name` field (optional)
     pub fn name(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();
@@ -303,10 +282,7 @@ where
     }
 }
 
-impl<
-    St: update_queue_state::State,
-    S: jacquard_common::BosStr,
-> UpdateQueueBuilder<St, S> {
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `recommendedPolicies` field (optional)
     pub fn recommended_policies(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
         self._fields.4 = value.into();

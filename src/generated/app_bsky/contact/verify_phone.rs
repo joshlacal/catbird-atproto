@@ -13,19 +13,22 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct VerifyPhone<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///The code received via SMS as a result of the call to `app.bsky.contact.startPhoneVerification`.
+    /// The code received via SMS as a result of the call to `app.bsky.contact.startPhoneVerification`.
     pub code: S,
-    ///The phone number to verify. Should be the same as the one passed to `app.bsky.contact.startPhoneVerification`.
+    /// The phone number to verify. Should be the same as the one passed to `app.bsky.contact.startPhoneVerification`.
     pub phone: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,7 +36,6 @@ pub struct VerifyPhone<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -43,17 +45,20 @@ pub struct VerifyPhone<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct VerifyPhoneOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///JWT to be used in a call to `app.bsky.contact.importContacts`. It is only valid for a single call.
+    /// JWT to be used in a call to `app.bsky.contact.importContacts`. It is only valid for a single call.
     pub token: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -61,7 +66,6 @@ pub struct VerifyPhoneOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -71,25 +75,40 @@ pub struct VerifyPhoneOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum VerifyPhoneError {
     #[serde(rename = "RateLimitExceeded")]
-    RateLimitExceeded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimitExceeded(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidDid")]
-    InvalidDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidDid(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidPhone")]
-    InvalidPhone(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidPhone(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidCode")]
-    InvalidCode(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidCode(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InternalError")]
-    InternalError(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InternalError(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -156,9 +175,8 @@ impl jacquard_common::xrpc::XrpcResp for VerifyPhoneResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for VerifyPhone<S> {
     const NSID: &'static str = "app.bsky.contact.verifyPhone";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = VerifyPhoneResponse;
 }
 
@@ -168,9 +186,8 @@ Path: `/xrpc/app.bsky.contact.verifyPhone`. The request payload type is `VerifyP
 pub struct VerifyPhoneRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for VerifyPhoneRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.verifyPhone";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = VerifyPhone<S>;
     type Response = VerifyPhoneResponse;
 }

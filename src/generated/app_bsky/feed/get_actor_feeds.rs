@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,28 +22,22 @@ pub struct GetActorFeeds<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetActorFeedsOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetActorFeedsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub feeds: Vec<crate::generated::app_bsky::feed::GeneratorView<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,8 +57,7 @@ impl jacquard_common::xrpc::XrpcResp for GetActorFeedsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetActorFeeds<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetActorFeeds<S> {
     const NSID: &'static str = "app.bsky.feed.getActorFeeds";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetActorFeedsResponse;
@@ -94,9 +80,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_actor_feeds_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -140,10 +126,8 @@ pub struct GetActorFeedsBuilder<
 
 impl GetActorFeeds<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetActorFeedsBuilder<
-        get_actor_feeds_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetActorFeedsBuilder<get_actor_feeds_state::Empty, jacquard_common::DefaultStr>
+    {
         GetActorFeedsBuilder::new()
     }
 }
@@ -196,10 +180,7 @@ where
     }
 }
 
-impl<
-    St: get_actor_feeds_state::State,
-    S: jacquard_common::BosStr,
-> GetActorFeedsBuilder<St, S> {
+impl<St: get_actor_feeds_state::State, S: jacquard_common::BosStr> GetActorFeedsBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -212,10 +193,7 @@ impl<
     }
 }
 
-impl<
-    St: get_actor_feeds_state::State,
-    S: jacquard_common::BosStr,
-> GetActorFeedsBuilder<St, S> {
+impl<St: get_actor_feeds_state::State, S: jacquard_common::BosStr> GetActorFeedsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();

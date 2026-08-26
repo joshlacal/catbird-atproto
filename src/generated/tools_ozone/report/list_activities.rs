@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,28 +22,22 @@ pub struct ListActivities<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub report_id: i64,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ListActivitiesOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct ListActivitiesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub activities: Vec<crate::generated::tools_ozone::report::ReportActivityView<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -70,8 +57,7 @@ impl jacquard_common::xrpc::XrpcResp for ListActivitiesResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for ListActivities<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListActivities<S> {
     const NSID: &'static str = "tools.ozone.report.listActivities";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListActivitiesResponse;
@@ -94,9 +80,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod list_activities_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -140,10 +126,8 @@ pub struct ListActivitiesBuilder<
 
 impl ListActivities<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ListActivitiesBuilder<
-        list_activities_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> ListActivitiesBuilder<list_activities_state::Empty, jacquard_common::DefaultStr>
+    {
         ListActivitiesBuilder::new()
     }
 }
@@ -177,10 +161,7 @@ impl<S: jacquard_common::BosStr> ListActivitiesBuilder<list_activities_state::Em
     }
 }
 
-impl<
-    St: list_activities_state::State,
-    S: jacquard_common::BosStr,
-> ListActivitiesBuilder<St, S> {
+impl<St: list_activities_state::State, S: jacquard_common::BosStr> ListActivitiesBuilder<St, S> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.0 = value.into();
@@ -193,10 +174,7 @@ impl<
     }
 }
 
-impl<
-    St: list_activities_state::State,
-    S: jacquard_common::BosStr,
-> ListActivitiesBuilder<St, S> {
+impl<St: list_activities_state::State, S: jacquard_common::BosStr> ListActivitiesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

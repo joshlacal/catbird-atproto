@@ -6,22 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetActorStarterPacks<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetActorStarterPacks<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor: jacquard_common::types::ident::AtIdentifier<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
@@ -31,28 +22,22 @@ pub struct GetActorStarterPacks<
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetActorStarterPacksOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetActorStarterPacksOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -72,8 +57,7 @@ impl jacquard_common::xrpc::XrpcResp for GetActorStarterPacksResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetActorStarterPacks<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetActorStarterPacks<S> {
     const NSID: &'static str = "app.bsky.graph.getActorStarterPacks";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetActorStarterPacksResponse;
@@ -96,9 +80,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_actor_starter_packs_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -152,18 +136,14 @@ impl GetActorStarterPacks<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> GetActorStarterPacks<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetActorStarterPacksBuilder<
-        get_actor_starter_packs_state::Empty,
-        S,
-    > {
+    pub fn builder() -> GetActorStarterPacksBuilder<get_actor_starter_packs_state::Empty, S> {
         GetActorStarterPacksBuilder::builder()
     }
 }
 
-impl GetActorStarterPacksBuilder<
-    get_actor_starter_packs_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl
+    GetActorStarterPacksBuilder<get_actor_starter_packs_state::Empty, jacquard_common::DefaultStr>
+{
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetActorStarterPacksBuilder {
@@ -174,9 +154,9 @@ impl GetActorStarterPacksBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetActorStarterPacksBuilder<get_actor_starter_packs_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    GetActorStarterPacksBuilder<get_actor_starter_packs_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetActorStarterPacksBuilder {
@@ -206,10 +186,9 @@ where
     }
 }
 
-impl<
-    St: get_actor_starter_packs_state::State,
-    S: jacquard_common::BosStr,
-> GetActorStarterPacksBuilder<St, S> {
+impl<St: get_actor_starter_packs_state::State, S: jacquard_common::BosStr>
+    GetActorStarterPacksBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.1 = value.into();
@@ -222,10 +201,9 @@ impl<
     }
 }
 
-impl<
-    St: get_actor_starter_packs_state::State,
-    S: jacquard_common::BosStr,
-> GetActorStarterPacksBuilder<St, S> {
+impl<St: get_actor_starter_packs_state::State, S: jacquard_common::BosStr>
+    GetActorStarterPacksBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();

@@ -6,22 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Reference to the space to delete.
-    pub space: S,
+    /// Reference to the space to delete.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -48,13 +41,20 @@ pub struct DeleteSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 #[serde(tag = "error", content = "message")]
 pub enum DeleteSpaceError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotSpaceOwner")]
-    NotSpaceOwner(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotSpaceOwner(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -96,6 +96,18 @@ impl jacquard_common::xrpc::XrpcResp for DeleteSpaceResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
     type Err = DeleteSpaceError;
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    {
+        if body.is_empty() {
+            Ok(())
+        } else {
+            Err(jacquard_common::error::DecodeError::UnexpectedBody)
+        }
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteSpace<S> {
@@ -115,4 +127,128 @@ impl jacquard_common::xrpc::XrpcEndpoint for DeleteSpaceRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = DeleteSpace<S>;
     type Response = DeleteSpaceResponse;
+}
+
+pub mod delete_space_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Space;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Space = Unset;
+    }
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Space = Set<members::space>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `space` field
+        pub struct space(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeleteSpaceBuilder<
+    St: delete_space_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeleteSpace<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeleteSpaceBuilder<delete_space_state::Empty, jacquard_common::DefaultStr> {
+        DeleteSpaceBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeleteSpace<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeleteSpaceBuilder<delete_space_state::Empty, S> {
+        DeleteSpaceBuilder::builder()
+    }
+}
+
+impl DeleteSpaceBuilder<delete_space_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeleteSpaceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeleteSpaceBuilder<delete_space_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeleteSpaceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteSpaceBuilder<St, S>
+where
+    St: delete_space_state::State,
+    St::Space: delete_space_state::IsUnset,
+{
+    /// Set the `space` field (required)
+    pub fn space(
+        mut self,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> DeleteSpaceBuilder<delete_space_state::SetSpace<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeleteSpaceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteSpaceBuilder<St, S>
+where
+    St: delete_space_state::State,
+    St::Space: delete_space_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeleteSpace<S> {
+        DeleteSpace {
+            space: self._fields.0.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeleteSpace<S> {
+        DeleteSpace {
+            space: self._fields.0.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

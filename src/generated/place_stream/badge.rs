@@ -11,29 +11,27 @@ pub mod get_valid_badges;
 /// View of a badge record, with fields resolved for display. If the DID in issuer is not the current streamplace node, the signature field shall be required.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct BadgeView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub badge_type: BadgeViewBadgeType<S>,
-    ///DID of the badge issuer.
+    /// DID of the badge issuer.
     pub issuer: jacquard_common::types::string::Did<S>,
-    ///DID of the badge recipient.
+    /// DID of the badge recipient.
     pub recipient: jacquard_common::types::string::Did<S>,
-    ///TODO: Cryptographic signature of the badge (of a place.stream.key).
+    /// TODO: Cryptographic signature of the badge (of a place.stream.key).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub signature: core::option::Option<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_badge_view_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -41,7 +39,6 @@ pub struct BadgeView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
         >,
     >,
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum BadgeViewBadgeType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
@@ -90,7 +87,8 @@ impl<S: jacquard_common::BosStr> serde::Serialize for BadgeViewBadgeType<S> {
 }
 
 impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-for BadgeViewBadgeType<S> {
+    for BadgeViewBadgeType<S>
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -131,7 +129,7 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Mod;
 impl core::fmt::Display for Mod {
@@ -150,7 +148,7 @@ impl core::fmt::Display for Mod {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Streamer;
 impl core::fmt::Display for Streamer {
@@ -169,7 +167,7 @@ impl core::fmt::Display for Streamer {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash
+    Hash,
 )]
 pub struct Vip;
 impl core::fmt::Display for Vip {
@@ -178,8 +176,7 @@ impl core::fmt::Display for Vip {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for BadgeView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for BadgeView<S> {
     fn nsid() -> &'static str {
         "place.stream.badge.defs"
     }
@@ -194,11 +191,35 @@ for BadgeView<S> {
     }
 }
 
+fn deserialize_badge_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod badge_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -269,10 +290,7 @@ pub struct BadgeViewBuilder<
 
 impl BadgeView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> BadgeViewBuilder<
-        badge_view_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> BadgeViewBuilder<badge_view_state::Empty, jacquard_common::DefaultStr> {
         BadgeViewBuilder::new()
     }
 }
@@ -411,9 +429,7 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_badge_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_badge_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.badge.defs"),
@@ -497,21 +513,27 @@ fn lexicon_doc_place_stream_badge_defs() -> jacquard_lexicon::lexicon::LexiconDo
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("mod"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("streamer"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("vip"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    ..Default::default()
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
+                ),
             );
             map
         },

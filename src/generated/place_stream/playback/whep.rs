@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -24,38 +17,21 @@ pub struct WhepParams<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub streamer: S,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct Whep {
     pub body: jacquard_common::deps::bytes::Bytes,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct WhepOutput {
     pub body: jacquard_common::deps::bytes::Bytes,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -65,18 +41,21 @@ pub struct WhepOutput {
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum WhepError {
     /// This user may not play this stream.
     #[serde(rename = "Unauthorized")]
-    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    Unauthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -134,22 +113,16 @@ impl jacquard_common::xrpc::XrpcResp for WhepResponse {
 
 impl jacquard_common::xrpc::XrpcRequest for Whep {
     const NSID: &'static str = "place.stream.playback.whep";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "*/*",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
     type Response = WhepResponse;
-    fn encode_body(
-        &self,
-        buffer: &mut Vec<u8>,
-    ) -> Result<(), jacquard_common::xrpc::EncodeError>
+    fn encode_body(&self, buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError>
     where
         Self: serde::Serialize,
     {
         Ok(buffer.extend_from_slice(self.body.as_ref()))
     }
-    fn decode_body<'de>(
-        body: &'de [u8],
-    ) -> Result<Self, jacquard_common::error::DecodeError>
+    fn decode_body<'de>(body: &'de [u8]) -> Result<Self, jacquard_common::error::DecodeError>
     where
         Self: serde::Deserialize<'de>,
     {
@@ -165,18 +138,17 @@ Path: `/xrpc/place.stream.playback.whep`. The request payload type is `Whep`; se
 pub struct WhepRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for WhepRequest {
     const PATH: &'static str = "/xrpc/place.stream.playback.whep";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "*/*",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
     type Request<S: jacquard_common::BosStr> = Whep;
     type Response = WhepResponse;
 }
 
 pub mod whep_params_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -228,10 +200,7 @@ pub struct WhepParamsBuilder<
 
 impl WhepParams<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> WhepParamsBuilder<
-        whep_params_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> WhepParamsBuilder<whep_params_state::Empty, jacquard_common::DefaultStr> {
         WhepParamsBuilder::new()
     }
 }

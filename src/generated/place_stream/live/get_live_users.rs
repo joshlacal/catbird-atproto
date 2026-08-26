@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(rename_all = "camelCase")]
 pub struct GetLiveUsers {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -25,7 +18,6 @@ pub struct GetLiveUsers {
     pub limit: core::option::Option<i64>,
 }
 
-
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -34,19 +26,21 @@ pub struct GetLiveUsers {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetLiveUsersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub streams: core::option::Option<
-        Vec<crate::generated::place_stream::livestream::LivestreamView<S>>,
-    >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    pub streams:
+        core::option::Option<Vec<crate::generated::place_stream::livestream::LivestreamView<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -89,9 +83,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_live_users_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -152,10 +146,7 @@ impl<St: get_live_users_state::State> GetLiveUsersBuilder<St> {
         self
     }
     /// Set the `before` field to an Option value (optional)
-    pub fn maybe_before(
-        mut self,
-        value: Option<jacquard_common::types::string::Datetime>,
-    ) -> Self {
+    pub fn maybe_before(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
         self._fields.0 = value;
         self
     }

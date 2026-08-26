@@ -13,21 +13,24 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct InitAgeAssurance<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///An ISO 3166-1 alpha-2 code of the user's location.
+    /// An ISO 3166-1 alpha-2 code of the user's location.
     pub country_code: S,
-    ///The user's email address to receive assurance instructions.
+    /// The user's email address to receive assurance instructions.
     pub email: S,
-    ///The user's preferred language for communication during the assurance process.
+    /// The user's preferred language for communication during the assurance process.
     pub language: S,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -36,27 +39,21 @@ pub struct InitAgeAssurance<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct InitAgeAssuranceOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct InitAgeAssuranceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -64,7 +61,6 @@ pub struct InitAgeAssuranceOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -74,21 +70,30 @@ pub struct InitAgeAssuranceOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum InitAgeAssuranceError {
     #[serde(rename = "InvalidEmail")]
-    InvalidEmail(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidEmail(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DidTooLong")]
-    DidTooLong(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DidTooLong(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidInitiation")]
-    InvalidInitiation(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidInitiation(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -139,12 +144,10 @@ impl jacquard_common::xrpc::XrpcResp for InitAgeAssuranceResponse {
     type Err = InitAgeAssuranceError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for InitAgeAssurance<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for InitAgeAssurance<S> {
     const NSID: &'static str = "app.bsky.unspecced.initAgeAssurance";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = InitAgeAssuranceResponse;
 }
 
@@ -154,9 +157,8 @@ Path: `/xrpc/app.bsky.unspecced.initAgeAssurance`. The request payload type is `
 pub struct InitAgeAssuranceRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for InitAgeAssuranceRequest {
     const PATH: &'static str = "/xrpc/app.bsky.unspecced.initAgeAssurance";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = InitAgeAssurance<S>;
     type Response = InitAgeAssuranceResponse;
 }

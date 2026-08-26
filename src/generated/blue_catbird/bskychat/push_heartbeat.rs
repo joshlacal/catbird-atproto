@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct PushHeartbeat<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Client platform identifier (e.g., 'ios', 'macos')
+    /// Client platform identifier (e.g., 'ios', 'macos')
     pub platform: S,
     #[serde(
         flatten,
@@ -43,7 +43,7 @@ pub struct PushHeartbeat<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct PushHeartbeatOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///When the foreground lease expires
+    /// When the foreground lease expires
     pub lease_expires_at: jacquard_common::types::string::Datetime,
     #[serde(
         flatten,

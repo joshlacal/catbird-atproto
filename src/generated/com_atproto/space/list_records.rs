@@ -28,7 +28,7 @@ pub struct ListRecords<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub repo: jacquard_common::types::string::Did<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reverse: core::option::Option<bool>,
-    pub space: S,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
 
 #[derive(
@@ -68,19 +68,35 @@ pub struct ListRecordsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 #[serde(tag = "error", content = "message")]
 pub enum ListRecordsError {
     #[serde(rename = "SpaceNotFound")]
-    SpaceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RepoNotFound")]
-    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RepoTakendown")]
-    RepoTakendown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoTakendown(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RepoSuspended")]
-    RepoSuspended(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoSuspended(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RepoDeactivated")]
-    RepoDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RepoDeactivated(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -145,12 +161,13 @@ pub struct Record<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cid: jacquard_common::types::string::Cid<S>,
     pub collection: jacquard_common::types::string::Nsid<S>,
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    ///The record's value. Inlined by default; omitted when excludeValues is set.
+    /// The record's value. Inlined by default; omitted when excludeValues is set.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub value: core::option::Option<jacquard_common::types::value::Data<S>>,
     #[serde(
         flatten,
         default,
+        deserialize_with = "deserialize_record_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -216,7 +233,7 @@ pub mod list_records_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -269,7 +286,7 @@ pub struct ListRecordsBuilder<
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<bool>,
-        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -408,7 +425,7 @@ where
     /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<S>,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> ListRecordsBuilder<list_records_state::SetSpace<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         ListRecordsBuilder {
@@ -439,11 +456,35 @@ where
     }
 }
 
+fn deserialize_record_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
 pub mod record_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -753,6 +794,9 @@ fn lexicon_doc_com_atproto_space_listRecords() -> jacquard_lexicon::lexicon::Lex
                                             ::jacquard_common::CowStr::new_static(
                                                 "Reference to the space.",
                                             ),
+                                        ),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                         ),
                                         ..Default::default()
                                     }),

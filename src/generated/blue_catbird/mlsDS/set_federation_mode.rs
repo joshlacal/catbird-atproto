@@ -20,7 +20,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SetFederationMode<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Federation mode to set (e.g., 'off', 'allowlist', 'open')
+    /// Federation mode to set (e.g., 'off', 'allowlist', 'open')
     pub mode: S,
     #[serde(
         flatten,
@@ -43,14 +43,14 @@ pub struct SetFederationMode<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SetFederationModeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///New effective federation mode
+    /// New effective federation mode
     pub effective_mode: S,
-    ///Federation mode from environment configuration
+    /// Federation mode from environment configuration
     pub env_mode: S,
-    ///Runtime override mode
+    /// Runtime override mode
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub override_mode: core::option::Option<S>,
-    ///Whether the mode was updated
+    /// Whether the mode was updated
     pub updated: bool,
     #[serde(
         flatten,
