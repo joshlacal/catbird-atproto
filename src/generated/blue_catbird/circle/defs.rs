@@ -75,6 +75,11 @@ pub fn validate_space_ref(uri: &str) -> Result<(), SpaceRefError> {
     let Some(rest) = uri.strip_prefix("at://") else {
         return Err(SpaceRefError("URI must start with 'at://'".to_string()));
     };
+    if uri.len() > 8192 {
+        return Err(SpaceRefError(
+            "SpaceRef URI exceeds maximum length of 8192 bytes".to_string(),
+        ));
+    }
     let parts: Vec<&str> = rest.split('/').collect();
     if parts.len() != 4 {
         return Err(SpaceRefError(
@@ -97,11 +102,39 @@ pub fn validate_space_ref(uri: &str) -> Result<(), SpaceRefError> {
     if skey.is_empty() {
         return Err(SpaceRefError("skey cannot be empty".to_string()));
     }
+    if skey.len() > 512 {
+        return Err(SpaceRefError(
+            "skey exceeds maximum length of 512 characters".to_string(),
+        ));
+    }
+    if skey == "." || skey == ".." {
+        return Err(SpaceRefError(format!(
+            "skey cannot be '.' or '..', got '{skey}'"
+        )));
+    }
+    if !skey.is_ascii()
+        || !skey.bytes().all(|byte| {
+            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b':' | b'~' | b'-')
+        })
+    {
+        return Err(SpaceRefError(format!(
+            "skey contains invalid characters, got '{skey}'"
+        )));
+    }
     Ok(())
 }
 
 /// Access state closed enum for Catbird Circles.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+)]
 #[serde(rename_all = "lowercase")]
 pub enum AccessState {
     Active,
@@ -111,7 +144,16 @@ pub enum AccessState {
 }
 
 /// Operation status closed enum for Catbird Circles.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+)]
 #[serde(rename_all = "lowercase")]
 pub enum OperationStatus {
     Pending,
@@ -120,7 +162,16 @@ pub enum OperationStatus {
 }
 
 /// Notification reason closed enum for Catbird Circles.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+)]
 #[serde(rename_all = "lowercase")]
 pub enum NotificationReason {
     Reply,
@@ -129,7 +180,16 @@ pub enum NotificationReason {
 }
 
 /// Report record reason closed enum.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+)]
 #[serde(rename_all = "lowercase")]
 pub enum ReportReason {
     Spam,
@@ -138,14 +198,25 @@ pub enum ReportReason {
 }
 
 /// Member action closed enum for updateMember.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+)]
 #[serde(rename_all = "lowercase")]
 pub enum MemberAction {
     Add,
     Remove,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -172,7 +243,9 @@ pub struct CircleSummary<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -197,7 +270,9 @@ pub struct Operation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -218,7 +293,9 @@ pub struct FeedItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
+)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
