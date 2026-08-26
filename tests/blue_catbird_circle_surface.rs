@@ -52,6 +52,7 @@ fn space_ref_validates_exact_uri_shape_did_nsid_and_canonical_record_key() {
 
     // Valid space references
     let valid_uris = [
+        "at://did:m:v/space/com.example.group/default",
         "at://did:plc:asdf123/space/com.example.group/default",
         "at://did:plc:owner/space/blue.catbird.circle/3abc",
         "at://did:web:example.com/space/blue.catbird.circle/3abc",
@@ -72,6 +73,25 @@ fn space_ref_validates_exact_uri_shape_did_nsid_and_canonical_record_key() {
         assert_eq!(deserialized.as_str(), uri);
     }
 
+    let did_2048 = format!("did:plc:{}", "a".repeat(2040));
+    let valid_did_2048 = format!("at://{did_2048}/space/com.example.group/default");
+    assert!(SpaceRef::new(valid_did_2048.clone()).is_ok());
+    let deserialized: SpaceRef = serde_json::from_str(&format!("\"{valid_did_2048}\"")).unwrap();
+    assert_eq!(deserialized.as_str(), valid_did_2048);
+
+    let nsid_317 = format!(
+        "com.example.{}.{}.{}.{}.{}",
+        "a".repeat(63),
+        "a".repeat(63),
+        "a".repeat(63),
+        "a".repeat(63),
+        "a".repeat(49)
+    );
+    let valid_nsid_317 = format!("at://did:plc:asdf123/space/{nsid_317}/default");
+    assert!(SpaceRef::new(valid_nsid_317.clone()).is_ok());
+    let deserialized: SpaceRef = serde_json::from_str(&format!("\"{valid_nsid_317}\"")).unwrap();
+    assert_eq!(deserialized.as_str(), valid_nsid_317);
+
     let valid_512 = format!(
         "at://did:plc:asdf123/space/com.example.group/{}",
         "a".repeat(512)
@@ -80,41 +100,55 @@ fn space_ref_validates_exact_uri_shape_did_nsid_and_canonical_record_key() {
     let deserialized: SpaceRef = serde_json::from_str(&format!("\"{valid_512}\"")).unwrap();
     assert_eq!(deserialized.as_str(), valid_512);
 
+    let did_2049 = format!("did:plc:{}", "a".repeat(2041));
+    let nsid_318 = format!(
+        "com.example.{}.{}.{}.{}.{}",
+        "a".repeat(63),
+        "a".repeat(63),
+        "a".repeat(63),
+        "a".repeat(63),
+        "a".repeat(50)
+    );
+
     // Malformed space references - rejected by both constructor and serde deserializer
     let malformed_uris = [
         // Scheme / prefix errors
-        "https://example.com/space/blue.catbird.circle/3abc",
-        "at:/did:plc:asdf123/space/com.example.group/default",
-        "AT://did:plc:asdf123/space/com.example.group/default",
+        "https://example.com/space/blue.catbird.circle/3abc".to_string(),
+        "at:/did:plc:asdf123/space/com.example.group/default".to_string(),
+        "AT://did:plc:asdf123/space/com.example.group/default".to_string(),
         // Segment count and structure errors
-        "at://did:plc:asdf123",
-        "at://did:plc:asdf123/space",
-        "at://did:plc:asdf123/space/com.example.group",
-        "at://did:plc:asdf123/space/com.example.group/default/extra",
-        "at://did:plc:asdf123/space/com.example.group/default/did:plc:user1/com.atproto.feed.post/abc123",
-        "at://did:plc:asdf123/com.atproto.feed.post/abc",
-        "at://did:plc:asdf123/space//default",
-        "at://did:plc:asdf123/space/com.example.group/",
-        "at:///space/com.example.group/default",
-        "at://did:plc:asdf123//com.example.group/default",
-        "at://did:plc:asdf123/other/com.example.group/default",
+        "at://did:plc:asdf123".to_string(),
+        "at://did:plc:asdf123/space".to_string(),
+        "at://did:plc:asdf123/space/com.example.group".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/default/extra".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/default/did:plc:user1/com.atproto.feed.post/abc123".to_string(),
+        "at://did:plc:asdf123/com.atproto.feed.post/abc".to_string(),
+        "at://did:plc:asdf123/space//default".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/".to_string(),
+        "at:///space/com.example.group/default".to_string(),
+        "at://did:plc:asdf123//com.example.group/default".to_string(),
+        "at://did:plc:asdf123/other/com.example.group/default".to_string(),
         // Authority DID errors
-        "at://user.bsky.social/space/com.example.group/default",
-        "at://did::owner/space/blue.catbird.circle/3abc",
-        "at://did:plc:/space/blue.catbird.circle/3abc",
-        "at://invalid-did/space/blue.catbird.circle/3abc",
+        "at://user.bsky.social/space/com.example.group/default".to_string(),
+        "at://did::owner/space/blue.catbird.circle/3abc".to_string(),
+        "at://did:plc:/space/blue.catbird.circle/3abc".to_string(),
+        "at://invalid-did/space/blue.catbird.circle/3abc".to_string(),
+        "at://did:plc:ünicode/space/com.example.group/default".to_string(),
+        format!("at://{did_2049}/space/com.example.group/default"),
         // SpaceType NSID errors
-        "at://did:plc:asdf123/space/short/default",
-        "at://did:plc:asdf123/space/-bad.example/3abc",
-        "at://did:plc:asdf123/space/com.example.-group/default",
-        "at://did:plc:asdf123/space/com.example..group/default",
-        "at://did:plc:asdf123/space/1com.example.group/default",
+        "at://did:plc:asdf123/space/short/default".to_string(),
+        "at://did:plc:asdf123/space/-bad.example/3abc".to_string(),
+        "at://did:plc:asdf123/space/com.example.-group/default".to_string(),
+        "at://did:plc:asdf123/space/com.example..group/default".to_string(),
+        "at://did:plc:asdf123/space/1com.example.group/default".to_string(),
+        format!("at://did:plc:asdf123/space/{nsid_318}/default"),
         // Skey RecordKey errors
-        "at://did:plc:asdf123/space/com.example.group/.",
-        "at://did:plc:asdf123/space/com.example.group/..",
-        "at://did:plc:asdf123/space/com.example.group/has space",
-        "at://did:plc:asdf123/space/com.example.group/has/slash",
-        "at://did:plc:asdf123/space/com.example.group/has@invalid",
+        "at://did:plc:asdf123/space/com.example.group/.".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/..".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/has space".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/has/slash".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/has@invalid".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/has%percent".to_string(),
     ];
 
     for uri in malformed_uris {
