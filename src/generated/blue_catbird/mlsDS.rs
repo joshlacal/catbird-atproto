@@ -60,6 +60,8 @@ pub struct EnvelopeHeaderV1<S: jacquard_common::BosStr = jacquard_common::Defaul
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub payload_sha256: jacquard_common::deps::bytes::Bytes,
     pub protocol_version: crate::generated::blue_catbird::mlsDS::ProtocolVersion<S>,
+    ///The mailbox's canonical admission instant for this signed operation. The sequencer must use this exact value as the entry receivedAt so both nodes canonicalize identical entry bytes.
+    pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub receiver_ds_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub sender_ds_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub sequencer_did: crate::generated::blue_catbird::chat::BareDid<S>,
@@ -236,7 +238,7 @@ pub mod entry_locator_v1_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -560,6 +562,7 @@ fn lexicon_doc_blue_catbird_mlsDS_defs() -> jacquard_lexicon::lexicon::LexiconDo
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("receiverDsDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerTerm"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("receivedAt"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("payloadSha256"),
                         ]),
                         properties: {
@@ -611,6 +614,19 @@ fn lexicon_doc_blue_catbird_mlsDS_defs() -> jacquard_lexicon::lexicon::LexiconDo
                                     ::jacquard_lexicon::lexicon::LexRef {
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#protocolVersion",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "receivedAt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.chat.defs#canonicalDatetime",
                                         ),
                                         ..Default::default()
                                     },
@@ -894,7 +910,7 @@ pub mod envelope_header_v1_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -904,6 +920,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId;
         type PayloadSha256;
         type ProtocolVersion;
+        type ReceivedAt;
         type ReceiverDsDid;
         type SenderDsDid;
         type SequencerDid;
@@ -917,6 +934,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = Unset;
         type PayloadSha256 = Unset;
         type ProtocolVersion = Unset;
+        type ReceivedAt = Unset;
         type ReceiverDsDid = Unset;
         type SenderDsDid = Unset;
         type SequencerDid = Unset;
@@ -930,6 +948,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = St::DeliveryId;
         type PayloadSha256 = St::PayloadSha256;
         type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = St::ReceivedAt;
         type ReceiverDsDid = St::ReceiverDsDid;
         type SenderDsDid = St::SenderDsDid;
         type SequencerDid = St::SequencerDid;
@@ -943,6 +962,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = Set<members::delivery_id>;
         type PayloadSha256 = St::PayloadSha256;
         type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = St::ReceivedAt;
         type ReceiverDsDid = St::ReceiverDsDid;
         type SenderDsDid = St::SenderDsDid;
         type SequencerDid = St::SequencerDid;
@@ -956,6 +976,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = St::DeliveryId;
         type PayloadSha256 = Set<members::payload_sha256>;
         type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = St::ReceivedAt;
         type ReceiverDsDid = St::ReceiverDsDid;
         type SenderDsDid = St::SenderDsDid;
         type SequencerDid = St::SequencerDid;
@@ -969,6 +990,21 @@ pub mod envelope_header_v1_state {
         type DeliveryId = St::DeliveryId;
         type PayloadSha256 = St::PayloadSha256;
         type ProtocolVersion = Set<members::protocol_version>;
+        type ReceivedAt = St::ReceivedAt;
+        type ReceiverDsDid = St::ReceiverDsDid;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerDid = St::SequencerDid;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `received_at` field to Set
+    pub struct SetReceivedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReceivedAt<St> {}
+    impl<St: State> State for SetReceivedAt<St> {
+        type ConversationId = St::ConversationId;
+        type DeliveryId = St::DeliveryId;
+        type PayloadSha256 = St::PayloadSha256;
+        type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = Set<members::received_at>;
         type ReceiverDsDid = St::ReceiverDsDid;
         type SenderDsDid = St::SenderDsDid;
         type SequencerDid = St::SequencerDid;
@@ -982,6 +1018,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = St::DeliveryId;
         type PayloadSha256 = St::PayloadSha256;
         type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = St::ReceivedAt;
         type ReceiverDsDid = Set<members::receiver_ds_did>;
         type SenderDsDid = St::SenderDsDid;
         type SequencerDid = St::SequencerDid;
@@ -995,6 +1032,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = St::DeliveryId;
         type PayloadSha256 = St::PayloadSha256;
         type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = St::ReceivedAt;
         type ReceiverDsDid = St::ReceiverDsDid;
         type SenderDsDid = Set<members::sender_ds_did>;
         type SequencerDid = St::SequencerDid;
@@ -1008,6 +1046,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = St::DeliveryId;
         type PayloadSha256 = St::PayloadSha256;
         type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = St::ReceivedAt;
         type ReceiverDsDid = St::ReceiverDsDid;
         type SenderDsDid = St::SenderDsDid;
         type SequencerDid = Set<members::sequencer_did>;
@@ -1021,6 +1060,7 @@ pub mod envelope_header_v1_state {
         type DeliveryId = St::DeliveryId;
         type PayloadSha256 = St::PayloadSha256;
         type ProtocolVersion = St::ProtocolVersion;
+        type ReceivedAt = St::ReceivedAt;
         type ReceiverDsDid = St::ReceiverDsDid;
         type SenderDsDid = St::SenderDsDid;
         type SequencerDid = St::SequencerDid;
@@ -1037,6 +1077,8 @@ pub mod envelope_header_v1_state {
         pub struct payload_sha256(());
         ///Marker type for the `protocol_version` field
         pub struct protocol_version(());
+        ///Marker type for the `received_at` field
+        pub struct received_at(());
         ///Marker type for the `receiver_ds_did` field
         pub struct receiver_ds_did(());
         ///Marker type for the `sender_ds_did` field
@@ -1059,6 +1101,7 @@ pub struct EnvelopeHeaderV1Builder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::mlsDS::ProtocolVersion<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
@@ -1087,7 +1130,7 @@ impl EnvelopeHeaderV1Builder<envelope_header_v1_state::Empty, jacquard_common::D
     pub fn new() -> Self {
         EnvelopeHeaderV1Builder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1098,7 +1141,7 @@ impl<S: jacquard_common::BosStr> EnvelopeHeaderV1Builder<envelope_header_v1_stat
     pub fn builder() -> Self {
         EnvelopeHeaderV1Builder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1183,6 +1226,25 @@ where
 impl<St, S: jacquard_common::BosStr> EnvelopeHeaderV1Builder<St, S>
 where
     St: envelope_header_v1_state::State,
+    St::ReceivedAt: envelope_header_v1_state::IsUnset,
+{
+    /// Set the `receivedAt` field (required)
+    pub fn received_at(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> EnvelopeHeaderV1Builder<envelope_header_v1_state::SetReceivedAt<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        EnvelopeHeaderV1Builder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EnvelopeHeaderV1Builder<St, S>
+where
+    St: envelope_header_v1_state::State,
     St::ReceiverDsDid: envelope_header_v1_state::IsUnset,
 {
     /// Set the `receiverDsDid` field (required)
@@ -1190,7 +1252,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> EnvelopeHeaderV1Builder<envelope_header_v1_state::SetReceiverDsDid<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EnvelopeHeaderV1Builder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1209,7 +1271,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> EnvelopeHeaderV1Builder<envelope_header_v1_state::SetSenderDsDid<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EnvelopeHeaderV1Builder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1228,7 +1290,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> EnvelopeHeaderV1Builder<envelope_header_v1_state::SetSequencerDid<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EnvelopeHeaderV1Builder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1247,7 +1309,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> EnvelopeHeaderV1Builder<envelope_header_v1_state::SetSequencerTerm<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EnvelopeHeaderV1Builder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1263,6 +1325,7 @@ where
     St::DeliveryId: envelope_header_v1_state::IsSet,
     St::PayloadSha256: envelope_header_v1_state::IsSet,
     St::ProtocolVersion: envelope_header_v1_state::IsSet,
+    St::ReceivedAt: envelope_header_v1_state::IsSet,
     St::ReceiverDsDid: envelope_header_v1_state::IsSet,
     St::SenderDsDid: envelope_header_v1_state::IsSet,
     St::SequencerDid: envelope_header_v1_state::IsSet,
@@ -1275,10 +1338,11 @@ where
             delivery_id: self._fields.1.unwrap(),
             payload_sha256: self._fields.2.unwrap(),
             protocol_version: self._fields.3.unwrap(),
-            receiver_ds_did: self._fields.4.unwrap(),
-            sender_ds_did: self._fields.5.unwrap(),
-            sequencer_did: self._fields.6.unwrap(),
-            sequencer_term: self._fields.7.unwrap(),
+            received_at: self._fields.4.unwrap(),
+            receiver_ds_did: self._fields.5.unwrap(),
+            sender_ds_did: self._fields.6.unwrap(),
+            sequencer_did: self._fields.7.unwrap(),
+            sequencer_term: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -1295,10 +1359,11 @@ where
             delivery_id: self._fields.1.unwrap(),
             payload_sha256: self._fields.2.unwrap(),
             protocol_version: self._fields.3.unwrap(),
-            receiver_ds_did: self._fields.4.unwrap(),
-            sender_ds_did: self._fields.5.unwrap(),
-            sequencer_did: self._fields.6.unwrap(),
-            sequencer_term: self._fields.7.unwrap(),
+            received_at: self._fields.4.unwrap(),
+            receiver_ds_did: self._fields.5.unwrap(),
+            sender_ds_did: self._fields.6.unwrap(),
+            sequencer_did: self._fields.7.unwrap(),
+            sequencer_term: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -1308,7 +1373,7 @@ pub mod federation_receipt_v1_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
