@@ -16,9 +16,9 @@ fn clean_event_json() -> Value {
         "createdAt": "2026-08-21T12:00:00.000Z",
         "entryId": "00112233-4455-4677-8899-aabbccddeeff",
         "entryKind": "blue.catbird.chat.defs#applicationEntry",
-        "acceptedPayloadSha256": {"$bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="},
-        "signedRequest": {"$bytes": "AQ=="},
-        "outerFingerprint": {"$bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="}
+        "acceptedPayloadSha256": {"$bytes": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA="},
+        "signedRequest": {"$bytes": "QUJDRA=="},
+        "outerFingerprint": {"$bytes": "oaKjpKWmp6ipqqusra6vsLGys7S1tre4ubq7vL2+v8A="}
     })
 }
 
@@ -38,6 +38,11 @@ fn legacy_event_json() -> Value {
 fn complete_clean_event_decodes_sealed_evidence() {
     let raw = serde_json::to_vec(&clean_event_json()).unwrap();
     let entry: ConvoEventEntry = serde_json::from_slice(&raw).unwrap();
+
+    let expected_sha: Vec<u8> = (1_u8..=32).collect();
+    let expected_signed_req: Vec<u8> = vec![0x41, 0x42, 0x43, 0x44];
+    let expected_fingerprint: Vec<u8> = (0xa1_u8..=0xc0).collect();
+
     assert_eq!(
         entry.entry_id.as_deref(),
         Some("00112233-4455-4677-8899-aabbccddeeff")
@@ -50,9 +55,18 @@ fn complete_clean_event_decodes_sealed_evidence() {
         entry.entry_kind.as_ref(),
         Some(&ConvoEventEntryEntryKind::ApplicationEntry)
     );
-    assert_eq!(entry.accepted_payload_sha256.as_ref().unwrap().len(), 32);
-    assert_eq!(entry.signed_request.as_ref().unwrap().as_ref(), &[1]);
-    assert_eq!(entry.outer_fingerprint.as_ref().unwrap().len(), 32);
+    assert_eq!(
+        entry.accepted_payload_sha256.as_deref(),
+        Some(expected_sha.as_slice())
+    );
+    assert_eq!(
+        entry.signed_request.as_deref(),
+        Some(expected_signed_req.as_slice())
+    );
+    assert_eq!(
+        entry.outer_fingerprint.as_deref(),
+        Some(expected_fingerprint.as_slice())
+    );
     assert!(entry.validate().is_ok());
 }
 
@@ -69,62 +83,153 @@ fn legacy_event_without_clean_fields_decodes() {
     assert!(entry.validate().is_ok());
 }
 
-fn validate_convo_event_bounds(entry: &ConvoEventEntry) -> Result<(), &'static str> {
-    if let Some(hash) = &entry.accepted_payload_sha256 {
-        if hash.len() != 32 {
-            return Err("acceptedPayloadSha256 must be 32 bytes");
-        }
-    }
-    if let Some(fp) = &entry.outer_fingerprint {
-        if fp.len() != 32 {
-            return Err("outerFingerprint must be 32 bytes");
-        }
-    }
-    if let Some(req) = &entry.signed_request {
-        if req.is_empty() || req.len() > 1_048_576 {
-            return Err("signedRequest must be between 1 and 1048576 bytes");
-        }
-    }
-    Ok(())
-}
-
 #[test]
-fn convo_event_entry_validates_hash_and_fingerprint_length() {
-    let b64_31 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
-    let b64_33 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+fn convo_event_entry_kind_table_driven_mapping_and_round_trip() {
+    let cases: [(&str, ConvoEventEntryEntryKind); 14] = [
+        (
+            "blue.catbird.chat.defs#applicationEntry",
+            ConvoEventEntryEntryKind::ApplicationEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#commitEntry",
+            ConvoEventEntryEntryKind::CommitEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#policyEntry",
+            ConvoEventEntryEntryKind::PolicyEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#metadataEntry",
+            ConvoEventEntryEntryKind::MetadataEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#creationEntry",
+            ConvoEventEntryEntryKind::CreationEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#participantAcceptanceEntry",
+            ConvoEventEntryEntryKind::ParticipantAcceptanceEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#conversationCloseEntry",
+            ConvoEventEntryEntryKind::ConversationCloseEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#resetRequestEntry",
+            ConvoEventEntryEntryKind::ResetRequestEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#resetActivationEntry",
+            ConvoEventEntryEntryKind::ResetActivationEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#leafRecoveryFulfillmentEntry",
+            ConvoEventEntryEntryKind::LeafRecoveryFulfillmentEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#leaveRequestEntry",
+            ConvoEventEntryEntryKind::LeaveRequestEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#zeroLeafLeaveEntry",
+            ConvoEventEntryEntryKind::ZeroLeafLeaveEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#leaveCancellationEntry",
+            ConvoEventEntryEntryKind::LeaveCancellationEntry,
+        ),
+        (
+            "blue.catbird.chat.defs#leaveCommitFulfillmentEntry",
+            ConvoEventEntryEntryKind::LeaveCommitFulfillmentEntry,
+        ),
+    ];
 
-    for field in ["acceptedPayloadSha256", "outerFingerprint"] {
-        for (invalid_len, b64_val) in [(31, b64_31), (33, b64_33)] {
-            let mut value = clean_event_json();
-            value[field] = json!({"$bytes": b64_val});
-            let raw = serde_json::to_vec(&value).unwrap();
-            let entry: ConvoEventEntry = serde_json::from_slice(&raw).unwrap();
-            assert!(
-                validate_convo_event_bounds(&entry).is_err(),
-                "accepted invalid length {invalid_len} for {field}"
-            );
-        }
-    }
-}
+    for (raw_str, expected_variant) in cases {
+        // Direct from_value construction
+        let constructed =
+            ConvoEventEntryEntryKind::from_value(jacquard_common::DefaultStr::from(raw_str));
+        assert_eq!(
+            constructed, expected_variant,
+            "from_value mismatch for {raw_str}"
+        );
+        assert_eq!(
+            constructed.as_str(),
+            raw_str,
+            "as_str mismatch for {raw_str}"
+        );
 
-#[test]
-fn convo_event_entry_validates_signed_request_bounds() {
-    let b64_empty = "";
-    let b64_over_1mib = "A".repeat(1_398_104);
+        // Also test &str variant construction
+        let constructed_borrowed = ConvoEventEntryEntryKind::from_value(raw_str);
+        assert_eq!(
+            constructed_borrowed.as_str(),
+            raw_str,
+            "borrowed as_str mismatch for {raw_str}"
+        );
 
-    for (name, b64_val) in [
-        ("empty", b64_empty.to_string()),
-        ("over-1-MiB", b64_over_1mib),
-    ] {
-        let mut value = clean_event_json();
-        value["signedRequest"] = json!({"$bytes": b64_val});
-        let raw = serde_json::to_vec(&value).unwrap();
-        let entry: ConvoEventEntry = serde_json::from_slice(&raw).unwrap();
-        assert!(
-            validate_convo_event_bounds(&entry).is_err(),
-            "accepted invalid signedRequest: {name}"
+        // JSON deserialization into enum
+        let json_val = json!(raw_str);
+        let decoded: ConvoEventEntryEntryKind = serde_json::from_value(json_val.clone()).unwrap();
+        assert_eq!(
+            decoded, expected_variant,
+            "JSON deserialize mismatch for {raw_str}"
+        );
+        assert_eq!(
+            decoded.as_str(),
+            raw_str,
+            "decoded as_str mismatch for {raw_str}"
+        );
+
+        // JSON serialization round-trip
+        let serialized = serde_json::to_value(&decoded).unwrap();
+        assert_eq!(
+            serialized, json_val,
+            "JSON serialize round-trip mismatch for {raw_str}"
+        );
+
+        // Deserialization within a ConvoEventEntry
+        let mut entry_val = clean_event_json();
+        entry_val["entryKind"] = json!(raw_str);
+        let raw_entry = serde_json::to_vec(&entry_val).unwrap();
+        let entry: ConvoEventEntry = serde_json::from_slice(&raw_entry).unwrap();
+        assert_eq!(
+            entry.entry_kind.as_ref(),
+            Some(&expected_variant),
+            "entry.entry_kind mismatch for {raw_str}"
         );
     }
+
+    // Unknown forward-compatible variant
+    let unknown_str = "blue.catbird.chat.defs#futureExtensionEntry";
+    let unknown_constructed =
+        ConvoEventEntryEntryKind::from_value(jacquard_common::DefaultStr::from(unknown_str));
+    assert_eq!(
+        unknown_constructed,
+        ConvoEventEntryEntryKind::Other(jacquard_common::DefaultStr::from(unknown_str))
+    );
+    assert_eq!(unknown_constructed.as_str(), unknown_str);
+
+    let unknown_json = json!(unknown_str);
+    let unknown_decoded: ConvoEventEntryEntryKind =
+        serde_json::from_value(unknown_json.clone()).unwrap();
+    assert_eq!(
+        unknown_decoded,
+        ConvoEventEntryEntryKind::Other(jacquard_common::DefaultStr::from(unknown_str))
+    );
+    assert_eq!(unknown_decoded.as_str(), unknown_str);
+
+    let unknown_serialized = serde_json::to_value(&unknown_decoded).unwrap();
+    assert_eq!(unknown_serialized, unknown_json);
+
+    let mut entry_val = clean_event_json();
+    entry_val["entryKind"] = json!(unknown_str);
+    let raw_entry = serde_json::to_vec(&entry_val).unwrap();
+    let entry: ConvoEventEntry = serde_json::from_slice(&raw_entry).unwrap();
+    assert_eq!(
+        entry.entry_kind.as_ref(),
+        Some(&ConvoEventEntryEntryKind::Other(
+            jacquard_common::DefaultStr::from(unknown_str)
+        ))
+    );
 }
 
 #[test]
@@ -158,4 +263,24 @@ fn convo_event_entry_lexicon_schema_doc_declares_exact_bounds() {
     };
     assert_eq!(b.min_length, Some(1));
     assert_eq!(b.max_length, Some(1048576));
+
+    let entry_id = obj.properties.get("entryId").unwrap();
+    assert!(matches!(entry_id, LexObjectProperty::String(_)));
+
+    let entry_kind = obj.properties.get("entryKind").unwrap();
+    assert!(matches!(entry_kind, LexObjectProperty::String(_)));
+
+    let required = obj.required.as_ref().expect("required properties");
+    for optional_field in [
+        "entryId",
+        "entryKind",
+        "acceptedPayloadSha256",
+        "signedRequest",
+        "outerFingerprint",
+    ] {
+        assert!(
+            !required.iter().any(|r| r.as_str() == optional_field),
+            "{optional_field} must not be in required properties"
+        );
+    }
 }
