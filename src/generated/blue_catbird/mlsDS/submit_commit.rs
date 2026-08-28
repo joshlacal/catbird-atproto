@@ -41,7 +41,7 @@ pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     pub commit_entry: crate::generated::blue_catbird::chat::CommitEntry<S>,
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub receipt: crate::generated::blue_catbird::mlsDS::FederationReceiptV1<S>,
-    pub welcomes: Vec<jacquard_common::types::value::Data<S>>,
+    pub welcomes: Vec<crate::generated::blue_catbird::chat::WelcomeView<S>>,
     #[serde(
         flatten,
         default,
