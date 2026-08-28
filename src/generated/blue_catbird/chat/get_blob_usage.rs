@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -23,24 +16,20 @@ pub struct GetBlobUsage<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub actor_device_id: S,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub usage: crate::generated::blue_catbird::chat::BlobUsageView<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,7 +37,6 @@ pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -58,9 +46,8 @@ pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetBlobUsageError {
     #[serde(rename = "CutoverRequired")]
@@ -70,19 +57,13 @@ pub enum GetBlobUsageError {
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -193,7 +174,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetBlobUsageRequest {
 
 pub mod get_blob_usage_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -235,10 +216,7 @@ pub struct GetBlobUsageBuilder<
 
 impl GetBlobUsage<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetBlobUsageBuilder<
-        get_blob_usage_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> GetBlobUsageBuilder<get_blob_usage_state::Empty, jacquard_common::DefaultStr> {
         GetBlobUsageBuilder::new()
     }
 }
