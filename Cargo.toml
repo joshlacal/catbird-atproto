@@ -12,9 +12,9 @@ streaming = ["jacquard-common/websocket", "dep:serde_ipld_dagcbor"]
 
 [dependencies]
 bytes = { version = "1", features = ["serde"] }
-jacquard-common = "=0.12.1"
-jacquard-derive = "=0.12.1"
-jacquard-lexicon = "=0.12.1"
+jacquard-common = { git = "https://tangled.org/nonbinary.computer/jacquard", rev = "3287244a99262a361bd32873a871982da0a76c40" }
+jacquard-derive = { git = "https://tangled.org/nonbinary.computer/jacquard", rev = "3287244a99262a361bd32873a871982da0a76c40" }
+jacquard-lexicon = { git = "https://tangled.org/nonbinary.computer/jacquard", rev = "3287244a99262a361bd32873a871982da0a76c40" }
 miette = "7"
 rustversion = "1"
 serde = { version = "1", features = ["derive"] }

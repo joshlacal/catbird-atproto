@@ -15,9 +15,8 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -33,7 +32,11 @@ pub struct DeliveryAck<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub sig: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub term: core::option::Option<i64>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,17 +45,9 @@ pub struct DeliveryAck<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -78,7 +73,11 @@ pub struct DeliverMessage<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub sender_ds_did: S,
     ///Current sequencer term for CAS validation
     pub sequencer_term: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -87,24 +86,14 @@ pub struct DeliverMessage<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct DeliverMessageOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct DeliverMessageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///Whether the message was accepted
     pub accepted: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -115,7 +104,11 @@ pub struct DeliverMessageOutput<
     pub delivery_id: S,
     ///Assigned sequence number
     pub seq: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -123,7 +116,6 @@ pub struct DeliverMessageOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -133,9 +125,8 @@ pub struct DeliverMessageOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum DeliverMessageError {
     #[serde(rename = "ConversationNotFound")]
@@ -187,8 +178,7 @@ impl core::fmt::Display for DeliverMessageError {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-for DeliveryAck<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DeliveryAck<S> {
     fn nsid() -> &'static str {
         "blue.catbird.mlsDS.deliverMessage"
     }
@@ -214,12 +204,10 @@ impl jacquard_common::xrpc::XrpcResp for DeliverMessageResponse {
     type Err = DeliverMessageError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for DeliverMessage<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeliverMessage<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeliverMessageResponse;
 }
 
@@ -229,16 +217,14 @@ Path: `/xrpc/blue.catbird.mlsDS.deliverMessage`. The request payload type is `De
 pub struct DeliverMessageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeliverMessageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deliverMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = DeliverMessage<S>;
     type Response = DeliverMessageResponse;
 }
 
-fn lexicon_doc_blue_catbird_mlsDS_deliverMessage() -> jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsDS_deliverMessage() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsDS.deliverMessage"),
@@ -246,198 +232,228 @@ fn lexicon_doc_blue_catbird_mlsDS_deliverMessage() -> jacquard_lexicon::lexicon:
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("deliveryAck"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Signed delivery acknowledgment",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sig")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "convoId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "epoch",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "msgId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sig",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Signed acknowledgment token",
-                                    ),
+                        )),
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sig"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "term",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                ..Default::default()
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("msgId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("sig"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Signed acknowledgment token",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("term"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
                     },
-                    ..Default::default()
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        encoding: ::jacquard_common::CowStr::new_static(
-                            "application/json",
-                        ),
-                        schema: Some(
-                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                required: Some(
-                                    vec![
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("msgId"),
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDsDid"),
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("ciphertext"),
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("paddedSize"),
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("deliveryId"),
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerTerm")
-                                    ],
-                                ),
-                                properties: {
-                                    #[allow(unused_mut)]
-                                    let mut map = ::alloc::collections::BTreeMap::new();
-                                    map.insert(
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                            "ciphertext",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(
+                    ::jacquard_lexicon::lexicon::LexXrpcProcedure {
+                        input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
+                            encoding: ::jacquard_common::CowStr::new_static("application/json"),
+                            schema: Some(::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(
+                                ::jacquard_lexicon::lexicon::LexObject {
+                                    required: Some(vec![
                                         ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "convoId",
                                         ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static("Conversation ID"),
-                                            ),
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                            "deliveryId",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Delivery tracking ID (ULID)",
-                                                ),
-                                            ),
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                            "epoch",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                            "messageType",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Message type (default: 'app')",
-                                                ),
-                                            ),
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
                                         ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "msgId",
                                         ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Unique message ID (ULID)",
-                                                ),
-                                            ),
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
                                         ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                            "paddedSize",
+                                            "epoch",
                                         ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
                                         ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "senderDsDid",
                                         ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "DID of the sending delivery service",
-                                                ),
-                                            ),
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "ciphertext",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "paddedSize",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "deliveryId",
+                                        ),
                                         ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "sequencerTerm",
                                         ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            ..Default::default()
-                                        }),
-                                    );
-                                    map
+                                    ]),
+                                    properties: {
+                                        #[allow(unused_mut)]
+                                        let mut map = ::alloc::collections::BTreeMap::new();
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "ciphertext",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                                ::jacquard_lexicon::lexicon::LexBytes {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "convoId",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Conversation ID",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "deliveryId",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Delivery tracking ID (ULID)",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "epoch",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                                ::jacquard_lexicon::lexicon::LexInteger {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "messageType",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Message type (default: 'app')",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "msgId",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Unique message ID (ULID)",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "paddedSize",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                                ::jacquard_lexicon::lexicon::LexInteger {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "senderDsDid",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "DID of the sending delivery service",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "sequencerTerm",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                                ::jacquard_lexicon::lexicon::LexInteger {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map
+                                    },
+                                    ..Default::default()
                                 },
-                                ..Default::default()
-                            }),
-                        ),
+                            )),
+                            ..Default::default()
+                        }),
                         ..Default::default()
-                    }),
-                    ..Default::default()
-                }),
+                    },
+                ),
             );
             map
         },
@@ -447,7 +463,7 @@ fn lexicon_doc_blue_catbird_mlsDS_deliverMessage() -> jacquard_lexicon::lexicon:
 
 pub mod deliver_message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -625,10 +641,8 @@ pub struct DeliverMessageBuilder<
 
 impl DeliverMessage<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeliverMessageBuilder<
-        deliver_message_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> DeliverMessageBuilder<deliver_message_state::Empty, jacquard_common::DefaultStr>
+    {
         DeliverMessageBuilder::new()
     }
 }
@@ -738,10 +752,7 @@ where
     }
 }
 
-impl<
-    St: deliver_message_state::State,
-    S: jacquard_common::BosStr,
-> DeliverMessageBuilder<St, S> {
+impl<St: deliver_message_state::State, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S> {
     /// Set the `messageType` field (optional)
     pub fn message_type(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.4 = value.into();

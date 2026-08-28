@@ -6,52 +6,37 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetConversationState<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct GetConversationState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor_device_id: S,
     pub conversation_id: S,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetConversationStateOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    pub pending_leave_requests: Vec<
-        crate::generated::blue_catbird::chat::LeaveRequestView<S>,
-    >,
-    pub pending_reset_requests: Vec<
-        crate::generated::blue_catbird::chat::ResetRequestView<S>,
-    >,
+pub struct GetConversationStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Open unexpired leaf recoveries bound to the current coordinate, visible only to an active concrete device leaf that may fulfill them. Excludes the requesting exact device, but includes other devices of the same DID. Ordered oldest first; successful fulfillment changes the coordinate and stale requests must be renewed. Absent on older servers; empty for logical participants without a current concrete leaf. This is separate from the exact-target-device getLeafRecoveryInbox and grants no additional application history.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub pending_leaf_recovery_requests:
+        core::option::Option<Vec<crate::generated::blue_catbird::chat::LeafRecoveryView<S>>>,
+    pub pending_leave_requests: Vec<crate::generated::blue_catbird::chat::LeaveRequestView<S>>,
+    pub pending_reset_requests: Vec<crate::generated::blue_catbird::chat::ResetRequestView<S>>,
     pub state: crate::generated::blue_catbird::chat::ConversationState<S>,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -59,7 +44,6 @@ pub struct GetConversationStateOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -69,15 +53,12 @@ pub struct GetConversationStateOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum GetConversationStateError {
     #[serde(rename = "AccessOutsideMembershipInterval")]
-    AccessOutsideMembershipInterval(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccessOutsideMembershipInterval(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "CutoverRequired")]
@@ -91,19 +72,13 @@ pub enum GetConversationStateError {
     #[serde(rename = "NotEntitled")]
     NotEntitled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(
-        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
-    ),
+    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RateLimited")]
     RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
@@ -223,8 +198,7 @@ impl jacquard_common::xrpc::XrpcResp for GetConversationStateResponse {
     type Err = GetConversationStateError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for GetConversationState<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetConversationState<S> {
     const NSID: &'static str = "blue.catbird.chat.getConversationState";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetConversationStateResponse;
@@ -243,9 +217,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetConversationStateRequest {
 
 pub mod get_conversation_state_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -297,28 +271,21 @@ pub struct GetConversationStateBuilder<
 
 impl GetConversationState<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetConversationStateBuilder<
-        get_conversation_state_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new(
+    ) -> GetConversationStateBuilder<get_conversation_state_state::Empty, jacquard_common::DefaultStr>
+    {
         GetConversationStateBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> GetConversationState<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetConversationStateBuilder<
-        get_conversation_state_state::Empty,
-        S,
-    > {
+    pub fn builder() -> GetConversationStateBuilder<get_conversation_state_state::Empty, S> {
         GetConversationStateBuilder::builder()
     }
 }
 
-impl GetConversationStateBuilder<
-    get_conversation_state_state::Empty,
-    jacquard_common::DefaultStr,
-> {
+impl GetConversationStateBuilder<get_conversation_state_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetConversationStateBuilder {
@@ -329,9 +296,9 @@ impl GetConversationStateBuilder<
     }
 }
 
-impl<
-    S: jacquard_common::BosStr,
-> GetConversationStateBuilder<get_conversation_state_state::Empty, S> {
+impl<S: jacquard_common::BosStr>
+    GetConversationStateBuilder<get_conversation_state_state::Empty, S>
+{
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetConversationStateBuilder {
@@ -351,10 +318,7 @@ where
     pub fn actor_device_id(
         mut self,
         value: impl Into<S>,
-    ) -> GetConversationStateBuilder<
-        get_conversation_state_state::SetActorDeviceId<St>,
-        S,
-    > {
+    ) -> GetConversationStateBuilder<get_conversation_state_state::SetActorDeviceId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         GetConversationStateBuilder {
             _state: ::core::marker::PhantomData,
@@ -373,10 +337,7 @@ where
     pub fn conversation_id(
         mut self,
         value: impl Into<S>,
-    ) -> GetConversationStateBuilder<
-        get_conversation_state_state::SetConversationId<St>,
-        S,
-    > {
+    ) -> GetConversationStateBuilder<get_conversation_state_state::SetConversationId<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         GetConversationStateBuilder {
             _state: ::core::marker::PhantomData,
