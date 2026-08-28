@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -33,7 +26,11 @@ pub struct SubmitCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub sender_ds_did: S,
     ///Current sequencer term for CAS validation
     pub sequencer_term: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,17 +39,9 @@ pub struct SubmitCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -67,7 +56,11 @@ pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     pub receipt: core::option::Option<S>,
     ///Current sequencer term
     pub sequencer_term: i64,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -75,7 +68,6 @@ pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -85,9 +77,8 @@ pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum SubmitCommitError {
     #[serde(rename = "ConversationNotFound")]
@@ -161,9 +152,8 @@ impl jacquard_common::xrpc::XrpcResp for SubmitCommitResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SubmitCommit<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.submitCommit";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = SubmitCommitResponse;
 }
 
@@ -173,16 +163,15 @@ Path: `/xrpc/blue.catbird.mlsDS.submitCommit`. The request payload type is `Subm
 pub struct SubmitCommitRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SubmitCommitRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.submitCommit";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = SubmitCommit<S>;
     type Response = SubmitCommitResponse;
 }
 
 pub mod submit_commit_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -311,10 +300,7 @@ pub struct SubmitCommitBuilder<
 
 impl SubmitCommit<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SubmitCommitBuilder<
-        submit_commit_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> SubmitCommitBuilder<submit_commit_state::Empty, jacquard_common::DefaultStr> {
         SubmitCommitBuilder::new()
     }
 }

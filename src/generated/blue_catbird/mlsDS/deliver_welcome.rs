@@ -6,15 +6,8 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -33,7 +26,11 @@ pub struct DeliverWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultS
     ///Serialized MLS Welcome message
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub welcome_data: jacquard_common::deps::bytes::Bytes,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,31 +39,25 @@ pub struct DeliverWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultS
     >,
 }
 
-
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct DeliverWelcomeOutput<
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
+pub struct DeliverWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///Whether the welcome was accepted
     pub accepted: bool,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub ack: core::option::Option<
         crate::generated::blue_catbird::mlsDS::deliver_message::DeliveryAck<S>,
     >,
-    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -74,7 +65,6 @@ pub struct DeliverWelcomeOutput<
         >,
     >,
 }
-
 
 #[derive(
     serde::Serialize,
@@ -84,9 +74,8 @@ pub struct DeliverWelcomeOutput<
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic
+    miette::Diagnostic,
 )]
-
 #[serde(tag = "error", content = "message")]
 pub enum DeliverWelcomeError {
     #[serde(rename = "RecipientNotFound")]
@@ -140,12 +129,10 @@ impl jacquard_common::xrpc::XrpcResp for DeliverWelcomeResponse {
     type Err = DeliverWelcomeError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
-for DeliverWelcome<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeliverWelcome<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeliverWelcomeResponse;
 }
 
@@ -155,16 +142,15 @@ Path: `/xrpc/blue.catbird.mlsDS.deliverWelcome`. The request payload type is `De
 pub struct DeliverWelcomeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeliverWelcomeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deliverWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = DeliverWelcome<S>;
     type Response = DeliverWelcomeResponse;
 }
 
 pub mod deliver_welcome_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -293,10 +279,8 @@ pub struct DeliverWelcomeBuilder<
 
 impl DeliverWelcome<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeliverWelcomeBuilder<
-        deliver_welcome_state::Empty,
-        jacquard_common::DefaultStr,
-    > {
+    pub fn new() -> DeliverWelcomeBuilder<deliver_welcome_state::Empty, jacquard_common::DefaultStr>
+    {
         DeliverWelcomeBuilder::new()
     }
 }
