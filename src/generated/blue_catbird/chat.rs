@@ -1393,7 +1393,7 @@ pub struct CreationManifest<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
-/// Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; OpenMLS 0.8.1 GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.
+/// Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.
 
 #[derive(
     serde::Serialize,
@@ -1961,7 +1961,7 @@ pub struct ExternalLinkEmbedVariant<
     >,
 }
 
-/// Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. OpenMLS 0.8.1 GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.
+/// Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.
 
 #[derive(
     serde::Serialize,
@@ -15070,7 +15070,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; OpenMLS 0.8.1 GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.",
+                            "Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.",
                         ),
                     ),
                     required: Some(
@@ -16442,7 +16442,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. OpenMLS 0.8.1 GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.",
+                            "Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.",
                         ),
                     ),
                     required: Some(
