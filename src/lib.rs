@@ -47,59 +47,49 @@ pub mod catbird {
             pub const NSID: &str = "blue.catbird.bskychat.updateMuteStatus";
         }
     }
-
     pub mod mls_ds {
         pub mod deliver_message {
             pub const NSID: &str = "blue.catbird.mlsDS.deliverMessage";
             pub type Input = crate::blue_catbird::mlsDS::deliver_message::DeliverMessage;
             pub type Output = crate::blue_catbird::mlsDS::deliver_message::DeliverMessageOutput;
         }
-
         pub mod deliver_welcome {
             pub const NSID: &str = "blue.catbird.mlsDS.deliverWelcome";
             pub type Input = crate::blue_catbird::mlsDS::deliver_welcome::DeliverWelcome;
             pub type Output = crate::blue_catbird::mlsDS::deliver_welcome::DeliverWelcomeOutput;
         }
-
         pub mod fetch_key_package {
             pub const NSID: &str = "blue.catbird.mlsDS.fetchKeyPackage";
             pub type Output = crate::blue_catbird::mlsDS::fetch_key_package::FetchKeyPackageOutput;
         }
-
         pub mod get_convo_digest {
             pub const NSID: &str = "blue.catbird.mlsDS.getConvoDigest";
             pub type Output = crate::blue_catbird::mlsDS::get_convo_digest::GetConvoDigestOutput;
         }
-
         pub mod get_convo_events {
             pub const NSID: &str = "blue.catbird.mlsDS.getConvoEvents";
             pub type Output = crate::blue_catbird::mlsDS::get_convo_events::GetConvoEventsOutput;
         }
-
         pub mod submit_commit {
             pub const NSID: &str = "blue.catbird.mlsDS.submitCommit";
             pub type Input = crate::blue_catbird::mlsDS::submit_commit::SubmitCommit;
             pub type Output = crate::blue_catbird::mlsDS::submit_commit::SubmitCommitOutput;
         }
-
         pub mod transfer_sequencer {
             pub const NSID: &str = "blue.catbird.mlsDS.transferSequencer";
             pub type Input = crate::blue_catbird::mlsDS::transfer_sequencer::TransferSequencer;
             pub type Output =
                 crate::blue_catbird::mlsDS::transfer_sequencer::TransferSequencerOutput;
         }
-
         pub mod health_check {
             pub const NSID: &str = "blue.catbird.mlsDS.healthCheck";
             pub type Output = crate::blue_catbird::mlsDS::health_check::HealthCheckOutput;
         }
-
         pub mod get_federation_peers {
             pub const NSID: &str = "blue.catbird.mlsDS.getFederationPeers";
             pub type Output =
                 crate::blue_catbird::mlsDS::get_federation_peers::GetFederationPeersOutput;
         }
-
         pub mod upsert_federation_peer {
             pub const NSID: &str = "blue.catbird.mlsDS.upsertFederationPeer";
             pub type Input =
@@ -107,7 +97,6 @@ pub mod catbird {
             pub type Output =
                 crate::blue_catbird::mlsDS::upsert_federation_peer::UpsertFederationPeerOutput;
         }
-
         pub mod delete_federation_peer {
             pub const NSID: &str = "blue.catbird.mlsDS.deleteFederationPeer";
             pub type Input =
@@ -115,13 +104,11 @@ pub mod catbird {
             pub type Output =
                 crate::blue_catbird::mlsDS::delete_federation_peer::DeleteFederationPeerOutput;
         }
-
         pub mod get_federation_mode {
             pub const NSID: &str = "blue.catbird.mlsDS.getFederationMode";
             pub type Output =
                 crate::blue_catbird::mlsDS::get_federation_mode::GetFederationModeOutput;
         }
-
         pub mod set_federation_mode {
             pub const NSID: &str = "blue.catbird.mlsDS.setFederationMode";
             pub type Input = crate::blue_catbird::mlsDS::set_federation_mode::SetFederationMode;

@@ -11,7 +11,10 @@ fn circle_summary_keeps_space_uri() {
     }"#;
     let summary: CircleSummary = serde_json::from_str(json_str).unwrap();
     assert_eq!(summary.name.as_str(), "Family");
-    assert_eq!(summary.uri.as_str(), "at://did:plc:owner/space/blue.catbird.circle/3abc");
+    assert_eq!(
+        summary.uri.as_str(),
+        "at://did:plc:owner/space/blue.catbird.circle/3abc"
+    );
     assert_eq!(summary.circle_id.as_str(), "3abcdefghijkl");
     assert_eq!(summary.owner.as_str(), "did:plc:owner");
     assert_eq!(summary.member_count, Some(5));
@@ -95,7 +98,8 @@ fn space_ref_validates_exact_uri_shape_did_nsid_and_canonical_record_key() {
         "at://did:plc:asdf123/space".to_string(),
         "at://did:plc:asdf123/space/com.example.group".to_string(),
         "at://did:plc:asdf123/space/com.example.group/default/extra".to_string(),
-        "at://did:plc:asdf123/space/com.example.group/default/did:plc:user1/com.atproto.feed.post".to_string(),
+        "at://did:plc:asdf123/space/com.example.group/default/did:plc:user1/com.atproto.feed.post"
+            .to_string(),
         "at://did:plc:asdf123/com.atproto.feed.post/abc".to_string(),
         "at://did:plc:asdf123/space//default".to_string(),
         "at://did:plc:asdf123/space/com.example.group/".to_string(),

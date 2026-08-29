@@ -42,6 +42,11 @@ pub enum GetBlobError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "InvalidRequest")]
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
     CutoverRequired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -96,6 +101,13 @@ impl core::fmt::Display for GetBlobError {
         match self {
             Self::BlobNotFound(msg) => {
                 write!(f, "BlobNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidRequest(msg) => {
+                write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

@@ -50,6 +50,11 @@ pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 )]
 #[serde(tag = "error", content = "message")]
 pub enum GetBlobUsageError {
+    #[serde(rename = "InvalidRequest")]
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
     CutoverRequired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -102,6 +107,13 @@ pub enum GetBlobUsageError {
 impl core::fmt::Display for GetBlobUsageError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::InvalidRequest(msg) => {
+                write!(f, "InvalidRequest")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::CutoverRequired(msg) => {
                 write!(f, "CutoverRequired")?;
                 if let Some(msg) = msg {

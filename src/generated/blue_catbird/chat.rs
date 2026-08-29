@@ -1094,6 +1094,10 @@ pub struct ConversationState<S: jacquard_common::BosStr = jacquard_common::Defau
     pub leaves: Vec<crate::generated::blue_catbird::chat::DeviceLeafView<S>>,
     pub metadata_snapshot: crate::generated::blue_catbird::chat::MetadataSnapshot<S>,
     pub participants: Vec<crate::generated::blue_catbird::chat::ParticipantView<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_did: core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_term: core::option::Option<i64>,
     pub snapshot_seq: i64,
     #[serde(
         flatten,
@@ -1201,7 +1205,7 @@ pub struct CreationManifest<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
-/// Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; OpenMLS 0.8.1 GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.
+/// Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -1894,7 +1898,7 @@ pub struct ExternalLinkEmbedVariant<S: jacquard_common::BosStr = jacquard_common
     >,
 }
 
-/// Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. OpenMLS 0.8.1 GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.
+/// Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -8032,6 +8036,48 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Con
                     path: jacquard_lexicon::validation::ValidationPath::from_field("participants"),
                     min: 1usize,
                     actual: value.len(),
+                });
+            }
+        }
+        if let Some(ref value) = self.sequencer_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("sequencer_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.sequencer_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("sequencer_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.sequencer_term {
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "sequencer_term",
+                    ),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.sequencer_term {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "sequencer_term",
+                    ),
+                    min: 0i64,
+                    actual: *value,
                 });
             }
         }
@@ -20532,6 +20578,25 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerTerm",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "snapshotSeq",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
@@ -20870,7 +20935,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; OpenMLS 0.8.1 GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.",
+                            "Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy.",
                         ),
                     ),
                     required: Some(
@@ -22274,7 +22339,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. OpenMLS 0.8.1 GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.",
+                            "Exactly one MLS 1.0 MLSMessage wire-format 4 wrapper. GroupInfo extensions are frozen to exactly ratchet_tree followed by external_pub; every other GroupInfo extension is rejected. external_pub presence does not authorize external commits, which protocol policy forbids.",
                         ),
                     ),
                     required: Some(
@@ -41609,6 +41674,8 @@ pub struct ConversationStateBuilder<
         core::option::Option<Vec<crate::generated::blue_catbird::chat::DeviceLeafView<S>>>,
         core::option::Option<crate::generated::blue_catbird::chat::MetadataSnapshot<S>>,
         core::option::Option<Vec<crate::generated::blue_catbird::chat::ParticipantView<S>>>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<i64>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -41635,7 +41702,7 @@ impl ConversationStateBuilder<conversation_state_state::Empty, jacquard_common::
     pub fn new() -> Self {
         ConversationStateBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -41646,7 +41713,7 @@ impl<S: jacquard_common::BosStr> ConversationStateBuilder<conversation_state_sta
     pub fn builder() -> Self {
         ConversationStateBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -41766,6 +41833,42 @@ where
     }
 }
 
+impl<St: conversation_state_state::State, S: jacquard_common::BosStr>
+    ConversationStateBuilder<St, S>
+{
+    /// Set the `sequencerDid` field (optional)
+    pub fn sequencer_did(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::BareDid<S>>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `sequencerDid` field to an Option value (optional)
+    pub fn maybe_sequencer_did(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St: conversation_state_state::State, S: jacquard_common::BosStr>
+    ConversationStateBuilder<St, S>
+{
+    /// Set the `sequencerTerm` field (optional)
+    pub fn sequencer_term(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `sequencerTerm` field to an Option value (optional)
+    pub fn maybe_sequencer_term(mut self, value: Option<i64>) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ConversationStateBuilder<St, S>
 where
     St: conversation_state_state::State,
@@ -41776,7 +41879,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ConversationStateBuilder<conversation_state_state::SetSnapshotSeq<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         ConversationStateBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -41805,7 +41908,9 @@ where
             leaves: self._fields.3.unwrap(),
             metadata_snapshot: self._fields.4.unwrap(),
             participants: self._fields.5.unwrap(),
-            snapshot_seq: self._fields.6.unwrap(),
+            sequencer_did: self._fields.6,
+            sequencer_term: self._fields.7,
+            snapshot_seq: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -41824,7 +41929,9 @@ where
             leaves: self._fields.3.unwrap(),
             metadata_snapshot: self._fields.4.unwrap(),
             participants: self._fields.5.unwrap(),
-            snapshot_seq: self._fields.6.unwrap(),
+            sequencer_did: self._fields.6,
+            sequencer_term: self._fields.7,
+            snapshot_seq: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }

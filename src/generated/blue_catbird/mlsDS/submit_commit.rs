@@ -13,19 +13,10 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SubmitCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Serialized MLS commit
+    pub header: crate::generated::blue_catbird::mlsDS::EnvelopeHeaderV1<S>,
+    /// Exact JSON bytes of the signed commit transition request
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub commit_data: jacquard_common::deps::bytes::Bytes,
-    /// Conversation ID
-    pub convo_id: S,
-    /// Current expected epoch
-    pub epoch: i64,
-    /// Proposed next epoch
-    pub proposed_epoch: i64,
-    /// DID of the submitting delivery service
-    pub sender_ds_did: S,
-    /// Current sequencer term for CAS validation
-    pub sequencer_term: i64,
+    pub signed_request_bytes: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
@@ -47,15 +38,10 @@ pub struct SubmitCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Whether the commit was accepted
-    pub accepted: bool,
-    /// Epoch assigned by the sequencer
-    pub assigned_epoch: i64,
-    /// Sequencer receipt for the commit
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub receipt: core::option::Option<S>,
-    /// Current sequencer term
-    pub sequencer_term: i64,
+    pub commit_entry: crate::generated::blue_catbird::chat::CommitEntry<S>,
+    pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
+    pub receipt: crate::generated::blue_catbird::mlsDS::FederationReceiptV1<S>,
+    pub welcomes: Vec<crate::generated::blue_catbird::chat::WelcomeView<S>>,
     #[serde(
         flatten,
         default,
@@ -101,6 +87,16 @@ pub enum SubmitCommitError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "InvalidEnvelope")]
+    InvalidEnvelope(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "UnauthorizedParticipantDs")]
+    UnauthorizedParticipantDs(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -136,6 +132,20 @@ impl core::fmt::Display for SubmitCommitError {
             }
             Self::CommitConflict(msg) => {
                 write!(f, "CommitConflict")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidEnvelope(msg) => {
+                write!(f, "InvalidEnvelope")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::UnauthorizedParticipantDs(msg) => {
+                write!(f, "UnauthorizedParticipantDs")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -192,105 +202,37 @@ pub mod submit_commit_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CommitData;
-        type ConvoId;
-        type Epoch;
-        type ProposedEpoch;
-        type SenderDsDid;
-        type SequencerTerm;
+        type Header;
+        type SignedRequestBytes;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CommitData = Unset;
-        type ConvoId = Unset;
-        type Epoch = Unset;
-        type ProposedEpoch = Unset;
-        type SenderDsDid = Unset;
-        type SequencerTerm = Unset;
+        type Header = Unset;
+        type SignedRequestBytes = Unset;
     }
-    ///State transition - sets the `commit_data` field to Set
-    pub struct SetCommitData<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetCommitData<St> {}
-    impl<St: State> State for SetCommitData<St> {
-        type CommitData = Set<members::commit_data>;
-        type ConvoId = St::ConvoId;
-        type Epoch = St::Epoch;
-        type ProposedEpoch = St::ProposedEpoch;
-        type SenderDsDid = St::SenderDsDid;
-        type SequencerTerm = St::SequencerTerm;
+    ///State transition - sets the `header` field to Set
+    pub struct SetHeader<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHeader<St> {}
+    impl<St: State> State for SetHeader<St> {
+        type Header = Set<members::header>;
+        type SignedRequestBytes = St::SignedRequestBytes;
     }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetConvoId<St> {}
-    impl<St: State> State for SetConvoId<St> {
-        type CommitData = St::CommitData;
-        type ConvoId = Set<members::convo_id>;
-        type Epoch = St::Epoch;
-        type ProposedEpoch = St::ProposedEpoch;
-        type SenderDsDid = St::SenderDsDid;
-        type SequencerTerm = St::SequencerTerm;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetEpoch<St> {}
-    impl<St: State> State for SetEpoch<St> {
-        type CommitData = St::CommitData;
-        type ConvoId = St::ConvoId;
-        type Epoch = Set<members::epoch>;
-        type ProposedEpoch = St::ProposedEpoch;
-        type SenderDsDid = St::SenderDsDid;
-        type SequencerTerm = St::SequencerTerm;
-    }
-    ///State transition - sets the `proposed_epoch` field to Set
-    pub struct SetProposedEpoch<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetProposedEpoch<St> {}
-    impl<St: State> State for SetProposedEpoch<St> {
-        type CommitData = St::CommitData;
-        type ConvoId = St::ConvoId;
-        type Epoch = St::Epoch;
-        type ProposedEpoch = Set<members::proposed_epoch>;
-        type SenderDsDid = St::SenderDsDid;
-        type SequencerTerm = St::SequencerTerm;
-    }
-    ///State transition - sets the `sender_ds_did` field to Set
-    pub struct SetSenderDsDid<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetSenderDsDid<St> {}
-    impl<St: State> State for SetSenderDsDid<St> {
-        type CommitData = St::CommitData;
-        type ConvoId = St::ConvoId;
-        type Epoch = St::Epoch;
-        type ProposedEpoch = St::ProposedEpoch;
-        type SenderDsDid = Set<members::sender_ds_did>;
-        type SequencerTerm = St::SequencerTerm;
-    }
-    ///State transition - sets the `sequencer_term` field to Set
-    pub struct SetSequencerTerm<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetSequencerTerm<St> {}
-    impl<St: State> State for SetSequencerTerm<St> {
-        type CommitData = St::CommitData;
-        type ConvoId = St::ConvoId;
-        type Epoch = St::Epoch;
-        type ProposedEpoch = St::ProposedEpoch;
-        type SenderDsDid = St::SenderDsDid;
-        type SequencerTerm = Set<members::sequencer_term>;
+    ///State transition - sets the `signed_request_bytes` field to Set
+    pub struct SetSignedRequestBytes<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignedRequestBytes<St> {}
+    impl<St: State> State for SetSignedRequestBytes<St> {
+        type Header = St::Header;
+        type SignedRequestBytes = Set<members::signed_request_bytes>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `commit_data` field
-        pub struct commit_data(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
-        ///Marker type for the `proposed_epoch` field
-        pub struct proposed_epoch(());
-        ///Marker type for the `sender_ds_did` field
-        pub struct sender_ds_did(());
-        ///Marker type for the `sequencer_term` field
-        pub struct sequencer_term(());
+        ///Marker type for the `header` field
+        pub struct header(());
+        ///Marker type for the `signed_request_bytes` field
+        pub struct signed_request_bytes(());
     }
 }
 
@@ -301,12 +243,8 @@ pub struct SubmitCommitBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<crate::generated::blue_catbird::mlsDS::EnvelopeHeaderV1<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<S>,
-        core::option::Option<i64>,
-        core::option::Option<i64>,
-        core::option::Option<S>,
-        core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -330,7 +268,7 @@ impl SubmitCommitBuilder<submit_commit_state::Empty, jacquard_common::DefaultStr
     pub fn new() -> Self {
         SubmitCommitBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -341,7 +279,7 @@ impl<S: jacquard_common::BosStr> SubmitCommitBuilder<submit_commit_state::Empty,
     pub fn builder() -> Self {
         SubmitCommitBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -350,13 +288,13 @@ impl<S: jacquard_common::BosStr> SubmitCommitBuilder<submit_commit_state::Empty,
 impl<St, S: jacquard_common::BosStr> SubmitCommitBuilder<St, S>
 where
     St: submit_commit_state::State,
-    St::CommitData: submit_commit_state::IsUnset,
+    St::Header: submit_commit_state::IsUnset,
 {
-    /// Set the `commitData` field (required)
-    pub fn commit_data(
+    /// Set the `header` field (required)
+    pub fn header(
         mut self,
-        value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> SubmitCommitBuilder<submit_commit_state::SetCommitData<St>, S> {
+        value: impl Into<crate::generated::blue_catbird::mlsDS::EnvelopeHeaderV1<S>>,
+    ) -> SubmitCommitBuilder<submit_commit_state::SetHeader<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         SubmitCommitBuilder {
             _state: ::core::marker::PhantomData,
@@ -369,13 +307,13 @@ where
 impl<St, S: jacquard_common::BosStr> SubmitCommitBuilder<St, S>
 where
     St: submit_commit_state::State,
-    St::ConvoId: submit_commit_state::IsUnset,
+    St::SignedRequestBytes: submit_commit_state::IsUnset,
 {
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
+    /// Set the `signedRequestBytes` field (required)
+    pub fn signed_request_bytes(
         mut self,
-        value: impl Into<S>,
-    ) -> SubmitCommitBuilder<submit_commit_state::SetConvoId<St>, S> {
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> SubmitCommitBuilder<submit_commit_state::SetSignedRequestBytes<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         SubmitCommitBuilder {
             _state: ::core::marker::PhantomData,
@@ -388,98 +326,14 @@ where
 impl<St, S: jacquard_common::BosStr> SubmitCommitBuilder<St, S>
 where
     St: submit_commit_state::State,
-    St::Epoch: submit_commit_state::IsUnset,
-{
-    /// Set the `epoch` field (required)
-    pub fn epoch(
-        mut self,
-        value: impl Into<i64>,
-    ) -> SubmitCommitBuilder<submit_commit_state::SetEpoch<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
-        SubmitCommitBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> SubmitCommitBuilder<St, S>
-where
-    St: submit_commit_state::State,
-    St::ProposedEpoch: submit_commit_state::IsUnset,
-{
-    /// Set the `proposedEpoch` field (required)
-    pub fn proposed_epoch(
-        mut self,
-        value: impl Into<i64>,
-    ) -> SubmitCommitBuilder<submit_commit_state::SetProposedEpoch<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
-        SubmitCommitBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> SubmitCommitBuilder<St, S>
-where
-    St: submit_commit_state::State,
-    St::SenderDsDid: submit_commit_state::IsUnset,
-{
-    /// Set the `senderDsDid` field (required)
-    pub fn sender_ds_did(
-        mut self,
-        value: impl Into<S>,
-    ) -> SubmitCommitBuilder<submit_commit_state::SetSenderDsDid<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
-        SubmitCommitBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> SubmitCommitBuilder<St, S>
-where
-    St: submit_commit_state::State,
-    St::SequencerTerm: submit_commit_state::IsUnset,
-{
-    /// Set the `sequencerTerm` field (required)
-    pub fn sequencer_term(
-        mut self,
-        value: impl Into<i64>,
-    ) -> SubmitCommitBuilder<submit_commit_state::SetSequencerTerm<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
-        SubmitCommitBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> SubmitCommitBuilder<St, S>
-where
-    St: submit_commit_state::State,
-    St::CommitData: submit_commit_state::IsSet,
-    St::ConvoId: submit_commit_state::IsSet,
-    St::Epoch: submit_commit_state::IsSet,
-    St::ProposedEpoch: submit_commit_state::IsSet,
-    St::SenderDsDid: submit_commit_state::IsSet,
-    St::SequencerTerm: submit_commit_state::IsSet,
+    St::Header: submit_commit_state::IsSet,
+    St::SignedRequestBytes: submit_commit_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> SubmitCommit<S> {
         SubmitCommit {
-            commit_data: self._fields.0.unwrap(),
-            convo_id: self._fields.1.unwrap(),
-            epoch: self._fields.2.unwrap(),
-            proposed_epoch: self._fields.3.unwrap(),
-            sender_ds_did: self._fields.4.unwrap(),
-            sequencer_term: self._fields.5.unwrap(),
+            header: self._fields.0.unwrap(),
+            signed_request_bytes: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -492,12 +346,8 @@ where
         >,
     ) -> SubmitCommit<S> {
         SubmitCommit {
-            commit_data: self._fields.0.unwrap(),
-            convo_id: self._fields.1.unwrap(),
-            epoch: self._fields.2.unwrap(),
-            proposed_epoch: self._fields.3.unwrap(),
-            sender_ds_did: self._fields.4.unwrap(),
-            sequencer_term: self._fields.5.unwrap(),
+            header: self._fields.0.unwrap(),
+            signed_request_bytes: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }

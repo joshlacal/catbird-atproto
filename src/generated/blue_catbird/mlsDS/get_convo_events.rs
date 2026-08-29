@@ -15,21 +15,34 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ConvoEventEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub accepted_payload_sha256: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     /// Encrypted message payload
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext: jacquard_common::deps::bytes::Bytes,
     /// Creation timestamp
     pub created_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub entry_id: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub entry_kind: core::option::Option<ConvoEventEntryEntryKind<S>>,
     /// MLS epoch
     pub epoch: i64,
     /// Message type (e.g., 'app')
     pub message_type: S,
     /// Message ID
     pub msg_id: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub outer_fingerprint: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     /// Padded plaintext size
     pub padded_size: i64,
     /// Sequence number
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub signed_request: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     #[serde(
         flatten,
         default,
@@ -42,6 +55,161 @@ pub struct ConvoEventEntry<S: jacquard_common::BosStr = jacquard_common::Default
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ConvoEventEntryEntryKind<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ApplicationEntry,
+    CommitEntry,
+    PolicyEntry,
+    MetadataEntry,
+    CreationEntry,
+    ParticipantAcceptanceEntry,
+    ConversationCloseEntry,
+    ResetRequestEntry,
+    ResetActivationEntry,
+    LeafRecoveryFulfillmentEntry,
+    LeaveRequestEntry,
+    ZeroLeafLeaveEntry,
+    LeaveCancellationEntry,
+    LeaveCommitFulfillmentEntry,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ConvoEventEntryEntryKind<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ApplicationEntry => "blue.catbird.chat.defs#applicationEntry",
+            Self::CommitEntry => "blue.catbird.chat.defs#commitEntry",
+            Self::PolicyEntry => "blue.catbird.chat.defs#policyEntry",
+            Self::MetadataEntry => "blue.catbird.chat.defs#metadataEntry",
+            Self::CreationEntry => "blue.catbird.chat.defs#creationEntry",
+            Self::ParticipantAcceptanceEntry => "blue.catbird.chat.defs#participantAcceptanceEntry",
+            Self::ConversationCloseEntry => "blue.catbird.chat.defs#conversationCloseEntry",
+            Self::ResetRequestEntry => "blue.catbird.chat.defs#resetRequestEntry",
+            Self::ResetActivationEntry => "blue.catbird.chat.defs#resetActivationEntry",
+            Self::LeafRecoveryFulfillmentEntry => {
+                "blue.catbird.chat.defs#leafRecoveryFulfillmentEntry"
+            }
+            Self::LeaveRequestEntry => "blue.catbird.chat.defs#leaveRequestEntry",
+            Self::ZeroLeafLeaveEntry => "blue.catbird.chat.defs#zeroLeafLeaveEntry",
+            Self::LeaveCancellationEntry => "blue.catbird.chat.defs#leaveCancellationEntry",
+            Self::LeaveCommitFulfillmentEntry => {
+                "blue.catbird.chat.defs#leaveCommitFulfillmentEntry"
+            }
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "blue.catbird.chat.defs#applicationEntry" => Self::ApplicationEntry,
+            "blue.catbird.chat.defs#commitEntry" => Self::CommitEntry,
+            "blue.catbird.chat.defs#policyEntry" => Self::PolicyEntry,
+            "blue.catbird.chat.defs#metadataEntry" => Self::MetadataEntry,
+            "blue.catbird.chat.defs#creationEntry" => Self::CreationEntry,
+            "blue.catbird.chat.defs#participantAcceptanceEntry" => Self::ParticipantAcceptanceEntry,
+            "blue.catbird.chat.defs#conversationCloseEntry" => Self::ConversationCloseEntry,
+            "blue.catbird.chat.defs#resetRequestEntry" => Self::ResetRequestEntry,
+            "blue.catbird.chat.defs#resetActivationEntry" => Self::ResetActivationEntry,
+            "blue.catbird.chat.defs#leafRecoveryFulfillmentEntry" => {
+                Self::LeafRecoveryFulfillmentEntry
+            }
+            "blue.catbird.chat.defs#leaveRequestEntry" => Self::LeaveRequestEntry,
+            "blue.catbird.chat.defs#zeroLeafLeaveEntry" => Self::ZeroLeafLeaveEntry,
+            "blue.catbird.chat.defs#leaveCancellationEntry" => Self::LeaveCancellationEntry,
+            "blue.catbird.chat.defs#leaveCommitFulfillmentEntry" => {
+                Self::LeaveCommitFulfillmentEntry
+            }
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ConvoEventEntryEntryKind<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ConvoEventEntryEntryKind<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ConvoEventEntryEntryKind<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ConvoEventEntryEntryKind<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ConvoEventEntryEntryKind<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ConvoEventEntryEntryKind<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ConvoEventEntryEntryKind<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ConvoEventEntryEntryKind::ApplicationEntry => {
+                ConvoEventEntryEntryKind::ApplicationEntry
+            }
+            ConvoEventEntryEntryKind::CommitEntry => ConvoEventEntryEntryKind::CommitEntry,
+            ConvoEventEntryEntryKind::PolicyEntry => ConvoEventEntryEntryKind::PolicyEntry,
+            ConvoEventEntryEntryKind::MetadataEntry => ConvoEventEntryEntryKind::MetadataEntry,
+            ConvoEventEntryEntryKind::CreationEntry => ConvoEventEntryEntryKind::CreationEntry,
+            ConvoEventEntryEntryKind::ParticipantAcceptanceEntry => {
+                ConvoEventEntryEntryKind::ParticipantAcceptanceEntry
+            }
+            ConvoEventEntryEntryKind::ConversationCloseEntry => {
+                ConvoEventEntryEntryKind::ConversationCloseEntry
+            }
+            ConvoEventEntryEntryKind::ResetRequestEntry => {
+                ConvoEventEntryEntryKind::ResetRequestEntry
+            }
+            ConvoEventEntryEntryKind::ResetActivationEntry => {
+                ConvoEventEntryEntryKind::ResetActivationEntry
+            }
+            ConvoEventEntryEntryKind::LeafRecoveryFulfillmentEntry => {
+                ConvoEventEntryEntryKind::LeafRecoveryFulfillmentEntry
+            }
+            ConvoEventEntryEntryKind::LeaveRequestEntry => {
+                ConvoEventEntryEntryKind::LeaveRequestEntry
+            }
+            ConvoEventEntryEntryKind::ZeroLeafLeaveEntry => {
+                ConvoEventEntryEntryKind::ZeroLeafLeaveEntry
+            }
+            ConvoEventEntryEntryKind::LeaveCancellationEntry => {
+                ConvoEventEntryEntryKind::LeaveCancellationEntry
+            }
+            ConvoEventEntryEntryKind::LeaveCommitFulfillmentEntry => {
+                ConvoEventEntryEntryKind::LeaveCommitFulfillmentEntry
+            }
+            ConvoEventEntryEntryKind::Other(v) => ConvoEventEntryEntryKind::Other(v.into_static()),
+        }
+    }
 }
 
 #[derive(
@@ -358,12 +526,17 @@ pub struct ConvoEventEntryBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<ConvoEventEntryEntryKind<S>>,
         core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -388,7 +561,9 @@ impl ConvoEventEntryBuilder<convo_event_entry_state::Empty, jacquard_common::Def
     pub fn new() -> Self {
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -399,9 +574,30 @@ impl<S: jacquard_common::BosStr> ConvoEventEntryBuilder<convo_event_entry_state:
     pub fn builder() -> Self {
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `acceptedPayloadSha256` field (optional)
+    pub fn accepted_payload_sha256(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `acceptedPayloadSha256` field to an Option value (optional)
+    pub fn maybe_accepted_payload_sha256(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
     }
 }
 
@@ -415,7 +611,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetCiphertext<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -434,12 +630,38 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetCreatedAt<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `entryId` field (optional)
+    pub fn entry_id(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `entryId` field to an Option value (optional)
+    pub fn maybe_entry_id(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `entryKind` field (optional)
+    pub fn entry_kind(mut self, value: impl Into<Option<ConvoEventEntryEntryKind<S>>>) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `entryKind` field to an Option value (optional)
+    pub fn maybe_entry_kind(mut self, value: Option<ConvoEventEntryEntryKind<S>>) -> Self {
+        self._fields.4 = value;
+        self
     }
 }
 
@@ -453,7 +675,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetEpoch<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -472,7 +694,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetMessageType<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -491,12 +713,31 @@ where
         mut self,
         value: impl Into<S>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetMsgId<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `outerFingerprint` field (optional)
+    pub fn outer_fingerprint(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `outerFingerprint` field to an Option value (optional)
+    pub fn maybe_outer_fingerprint(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.8 = value;
+        self
     }
 }
 
@@ -510,7 +751,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetPaddedSize<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -529,12 +770,31 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetSeq<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `signedRequest` field (optional)
+    pub fn signed_request(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.11 = value.into();
+        self
+    }
+    /// Set the `signedRequest` field to an Option value (optional)
+    pub fn maybe_signed_request(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.11 = value;
+        self
     }
 }
 
@@ -552,13 +812,18 @@ where
     /// Build the final struct.
     pub fn build(self) -> ConvoEventEntry<S> {
         ConvoEventEntry {
-            ciphertext: self._fields.0.unwrap(),
-            created_at: self._fields.1.unwrap(),
-            epoch: self._fields.2.unwrap(),
-            message_type: self._fields.3.unwrap(),
-            msg_id: self._fields.4.unwrap(),
-            padded_size: self._fields.5.unwrap(),
-            seq: self._fields.6.unwrap(),
+            accepted_payload_sha256: self._fields.0,
+            ciphertext: self._fields.1.unwrap(),
+            created_at: self._fields.2.unwrap(),
+            entry_id: self._fields.3,
+            entry_kind: self._fields.4,
+            epoch: self._fields.5.unwrap(),
+            message_type: self._fields.6.unwrap(),
+            msg_id: self._fields.7.unwrap(),
+            outer_fingerprint: self._fields.8,
+            padded_size: self._fields.9.unwrap(),
+            seq: self._fields.10.unwrap(),
+            signed_request: self._fields.11,
             extra_data: Default::default(),
         }
     }
@@ -571,13 +836,18 @@ where
         >,
     ) -> ConvoEventEntry<S> {
         ConvoEventEntry {
-            ciphertext: self._fields.0.unwrap(),
-            created_at: self._fields.1.unwrap(),
-            epoch: self._fields.2.unwrap(),
-            message_type: self._fields.3.unwrap(),
-            msg_id: self._fields.4.unwrap(),
-            padded_size: self._fields.5.unwrap(),
-            seq: self._fields.6.unwrap(),
+            accepted_payload_sha256: self._fields.0,
+            ciphertext: self._fields.1.unwrap(),
+            created_at: self._fields.2.unwrap(),
+            entry_id: self._fields.3,
+            entry_kind: self._fields.4,
+            epoch: self._fields.5.unwrap(),
+            message_type: self._fields.6.unwrap(),
+            msg_id: self._fields.7.unwrap(),
+            outer_fingerprint: self._fields.8,
+            padded_size: self._fields.9.unwrap(),
+            seq: self._fields.10.unwrap(),
+            signed_request: self._fields.11,
             extra_data: Some(extra_data),
         }
     }
@@ -611,6 +881,18 @@ fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon:
                             let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "acceptedPayloadSha256",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "ciphertext",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
@@ -629,6 +911,22 @@ fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon:
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("entryId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("entryKind"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
                                         ..Default::default()
                                     },
                                 ),
@@ -667,6 +965,18 @@ fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon:
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "outerFingerprint",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "paddedSize",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
@@ -679,6 +989,18 @@ fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon:
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "signedRequest",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(1048576usize),
+                                        min_length: Some(1usize),
                                         ..Default::default()
                                     },
                                 ),

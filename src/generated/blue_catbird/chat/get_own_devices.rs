@@ -61,6 +61,11 @@ pub struct GetOwnDevicesOutput<S: jacquard_common::BosStr = jacquard_common::Def
 )]
 #[serde(tag = "error", content = "message")]
 pub enum GetOwnDevicesError {
+    #[serde(rename = "InvalidRequest")]
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CursorExpired")]
     CursorExpired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -118,6 +123,13 @@ pub enum GetOwnDevicesError {
 impl core::fmt::Display for GetOwnDevicesError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::InvalidRequest(msg) => {
+                write!(f, "InvalidRequest")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::CursorExpired(msg) => {
                 write!(f, "CursorExpired")?;
                 if let Some(msg) = msg {
