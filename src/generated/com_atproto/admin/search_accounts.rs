@@ -31,7 +31,7 @@ pub struct SearchAccounts<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SearchAccountsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub accounts: Vec<crate::generated::com_atproto::admin::AccountView<S>>,
+    pub accounts: Vec<crate::com_atproto::admin::AccountView<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     #[serde(

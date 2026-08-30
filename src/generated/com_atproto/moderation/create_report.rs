@@ -14,13 +14,12 @@
 )]
 pub struct CreateReport<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub mod_tool:
-        core::option::Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>,
+    pub mod_tool: core::option::Option<crate::com_atproto::moderation::create_report::ModTool<S>>,
     /// Additional context about the content and violation.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reason: core::option::Option<S>,
     /// Indicates the broad category of violation the report is for.
-    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<S>,
+    pub reason_type: crate::com_atproto::moderation::ReasonType<S>,
     pub subject: CreateReportSubject<S>,
     #[serde(
         flatten,
@@ -45,9 +44,9 @@ pub struct CreateReport<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 )]
 pub enum CreateReportSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
+    RepoRef(Box<crate::com_atproto::admin::RepoRef<S>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
+    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<S>>),
 }
 
 #[derive(
@@ -62,7 +61,7 @@ pub struct CreateReportOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     pub id: i64,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reason: core::option::Option<S>,
-    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<S>,
+    pub reason_type: crate::com_atproto::moderation::ReasonType<S>,
     pub reported_by: jacquard_common::types::string::Did<S>,
     pub subject: CreateReportOutputSubject<S>,
     #[serde(
@@ -88,9 +87,9 @@ pub struct CreateReportOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 )]
 pub enum CreateReportOutputSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
+    RepoRef(Box<crate::com_atproto::admin::RepoRef<S>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
+    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<S>>),
 }
 
 /// Moderation tool information for tracing the source of the action
@@ -225,9 +224,9 @@ pub struct CreateReportBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>,
+        core::option::Option<crate::com_atproto::moderation::create_report::ModTool<S>>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::com_atproto::moderation::ReasonType<S>>,
+        core::option::Option<crate::com_atproto::moderation::ReasonType<S>>,
         core::option::Option<CreateReportSubject<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -273,7 +272,7 @@ impl<St: create_report_state::State, S: jacquard_common::BosStr> CreateReportBui
     /// Set the `modTool` field (optional)
     pub fn mod_tool(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>>,
+        value: impl Into<Option<crate::com_atproto::moderation::create_report::ModTool<S>>>,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -281,7 +280,7 @@ impl<St: create_report_state::State, S: jacquard_common::BosStr> CreateReportBui
     /// Set the `modTool` field to an Option value (optional)
     pub fn maybe_mod_tool(
         mut self,
-        value: Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>,
+        value: Option<crate::com_atproto::moderation::create_report::ModTool<S>>,
     ) -> Self {
         self._fields.0 = value;
         self
@@ -309,7 +308,7 @@ where
     /// Set the `reasonType` field (required)
     pub fn reason_type(
         mut self,
-        value: impl Into<crate::generated::com_atproto::moderation::ReasonType<S>>,
+        value: impl Into<crate::com_atproto::moderation::ReasonType<S>>,
     ) -> CreateReportBuilder<create_report_state::SetReasonType<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         CreateReportBuilder {

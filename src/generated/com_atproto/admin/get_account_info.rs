@@ -25,7 +25,7 @@ pub struct GetAccountInfo<S: jacquard_common::BosStr = jacquard_common::DefaultS
 )]
 pub struct GetAccountInfoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    pub value: crate::generated::com_atproto::admin::AccountView<S>,
+    pub value: crate::com_atproto::admin::AccountView<S>,
     #[serde(
         flatten,
         default,

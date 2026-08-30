@@ -34,7 +34,7 @@ pub struct QueryLabels<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 pub struct QueryLabelsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub labels: Vec<crate::generated::com_atproto::label::Label<S>>,
+    pub labels: Vec<crate::com_atproto::label::Label<S>>,
     #[serde(
         flatten,
         default,

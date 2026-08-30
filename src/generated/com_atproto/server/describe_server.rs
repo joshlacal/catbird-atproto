@@ -84,16 +84,14 @@ pub struct DescribeServerOutput<S: jacquard_common::BosStr = jacquard_common::De
     pub blob_upload_limit: core::option::Option<i64>,
     /// Contact information
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub contact:
-        core::option::Option<crate::generated::com_atproto::server::describe_server::Contact<S>>,
+    pub contact: core::option::Option<crate::com_atproto::server::describe_server::Contact<S>>,
     pub did: jacquard_common::types::string::Did<S>,
     /// If true, an invite code must be supplied to create an account on this instance.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invite_code_required: core::option::Option<bool>,
     /// URLs of service policy documents.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub links:
-        core::option::Option<crate::generated::com_atproto::server::describe_server::Links<S>>,
+    pub links: core::option::Option<crate::com_atproto::server::describe_server::Links<S>>,
     /// If true, a phone verification token must be supplied to create an account on this instance.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub phone_verification_required: core::option::Option<bool>,

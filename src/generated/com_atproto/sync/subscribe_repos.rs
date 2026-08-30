@@ -150,7 +150,7 @@ pub struct Commit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blocks: jacquard_common::deps::bytes::Bytes,
     /// Repo commit object CID.
     pub commit: jacquard_common::types::cid::CidLink<S>,
-    pub ops: Vec<crate::generated::com_atproto::sync::subscribe_repos::RepoOp<S>>,
+    pub ops: Vec<crate::com_atproto::sync::subscribe_repos::RepoOp<S>>,
     /// The root CID of the MST tree for the previous commit from this repo (indicated by the 'since' revision field in this message). Corresponds to the 'data' field in the repo commit object. NOTE: this field is effectively required for the 'inductive' version of firehose.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub prev_data: core::option::Option<jacquard_common::types::cid::CidLink<S>>,
@@ -339,15 +339,15 @@ pub struct SubscribeRepos {
 )]
 pub enum SubscribeReposMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.sync.subscribeRepos#commit")]
-    Commit(Box<crate::generated::com_atproto::sync::subscribe_repos::Commit<S>>),
+    Commit(Box<crate::com_atproto::sync::subscribe_repos::Commit<S>>),
     #[serde(rename = "com.atproto.sync.subscribeRepos#sync")]
-    Sync(Box<crate::generated::com_atproto::sync::subscribe_repos::Sync<S>>),
+    Sync(Box<crate::com_atproto::sync::subscribe_repos::Sync<S>>),
     #[serde(rename = "com.atproto.sync.subscribeRepos#identity")]
-    Identity(Box<crate::generated::com_atproto::sync::subscribe_repos::Identity<S>>),
+    Identity(Box<crate::com_atproto::sync::subscribe_repos::Identity<S>>),
     #[serde(rename = "com.atproto.sync.subscribeRepos#account")]
-    Account(Box<crate::generated::com_atproto::sync::subscribe_repos::Account<S>>),
+    Account(Box<crate::com_atproto::sync::subscribe_repos::Account<S>>),
     #[serde(rename = "com.atproto.sync.subscribeRepos#info")]
-    Info(Box<crate::generated::com_atproto::sync::subscribe_repos::Info<S>>),
+    Info(Box<crate::com_atproto::sync::subscribe_repos::Info<S>>),
 }
 
 impl<S: jacquard_common::BosStr> SubscribeReposMessage<S> {
@@ -1774,7 +1774,7 @@ pub struct CommitBuilder<
         core::option::Option<Vec<jacquard_common::types::cid::CidLink<S>>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::types::cid::CidLink<S>>,
-        core::option::Option<Vec<crate::generated::com_atproto::sync::subscribe_repos::RepoOp<S>>>,
+        core::option::Option<Vec<crate::com_atproto::sync::subscribe_repos::RepoOp<S>>>,
         core::option::Option<jacquard_common::types::cid::CidLink<S>>,
         core::option::Option<bool>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
@@ -1892,7 +1892,7 @@ where
     /// Set the `ops` field (required)
     pub fn ops(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::sync::subscribe_repos::RepoOp<S>>>,
+        value: impl Into<Vec<crate::com_atproto::sync::subscribe_repos::RepoOp<S>>>,
     ) -> CommitBuilder<commit_state::SetOps<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         CommitBuilder {

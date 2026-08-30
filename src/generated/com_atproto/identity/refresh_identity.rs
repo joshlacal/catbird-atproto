@@ -36,7 +36,7 @@ pub struct RefreshIdentity<S: jacquard_common::BosStr = jacquard_common::Default
 )]
 pub struct RefreshIdentityOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    pub value: crate::generated::com_atproto::identity::IdentityInfo<S>,
+    pub value: crate::com_atproto::identity::IdentityInfo<S>,
     #[serde(
         flatten,
         default,

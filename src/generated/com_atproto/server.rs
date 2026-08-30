@@ -46,7 +46,7 @@ pub struct InviteCode<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub created_by: S,
     pub disabled: bool,
     pub for_account: S,
-    pub uses: Vec<crate::generated::com_atproto::server::InviteCodeUse<S>>,
+    pub uses: Vec<crate::com_atproto::server::InviteCodeUse<S>>,
     #[serde(
         flatten,
         default,
@@ -286,7 +286,7 @@ pub struct InviteCodeBuilder<
         core::option::Option<S>,
         core::option::Option<bool>,
         core::option::Option<S>,
-        core::option::Option<Vec<crate::generated::com_atproto::server::InviteCodeUse<S>>>,
+        core::option::Option<Vec<crate::com_atproto::server::InviteCodeUse<S>>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -449,7 +449,7 @@ where
     /// Set the `uses` field (required)
     pub fn uses(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::server::InviteCodeUse<S>>>,
+        value: impl Into<Vec<crate::com_atproto::server::InviteCodeUse<S>>>,
     ) -> InviteCodeBuilder<invite_code_state::SetUses<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {

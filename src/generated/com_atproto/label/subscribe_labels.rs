@@ -120,7 +120,7 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Labels<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub labels: Vec<crate::generated::com_atproto::label::Label<S>>,
+    pub labels: Vec<crate::com_atproto::label::Label<S>>,
     pub seq: i64,
     #[serde(
         flatten,
@@ -155,9 +155,9 @@ pub struct SubscribeLabels {
 )]
 pub enum SubscribeLabelsMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.label.subscribeLabels#labels")]
-    Labels(Box<crate::generated::com_atproto::label::subscribe_labels::Labels<S>>),
+    Labels(Box<crate::com_atproto::label::subscribe_labels::Labels<S>>),
     #[serde(rename = "com.atproto.label.subscribeLabels#info")]
-    Info(Box<crate::generated::com_atproto::label::subscribe_labels::Info<S>>),
+    Info(Box<crate::com_atproto::label::subscribe_labels::Info<S>>),
 }
 
 impl<S: jacquard_common::BosStr> SubscribeLabelsMessage<S> {
@@ -507,7 +507,7 @@ pub struct LabelsBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<Vec<crate::com_atproto::label::Label<S>>>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -557,7 +557,7 @@ where
     /// Set the `labels` field (required)
     pub fn labels(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        value: impl Into<Vec<crate::com_atproto::label::Label<S>>>,
     ) -> LabelsBuilder<labels_state::SetLabels<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         LabelsBuilder {

@@ -39,11 +39,11 @@ pub struct ListRepoOps<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 pub struct ListRepoOpsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// The account's current signed commit. Included when the response reaches the head of the oplog; omitted on backfill responses.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub commit: core::option::Option<crate::generated::com_atproto::space::SignedCommit<S>>,
+    pub commit: core::option::Option<crate::com_atproto::space::SignedCommit<S>>,
     /// Pass as `cursor` to fetch the next page. Absent once the response reaches the head of the oplog.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub ops: Vec<crate::generated::com_atproto::space::list_repo_ops::OpEntry<S>>,
+    pub ops: Vec<crate::com_atproto::space::list_repo_ops::OpEntry<S>>,
     #[serde(
         flatten,
         default,

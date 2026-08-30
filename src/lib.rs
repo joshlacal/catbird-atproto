@@ -25,11 +25,21 @@ pub use generated::app_bsky;
 #[cfg(feature = "namespace-bluecatbird")]
 pub use generated::blue_catbird;
 pub use generated::builder_types;
-#[cfg(any(
-    feature = "namespace-site-standard",
-    feature = "namespace-atproto-space"
-))]
-pub use generated::com_atproto;
+pub mod com_atproto {
+    pub use crate::generated::com_atproto::admin;
+    pub use crate::generated::com_atproto::identity;
+    pub use crate::generated::com_atproto::label;
+    pub use crate::generated::com_atproto::lexicon;
+    pub use crate::generated::com_atproto::moderation;
+    pub use crate::generated::com_atproto::repo;
+    pub use crate::generated::com_atproto::server;
+    #[cfg(feature = "namespace-atproto-space")]
+    pub use crate::generated::com_atproto::simplespace;
+    #[cfg(feature = "namespace-atproto-space")]
+    pub use crate::generated::com_atproto::space;
+    pub use crate::generated::com_atproto::sync;
+    pub use crate::generated::com_atproto::temp;
+}
 #[cfg(feature = "namespace-site-standard")]
 pub use generated::site_standard;
 pub use jacquard_common;

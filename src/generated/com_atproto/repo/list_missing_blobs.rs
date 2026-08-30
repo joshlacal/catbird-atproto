@@ -29,7 +29,7 @@ pub struct ListMissingBlobs<S: jacquard_common::BosStr = jacquard_common::Defaul
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ListMissingBlobsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub blobs: Vec<crate::generated::com_atproto::repo::list_missing_blobs::RecordBlob<S>>,
+    pub blobs: Vec<crate::com_atproto::repo::list_missing_blobs::RecordBlob<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     #[serde(

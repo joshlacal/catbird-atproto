@@ -30,10 +30,10 @@ pub struct GetSubjectStatus<S: jacquard_common::BosStr = jacquard_common::Defaul
 )]
 pub struct GetSubjectStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub deactivated: core::option::Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+    pub deactivated: core::option::Option<crate::com_atproto::admin::StatusAttr<S>>,
     pub subject: GetSubjectStatusOutputSubject<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub takedown: core::option::Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+    pub takedown: core::option::Option<crate::com_atproto::admin::StatusAttr<S>>,
     #[serde(
         flatten,
         default,
@@ -57,11 +57,11 @@ pub struct GetSubjectStatusOutput<S: jacquard_common::BosStr = jacquard_common::
 )]
 pub enum GetSubjectStatusOutputSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
+    RepoRef(Box<crate::com_atproto::admin::RepoRef<S>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
+    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<S>>),
     #[serde(rename = "com.atproto.admin.defs#repoBlobRef")]
-    RepoBlobRef(Box<crate::generated::com_atproto::admin::RepoBlobRef<S>>),
+    RepoBlobRef(Box<crate::com_atproto::admin::RepoBlobRef<S>>),
 }
 
 /** Response marker for the `com.atproto.admin.getSubjectStatus` query.

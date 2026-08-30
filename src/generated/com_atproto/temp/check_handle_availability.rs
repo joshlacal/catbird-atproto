@@ -56,12 +56,10 @@ pub enum CheckHandleAvailabilityOutputResult<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     #[serde(rename = "com.atproto.temp.checkHandleAvailability#resultAvailable")]
-    ResultAvailable(
-        Box<crate::generated::com_atproto::temp::check_handle_availability::ResultAvailable<S>>,
-    ),
+    ResultAvailable(Box<crate::com_atproto::temp::check_handle_availability::ResultAvailable<S>>),
     #[serde(rename = "com.atproto.temp.checkHandleAvailability#resultUnavailable")]
     ResultUnavailable(
-        Box<crate::generated::com_atproto::temp::check_handle_availability::ResultUnavailable<S>>,
+        Box<crate::com_atproto::temp::check_handle_availability::ResultUnavailable<S>>,
     ),
 }
 
@@ -155,8 +153,7 @@ pub struct ResultAvailable<S: jacquard_common::BosStr = jacquard_common::Default
 )]
 pub struct ResultUnavailable<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// List of suggested handles based on the provided inputs.
-    pub suggestions:
-        Vec<crate::generated::com_atproto::temp::check_handle_availability::Suggestion<S>>,
+    pub suggestions: Vec<crate::com_atproto::temp::check_handle_availability::Suggestion<S>>,
     #[serde(
         flatten,
         default,
@@ -695,7 +692,7 @@ pub struct ResultUnavailableBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<
-            Vec<crate::generated::com_atproto::temp::check_handle_availability::Suggestion<S>>,
+            Vec<crate::com_atproto::temp::check_handle_availability::Suggestion<S>>,
         >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -747,9 +744,7 @@ where
     /// Set the `suggestions` field (required)
     pub fn suggestions(
         mut self,
-        value: impl Into<
-            Vec<crate::generated::com_atproto::temp::check_handle_availability::Suggestion<S>>,
-        >,
+        value: impl Into<Vec<crate::com_atproto::temp::check_handle_availability::Suggestion<S>>>,
     ) -> ResultUnavailableBuilder<result_unavailable_state::SetSuggestions<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ResultUnavailableBuilder {

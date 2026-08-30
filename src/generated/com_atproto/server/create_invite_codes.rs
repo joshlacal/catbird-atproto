@@ -64,7 +64,7 @@ pub struct CreateInviteCodes<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateInviteCodesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub codes: Vec<crate::generated::com_atproto::server::create_invite_codes::AccountCodes<S>>,
+    pub codes: Vec<crate::com_atproto::server::create_invite_codes::AccountCodes<S>>,
     #[serde(
         flatten,
         default,

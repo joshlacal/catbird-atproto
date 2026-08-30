@@ -177,7 +177,7 @@ pub struct LabelValueDefinition<S: jacquard_common::BosStr = jacquard_common::De
     pub default_setting: core::option::Option<LabelValueDefinitionDefaultSetting<S>>,
     /// The value of the label being defined. Must only include lowercase ascii and the '-' character ([a-z-]+).
     pub identifier: S,
-    pub locales: Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<S>>,
+    pub locales: Vec<crate::com_atproto::label::LabelValueDefinitionStrings<S>>,
     /// How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.
     pub severity: LabelValueDefinitionSeverity<S>,
     #[serde(
@@ -533,7 +533,7 @@ pub struct SelfLabel<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SelfLabels<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub values: Vec<crate::generated::com_atproto::label::SelfLabel<S>>,
+    pub values: Vec<crate::com_atproto::label::SelfLabel<S>>,
     #[serde(
         flatten,
         default,
@@ -1616,9 +1616,7 @@ pub struct LabelValueDefinitionBuilder<
         core::option::Option<LabelValueDefinitionBlurs<S>>,
         core::option::Option<LabelValueDefinitionDefaultSetting<S>>,
         core::option::Option<S>,
-        core::option::Option<
-            Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<S>>,
-        >,
+        core::option::Option<Vec<crate::com_atproto::label::LabelValueDefinitionStrings<S>>>,
         core::option::Option<LabelValueDefinitionSeverity<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -1746,7 +1744,7 @@ where
     /// Set the `locales` field (required)
     pub fn locales(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<S>>>,
+        value: impl Into<Vec<crate::com_atproto::label::LabelValueDefinitionStrings<S>>>,
     ) -> LabelValueDefinitionBuilder<label_value_definition_state::SetLocales<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         LabelValueDefinitionBuilder {
@@ -2140,7 +2138,7 @@ pub struct SelfLabelsBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<Vec<crate::generated::com_atproto::label::SelfLabel<S>>>,),
+    _fields: (core::option::Option<Vec<crate::com_atproto::label::SelfLabel<S>>>,),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -2188,7 +2186,7 @@ where
     /// Set the `values` field (required)
     pub fn values(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::SelfLabel<S>>>,
+        value: impl Into<Vec<crate::com_atproto::label::SelfLabel<S>>>,
     ) -> SelfLabelsBuilder<self_labels_state::SetValues<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         SelfLabelsBuilder {

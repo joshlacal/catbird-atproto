@@ -26,7 +26,7 @@ pub struct GetLatestCommit<S: jacquard_common::BosStr = jacquard_common::Default
 )]
 pub struct GetLatestCommitOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// The account's current signed commit.
-    pub commit: crate::generated::com_atproto::space::SignedCommit<S>,
+    pub commit: crate::com_atproto::space::SignedCommit<S>,
     #[serde(
         flatten,
         default,

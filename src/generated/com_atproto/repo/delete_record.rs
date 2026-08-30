@@ -54,7 +54,7 @@ pub struct DeleteRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 )]
 pub struct DeleteRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub commit: core::option::Option<crate::generated::com_atproto::repo::CommitMeta<S>>,
+    pub commit: core::option::Option<crate::com_atproto::repo::CommitMeta<S>>,
     #[serde(
         flatten,
         default,

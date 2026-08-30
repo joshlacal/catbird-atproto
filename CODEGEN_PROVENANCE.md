@@ -51,3 +51,60 @@ The full generated directory is intentionally not claimed byte-identical in
 this check: the pinned source corpus has unrelated changes in other
 namespaces. No generated file was hand-edited and no lexicon semantics were
 changed for this provenance repair.
+
+## Task 0A / Finding 6: `com.atproto.space` v2 SignedCommit surface
+
+This record covers `src/generated/com_atproto/space.rs` and `src/generated/com_atproto/space/`
+at `catbird-atproto` revision `urpktszl` (`8bf6222d`, review baseline `edd245fc`), with initial generation performed at `3c0262dc`.
+
+### Canonical generation command
+
+Scoped generation using `jacquard-codegen` from `jacquard-lexgen` (Jacquard 0.13.0 / `3287244a99262a361bd32873a871982da0a76c40`):
+
+```sh
+cargo run --manifest-path jacquard/Cargo.toml -p jacquard-lexgen --bin jacquard-codegen -- \
+  --macro \
+  -i Petrel/generator/lexicons/com/atproto/space \
+  -o catbird-atproto/src/generated
+find catbird-atproto/src/generated/com_atproto/space* -name '*.rs' -print0 | xargs -0 rustfmt
+```
+
+### Pinned inputs and deterministic hashes
+
+#### 1. Initial Generation Point
+
+| Input | Revision / Path | SHA-256 |
+| --- | --- | --- |
+| `Petrel/generator/lexicons/com/atproto/space/defs.json` | `quurkpuz` (`b409d73d`) | `a81cdee945eebe4117f2b74d51a4298f0d5c47675412ec6f95944d99cf67291d` |
+| `Petrel/generator/lexicons/com/atproto/space` (tree) | `quurkpuz` (`b409d73d`) | `99dac4a569e6632a295a486b155a673e343f6774c9e99d12a977518209a5bafa` |
+| `jacquard` (repo/api/lexgen) | `vkylwwum` (`8d85e730`) (parent `3287244a`) | `3287244a99262a361bd32873a871982da0a76c40` |
+| `catbird-atproto` | `urpktszl` (`3c0262dc`) | — |
+| Protocol `.pin` | `89deb9faca20e56fa2a262fe9746ed52bc1095ba` | — |
+
+#### 2. Current Immutable Verification Contract & Fixtures (Round 5 / Final Fix Round)
+
+| Repository / Artifact | Revision / Path | SHA-256 |
+| --- | --- | --- |
+| `catbird-atproto` | `urpktszl` (`8bf6222d`, baseline `edd245fc`) | — |
+| `Petrel` | `quurkpuz` (`10180663`, baseline `2a427363`) | — |
+| `jacquard` | `vkylwwum` (`970d672a`, baseline `0280b77c`) (parent `3287244a`) | `3287244a99262a361bd32873a871982da0a76c40` |
+| `Petrel/generator/lexicons/com/atproto/space/defs.json` | `10180663` | `a81cdee945eebe4117f2b74d51a4298f0d5c47675412ec6f95944d99cf67291d` |
+| Portable Vector Fixture (`commit_v2_vectors.json`) | `tests/fixtures/commit_v2_vectors.json` | `85c60d19154ed59f3d3b06aa80a3738c32e72baecd82de15bf48baabc6f5bede` |
+
+### Output artifact digest
+
+```text
+catbird-atproto/src/generated/com_atproto/space.rs (SHA-256): bcbc7db4cd1a550883a97e641b5c334d923b62f3b231d47fa4e3af68645963a8
+jacquard-api/src/com_atproto/space.rs (SHA-256):              bcbc7db4cd1a550883a97e641b5c334d923b62f3b231d47fa4e3af68645963a8
+```
+
+The generated `SignedCommit` types in `catbird-atproto` and `jacquard-api` are byte-identical.
+
+### Contract & Verification Rules
+
+1. **Wire rule:** `SignedCommit` requires only `ver`, `rev`, `hash`, and `sig` on the wire so legacy v1 payloads deserialize; all v2 transition fields (`did`, `space`, `prevRev`, `prevHash`, `path`, `action`, action-appropriate `cid`/`prevCid`, and `val` digest) are required by all v2 signers and verifiers.
+2. **Verification policy / fail closed default:** Generic verifiers default to `CommitVerificationPolicy::StrictV2` which fails closed on v1 commits. Bounded migration requires caller-selected `DualReadWithCutoff { cutoff_rev }` or explicit `ExplicitMigrationPermitV1`. Acceptance of v1 cannot be perpetual or unconfigured.
+3. **Omission tests:** Missing or illegal fields across create/update/delete actions cause deterministic verification failures dynamically tested against canonical omission vector descriptors.
+4. **Generic CAR fail-closed:** `PermissionedCar::validate` fails closed on untrusted v2 commits; caller-supplied trusted context is verified via `validate_v2` or `validate_with_policy`.
+5. **Portable cross-boundary vectors:** Canonical fixed literal vectors for transcripts, curves (Ed25519, NIST P-256, Secp256k1), CBOR, and omission vectors are published as self-contained fixtures in `catbird-atproto/tests/fixtures/commit_v2_vectors.json`, `Petrel/generator/tests/fixtures/commit_v2_vectors.json`, and `jacquard-repo/tests/fixtures/commit_v2_vectors.json`, exposed via `COMMIT_V2_TEST_VECTORS_JSON`, and consumed by tests across all three repositories without relative cross-workspace file dependencies.
+6. **External producer & release status:** Producer deployment owner remains UNKNOWN and external producer deployment remains an operational rollout gate. Consumer cutover is explicitly Task 5 and external producer deployment is Task 11. Release of v2 enforcement in deployed consumers is BLOCKED until the accountable producer is deployed and consumer cutover is executed. Local reproducibility does not imply deployed reproducibility.

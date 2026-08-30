@@ -39,7 +39,7 @@ pub struct GetHostStatusOutput<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub seq: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub status: core::option::Option<crate::generated::com_atproto::sync::HostStatus<S>>,
+    pub status: core::option::Option<crate::com_atproto::sync::HostStatus<S>>,
     #[serde(
         flatten,
         default,

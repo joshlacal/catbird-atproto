@@ -235,11 +235,11 @@ pub struct ApplyWrites<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub enum ApplyWritesWritesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.space.applyWrites#create")]
-    Create(Box<crate::generated::com_atproto::space::apply_writes::Create<S>>),
+    Create(Box<crate::com_atproto::space::apply_writes::Create<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#update")]
-    Update(Box<crate::generated::com_atproto::space::apply_writes::Update<S>>),
+    Update(Box<crate::com_atproto::space::apply_writes::Update<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#delete")]
-    Delete(Box<crate::generated::com_atproto::space::apply_writes::Delete<S>>),
+    Delete(Box<crate::com_atproto::space::apply_writes::Delete<S>>),
 }
 
 #[derive(
@@ -281,11 +281,11 @@ pub struct ApplyWritesOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 pub enum ApplyWritesOutputResultsItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.space.applyWrites#createResult")]
-    CreateResult(Box<crate::generated::com_atproto::space::apply_writes::CreateResult<S>>),
+    CreateResult(Box<crate::com_atproto::space::apply_writes::CreateResult<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#updateResult")]
-    UpdateResult(Box<crate::generated::com_atproto::space::apply_writes::UpdateResult<S>>),
+    UpdateResult(Box<crate::com_atproto::space::apply_writes::UpdateResult<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#deleteResult")]
-    DeleteResult(Box<crate::generated::com_atproto::space::apply_writes::DeleteResult<S>>),
+    DeleteResult(Box<crate::com_atproto::space::apply_writes::DeleteResult<S>>),
 }
 
 #[derive(

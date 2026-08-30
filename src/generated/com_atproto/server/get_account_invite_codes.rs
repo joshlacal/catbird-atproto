@@ -28,7 +28,7 @@ pub struct GetAccountInviteCodes {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetAccountInviteCodesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub codes: Vec<crate::generated::com_atproto::server::InviteCode<S>>,
+    pub codes: Vec<crate::com_atproto::server::InviteCode<S>>,
     #[serde(
         flatten,
         default,

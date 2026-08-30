@@ -53,7 +53,7 @@ pub struct PutRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 pub struct PutRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cid: jacquard_common::types::string::Cid<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub commit: core::option::Option<crate::generated::com_atproto::repo::CommitMeta<S>>,
+    pub commit: core::option::Option<crate::com_atproto::repo::CommitMeta<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub validation_status: core::option::Option<PutRecordOutputValidationStatus<S>>,

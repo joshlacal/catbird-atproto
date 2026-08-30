@@ -28,7 +28,7 @@ pub struct Host<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub seq: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub status: core::option::Option<crate::generated::com_atproto::sync::HostStatus<S>>,
+    pub status: core::option::Option<crate::com_atproto::sync::HostStatus<S>>,
     #[serde(
         flatten,
         default,
@@ -70,7 +70,7 @@ pub struct ListHostsOutput<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     /// Sort order is not formally specified. Recommended order is by time host was first seen by the server, with oldest first.
-    pub hosts: Vec<crate::generated::com_atproto::sync::list_hosts::Host<S>>,
+    pub hosts: Vec<crate::com_atproto::sync::list_hosts::Host<S>>,
     #[serde(
         flatten,
         default,

@@ -24,7 +24,7 @@ pub struct GetAccountInfos<S: jacquard_common::BosStr = jacquard_common::Default
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetAccountInfosOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub infos: Vec<crate::generated::com_atproto::admin::AccountView<S>>,
+    pub infos: Vec<crate::com_atproto::admin::AccountView<S>>,
     #[serde(
         flatten,
         default,

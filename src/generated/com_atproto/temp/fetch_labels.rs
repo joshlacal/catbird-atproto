@@ -26,7 +26,7 @@ pub struct FetchLabels {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct FetchLabelsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub labels: Vec<crate::generated::com_atproto::label::Label<S>>,
+    pub labels: Vec<crate::com_atproto::label::Label<S>>,
     #[serde(
         flatten,
         default,

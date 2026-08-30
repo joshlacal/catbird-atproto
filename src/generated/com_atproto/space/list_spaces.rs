@@ -35,7 +35,7 @@ pub struct ListSpaces<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 pub struct ListSpacesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub spaces: Vec<crate::generated::com_atproto::space::list_spaces::SpaceView<S>>,
+    pub spaces: Vec<crate::com_atproto::space::list_spaces::SpaceView<S>>,
     #[serde(
         flatten,
         default,

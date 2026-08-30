@@ -14,10 +14,10 @@
 )]
 pub struct UpdateSubjectStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub deactivated: core::option::Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+    pub deactivated: core::option::Option<crate::com_atproto::admin::StatusAttr<S>>,
     pub subject: UpdateSubjectStatusSubject<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub takedown: core::option::Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+    pub takedown: core::option::Option<crate::com_atproto::admin::StatusAttr<S>>,
     #[serde(
         flatten,
         default,
@@ -41,11 +41,11 @@ pub struct UpdateSubjectStatus<S: jacquard_common::BosStr = jacquard_common::Def
 )]
 pub enum UpdateSubjectStatusSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
+    RepoRef(Box<crate::com_atproto::admin::RepoRef<S>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
+    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<S>>),
     #[serde(rename = "com.atproto.admin.defs#repoBlobRef")]
-    RepoBlobRef(Box<crate::generated::com_atproto::admin::RepoBlobRef<S>>),
+    RepoBlobRef(Box<crate::com_atproto::admin::RepoBlobRef<S>>),
 }
 
 #[derive(
@@ -58,7 +58,7 @@ pub enum UpdateSubjectStatusSubject<S: jacquard_common::BosStr = jacquard_common
 pub struct UpdateSubjectStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub subject: UpdateSubjectStatusOutputSubject<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub takedown: core::option::Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+    pub takedown: core::option::Option<crate::com_atproto::admin::StatusAttr<S>>,
     #[serde(
         flatten,
         default,
@@ -83,11 +83,11 @@ pub struct UpdateSubjectStatusOutput<S: jacquard_common::BosStr = jacquard_commo
 pub enum UpdateSubjectStatusOutputSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
+    RepoRef(Box<crate::com_atproto::admin::RepoRef<S>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
+    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<S>>),
     #[serde(rename = "com.atproto.admin.defs#repoBlobRef")]
-    RepoBlobRef(Box<crate::generated::com_atproto::admin::RepoBlobRef<S>>),
+    RepoBlobRef(Box<crate::com_atproto::admin::RepoBlobRef<S>>),
 }
 
 /** Response marker for the `com.atproto.admin.updateSubjectStatus` procedure.
@@ -159,9 +159,9 @@ pub struct UpdateSubjectStatusBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+        core::option::Option<crate::com_atproto::admin::StatusAttr<S>>,
         core::option::Option<UpdateSubjectStatusSubject<S>>,
-        core::option::Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+        core::option::Option<crate::com_atproto::admin::StatusAttr<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -210,7 +210,7 @@ impl<St: update_subject_status_state::State, S: jacquard_common::BosStr>
     /// Set the `deactivated` field (optional)
     pub fn deactivated(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::admin::StatusAttr<S>>>,
+        value: impl Into<Option<crate::com_atproto::admin::StatusAttr<S>>>,
     ) -> Self {
         self._fields.0 = value.into();
         self
@@ -218,7 +218,7 @@ impl<St: update_subject_status_state::State, S: jacquard_common::BosStr>
     /// Set the `deactivated` field to an Option value (optional)
     pub fn maybe_deactivated(
         mut self,
-        value: Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+        value: Option<crate::com_atproto::admin::StatusAttr<S>>,
     ) -> Self {
         self._fields.0 = value;
         self
@@ -250,7 +250,7 @@ impl<St: update_subject_status_state::State, S: jacquard_common::BosStr>
     /// Set the `takedown` field (optional)
     pub fn takedown(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::admin::StatusAttr<S>>>,
+        value: impl Into<Option<crate::com_atproto::admin::StatusAttr<S>>>,
     ) -> Self {
         self._fields.2 = value.into();
         self
@@ -258,7 +258,7 @@ impl<St: update_subject_status_state::State, S: jacquard_common::BosStr>
     /// Set the `takedown` field to an Option value (optional)
     pub fn maybe_takedown(
         mut self,
-        value: Option<crate::generated::com_atproto::admin::StatusAttr<S>>,
+        value: Option<crate::com_atproto::admin::StatusAttr<S>>,
     ) -> Self {
         self._fields.2 = value;
         self

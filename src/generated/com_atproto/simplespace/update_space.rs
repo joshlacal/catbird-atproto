@@ -44,9 +44,9 @@ pub struct UpdateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub enum UpdateSpaceAppAccess<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#open")]
-    Open(Box<crate::generated::com_atproto::simplespace::Open<S>>),
+    Open(Box<crate::com_atproto::simplespace::Open<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#allowList")]
-    AllowList(Box<crate::generated::com_atproto::simplespace::AllowList<S>>),
+    AllowList(Box<crate::com_atproto::simplespace::AllowList<S>>),
 }
 
 #[jacquard_derive::open_union]
@@ -59,11 +59,11 @@ pub enum UpdateSpaceAppAccess<S: jacquard_common::BosStr = jacquard_common::Defa
 )]
 pub enum UpdateSpacePolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#publicPolicy")]
-    PublicPolicy(Box<crate::generated::com_atproto::simplespace::PublicPolicy<S>>),
+    PublicPolicy(Box<crate::com_atproto::simplespace::PublicPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#memberListPolicy")]
-    MemberListPolicy(Box<crate::generated::com_atproto::simplespace::MemberListPolicy<S>>),
+    MemberListPolicy(Box<crate::com_atproto::simplespace::MemberListPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#managingAppPolicy")]
-    ManagingAppPolicy(Box<crate::generated::com_atproto::simplespace::ManagingAppPolicy<S>>),
+    ManagingAppPolicy(Box<crate::com_atproto::simplespace::ManagingAppPolicy<S>>),
 }
 
 #[derive(
