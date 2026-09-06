@@ -108,3 +108,34 @@ The generated `SignedCommit` types in `catbird-atproto` and `jacquard-api` are b
 4. **Generic CAR fail-closed:** `PermissionedCar::validate` fails closed on untrusted v2 commits; caller-supplied trusted context is verified via `validate_v2` or `validate_with_policy`.
 5. **Portable cross-boundary vectors:** Canonical fixed literal vectors for transcripts, curves (Ed25519, NIST P-256, Secp256k1), CBOR, and omission vectors are published as self-contained fixtures in `catbird-atproto/tests/fixtures/commit_v2_vectors.json`, `Petrel/generator/tests/fixtures/commit_v2_vectors.json`, and `jacquard-repo/tests/fixtures/commit_v2_vectors.json`, exposed via `COMMIT_V2_TEST_VECTORS_JSON`, and consumed by tests across all three repositories without relative cross-workspace file dependencies.
 6. **External producer & release status:** Producer deployment owner remains UNKNOWN and external producer deployment remains an operational rollout gate. Consumer cutover is explicitly Task 5 and external producer deployment is Task 11. Release of v2 enforcement in deployed consumers is BLOCKED until the accountable producer is deployed and consumer cutover is executed. Local reproducibility does not imply deployed reproducibility.
+
+## Native leaf recovery and signed operation expiry (2026-09-05)
+
+The two endpoint files below were regenerated on the existing `d3536e0f`
+main tree without replacing its Space, Circle, runtime, or dependency surface.
+The canonical PetrelCatbird chat schemas provide the optional
+`pendingLeafRecoveryRequests` response field and `SignedOperationExpired` error.
+
+Generation used Jacquard 0.13.0 at
+`3287244a99262a361bd32873a871982da0a76c40`, matching this crate's dependency pin.
+A scoped wrapper loads a copy of the 36 canonical
+`PetrelCatbird/lexicons/blue/catbird/chat/*.json` schemas with
+`LexiconCorpus::load_from_dir`, then calls
+`CodeGenerator::with_mode(&corpus, "crate::generated".to_owned(), CodegenMode::Macro)`
+and `write_to_disk` into a separate output directory. This uses the same
+module root as the existing canonical Rust generator; the upstream CLI's
+hardcoded `crate` root would produce different paths. Only the two listed
+endpoint files were copied into this tree after `rustfmt --edition 2021`.
+No generated file was hand-edited.
+
+The generator's existing per-variant serde omission attributes are retained.
+Focused tests cover typed expiry decoding, message preservation, and decoding
+an absent message with the existing explicit-null serialization form; the
+existing Space contract suite remains enabled.
+
+| Input or generated output | SHA-256 |
+| --- | --- |
+| PetrelCatbird chat `blue.catbird.chat.getConversationState.json` | `75b2e89a35423d704fe4ca95ff0634be6d936013fa563be569c04bcbb8ea51eb` |
+| PetrelCatbird chat `blue.catbird.chat.submitTransition.json` | `f843e0ee461008a116676038dabc49b1a1f351a1f06ae03672518a014acd9805` |
+| Generated chat `get_conversation_state.rs` | `8748643995027c4a4ce3055eae4fb67f3b944f19252ab528e3955df6635eb301` |
+| Generated chat `submit_transition.rs` | `937633a9d2102b980180b4ac3f1eb1cca7212335fc1863e1a1d57c9066de96ea` |

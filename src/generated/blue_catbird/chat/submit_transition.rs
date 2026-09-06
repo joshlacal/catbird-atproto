@@ -253,6 +253,12 @@ pub enum SubmitTransitionError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// The exact signed operation has no durable operation claim and its signedAt is older than the first-execution acceptance window. The server verified the device signature after global idempotency arbitration. This operation was not accepted and cannot execute; completed operations remain replayable regardless of age.
+    #[serde(rename = "SignedOperationExpired")]
+    SignedOperationExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -566,6 +572,13 @@ impl core::fmt::Display for SubmitTransitionError {
                 }
                 Ok(())
             }
+            Self::SignedOperationExpired(msg) => {
+                write!(f, "SignedOperationExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::StaleCoordinates(msg) => {
                 write!(f, "StaleCoordinates")?;
                 if let Some(msg) = msg {
@@ -660,7 +673,7 @@ pub mod submit_transition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
