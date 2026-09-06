@@ -25,6 +25,10 @@ pub struct GetConversationState<S: jacquard_common::BosStr = jacquard_common::De
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetConversationStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Open unexpired leaf recoveries bound to the current coordinate, visible only to an active concrete device leaf that may fulfill them. Excludes the requesting exact device, but includes other devices of the same DID. Ordered oldest first; successful fulfillment changes the coordinate and stale requests must be renewed. Absent on older servers; empty for logical participants without a current concrete leaf. This is separate from the exact-target-device getLeafRecoveryInbox and grants no additional application history.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub pending_leaf_recovery_requests:
+        core::option::Option<Vec<crate::generated::blue_catbird::chat::LeafRecoveryView<S>>>,
     pub pending_leave_requests: Vec<crate::generated::blue_catbird::chat::LeaveRequestView<S>>,
     pub pending_reset_requests: Vec<crate::generated::blue_catbird::chat::ResetRequestView<S>>,
     pub state: crate::generated::blue_catbird::chat::ConversationState<S>,
@@ -215,7 +219,7 @@ pub mod get_conversation_state_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -141,6 +141,9 @@ pub enum SubmitTransitionError {
     ParticipantLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RelationshipPolicyUnavailable")]
     RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// The exact signed operation has no durable operation claim and its signedAt is older than the first-execution acceptance window. The server verified the device signature after global idempotency arbitration. This operation was not accepted and cannot execute; completed operations remain replayable regardless of age.
+    #[serde(rename = "SignedOperationExpired")]
+    SignedOperationExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "StandaloneProposalForbidden")]
@@ -427,6 +430,13 @@ impl core::fmt::Display for SubmitTransitionError {
             }
             Self::RelationshipPolicyUnavailable(msg) => {
                 write!(f, "RelationshipPolicyUnavailable")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::SignedOperationExpired(msg) => {
+                write!(f, "SignedOperationExpired")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
