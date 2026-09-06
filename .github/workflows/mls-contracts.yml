@@ -1,0 +1,49 @@
+name: Validate MLS and Space contracts
+
+on:
+  push:
+    branches: [main, release/mls-v2-main-validation]
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'Cargo.*'
+      - '.github/workflows/mls-contracts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: '1.97.1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CMAKE_POLICY_VERSION_MINIMUM: '3.5'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: catbird-atproto
+      - uses: actions/checkout@v4
+        with:
+          repository: joshlacal/catbird-mls
+          ref: 1495be65e0b74336267b642b895401373d4f507b
+          path: catbird-mls
+      - name: Install compiler
+        run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            catbird-atproto/target
+            catbird-mls/target
+          key: ${{ runner.os }}-mls-contracts-${{ env.RUSTUP_TOOLCHAIN }}-${{ hashFiles('catbird-atproto/Cargo.lock', 'catbird-mls/Cargo.lock') }}
+      - name: Verify chat recovery and existing Space contracts
+        working-directory: catbird-atproto
+        run: cargo test --locked --features streaming,namespace-atproto-space --test blue_catbird_chat_surface --test com_atproto_space_surface
+      - name: Compile released native consumer against this SDK
+        working-directory: catbird-mls
+        run: cargo check --locked --lib
