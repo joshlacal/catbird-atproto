@@ -13,23 +13,37 @@ extern crate alloc;
 )]
 pub mod generated {
     #[cfg(feature = "namespace-bluecatbird")]
+    pub mod app_bsky;
+    #[cfg(feature = "namespace-bluecatbird")]
     pub mod blue_catbird;
     pub mod builder_types;
-    #[cfg(feature = "namespace-site-standard")]
+    #[cfg(any(
+        feature = "namespace-bluecatbird",
+        feature = "namespace-site-standard",
+        feature = "namespace-atproto-space"
+    ))]
     pub mod com_atproto;
     #[cfg(feature = "namespace-site-standard")]
     pub mod site_standard;
 }
 
 #[cfg(feature = "namespace-bluecatbird")]
+pub use generated::app_bsky;
+#[cfg(feature = "namespace-bluecatbird")]
 pub use generated::blue_catbird;
 pub use generated::builder_types;
+#[cfg(any(
+    feature = "namespace-bluecatbird",
+    feature = "namespace-site-standard",
+    feature = "namespace-atproto-space"
+))]
+pub use generated::com_atproto;
 #[cfg(feature = "namespace-site-standard")]
 pub use generated::site_standard;
 pub use jacquard_common;
 pub use jacquard_common::types;
 pub use jacquard_derive;
-
+pub use jacquard_lexicon;
 #[cfg(feature = "namespace-bluecatbird")]
 pub mod catbird {
     pub mod bsky_chat {

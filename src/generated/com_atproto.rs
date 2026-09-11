@@ -11,9 +11,7 @@ pub mod lexicon;
 pub mod moderation;
 pub mod repo;
 pub mod server;
-#[cfg(feature = "namespace-atproto-space")]
 pub mod simplespace;
-#[cfg(feature = "namespace-atproto-space")]
 pub mod space;
 pub mod sync;
 pub mod temp;

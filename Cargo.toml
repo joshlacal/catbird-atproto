@@ -8,6 +8,7 @@ description = "Shared generated AT Protocol lexicon surface for Catbird Rust cra
 default = ["namespace-bluecatbird"]
 namespace-bluecatbird = []
 namespace-site-standard = []
+namespace-atproto-space = []
 streaming = ["jacquard-common/websocket", "dep:serde_ipld_dagcbor"]
 
 [dependencies]
