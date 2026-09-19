@@ -105,7 +105,8 @@ mod tests {
             .map(|x| format!("{x:02x}"))
             .collect::<String>();
         assert_eq!(actual, fixture["transcriptHex"].as_str().unwrap());
-        body.protocol_version = crate::blue_catbird::chat::PushRegistrationBodyProtocolVersion::Other("1".into());
+        body.protocol_version =
+            crate::blue_catbird::chat::PushRegistrationBodyProtocolVersion::Other("1".into());
         assert!(transcript(&body).is_err());
         body.protocol_version = crate::blue_catbird::chat::PushRegistrationBodyProtocolVersion::_2;
         body.signature_domain = "CATBIRD-CHAT-CREATE\0".into();
