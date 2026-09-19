@@ -2090,6 +2090,36 @@ pub struct DirectRequestKey<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+/// Replenishment hint for the authenticated actor device only, bound to the enclosing ownDeviceView device identity, keyId and authGeneration. Counts are not publication or preparation authority. usableUntil equals asOf plus seven days, 300 seconds import margin and 300 seconds preparation lease.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DirectRequestKeyPoolStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub as_of: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    pub enabled: bool,
+    pub reserved_count: i64,
+    pub revision: i64,
+    pub usable_count: i64,
+    pub usable_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_direct_request_key_pool_stats_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
@@ -2216,6 +2246,7 @@ pub struct DirectRequestPreparationSnapshot<
     pub creator: crate::generated::blue_catbird::chat::DirectRequestCreator<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub lease_expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub minimum_import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
@@ -2255,6 +2286,7 @@ pub struct DirectRequestPreparationView<S: jacquard_common::BosStr = jacquard_co
     pub creator: crate::generated::blue_catbird::chat::DirectRequestCreator<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub lease_expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub minimum_import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
@@ -2323,6 +2355,7 @@ pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_co
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
+    /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub next: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
@@ -2575,6 +2608,7 @@ pub struct DirectRequestState<S: jacquard_common::BosStr = jacquard_common::Defa
     pub consent: DirectRequestStateConsent<S>,
     pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
@@ -2805,6 +2839,7 @@ pub struct DirectRequestWelcomeProvenance<S: jacquard_common::BosStr = jacquard_
     pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub grant_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub grant_revision: i64,
+    /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub key_package_ref: crate::generated::blue_catbird::chat::ArtifactHash,
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
@@ -4750,6 +4785,10 @@ pub type OperationId<S = jacquard_common::DefaultStr> = S;
 )]
 pub struct OwnDeviceView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub device: crate::generated::blue_catbird::chat::DeviceView<S>,
+    /// Present only for the authenticated actorDeviceId when its request capability record exists; absent for all peer/other-device items. Counts include only current authorized request-purpose KeyPackages with valid enabled nonrevoked grants and the full indicated lifetime horizon.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub direct_request_key_pool:
+        core::option::Option<crate::generated::blue_catbird::chat::DirectRequestKeyPoolStats<S>>,
     #[serde(
         flatten,
         default,
@@ -12585,6 +12624,87 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dir
         lexicon_doc_blue_catbird_chat_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for DirectRequestKeyPoolStats<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "directRequestKeyPoolStats"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.reserved_count;
+            if *value > 1000i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reserved_count",
+                    ),
+                    max: 1000i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.reserved_count;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reserved_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.revision;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("revision"),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.revision;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("revision"),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.usable_count;
+            if *value > 1000i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("usable_count"),
+                    max: 1000i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.usable_count;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("usable_count"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -29448,6 +29568,94 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "directRequestKeyPoolStats",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Replenishment hint for the authenticated actor device only, bound to the enclosing ownDeviceView device identity, keyId and authGeneration. Counts are not publication or preparation authority. usableUntil equals asOf plus seven days, 300 seconds import margin and 300 seconds preparation lease.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("enabled"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("revision"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("usableCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reservedCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("asOf"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("usableUntil")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "asOf",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "enabled",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reservedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(1000i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "revision",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "usableCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(1000i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "usableUntil",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "directRequestKeysPublicationBody",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
@@ -36347,6 +36555,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
                                         r#ref: ::jacquard_common::CowStr::new_static("#deviceView"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "directRequestKeyPool",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#directRequestKeyPoolStats",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -64349,6 +64570,369 @@ where
     }
 }
 
+fn deserialize_direct_request_key_pool_stats_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod direct_request_key_pool_stats_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type AsOf;
+        type Enabled;
+        type ReservedCount;
+        type Revision;
+        type UsableCount;
+        type UsableUntil;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type AsOf = Unset;
+        type Enabled = Unset;
+        type ReservedCount = Unset;
+        type Revision = Unset;
+        type UsableCount = Unset;
+        type UsableUntil = Unset;
+    }
+    ///State transition - sets the `as_of` field to Set
+    pub struct SetAsOf<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAsOf<St> {}
+    impl<St: State> State for SetAsOf<St> {
+        type AsOf = Set<members::as_of>;
+        type Enabled = St::Enabled;
+        type ReservedCount = St::ReservedCount;
+        type Revision = St::Revision;
+        type UsableCount = St::UsableCount;
+        type UsableUntil = St::UsableUntil;
+    }
+    ///State transition - sets the `enabled` field to Set
+    pub struct SetEnabled<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEnabled<St> {}
+    impl<St: State> State for SetEnabled<St> {
+        type AsOf = St::AsOf;
+        type Enabled = Set<members::enabled>;
+        type ReservedCount = St::ReservedCount;
+        type Revision = St::Revision;
+        type UsableCount = St::UsableCount;
+        type UsableUntil = St::UsableUntil;
+    }
+    ///State transition - sets the `reserved_count` field to Set
+    pub struct SetReservedCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReservedCount<St> {}
+    impl<St: State> State for SetReservedCount<St> {
+        type AsOf = St::AsOf;
+        type Enabled = St::Enabled;
+        type ReservedCount = Set<members::reserved_count>;
+        type Revision = St::Revision;
+        type UsableCount = St::UsableCount;
+        type UsableUntil = St::UsableUntil;
+    }
+    ///State transition - sets the `revision` field to Set
+    pub struct SetRevision<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRevision<St> {}
+    impl<St: State> State for SetRevision<St> {
+        type AsOf = St::AsOf;
+        type Enabled = St::Enabled;
+        type ReservedCount = St::ReservedCount;
+        type Revision = Set<members::revision>;
+        type UsableCount = St::UsableCount;
+        type UsableUntil = St::UsableUntil;
+    }
+    ///State transition - sets the `usable_count` field to Set
+    pub struct SetUsableCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUsableCount<St> {}
+    impl<St: State> State for SetUsableCount<St> {
+        type AsOf = St::AsOf;
+        type Enabled = St::Enabled;
+        type ReservedCount = St::ReservedCount;
+        type Revision = St::Revision;
+        type UsableCount = Set<members::usable_count>;
+        type UsableUntil = St::UsableUntil;
+    }
+    ///State transition - sets the `usable_until` field to Set
+    pub struct SetUsableUntil<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUsableUntil<St> {}
+    impl<St: State> State for SetUsableUntil<St> {
+        type AsOf = St::AsOf;
+        type Enabled = St::Enabled;
+        type ReservedCount = St::ReservedCount;
+        type Revision = St::Revision;
+        type UsableCount = St::UsableCount;
+        type UsableUntil = Set<members::usable_until>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `as_of` field
+        pub struct as_of(());
+        ///Marker type for the `enabled` field
+        pub struct enabled(());
+        ///Marker type for the `reserved_count` field
+        pub struct reserved_count(());
+        ///Marker type for the `revision` field
+        pub struct revision(());
+        ///Marker type for the `usable_count` field
+        pub struct usable_count(());
+        ///Marker type for the `usable_until` field
+        pub struct usable_until(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DirectRequestKeyPoolStatsBuilder<
+    St: direct_request_key_pool_stats_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+        core::option::Option<bool>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DirectRequestKeyPoolStats<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DirectRequestKeyPoolStatsBuilder<
+        direct_request_key_pool_stats_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        DirectRequestKeyPoolStatsBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DirectRequestKeyPoolStats<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> DirectRequestKeyPoolStatsBuilder<direct_request_key_pool_stats_state::Empty, S> {
+        DirectRequestKeyPoolStatsBuilder::builder()
+    }
+}
+
+impl
+    DirectRequestKeyPoolStatsBuilder<
+        direct_request_key_pool_stats_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    DirectRequestKeyPoolStatsBuilder<direct_request_key_pool_stats_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestKeyPoolStatsBuilder<St, S>
+where
+    St: direct_request_key_pool_stats_state::State,
+    St::AsOf: direct_request_key_pool_stats_state::IsUnset,
+{
+    /// Set the `asOf` field (required)
+    pub fn as_of(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> DirectRequestKeyPoolStatsBuilder<direct_request_key_pool_stats_state::SetAsOf<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestKeyPoolStatsBuilder<St, S>
+where
+    St: direct_request_key_pool_stats_state::State,
+    St::Enabled: direct_request_key_pool_stats_state::IsUnset,
+{
+    /// Set the `enabled` field (required)
+    pub fn enabled(
+        mut self,
+        value: impl Into<bool>,
+    ) -> DirectRequestKeyPoolStatsBuilder<direct_request_key_pool_stats_state::SetEnabled<St>, S>
+    {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestKeyPoolStatsBuilder<St, S>
+where
+    St: direct_request_key_pool_stats_state::State,
+    St::ReservedCount: direct_request_key_pool_stats_state::IsUnset,
+{
+    /// Set the `reservedCount` field (required)
+    pub fn reserved_count(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DirectRequestKeyPoolStatsBuilder<
+        direct_request_key_pool_stats_state::SetReservedCount<St>,
+        S,
+    > {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestKeyPoolStatsBuilder<St, S>
+where
+    St: direct_request_key_pool_stats_state::State,
+    St::Revision: direct_request_key_pool_stats_state::IsUnset,
+{
+    /// Set the `revision` field (required)
+    pub fn revision(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DirectRequestKeyPoolStatsBuilder<direct_request_key_pool_stats_state::SetRevision<St>, S>
+    {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestKeyPoolStatsBuilder<St, S>
+where
+    St: direct_request_key_pool_stats_state::State,
+    St::UsableCount: direct_request_key_pool_stats_state::IsUnset,
+{
+    /// Set the `usableCount` field (required)
+    pub fn usable_count(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DirectRequestKeyPoolStatsBuilder<direct_request_key_pool_stats_state::SetUsableCount<St>, S>
+    {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestKeyPoolStatsBuilder<St, S>
+where
+    St: direct_request_key_pool_stats_state::State,
+    St::UsableUntil: direct_request_key_pool_stats_state::IsUnset,
+{
+    /// Set the `usableUntil` field (required)
+    pub fn usable_until(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> DirectRequestKeyPoolStatsBuilder<direct_request_key_pool_stats_state::SetUsableUntil<St>, S>
+    {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        DirectRequestKeyPoolStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestKeyPoolStatsBuilder<St, S>
+where
+    St: direct_request_key_pool_stats_state::State,
+    St::AsOf: direct_request_key_pool_stats_state::IsSet,
+    St::Enabled: direct_request_key_pool_stats_state::IsSet,
+    St::ReservedCount: direct_request_key_pool_stats_state::IsSet,
+    St::Revision: direct_request_key_pool_stats_state::IsSet,
+    St::UsableCount: direct_request_key_pool_stats_state::IsSet,
+    St::UsableUntil: direct_request_key_pool_stats_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DirectRequestKeyPoolStats<S> {
+        DirectRequestKeyPoolStats {
+            as_of: self._fields.0.unwrap(),
+            enabled: self._fields.1.unwrap(),
+            reserved_count: self._fields.2.unwrap(),
+            revision: self._fields.3.unwrap(),
+            usable_count: self._fields.4.unwrap(),
+            usable_until: self._fields.5.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DirectRequestKeyPoolStats<S> {
+        DirectRequestKeyPoolStats {
+            as_of: self._fields.0.unwrap(),
+            enabled: self._fields.1.unwrap(),
+            reserved_count: self._fields.2.unwrap(),
+            revision: self._fields.3.unwrap(),
+            usable_count: self._fields.4.unwrap(),
+            usable_until: self._fields.5.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 fn deserialize_direct_request_keys_publication_body_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -91622,7 +92206,10 @@ pub struct OwnDeviceViewBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<crate::generated::blue_catbird::chat::DeviceView<S>>,),
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceView<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::DirectRequestKeyPoolStats<S>>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -91646,7 +92233,7 @@ impl OwnDeviceViewBuilder<own_device_view_state::Empty, jacquard_common::Default
     pub fn new() -> Self {
         OwnDeviceViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -91657,7 +92244,7 @@ impl<S: jacquard_common::BosStr> OwnDeviceViewBuilder<own_device_view_state::Emp
     pub fn builder() -> Self {
         OwnDeviceViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -91682,6 +92269,25 @@ where
     }
 }
 
+impl<St: own_device_view_state::State, S: jacquard_common::BosStr> OwnDeviceViewBuilder<St, S> {
+    /// Set the `directRequestKeyPool` field (optional)
+    pub fn direct_request_key_pool(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::DirectRequestKeyPoolStats<S>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `directRequestKeyPool` field to an Option value (optional)
+    pub fn maybe_direct_request_key_pool(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::DirectRequestKeyPoolStats<S>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> OwnDeviceViewBuilder<St, S>
 where
     St: own_device_view_state::State,
@@ -91691,6 +92297,7 @@ where
     pub fn build(self) -> OwnDeviceView<S> {
         OwnDeviceView {
             device: self._fields.0.unwrap(),
+            direct_request_key_pool: self._fields.1,
             extra_data: Default::default(),
         }
     }
@@ -91704,6 +92311,7 @@ where
     ) -> OwnDeviceView<S> {
         OwnDeviceView {
             device: self._fields.0.unwrap(),
+            direct_request_key_pool: self._fields.1,
             extra_data: Some(extra_data),
         }
     }
