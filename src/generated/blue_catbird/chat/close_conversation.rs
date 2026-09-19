@@ -141,6 +141,12 @@ pub enum CloseConversationError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// The bounded encrypted request lifecycle reserve cannot accommodate this operation. No first-execution effects are committed; retry the same signed operation after capacity is available.
+    #[serde(rename = "CapacityUnavailable")]
+    CapacityUnavailable(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -260,6 +266,13 @@ impl core::fmt::Display for CloseConversationError {
             }
             Self::RateLimited(msg) => {
                 write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::CapacityUnavailable(msg) => {
+                write!(f, "CapacityUnavailable")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
