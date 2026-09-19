@@ -64,104 +64,241 @@ pub struct SubmitTransitionOutput<S: jacquard_common::BosStr = jacquard_common::
 #[serde(tag = "error", content = "message")]
 pub enum SubmitTransitionError {
     #[serde(rename = "AdminRequired")]
-    AdminRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AdminRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "BlockedRelationship")]
-    BlockedRelationship(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BlockedRelationship(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CommitterSelfRemovalForbidden")]
-    CommitterSelfRemovalForbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CommitterSelfRemovalForbidden(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationLeafLimitReached")]
-    ConversationLeafLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationLeafLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CoordinateOverflow")]
-    CoordinateOverflow(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CoordinateOverflow(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
-    CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotLeaf")]
-    DeviceNotLeaf(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceNotLeaf(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotRegistered")]
-    DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceRevoked")]
-    DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DirectParticipantMutationForbidden")]
     DirectParticipantMutationForbidden(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
     #[serde(rename = "DuplicateDeviceLeaf")]
-    DuplicateDeviceLeaf(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DuplicateDeviceLeaf(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ExternalCommitForbidden")]
-    ExternalCommitForbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ExternalCommitForbidden(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "GroupInvitesDisabled")]
-    GroupInvitesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    GroupInvitesDisabled(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "IdempotencyConflict")]
-    IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    IdempotencyConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidCommit")]
-    InvalidCommit(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidCommit(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidLeaveManifest")]
-    InvalidLeaveManifest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidLeaveManifest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidMetadataSnapshot")]
-    InvalidMetadataSnapshot(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidMetadataSnapshot(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
-    InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidSignature")]
-    InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidSignature(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidWelcomeMapping")]
-    InvalidWelcomeMapping(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidWelcomeMapping(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvitationLimitReached")]
-    InvitationLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvitationLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LastAdminRequired")]
-    LastAdminRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LastAdminRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LeafRecoveryExpired")]
-    LeafRecoveryExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LeafRecoveryExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LeafRecoveryNotFound")]
-    LeafRecoveryNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LeafRecoveryNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LeafRecoverySuperseded")]
-    LeafRecoverySuperseded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LeafRecoverySuperseded(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LeaveRequestExpired")]
-    LeaveRequestExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LeaveRequestExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LeaveRequestNotFound")]
-    LeaveRequestNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LeaveRequestNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LeaveRequestStale")]
-    LeaveRequestStale(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LeaveRequestStale(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MetadataNonceReuse")]
-    MetadataNonceReuse(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MetadataNonceReuse(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MetadataVersionOverflow")]
-    MetadataVersionOverflow(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MetadataVersionOverflow(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MissingMetadataSnapshot")]
-    MissingMetadataSnapshot(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MissingMetadataSnapshot(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotFollowedByRecipient")]
-    NotFollowedByRecipient(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotFollowedByRecipient(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotMember")]
-    NotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotMember(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ParticipantLeafLimitReached")]
-    ParticipantLeafLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ParticipantLeafLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ParticipantLimitReached")]
-    ParticipantLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ParticipantLimitReached(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RelationshipPolicyUnavailable")]
-    RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RelationshipPolicyUnavailable(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The exact signed operation has no durable operation claim and its signedAt is older than the first-execution acceptance window. The server verified the device signature after global idempotency arbitration. This operation was not accepted and cannot execute; completed operations remain replayable regardless of age.
     #[serde(rename = "SignedOperationExpired")]
-    SignedOperationExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    SignedOperationExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "StaleCoordinates")]
-    StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    StaleCoordinates(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "StandaloneProposalForbidden")]
-    StandaloneProposalForbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    StandaloneProposalForbidden(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnsupportedMlsProfile")]
-    UnsupportedMlsProfile(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedMlsProfile(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
-    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -536,7 +673,7 @@ pub mod submit_transition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

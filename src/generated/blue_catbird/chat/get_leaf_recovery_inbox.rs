@@ -5,6 +5,100 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetLeafRecoveryInboxSupportedProtocolVersions<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _1,
+    _2,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetLeafRecoveryInboxSupportedProtocolVersions<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::_1 => "1",
+            Self::_2 => "2",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "1" => Self::_1,
+            "2" => Self::_2,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display
+    for GetLeafRecoveryInboxSupportedProtocolVersions<S>
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetLeafRecoveryInboxSupportedProtocolVersions<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize
+    for GetLeafRecoveryInboxSupportedProtocolVersions<S>
+{
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetLeafRecoveryInboxSupportedProtocolVersions<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default
+    for GetLeafRecoveryInboxSupportedProtocolVersions<S>
+{
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for GetLeafRecoveryInboxSupportedProtocolVersions<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetLeafRecoveryInboxSupportedProtocolVersions<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetLeafRecoveryInboxSupportedProtocolVersions::_1 => {
+                GetLeafRecoveryInboxSupportedProtocolVersions::_1
+            }
+            GetLeafRecoveryInboxSupportedProtocolVersions::_2 => {
+                GetLeafRecoveryInboxSupportedProtocolVersions::_2
+            }
+            GetLeafRecoveryInboxSupportedProtocolVersions::Other(v) => {
+                GetLeafRecoveryInboxSupportedProtocolVersions::Other(v.into_static())
+            }
+        }
+    }
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
@@ -21,6 +115,9 @@ pub struct GetLeafRecoveryInbox<S: jacquard_common::BosStr = jacquard_common::De
     /// (min length: 1, max length: 512)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub page_cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub supported_protocol_versions:
+        core::option::Option<Vec<GetLeafRecoveryInboxSupportedProtocolVersions<S>>>,
 }
 
 #[derive(
@@ -32,6 +129,9 @@ pub struct GetLeafRecoveryInbox<S: jacquard_common::BosStr = jacquard_common::De
 )]
 pub struct GetLeafRecoveryInboxOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub has_more: bool,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub inventory_scope:
+        core::option::Option<crate::generated::blue_catbird::chat::DirectRequestInventoryScope<S>>,
     pub inventory_session_id: S,
     pub items: Vec<crate::generated::blue_catbird::chat::LeafRecoveryInboxItem<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -64,33 +164,70 @@ pub struct GetLeafRecoveryInboxOutput<S: jacquard_common::BosStr = jacquard_comm
 #[serde(tag = "error", content = "message")]
 pub enum GetLeafRecoveryInboxError {
     #[serde(rename = "CursorExpired")]
-    CursorExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CursorExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
-    CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotRegistered")]
-    DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceRevoked")]
-    DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
-    InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InventorySessionExpired")]
-    InventorySessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InventorySessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InventorySessionMismatch")]
-    InventorySessionMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InventorySessionMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
-    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -229,7 +366,7 @@ pub mod get_leaf_recovery_inbox_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -294,6 +431,7 @@ pub struct GetLeafRecoveryInboxBuilder<
         core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<S>,
+        core::option::Option<Vec<GetLeafRecoveryInboxSupportedProtocolVersions<S>>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -322,7 +460,7 @@ impl
     pub fn new() -> Self {
         GetLeafRecoveryInboxBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -335,7 +473,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         GetLeafRecoveryInboxBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -414,6 +552,27 @@ impl<St: get_leaf_recovery_inbox_state::State, S: jacquard_common::BosStr>
     }
 }
 
+impl<St: get_leaf_recovery_inbox_state::State, S: jacquard_common::BosStr>
+    GetLeafRecoveryInboxBuilder<St, S>
+{
+    /// Set the `supportedProtocolVersions` field (optional)
+    pub fn supported_protocol_versions(
+        mut self,
+        value: impl Into<Option<Vec<GetLeafRecoveryInboxSupportedProtocolVersions<S>>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `supportedProtocolVersions` field to an Option value (optional)
+    pub fn maybe_supported_protocol_versions(
+        mut self,
+        value: Option<Vec<GetLeafRecoveryInboxSupportedProtocolVersions<S>>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> GetLeafRecoveryInboxBuilder<St, S>
 where
     St: get_leaf_recovery_inbox_state::State,
@@ -428,6 +587,7 @@ where
             inventory_session_id: self._fields.1.unwrap(),
             limit: self._fields.2.unwrap(),
             page_cursor: self._fields.3,
+            supported_protocol_versions: self._fields.4,
         }
     }
 }
