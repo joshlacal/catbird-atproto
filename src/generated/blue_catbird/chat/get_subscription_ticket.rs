@@ -20,10 +20,13 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSubscriptionTicket<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///Canonical lowercase hyphenated RFC 4122-variant UUIDv4 device ID; strict runtime validation rejects every other spelling, version, or variant.
+    /// Canonical lowercase hyphenated RFC 4122-variant UUIDv4 device ID; strict runtime validation rejects every other spelling, version, or variant.
     pub actor_device_id: S,
     pub event_cursor: S,
     pub inventory_session_id: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub supported_protocol_versions:
+        core::option::Option<Vec<GetSubscriptionTicketSupportedProtocolVersions<S>>>,
     #[serde(
         flatten,
         default,
@@ -37,6 +40,100 @@ pub struct GetSubscriptionTicket<S: jacquard_common::BosStr = jacquard_common::D
     >,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetSubscriptionTicketSupportedProtocolVersions<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _1,
+    _2,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetSubscriptionTicketSupportedProtocolVersions<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::_1 => "1",
+            Self::_2 => "2",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "1" => Self::_1,
+            "2" => Self::_2,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display
+    for GetSubscriptionTicketSupportedProtocolVersions<S>
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetSubscriptionTicketSupportedProtocolVersions<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize
+    for GetSubscriptionTicketSupportedProtocolVersions<S>
+{
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetSubscriptionTicketSupportedProtocolVersions<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default
+    for GetSubscriptionTicketSupportedProtocolVersions<S>
+{
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for GetSubscriptionTicketSupportedProtocolVersions<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetSubscriptionTicketSupportedProtocolVersions<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetSubscriptionTicketSupportedProtocolVersions::_1 => {
+                GetSubscriptionTicketSupportedProtocolVersions::_1
+            }
+            GetSubscriptionTicketSupportedProtocolVersions::_2 => {
+                GetSubscriptionTicketSupportedProtocolVersions::_2
+            }
+            GetSubscriptionTicketSupportedProtocolVersions::Other(v) => {
+                GetSubscriptionTicketSupportedProtocolVersions::Other(v.into_static())
+            }
+        }
+    }
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
@@ -47,6 +144,9 @@ pub struct GetSubscriptionTicket<S: jacquard_common::BosStr = jacquard_common::D
 pub struct GetSubscriptionTicketOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub endpoint: jacquard_common::types::string::UriValue<S>,
     pub expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub inventory_scope:
+        core::option::Option<crate::generated::blue_catbird::chat::DirectRequestInventoryScope<S>>,
     pub ticket: S,
     #[serde(
         flatten,
@@ -74,35 +174,75 @@ pub struct GetSubscriptionTicketOutput<S: jacquard_common::BosStr = jacquard_com
 #[serde(tag = "error", content = "message")]
 pub enum GetSubscriptionTicketError {
     #[serde(rename = "CursorExpired")]
-    CursorExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CursorExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
-    CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotRegistered")]
-    DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceRevoked")]
-    DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
-    InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InventoryIncomplete")]
-    InventoryIncomplete(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InventoryIncomplete(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InventorySessionExpired")]
-    InventorySessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InventorySessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InventorySessionMismatch")]
-    InventorySessionMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InventorySessionMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
-    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }

@@ -6,14 +6,27 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
 )]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AcceptConversation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub signed_request: crate::generated::blue_catbird::chat::SignedParticipantAcceptance<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub direct_request: core::option::Option<
+        crate::generated::blue_catbird::chat::SignedDirectRequestAcceptance<S>,
+    >,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub signed_request:
+        core::option::Option<crate::generated::blue_catbird::chat::SignedParticipantAcceptance<S>>,
     #[serde(
         flatten,
         default,
@@ -35,9 +48,15 @@ pub struct AcceptConversation<S: jacquard_common::BosStr = jacquard_common::Defa
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AcceptConversationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub acceptance_proof:
+        core::option::Option<crate::generated::blue_catbird::chat::DirectRequestAcceptanceProof<S>>,
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
-    pub entry: crate::generated::blue_catbird::chat::ParticipantAcceptanceEntry<S>,
-    pub recovery: crate::generated::blue_catbird::chat::LeafRecoveryView<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub entry:
+        core::option::Option<crate::generated::blue_catbird::chat::ParticipantAcceptanceEntry<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub recovery: core::option::Option<crate::generated::blue_catbird::chat::LeafRecoveryView<S>>,
     #[serde(
         flatten,
         default,
@@ -64,57 +83,130 @@ pub struct AcceptConversationOutput<S: jacquard_common::BosStr = jacquard_common
 #[serde(tag = "error", content = "message")]
 pub enum AcceptConversationError {
     #[serde(rename = "BlockedRelationship")]
-    BlockedRelationship(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    BlockedRelationship(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CoordinateOverflow")]
-    CoordinateOverflow(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CoordinateOverflow(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
-    CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotRegistered")]
-    DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceRevoked")]
-    DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "GroupInvitesDisabled")]
-    GroupInvitesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    GroupInvitesDisabled(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "IdempotencyConflict")]
-    IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    IdempotencyConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
-    InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidRequest(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidSignature")]
-    InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidSignature(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvitationNotFound")]
-    InvitationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvitationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvitationNotPending")]
-    InvitationNotPending(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvitationNotPending(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvitationProvenanceMismatch")]
-    InvitationProvenanceMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvitationProvenanceMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "KeyPackageUnavailable")]
-    KeyPackageUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    KeyPackageUnavailable(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MessagesDisabled")]
-    MessagesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MessagesDisabled(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotFollowedByRecipient")]
-    NotFollowedByRecipient(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotFollowedByRecipient(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotParticipant")]
-    NotParticipant(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotParticipant(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RelationshipPolicyUnavailable")]
-    RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RelationshipPolicyUnavailable(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "StaleCoordinates")]
-    StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    StaleCoordinates(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
-    AccountSessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
-    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceBindingMismatch")]
-    DeviceBindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    DeviceBindingMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ProtocolUpgradeRequired")]
-    ProtocolUpgradeRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ProtocolUpgradeRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RateLimited")]
-    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
         error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
         message: Option<jacquard_common::deps::smol_str::SmolStr>,
     },
 }
@@ -329,132 +421,4 @@ impl jacquard_common::xrpc::XrpcEndpoint for AcceptConversationRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = AcceptConversation<S>;
     type Response = AcceptConversationResponse;
-}
-
-pub mod accept_conversation_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use ::core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type SignedRequest;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type SignedRequest = Unset;
-    }
-    ///State transition - sets the `signed_request` field to Set
-    pub struct SetSignedRequest<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetSignedRequest<St> {}
-    impl<St: State> State for SetSignedRequest<St> {
-        type SignedRequest = Set<members::signed_request>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `signed_request` field
-        pub struct signed_request(());
-    }
-}
-
-/// Builder for constructing an instance of this type.
-pub struct AcceptConversationBuilder<
-    St: accept_conversation_state::State,
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::SignedParticipantAcceptance<S>>,
-    ),
-    _type: ::core::marker::PhantomData<fn() -> S>,
-}
-
-impl AcceptConversation<jacquard_common::DefaultStr> {
-    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> AcceptConversationBuilder<accept_conversation_state::Empty, jacquard_common::DefaultStr>
-    {
-        AcceptConversationBuilder::new()
-    }
-}
-
-impl<S: jacquard_common::BosStr> AcceptConversation<S> {
-    /// Create a new builder for this type
-    pub fn builder() -> AcceptConversationBuilder<accept_conversation_state::Empty, S> {
-        AcceptConversationBuilder::builder()
-    }
-}
-
-impl AcceptConversationBuilder<accept_conversation_state::Empty, jacquard_common::DefaultStr> {
-    /// Create a new builder with all fields unset, using the default string type, if needed
-    pub fn new() -> Self {
-        AcceptConversationBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: (None,),
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<S: jacquard_common::BosStr> AcceptConversationBuilder<accept_conversation_state::Empty, S> {
-    /// Create a new builder with all fields unset
-    pub fn builder() -> Self {
-        AcceptConversationBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: (None,),
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> AcceptConversationBuilder<St, S>
-where
-    St: accept_conversation_state::State,
-    St::SignedRequest: accept_conversation_state::IsUnset,
-{
-    /// Set the `signedRequest` field (required)
-    pub fn signed_request(
-        mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::SignedParticipantAcceptance<S>>,
-    ) -> AcceptConversationBuilder<accept_conversation_state::SetSignedRequest<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
-        AcceptConversationBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> AcceptConversationBuilder<St, S>
-where
-    St: accept_conversation_state::State,
-    St::SignedRequest: accept_conversation_state::IsSet,
-{
-    /// Build the final struct.
-    pub fn build(self) -> AcceptConversation<S> {
-        AcceptConversation {
-            signed_request: self._fields.0.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data.
-    pub fn build_with_data(
-        self,
-        extra_data: alloc::collections::BTreeMap<
-            jacquard_common::deps::smol_str::SmolStr,
-            jacquard_common::types::value::Data<S>,
-        >,
-    ) -> AcceptConversation<S> {
-        AcceptConversation {
-            signed_request: self._fields.0.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
 }
