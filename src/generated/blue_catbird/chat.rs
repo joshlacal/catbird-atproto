@@ -23,6 +23,7 @@ pub mod get_blob;
 pub mod get_blob_usage;
 pub mod get_conversation_state;
 pub mod get_conversations;
+pub mod get_device_key;
 pub mod get_devices;
 pub mod get_direct_request_outcome;
 pub mod get_entries;
@@ -5099,6 +5100,233 @@ pub struct PublicCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+/// The canonical service acknowledged this exact signed device binding. The gateway commits its token registry only after matching this digest and body to the authenticated request; this is not a client-supplied authorization flag.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PushRegistrationBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub binding_digest: jacquard_common::deps::bytes::Bytes,
+    pub body: crate::generated::blue_catbird::chat::PushRegistrationBody<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_push_registration_binding_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Device-signed push binding for the canonical authority. Transcript is the literal UTF8 signatureDomain, then protocolVersion, authorityDid, actorDid as u32-big-endian length-prefixed UTF8, actorDeviceId as16 raw UUID bytes, keyId as length-prefixed UTF8, authGeneration u64 big-endian, registrationId as16 UUID bytes, provider and appId as length-prefixed UTF8, tokenGeneration u64 big-endian, tokenSha256 as32 bytes, enabled as one byte0or1, signedAt as length-prefixed UTF8. First execution checks current immutable key and authentication generation, signature, five-minute freshness and monotonic token generation. Exact current binding retry retains the same signature and receipt. Top-level token must hash to tokenSha256 when enabled; disable omits token and uses SHA256(empty). New registrations start at tokenGeneration1; rotation/rebind increments it. Devices never share registrations.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PushRegistrationBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    pub app_id: S,
+    pub auth_generation: i64,
+    pub authority_did: S,
+    pub enabled: bool,
+    pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    pub protocol_version: PushRegistrationBodyProtocolVersion<S>,
+    pub provider: PushRegistrationBodyProvider<S>,
+    pub registration_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    pub signature_domain: S,
+    pub signed_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    pub token_generation: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub token_sha256: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_push_registration_body_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum PushRegistrationBodyProtocolVersion<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _2,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> PushRegistrationBodyProtocolVersion<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::_2 => "2",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "2" => Self::_2,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for PushRegistrationBodyProtocolVersion<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for PushRegistrationBodyProtocolVersion<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for PushRegistrationBodyProtocolVersion<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for PushRegistrationBodyProtocolVersion<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for PushRegistrationBodyProtocolVersion<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for PushRegistrationBodyProtocolVersion<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = PushRegistrationBodyProtocolVersion<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            PushRegistrationBodyProtocolVersion::_2 => PushRegistrationBodyProtocolVersion::_2,
+            PushRegistrationBodyProtocolVersion::Other(v) => {
+                PushRegistrationBodyProtocolVersion::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum PushRegistrationBodyProvider<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Apns,
+    Fcm,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> PushRegistrationBodyProvider<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Apns => "apns",
+            Self::Fcm => "fcm",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "apns" => Self::Apns,
+            "fcm" => Self::Fcm,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for PushRegistrationBodyProvider<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for PushRegistrationBodyProvider<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for PushRegistrationBodyProvider<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for PushRegistrationBodyProvider<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for PushRegistrationBodyProvider<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for PushRegistrationBodyProvider<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = PushRegistrationBodyProvider<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            PushRegistrationBodyProvider::Apns => PushRegistrationBodyProvider::Apns,
+            PushRegistrationBodyProvider::Fcm => PushRegistrationBodyProvider::Fcm,
+            PushRegistrationBodyProvider::Other(v) => {
+                PushRegistrationBodyProvider::Other(v.into_static())
+            }
+        }
+    }
+}
+
 /// The reaction string must use Unicode 17.0.0 NFC, be control-free, and contain exactly one Unicode 17.0.0 UAX #29 extended grapheme cluster; no Unicode emoji-property requirement is imposed. Per verified DID plus emoji, greatest conversation seq wins. A target tombstone suppresses all reactions in the rendered state.
 
 #[derive(
@@ -6486,6 +6714,31 @@ pub struct SignedPolicyTransition<S: jacquard_common::BosStr = jacquard_common::
         flatten,
         default,
         deserialize_with = "deserialize_signed_policy_transition_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SignedPushRegistration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub body: crate::generated::blue_catbird::chat::PushRegistrationBody<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_signed_push_registration_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -19693,6 +19946,206 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pub
     }
 }
 
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for PushRegistrationBinding<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "pushRegistrationBinding"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for PushRegistrationBody<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "pushRegistrationBody"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.app_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 128usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("app_id"),
+                    max: 128usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.app_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 1usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("app_id"),
+                    min: 1usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.auth_generation;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "auth_generation",
+                    ),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.auth_generation;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "auth_generation",
+                    ),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.registration_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "registration_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.registration_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "registration_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.token_generation;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "token_generation",
+                    ),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.token_generation;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "token_generation",
+                    ),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReactionFrameBody<S> {
     fn nsid() -> &'static str {
         "blue.catbird.chat.defs"
@@ -21774,6 +22227,23 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn def_name() -> &'static str {
         "signedPolicyTransition"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for SignedPushRegistration<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "signedPushRegistration"
     }
     fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_blue_catbird_chat_defs()
@@ -37377,6 +37847,216 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "pushRegistrationBinding",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "The canonical service acknowledged this exact signed device binding. The gateway commits its token registry only after matching this digest and body to the authenticated request; this is not a client-supplied authorization flag.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("body"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("bindingDigest")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "bindingDigest",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "body",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#pushRegistrationBody",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "pushRegistrationBody",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Device-signed push binding for the canonical authority. Transcript is the literal UTF8 signatureDomain, then protocolVersion, authorityDid, actorDid as u32-big-endian length-prefixed UTF8, actorDeviceId as16 raw UUID bytes, keyId as length-prefixed UTF8, authGeneration u64 big-endian, registrationId as16 UUID bytes, provider and appId as length-prefixed UTF8, tokenGeneration u64 big-endian, tokenSha256 as32 bytes, enabled as one byte0or1, signedAt as length-prefixed UTF8. First execution checks current immutable key and authentication generation, signature, five-minute freshness and monotonic token generation. Exact current binding retry retains the same signature and receipt. Top-level token must hash to tokenSha256 when enabled; disable omits token and uses SHA256(empty). New registrations start at tokenGeneration1; rotation/rebind increments it. Devices never share registrations.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("protocolVersion"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signatureDomain"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("authorityDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDeviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("keyId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("authGeneration"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("registrationId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("provider"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("appId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("tokenGeneration"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("tokenSha256"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("enabled"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signedAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDeviceId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#deviceId"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "appId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(1usize),
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "authGeneration",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "authorityDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "enabled",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "keyId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#keyId"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "protocolVersion",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "provider",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "registrationId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#operationId",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signatureDomain",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "tokenGeneration",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "tokenSha256",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "reactionFrameBody",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -40023,6 +40703,44 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                             "#policyTransitionBody",
                                         )],
                                         closed: Some(true),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("signature"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(64usize),
+                                        min_length: Some(64usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("signedPushRegistration"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("body"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("body"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#pushRegistrationBody",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -95321,6 +96039,971 @@ where
     }
 }
 
+fn deserialize_push_registration_binding_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod push_registration_binding_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type BindingDigest;
+        type Body;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type BindingDigest = Unset;
+        type Body = Unset;
+    }
+    ///State transition - sets the `binding_digest` field to Set
+    pub struct SetBindingDigest<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBindingDigest<St> {}
+    impl<St: State> State for SetBindingDigest<St> {
+        type BindingDigest = Set<members::binding_digest>;
+        type Body = St::Body;
+    }
+    ///State transition - sets the `body` field to Set
+    pub struct SetBody<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBody<St> {}
+    impl<St: State> State for SetBody<St> {
+        type BindingDigest = St::BindingDigest;
+        type Body = Set<members::body>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `binding_digest` field
+        pub struct binding_digest(());
+        ///Marker type for the `body` field
+        pub struct body(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct PushRegistrationBindingBuilder<
+    St: push_registration_binding_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<crate::generated::blue_catbird::chat::PushRegistrationBody<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl PushRegistrationBinding<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PushRegistrationBindingBuilder<
+        push_registration_binding_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        PushRegistrationBindingBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> PushRegistrationBinding<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PushRegistrationBindingBuilder<push_registration_binding_state::Empty, S> {
+        PushRegistrationBindingBuilder::builder()
+    }
+}
+
+impl
+    PushRegistrationBindingBuilder<
+        push_registration_binding_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        PushRegistrationBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    PushRegistrationBindingBuilder<push_registration_binding_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PushRegistrationBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBindingBuilder<St, S>
+where
+    St: push_registration_binding_state::State,
+    St::BindingDigest: push_registration_binding_state::IsUnset,
+{
+    /// Set the `bindingDigest` field (required)
+    pub fn binding_digest(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> PushRegistrationBindingBuilder<push_registration_binding_state::SetBindingDigest<St>, S>
+    {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        PushRegistrationBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBindingBuilder<St, S>
+where
+    St: push_registration_binding_state::State,
+    St::Body: push_registration_binding_state::IsUnset,
+{
+    /// Set the `body` field (required)
+    pub fn body(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::PushRegistrationBody<S>>,
+    ) -> PushRegistrationBindingBuilder<push_registration_binding_state::SetBody<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        PushRegistrationBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBindingBuilder<St, S>
+where
+    St: push_registration_binding_state::State,
+    St::BindingDigest: push_registration_binding_state::IsSet,
+    St::Body: push_registration_binding_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> PushRegistrationBinding<S> {
+        PushRegistrationBinding {
+            binding_digest: self._fields.0.unwrap(),
+            body: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> PushRegistrationBinding<S> {
+        PushRegistrationBinding {
+            binding_digest: self._fields.0.unwrap(),
+            body: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_push_registration_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod push_registration_body_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ActorDeviceId;
+        type ActorDid;
+        type AppId;
+        type AuthGeneration;
+        type AuthorityDid;
+        type Enabled;
+        type KeyId;
+        type ProtocolVersion;
+        type Provider;
+        type RegistrationId;
+        type SignatureDomain;
+        type SignedAt;
+        type TokenGeneration;
+        type TokenSha256;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ActorDeviceId = Unset;
+        type ActorDid = Unset;
+        type AppId = Unset;
+        type AuthGeneration = Unset;
+        type AuthorityDid = Unset;
+        type Enabled = Unset;
+        type KeyId = Unset;
+        type ProtocolVersion = Unset;
+        type Provider = Unset;
+        type RegistrationId = Unset;
+        type SignatureDomain = Unset;
+        type SignedAt = Unset;
+        type TokenGeneration = Unset;
+        type TokenSha256 = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `actor_did` field to Set
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = Set<members::actor_did>;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `app_id` field to Set
+    pub struct SetAppId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAppId<St> {}
+    impl<St: State> State for SetAppId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = Set<members::app_id>;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `auth_generation` field to Set
+    pub struct SetAuthGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthGeneration<St> {}
+    impl<St: State> State for SetAuthGeneration<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = Set<members::auth_generation>;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `authority_did` field to Set
+    pub struct SetAuthorityDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthorityDid<St> {}
+    impl<St: State> State for SetAuthorityDid<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = Set<members::authority_did>;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `enabled` field to Set
+    pub struct SetEnabled<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEnabled<St> {}
+    impl<St: State> State for SetEnabled<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = Set<members::enabled>;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `key_id` field to Set
+    pub struct SetKeyId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyId<St> {}
+    impl<St: State> State for SetKeyId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = Set<members::key_id>;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `protocol_version` field to Set
+    pub struct SetProtocolVersion<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetProtocolVersion<St> {}
+    impl<St: State> State for SetProtocolVersion<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = Set<members::protocol_version>;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `provider` field to Set
+    pub struct SetProvider<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetProvider<St> {}
+    impl<St: State> State for SetProvider<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = Set<members::provider>;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `registration_id` field to Set
+    pub struct SetRegistrationId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRegistrationId<St> {}
+    impl<St: State> State for SetRegistrationId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = Set<members::registration_id>;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `signature_domain` field to Set
+    pub struct SetSignatureDomain<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignatureDomain<St> {}
+    impl<St: State> State for SetSignatureDomain<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = Set<members::signature_domain>;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `signed_at` field to Set
+    pub struct SetSignedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignedAt<St> {}
+    impl<St: State> State for SetSignedAt<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = Set<members::signed_at>;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `token_generation` field to Set
+    pub struct SetTokenGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTokenGeneration<St> {}
+    impl<St: State> State for SetTokenGeneration<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = Set<members::token_generation>;
+        type TokenSha256 = St::TokenSha256;
+    }
+    ///State transition - sets the `token_sha256` field to Set
+    pub struct SetTokenSha256<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTokenSha256<St> {}
+    impl<St: State> State for SetTokenSha256<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type AuthorityDid = St::AuthorityDid;
+        type Enabled = St::Enabled;
+        type KeyId = St::KeyId;
+        type ProtocolVersion = St::ProtocolVersion;
+        type Provider = St::Provider;
+        type RegistrationId = St::RegistrationId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TokenGeneration = St::TokenGeneration;
+        type TokenSha256 = Set<members::token_sha256>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
+        ///Marker type for the `actor_did` field
+        pub struct actor_did(());
+        ///Marker type for the `app_id` field
+        pub struct app_id(());
+        ///Marker type for the `auth_generation` field
+        pub struct auth_generation(());
+        ///Marker type for the `authority_did` field
+        pub struct authority_did(());
+        ///Marker type for the `enabled` field
+        pub struct enabled(());
+        ///Marker type for the `key_id` field
+        pub struct key_id(());
+        ///Marker type for the `protocol_version` field
+        pub struct protocol_version(());
+        ///Marker type for the `provider` field
+        pub struct provider(());
+        ///Marker type for the `registration_id` field
+        pub struct registration_id(());
+        ///Marker type for the `signature_domain` field
+        pub struct signature_domain(());
+        ///Marker type for the `signed_at` field
+        pub struct signed_at(());
+        ///Marker type for the `token_generation` field
+        pub struct token_generation(());
+        ///Marker type for the `token_sha256` field
+        pub struct token_sha256(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct PushRegistrationBodyBuilder<
+    St: push_registration_body_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
+        core::option::Option<PushRegistrationBodyProtocolVersion<S>>,
+        core::option::Option<PushRegistrationBodyProvider<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl PushRegistrationBody<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::Empty, jacquard_common::DefaultStr>
+    {
+        PushRegistrationBodyBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> PushRegistrationBody<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PushRegistrationBodyBuilder<push_registration_body_state::Empty, S> {
+        PushRegistrationBodyBuilder::builder()
+    }
+}
+
+impl PushRegistrationBodyBuilder<push_registration_body_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    PushRegistrationBodyBuilder<push_registration_body_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::ActorDeviceId: push_registration_body_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::ActorDid: push_registration_body_state::IsUnset,
+{
+    /// Set the `actorDid` field (required)
+    pub fn actor_did(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetActorDid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::AppId: push_registration_body_state::IsUnset,
+{
+    /// Set the `appId` field (required)
+    pub fn app_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetAppId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::AuthGeneration: push_registration_body_state::IsUnset,
+{
+    /// Set the `authGeneration` field (required)
+    pub fn auth_generation(
+        mut self,
+        value: impl Into<i64>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetAuthGeneration<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::AuthorityDid: push_registration_body_state::IsUnset,
+{
+    /// Set the `authorityDid` field (required)
+    pub fn authority_did(
+        mut self,
+        value: impl Into<S>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetAuthorityDid<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::Enabled: push_registration_body_state::IsUnset,
+{
+    /// Set the `enabled` field (required)
+    pub fn enabled(
+        mut self,
+        value: impl Into<bool>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetEnabled<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::KeyId: push_registration_body_state::IsUnset,
+{
+    /// Set the `keyId` field (required)
+    pub fn key_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::KeyId<S>>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetKeyId<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::ProtocolVersion: push_registration_body_state::IsUnset,
+{
+    /// Set the `protocolVersion` field (required)
+    pub fn protocol_version(
+        mut self,
+        value: impl Into<PushRegistrationBodyProtocolVersion<S>>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetProtocolVersion<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::Provider: push_registration_body_state::IsUnset,
+{
+    /// Set the `provider` field (required)
+    pub fn provider(
+        mut self,
+        value: impl Into<PushRegistrationBodyProvider<S>>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetProvider<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::RegistrationId: push_registration_body_state::IsUnset,
+{
+    /// Set the `registrationId` field (required)
+    pub fn registration_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetRegistrationId<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::SignatureDomain: push_registration_body_state::IsUnset,
+{
+    /// Set the `signatureDomain` field (required)
+    pub fn signature_domain(
+        mut self,
+        value: impl Into<S>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetSignatureDomain<St>, S> {
+        self._fields.10 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::SignedAt: push_registration_body_state::IsUnset,
+{
+    /// Set the `signedAt` field (required)
+    pub fn signed_at(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetSignedAt<St>, S> {
+        self._fields.11 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::TokenGeneration: push_registration_body_state::IsUnset,
+{
+    /// Set the `tokenGeneration` field (required)
+    pub fn token_generation(
+        mut self,
+        value: impl Into<i64>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetTokenGeneration<St>, S> {
+        self._fields.12 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::TokenSha256: push_registration_body_state::IsUnset,
+{
+    /// Set the `tokenSha256` field (required)
+    pub fn token_sha256(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> PushRegistrationBodyBuilder<push_registration_body_state::SetTokenSha256<St>, S> {
+        self._fields.13 = ::core::option::Option::Some(value.into());
+        PushRegistrationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PushRegistrationBodyBuilder<St, S>
+where
+    St: push_registration_body_state::State,
+    St::ActorDeviceId: push_registration_body_state::IsSet,
+    St::ActorDid: push_registration_body_state::IsSet,
+    St::AppId: push_registration_body_state::IsSet,
+    St::AuthGeneration: push_registration_body_state::IsSet,
+    St::AuthorityDid: push_registration_body_state::IsSet,
+    St::Enabled: push_registration_body_state::IsSet,
+    St::KeyId: push_registration_body_state::IsSet,
+    St::ProtocolVersion: push_registration_body_state::IsSet,
+    St::Provider: push_registration_body_state::IsSet,
+    St::RegistrationId: push_registration_body_state::IsSet,
+    St::SignatureDomain: push_registration_body_state::IsSet,
+    St::SignedAt: push_registration_body_state::IsSet,
+    St::TokenGeneration: push_registration_body_state::IsSet,
+    St::TokenSha256: push_registration_body_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> PushRegistrationBody<S> {
+        PushRegistrationBody {
+            actor_device_id: self._fields.0.unwrap(),
+            actor_did: self._fields.1.unwrap(),
+            app_id: self._fields.2.unwrap(),
+            auth_generation: self._fields.3.unwrap(),
+            authority_did: self._fields.4.unwrap(),
+            enabled: self._fields.5.unwrap(),
+            key_id: self._fields.6.unwrap(),
+            protocol_version: self._fields.7.unwrap(),
+            provider: self._fields.8.unwrap(),
+            registration_id: self._fields.9.unwrap(),
+            signature_domain: self._fields.10.unwrap(),
+            signed_at: self._fields.11.unwrap(),
+            token_generation: self._fields.12.unwrap(),
+            token_sha256: self._fields.13.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> PushRegistrationBody<S> {
+        PushRegistrationBody {
+            actor_device_id: self._fields.0.unwrap(),
+            actor_did: self._fields.1.unwrap(),
+            app_id: self._fields.2.unwrap(),
+            auth_generation: self._fields.3.unwrap(),
+            authority_did: self._fields.4.unwrap(),
+            enabled: self._fields.5.unwrap(),
+            key_id: self._fields.6.unwrap(),
+            protocol_version: self._fields.7.unwrap(),
+            provider: self._fields.8.unwrap(),
+            registration_id: self._fields.9.unwrap(),
+            signature_domain: self._fields.10.unwrap(),
+            signed_at: self._fields.11.unwrap(),
+            token_generation: self._fields.12.unwrap(),
+            token_sha256: self._fields.13.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 fn deserialize_reaction_frame_body_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -107053,6 +108736,201 @@ where
         >,
     ) -> SignedPolicyTransition<S> {
         SignedPolicyTransition {
+            body: self._fields.0.unwrap(),
+            signature: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_signed_push_registration_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod signed_push_registration_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Body;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Body = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `body` field to Set
+    pub struct SetBody<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBody<St> {}
+    impl<St: State> State for SetBody<St> {
+        type Body = Set<members::body>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type Body = St::Body;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `body` field
+        pub struct body(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct SignedPushRegistrationBuilder<
+    St: signed_push_registration_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::PushRegistrationBody<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl SignedPushRegistration<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SignedPushRegistrationBuilder<
+        signed_push_registration_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        SignedPushRegistrationBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> SignedPushRegistration<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SignedPushRegistrationBuilder<signed_push_registration_state::Empty, S> {
+        SignedPushRegistrationBuilder::builder()
+    }
+}
+
+impl
+    SignedPushRegistrationBuilder<
+        signed_push_registration_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        SignedPushRegistrationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    SignedPushRegistrationBuilder<signed_push_registration_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SignedPushRegistrationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SignedPushRegistrationBuilder<St, S>
+where
+    St: signed_push_registration_state::State,
+    St::Body: signed_push_registration_state::IsUnset,
+{
+    /// Set the `body` field (required)
+    pub fn body(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::PushRegistrationBody<S>>,
+    ) -> SignedPushRegistrationBuilder<signed_push_registration_state::SetBody<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        SignedPushRegistrationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SignedPushRegistrationBuilder<St, S>
+where
+    St: signed_push_registration_state::State,
+    St::Signature: signed_push_registration_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> SignedPushRegistrationBuilder<signed_push_registration_state::SetSignature<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        SignedPushRegistrationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SignedPushRegistrationBuilder<St, S>
+where
+    St: signed_push_registration_state::State,
+    St::Body: signed_push_registration_state::IsSet,
+    St::Signature: signed_push_registration_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> SignedPushRegistration<S> {
+        SignedPushRegistration {
+            body: self._fields.0.unwrap(),
+            signature: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> SignedPushRegistration<S> {
+        SignedPushRegistration {
             body: self._fields.0.unwrap(),
             signature: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
