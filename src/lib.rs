@@ -170,3 +170,6 @@ mod bytes_test {
         );
     }
 }
+
+#[cfg(feature = "namespace-bluecatbird")]
+pub mod push_registration;
