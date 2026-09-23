@@ -171,9 +171,13 @@ pub struct AddressableDevice<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub conversation_id: jacquard_common::deps::bytes::Bytes,
     pub generation: i64,
-    pub message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub message_id: jacquard_common::deps::bytes::Bytes,
     pub prior: crate::generated::blue_catbird::chat::MlsAadPriorContext<S>,
     pub protocol_version: crate::generated::blue_catbird::chat::ProtocolVersion<S>,
     #[serde(
@@ -201,7 +205,8 @@ pub struct ApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultS
 )]
 pub struct ApplicationAttachmentBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub purpose: S,
     #[serde(
@@ -285,7 +290,9 @@ pub struct ApplicationEntry<S: jacquard_common::BosStr = jacquard_common::Defaul
 pub struct ApplicationFrame<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub body: crate::generated::blue_catbird::chat::ApplicationFrameBody<S>,
     pub context: crate::generated::blue_catbird::chat::ApplicationFrameContext<S>,
-    pub message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub message_id: jacquard_common::deps::bytes::Bytes,
     pub protocol: S,
     pub version: i64,
     #[serde(
@@ -332,7 +339,9 @@ pub enum ApplicationFrameBody<S: jacquard_common::BosStr = jacquard_common::Defa
 pub struct ApplicationFrameContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub confirmation_tag: jacquard_common::deps::bytes::Bytes,
-    pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub conversation_id: jacquard_common::deps::bytes::Bytes,
     pub epoch: i64,
     pub generation: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -453,10 +462,14 @@ pub type BareDid<S = jacquard_common::DefaultStr> = jacquard_common::types::stri
 )]
 pub struct BlobAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub attachment_index: i64,
-    pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub blob_id: jacquard_common::deps::bytes::Bytes,
     pub context: crate::generated::blue_catbird::chat::ApplicationFrameContext<S>,
     pub media_type: S,
-    pub message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub message_id: jacquard_common::deps::bytes::Bytes,
     pub plaintext_size: i64,
     pub protocol: S,
     pub purpose: S,
@@ -518,7 +531,8 @@ pub struct BlobUploadPreparationBody<S: jacquard_common::BosStr = jacquard_commo
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub auth_generation: i64,
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -552,7 +566,8 @@ pub struct BlobUploadPreparationBody<S: jacquard_common::BosStr = jacquard_commo
 )]
 pub struct BlobUploadView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub purpose: crate::generated::blue_catbird::chat::BlobPurpose<S>,
@@ -637,11 +652,15 @@ pub type CipherSuite<S = jacquard_common::DefaultStr> = S;
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CommitAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub conversation_id: jacquard_common::deps::bytes::Bytes,
     pub generation: i64,
     pub prior: crate::generated::blue_catbird::chat::MlsAadPriorContext<S>,
     pub protocol_version: crate::generated::blue_catbird::chat::ProtocolVersion<S>,
-    pub transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub transition_id: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
@@ -1475,9 +1494,11 @@ pub struct DirectRequestAcceptanceBody<S: jacquard_common::BosStr = jacquard_com
 pub struct DirectRequestAcceptanceCommitReceiptBody<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    pub acceptance_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub acceptance_digest: jacquard_common::deps::bytes::Bytes,
     pub authority_did: S,
-    pub entry_hash: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub entry_hash: jacquard_common::deps::bytes::Bytes,
     pub key_id: crate::generated::blue_catbird::chat::DirectRequestReceiptKeyId<S>,
     pub next: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub prior: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
@@ -1559,7 +1580,8 @@ pub struct DirectRequestAcceptanceProof<S: jacquard_common::BosStr = jacquard_co
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectRequestApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub context_hash: jacquard_common::deps::bytes::Bytes,
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub protocol_version: S,
@@ -1622,7 +1644,8 @@ pub struct DirectRequestCancellationBody<S: jacquard_common::BosStr = jacquard_c
     pub auth_generation: i64,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub protocol_version: S,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -1654,9 +1677,11 @@ pub struct DirectRequestCancelledReceipt<S: jacquard_common::BosStr = jacquard_c
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub request_digest: jacquard_common::deps::bytes::Bytes,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: S,
     #[serde(
@@ -1681,7 +1706,8 @@ pub struct DirectRequestCancelledReceipt<S: jacquard_common::BosStr = jacquard_c
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectRequestCommitAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub context_hash: jacquard_common::deps::bytes::Bytes,
     pub protocol_version: S,
     #[serde(
         flatten,
@@ -1711,7 +1737,8 @@ pub struct DirectRequestContext<S: jacquard_common::BosStr = jacquard_common::De
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
-    pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_digest: jacquard_common::deps::bytes::Bytes,
     pub protocol_version: S,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -1826,9 +1853,11 @@ pub struct DirectRequestExistingDirectReceipt<
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub request_digest: jacquard_common::deps::bytes::Bytes,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: DirectRequestExistingDirectReceiptRequestKind<S>,
     pub requires_acceptance: bool,
@@ -1952,9 +1981,11 @@ pub struct DirectRequestExpiredReceipt<S: jacquard_common::BosStr = jacquard_com
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub request_digest: jacquard_common::deps::bytes::Bytes,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: S,
     #[serde(
@@ -1987,8 +2018,10 @@ pub struct DirectRequestGrantBody<S: jacquard_common::BosStr = jacquard_common::
     pub grant_revision: i64,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
-    pub key_package_ref: crate::generated::blue_catbird::chat::ArtifactHash,
-    pub key_package_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub key_package_ref: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub key_package_sha256: jacquard_common::deps::bytes::Bytes,
     pub profile: crate::generated::blue_catbird::chat::DirectRequestProfile<S>,
     pub protocol_version: S,
     pub purpose: S,
@@ -2051,7 +2084,8 @@ pub struct DirectRequestIntroduction<S: jacquard_common::BosStr = jacquard_commo
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectRequestInventoryScope<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub scope_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub scope_digest: jacquard_common::deps::bytes::Bytes,
     pub supported_protocol_versions: Vec<crate::generated::blue_catbird::chat::ProtocolVersion<S>>,
     #[serde(
         flatten,
@@ -2250,7 +2284,8 @@ pub struct DirectRequestPreparationSnapshot<
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub minimum_import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub prepared_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub profile: crate::generated::blue_catbird::chat::DirectRequestProfile<S>,
     pub protocol_version: S,
@@ -2290,8 +2325,10 @@ pub struct DirectRequestPreparationView<S: jacquard_common::BosStr = jacquard_co
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub minimum_import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
-    pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_digest: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_signature: jacquard_common::deps::bytes::Bytes,
     pub prepared_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
@@ -2352,7 +2389,8 @@ pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_co
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub artifacts: crate::generated::blue_catbird::chat::DirectRequestBootstrapArtifacts<S>,
     pub auth_generation: i64,
-    pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub context_hash: jacquard_common::deps::bytes::Bytes,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -2361,8 +2399,10 @@ pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_co
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub next: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
-    pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_digest: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub profile: crate::generated::blue_catbird::chat::DirectRequestProfile<S>,
     pub protocol_version: S,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
@@ -2398,9 +2438,11 @@ pub struct DirectRequestPublishedReceipt<S: jacquard_common::BosStr = jacquard_c
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub request_digest: jacquard_common::deps::bytes::Bytes,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: S,
     #[serde(
@@ -2460,9 +2502,11 @@ pub struct DirectRequestRejectedReceipt<S: jacquard_common::BosStr = jacquard_co
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
     pub code: crate::generated::blue_catbird::chat::DirectRequestErrorCode<S>,
-    pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_request_digest: jacquard_common::deps::bytes::Bytes,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub request_digest: jacquard_common::deps::bytes::Bytes,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: DirectRequestRejectedReceiptRequestKind<S>,
     #[serde(
@@ -2607,11 +2651,13 @@ pub struct DirectRequestState<S: jacquard_common::BosStr = jacquard_common::Defa
     pub acceptance_proof:
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestAcceptanceProof<S>>,
     pub consent: DirectRequestStateConsent<S>,
-    pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub context_hash: jacquard_common::deps::bytes::Bytes,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_digest: jacquard_common::deps::bytes::Bytes,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub sender_did: crate::generated::blue_catbird::chat::BareDid<S>,
@@ -2788,7 +2834,8 @@ pub struct DirectRequestWelcomeBundle<S: jacquard_common::BosStr = jacquard_comm
     pub deliveries: Vec<crate::generated::blue_catbird::chat::DirectRequestWelcomeDelivery<S>>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub opaque_welcome: jacquard_common::deps::bytes::Bytes,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
@@ -2837,13 +2884,16 @@ pub struct DirectRequestWelcomeDelivery<S: jacquard_common::BosStr = jacquard_co
 )]
 pub struct DirectRequestWelcomeProvenance<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 {
-    pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub context_hash: jacquard_common::deps::bytes::Bytes,
     pub grant_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub grant_revision: i64,
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    pub key_package_ref: crate::generated::blue_catbird::chat::ArtifactHash,
-    pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub key_package_ref: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub preparation_digest: jacquard_common::deps::bytes::Bytes,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     #[serde(
         flatten,
@@ -2874,7 +2924,8 @@ pub struct DirectRequestWelcomeView<S: jacquard_common::BosStr = jacquard_common
     pub provenance: crate::generated::blue_catbird::chat::DirectRequestWelcomeProvenance<S>,
     pub recipient_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     pub status: crate::generated::blue_catbird::chat::WelcomeStatus<S>,
     pub transition_seq: i64,
     pub welcome_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -2976,8 +3027,11 @@ pub struct EditFrameVariant<S: jacquard_common::BosStr = jacquard_common::Defaul
 )]
 pub struct EncryptedAudioEmbed<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub algorithm: S,
-    pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub blob_id: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub duration_millis: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -3130,10 +3184,13 @@ pub struct EncryptedImageEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub algorithm: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub alt_text: core::option::Option<S>,
-    pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub blob_id: jacquard_common::deps::bytes::Bytes,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub blurhash: core::option::Option<S>,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub height: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -3424,7 +3481,8 @@ pub struct GroupInfoArtifact<S: jacquard_common::BosStr = jacquard_common::Defau
     pub bytes: jacquard_common::deps::bytes::Bytes,
     pub content_type: S,
     pub framing: S,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
@@ -3514,7 +3572,8 @@ pub struct KeyPackageArtifact<S: jacquard_common::BosStr = jacquard_common::Defa
     pub framing: S,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key_package_ref: jacquard_common::deps::bytes::Bytes,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
@@ -4216,7 +4275,9 @@ pub struct MessageFrameVariant<S: jacquard_common::BosStr = jacquard_common::Def
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MessageTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub target_message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub target_message_id: jacquard_common::deps::bytes::Bytes,
     pub target_seq: i64,
     #[serde(
         flatten,
@@ -4248,7 +4309,9 @@ pub struct MetadataAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub ciphertext_size: i64,
     pub coordinate: crate::generated::blue_catbird::chat::MetadataCryptoContext<S>,
     pub metadata_version: i64,
-    pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub origin_transition_id: jacquard_common::deps::bytes::Bytes,
     pub protocol: S,
     pub version: i64,
     #[serde(
@@ -4273,8 +4336,11 @@ pub struct MetadataAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataAadAvatarBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub blob_id: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub purpose: S,
     #[serde(
@@ -4336,7 +4402,8 @@ pub struct MetadataAuthorProof<S: jacquard_common::BosStr = jacquard_common::Def
 )]
 pub struct MetadataAvatarBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub purpose: S,
     #[serde(
@@ -4363,10 +4430,16 @@ pub struct MetadataAvatarBinding<S: jacquard_common::BosStr = jacquard_common::D
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataAvatarBlobAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
-    pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub blob_id: jacquard_common::deps::bytes::Bytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub conversation_id: jacquard_common::deps::bytes::Bytes,
     pub media_type: S,
-    pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub origin_transition_id: jacquard_common::deps::bytes::Bytes,
     pub original_metadata_version: i64,
     pub plaintext_size: i64,
     pub protocol: S,
@@ -4398,10 +4471,13 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub algorithm: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub alt_text: core::option::Option<S>,
-    pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub blob_id: jacquard_common::deps::bytes::Bytes,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub blurhash: core::option::Option<S>,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub height: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -4409,7 +4485,9 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub mime_type: MetadataAvatarEmbedMimeType<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub nonce: jacquard_common::deps::bytes::Bytes,
-    pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub origin_transition_id: jacquard_common::deps::bytes::Bytes,
     pub original_metadata_version: i64,
     pub plaintext_size: i64,
     pub purpose: S,
@@ -4525,7 +4603,9 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataContentProjection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub author_device_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub author_device_id: jacquard_common::deps::bytes::Bytes,
     pub author_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub author_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -4533,7 +4613,9 @@ pub struct MetadataContentProjection<S: jacquard_common::BosStr = jacquard_commo
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
     pub metadata_version: i64,
-    pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub origin_transition_id: jacquard_common::deps::bytes::Bytes,
     pub protocol: S,
     pub title: S,
     pub version: i64,
@@ -4561,7 +4643,9 @@ pub struct MetadataContentProjection<S: jacquard_common::BosStr = jacquard_commo
 pub struct MetadataCryptoContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub confirmation_tag: jacquard_common::deps::bytes::Bytes,
-    pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub conversation_id: jacquard_common::deps::bytes::Bytes,
     pub epoch: i64,
     pub generation: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -4619,10 +4703,13 @@ pub struct MetadataEntry<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataExporterContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub conversation_id: jacquard_common::deps::bytes::Bytes,
     pub epoch: i64,
     pub generation: i64,
-    pub group_context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub group_context_hash: jacquard_common::deps::bytes::Bytes,
     pub metadata_version: i64,
     pub protocol: S,
     pub version: i64,
@@ -4683,7 +4770,8 @@ pub struct MetadataSnapshot<S: jacquard_common::BosStr = jacquard_common::Defaul
         core::option::Option<crate::generated::blue_catbird::chat::MetadataAvatarBinding<S>>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext: jacquard_common::deps::bytes::Bytes,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub coordinate: crate::generated::blue_catbird::chat::MetadataCryptoContext<S>,
     pub metadata_version: i64,
@@ -4751,7 +4839,9 @@ pub struct MetadataTransitionBody<S: jacquard_common::BosStr = jacquard_common::
 pub struct MlsAadPriorContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub confirmation_tag: jacquard_common::deps::bytes::Bytes,
-    pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub conversation_id: jacquard_common::deps::bytes::Bytes,
     pub epoch: i64,
     pub generation: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -5023,7 +5113,8 @@ pub struct PrivateApplicationMessage<S: jacquard_common::BosStr = jacquard_commo
     pub bytes: jacquard_common::deps::bytes::Bytes,
     pub content_type: S,
     pub framing: S,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
@@ -5085,7 +5176,8 @@ pub struct PublicCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub bytes: jacquard_common::deps::bytes::Bytes,
     pub content_type: S,
     pub framing: S,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     #[serde(
         flatten,
         default,
@@ -5468,7 +5560,9 @@ pub struct ReactionFrameVariant<S: jacquard_common::BosStr = jacquard_common::De
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReadStateFrameBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub through_message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub through_message_id: jacquard_common::deps::bytes::Bytes,
     pub through_seq: i64,
     #[serde(
         flatten,
@@ -7093,7 +7187,8 @@ pub struct TypingEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub struct UploadedBlobBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
-    pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext_sha256: jacquard_common::deps::bytes::Bytes,
     pub ciphertext_size: i64,
     pub purpose: crate::generated::blue_catbird::chat::BlobPurpose<S>,
     #[serde(
@@ -7204,7 +7299,8 @@ pub struct WelcomeBundle<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub framing: S,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub opaque_welcome: jacquard_common::deps::bytes::Bytes,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     pub welcome_id: crate::generated::blue_catbird::chat::OperationId<S>,
     #[serde(
         flatten,
@@ -7324,7 +7420,8 @@ pub struct WelcomeView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub provenance: crate::generated::blue_catbird::chat::RecoveryWelcomeProvenance<S>,
     pub recipient_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
-    pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sha256: jacquard_common::deps::bytes::Bytes,
     pub status: crate::generated::blue_catbird::chat::WelcomeStatus<S>,
     pub transition_seq: i64,
     pub welcome_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -24382,10 +24479,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -24403,10 +24499,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "messageId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -24473,10 +24568,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -24647,10 +24741,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "messageId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -24730,11 +24823,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "conversationId",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#identifierBytes",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(16usize),
+                                        min_length: Some(16usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -25096,10 +25188,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "blobId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -25128,10 +25219,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "messageId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -25372,11 +25462,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "ciphertextSha256",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -25533,11 +25622,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "ciphertextSha256",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -25760,10 +25848,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -25803,10 +25890,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "transitionId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -28304,11 +28390,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "acceptanceDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -28325,11 +28410,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("entryHash"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -28563,11 +28647,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contextHash",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -28795,11 +28878,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationRequestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -28934,11 +29016,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationRequestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -28960,11 +29041,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "requestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29013,11 +29093,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contextHash",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29137,11 +29216,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29488,11 +29566,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationRequestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29514,11 +29591,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "requestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29631,11 +29707,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationRequestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29657,11 +29732,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "requestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29819,11 +29893,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "keyPackageRef",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29832,11 +29905,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "keyPackageSha256",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -29960,11 +30032,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "scopeDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -30616,10 +30687,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "preparationRequestDigest",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -30817,10 +30887,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "preparationDigest",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -30828,10 +30897,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "preparationRequestDigest",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -31060,11 +31128,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contextHash",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31156,11 +31223,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31169,11 +31235,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationRequestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31365,11 +31430,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationRequestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31391,11 +31455,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "requestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31601,11 +31664,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationRequestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31627,11 +31689,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "requestDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31799,11 +31860,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contextHash",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31838,11 +31898,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -31983,10 +32042,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "sha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -32076,11 +32134,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contextHash",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -32125,11 +32182,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "keyPackageRef",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -32138,11 +32194,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preparationDigest",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -32262,11 +32317,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("sha256"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -32462,10 +32516,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "blobId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -32473,10 +32526,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -32654,10 +32706,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "blobId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -32675,10 +32726,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -33066,10 +33116,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "sha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -33322,10 +33371,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "sha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -35507,10 +35555,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "targetMessageId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -35596,10 +35643,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "originTransitionId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -35643,11 +35689,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("blobId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#identifierBytes",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(16usize),
+                                        min_length: Some(16usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -35656,11 +35701,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "ciphertextSha256",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -35842,10 +35886,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -35901,10 +35944,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "blobId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -35912,10 +35954,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -35933,10 +35974,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "originTransitionId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -36033,10 +36073,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "blobId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -36054,10 +36093,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -36113,10 +36151,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "originTransitionId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -36190,11 +36227,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "authorDeviceId",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#identifierBytes",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(16usize),
+                                        min_length: Some(16usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -36258,11 +36294,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "originTransitionId",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#identifierBytes",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(16usize),
+                                        min_length: Some(16usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -36336,11 +36371,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "conversationId",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#identifierBytes",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(16usize),
+                                        min_length: Some(16usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -36505,10 +36539,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -36536,10 +36569,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupContextHash",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -36680,10 +36712,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -36927,10 +36958,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -37740,11 +37770,10 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("sha256"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#artifactHash",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -37833,10 +37862,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "sha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -38161,10 +38189,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "throughMessageId",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#identifierBytes",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16usize),
+                                min_length: Some(16usize),
                                 ..Default::default()
                             }),
                         );
@@ -41399,10 +41426,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -41713,10 +41739,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "sha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -42101,10 +42126,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "sha256",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#artifactHash",
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -43358,9 +43382,9 @@ pub struct ApplicationAadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::MlsAadPriorContext<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ProtocolVersion<S>>,
     ),
@@ -43412,7 +43436,7 @@ where
     /// Set the `conversationId` field (required)
     pub fn conversation_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> ApplicationAadBuilder<application_aad_state::SetConversationId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ApplicationAadBuilder {
@@ -43450,7 +43474,7 @@ where
     /// Set the `messageId` field (required)
     pub fn message_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> ApplicationAadBuilder<application_aad_state::SetMessageId<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         ApplicationAadBuilder {
@@ -43644,7 +43668,7 @@ pub struct ApplicationAttachmentBindingBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
     ),
@@ -43726,7 +43750,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> ApplicationAttachmentBindingBuilder<
         application_attachment_binding_state::SetCiphertextSha256<St>,
         S,
@@ -44246,7 +44270,7 @@ pub struct ApplicationFrameBuilder<
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::ApplicationFrameBody<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ApplicationFrameContext<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<i64>,
     ),
@@ -44336,7 +44360,7 @@ where
     /// Set the `messageId` field (required)
     pub fn message_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> ApplicationFrameBuilder<application_frame_state::SetMessageId<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         ApplicationFrameBuilder {
@@ -44614,7 +44638,7 @@ pub struct ApplicationFrameContextBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -44699,7 +44723,7 @@ where
     /// Set the `conversationId` field (required)
     pub fn conversation_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> ApplicationFrameContextBuilder<application_frame_context_state::SetConversationId<St>, S>
     {
         self._fields.1 = ::core::option::Option::Some(value.into());
@@ -46010,10 +46034,10 @@ pub struct BlobAadBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::ApplicationFrameContext<S>>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<S>,
@@ -46084,7 +46108,7 @@ where
     /// Set the `blobId` field (required)
     pub fn blob_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> BlobAadBuilder<blob_aad_state::SetBlobId<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         BlobAadBuilder {
@@ -46141,7 +46165,7 @@ where
     /// Set the `messageId` field (required)
     pub fn message_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> BlobAadBuilder<blob_aad_state::SetMessageId<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         BlobAadBuilder {
@@ -47112,7 +47136,7 @@ pub struct BlobUploadPreparationBodyBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
@@ -47270,7 +47294,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> BlobUploadPreparationBodyBuilder<
         blob_upload_preparation_body_state::SetCiphertextSha256<St>,
         S,
@@ -47703,7 +47727,7 @@ pub struct BlobUploadViewBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::BlobPurpose<S>>,
@@ -47776,7 +47800,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> BlobUploadViewBuilder<blob_upload_view_state::SetCiphertextSha256<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         BlobUploadViewBuilder {
@@ -48523,11 +48547,11 @@ pub struct CommitAadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::MlsAadPriorContext<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ProtocolVersion<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -48576,7 +48600,7 @@ where
     /// Set the `conversationId` field (required)
     pub fn conversation_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> CommitAadBuilder<commit_aad_state::SetConversationId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         CommitAadBuilder {
@@ -48652,7 +48676,7 @@ where
     /// Set the `transitionId` field (required)
     pub fn transition_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> CommitAadBuilder<commit_aad_state::SetTransitionId<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         CommitAadBuilder {
@@ -58640,9 +58664,9 @@ pub struct DirectRequestAcceptanceCommitReceiptBodyBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestReceiptKeyId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
@@ -58714,7 +58738,7 @@ where
     /// Set the `acceptanceDigest` field (required)
     pub fn acceptance_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestAcceptanceCommitReceiptBodyBuilder<
         direct_request_acceptance_commit_receipt_body_state::SetAcceptanceDigest<St>,
         S,
@@ -58758,7 +58782,7 @@ where
     /// Set the `entryHash` field (required)
     pub fn entry_hash(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestAcceptanceCommitReceiptBodyBuilder<
         direct_request_acceptance_commit_receipt_body_state::SetEntryHash<St>,
         S,
@@ -59613,7 +59637,7 @@ pub struct DirectRequestApplicationAadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<S>,
@@ -59676,7 +59700,7 @@ where
     /// Set the `contextHash` field (required)
     pub fn context_hash(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestApplicationAadBuilder<
         direct_request_application_aad_state::SetContextHash<St>,
         S,
@@ -60443,7 +60467,7 @@ pub struct DirectRequestCancellationBodyBuilder<
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
@@ -60621,7 +60645,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestCancellationBodyBuilder<
         direct_request_cancellation_body_state::SetPreparationRequestDigest<St>,
         S,
@@ -61021,9 +61045,9 @@ pub struct DirectRequestCancelledReceiptBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<S>,
     ),
@@ -61174,7 +61198,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestCancelledReceiptBuilder<
         direct_request_cancelled_receipt_state::SetPreparationRequestDigest<St>,
         S,
@@ -61218,7 +61242,7 @@ where
     /// Set the `requestDigest` field (required)
     pub fn request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestCancelledReceiptBuilder<
         direct_request_cancelled_receipt_state::SetRequestDigest<St>,
         S,
@@ -61402,7 +61426,7 @@ pub struct DirectRequestCommitAadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -61462,7 +61486,7 @@ where
     /// Set the `contextHash` field (required)
     pub fn context_hash(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestCommitAadBuilder<direct_request_commit_aad_state::SetContextHash<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         DirectRequestCommitAadBuilder {
@@ -61772,7 +61796,7 @@ pub struct DirectRequestContextBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestOrigin<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
@@ -61942,7 +61966,7 @@ where
     /// Set the `preparationDigest` field (required)
     pub fn preparation_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestContextBuilder<direct_request_context_state::SetPreparationDigest<St>, S>
     {
         self._fields.6 = ::core::option::Option::Some(value.into());
@@ -63145,9 +63169,9 @@ pub struct DirectRequestExistingDirectReceiptBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<DirectRequestExistingDirectReceiptRequestKind<S>>,
         core::option::Option<bool>,
@@ -63329,7 +63353,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestExistingDirectReceiptBuilder<
         direct_request_existing_direct_receipt_state::SetPreparationRequestDigest<St>,
         S,
@@ -63373,7 +63397,7 @@ where
     /// Set the `requestDigest` field (required)
     pub fn request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestExistingDirectReceiptBuilder<
         direct_request_existing_direct_receipt_state::SetRequestDigest<St>,
         S,
@@ -63729,9 +63753,9 @@ pub struct DirectRequestExpiredReceiptBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<S>,
     ),
@@ -63879,7 +63903,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestExpiredReceiptBuilder<
         direct_request_expired_receipt_state::SetPreparationRequestDigest<St>,
         S,
@@ -63923,7 +63947,7 @@ where
     /// Set the `requestDigest` field (required)
     pub fn request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestExpiredReceiptBuilder<
         direct_request_expired_receipt_state::SetRequestDigest<St>,
         S,
@@ -64451,8 +64475,8 @@ pub struct DirectRequestGrantBodyBuilder<
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestProfile<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
@@ -64678,7 +64702,7 @@ where
     /// Set the `keyPackageRef` field (required)
     pub fn key_package_ref(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestGrantBodyBuilder<direct_request_grant_body_state::SetKeyPackageRef<St>, S>
     {
         self._fields.8 = ::core::option::Option::Some(value.into());
@@ -64698,7 +64722,7 @@ where
     /// Set the `keyPackageSha256` field (required)
     pub fn key_package_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestGrantBodyBuilder<direct_request_grant_body_state::SetKeyPackageSha256<St>, S>
     {
         self._fields.9 = ::core::option::Option::Some(value.into());
@@ -64975,7 +64999,7 @@ pub struct DirectRequestInventoryScopeBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<Vec<crate::generated::blue_catbird::chat::ProtocolVersion<S>>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -65036,7 +65060,7 @@ where
     /// Set the `scopeDigest` field (required)
     pub fn scope_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestInventoryScopeBuilder<
         direct_request_inventory_scope_state::SetScopeDigest<St>,
         S,
@@ -67522,7 +67546,7 @@ pub struct DirectRequestPreparationSnapshotBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestOrigin<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestProfile<S>>,
         core::option::Option<S>,
@@ -67752,7 +67776,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPreparationSnapshotBuilder<
         direct_request_preparation_snapshot_state::SetPreparationRequestDigest<St>,
         S,
@@ -68491,8 +68515,8 @@ pub struct DirectRequestPreparationViewBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestOrigin<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestProfile<S>>,
@@ -68718,7 +68742,7 @@ where
     /// Set the `preparationDigest` field (required)
     pub fn preparation_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPreparationViewBuilder<
         direct_request_preparation_view_state::SetPreparationDigest<St>,
         S,
@@ -68740,7 +68764,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPreparationViewBuilder<
         direct_request_preparation_view_state::SetPreparationRequestDigest<St>,
         S,
@@ -69806,7 +69830,7 @@ pub struct DirectRequestPublicationBodyBuilder<
             crate::generated::blue_catbird::chat::DirectRequestBootstrapArtifacts<S>,
         >,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
@@ -69814,8 +69838,8 @@ pub struct DirectRequestPublicationBodyBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestOrigin<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestProfile<S>>,
         core::option::Option<S>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
@@ -69975,7 +69999,7 @@ where
     /// Set the `contextHash` field (required)
     pub fn context_hash(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPublicationBodyBuilder<
         direct_request_publication_body_state::SetContextHash<St>,
         S,
@@ -70145,7 +70169,7 @@ where
     /// Set the `preparationDigest` field (required)
     pub fn preparation_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPublicationBodyBuilder<
         direct_request_publication_body_state::SetPreparationDigest<St>,
         S,
@@ -70167,7 +70191,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPublicationBodyBuilder<
         direct_request_publication_body_state::SetPreparationRequestDigest<St>,
         S,
@@ -70707,9 +70731,9 @@ pub struct DirectRequestPublishedReceiptBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<S>,
     ),
@@ -70930,7 +70954,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPublishedReceiptBuilder<
         direct_request_published_receipt_state::SetPreparationRequestDigest<St>,
         S,
@@ -70974,7 +70998,7 @@ where
     /// Set the `requestDigest` field (required)
     pub fn request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestPublishedReceiptBuilder<
         direct_request_published_receipt_state::SetRequestDigest<St>,
         S,
@@ -71656,9 +71680,9 @@ pub struct DirectRequestRejectedReceiptBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestErrorCode<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<DirectRequestRejectedReceiptRequestKind<S>>,
     ),
@@ -71828,7 +71852,7 @@ where
     /// Set the `preparationRequestDigest` field (required)
     pub fn preparation_request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestRejectedReceiptBuilder<
         direct_request_rejected_receipt_state::SetPreparationRequestDigest<St>,
         S,
@@ -71872,7 +71896,7 @@ where
     /// Set the `requestDigest` field (required)
     pub fn request_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestRejectedReceiptBuilder<
         direct_request_rejected_receipt_state::SetRequestDigest<St>,
         S,
@@ -72543,10 +72567,10 @@ pub struct DirectRequestStateBuilder<
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestAcceptanceProof<S>>,
         core::option::Option<DirectRequestStateConsent<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
@@ -72640,7 +72664,7 @@ where
     /// Set the `contextHash` field (required)
     pub fn context_hash(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestStateBuilder<direct_request_state_state::SetContextHash<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         DirectRequestStateBuilder {
@@ -72697,7 +72721,7 @@ where
     /// Set the `preparationDigest` field (required)
     pub fn preparation_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestStateBuilder<direct_request_state_state::SetPreparationDigest<St>, S> {
         self._fields.5 = ::core::option::Option::Some(value.into());
         DirectRequestStateBuilder {
@@ -73068,7 +73092,7 @@ pub struct DirectRequestWelcomeBundleBuilder<
             Vec<crate::generated::blue_catbird::chat::DirectRequestWelcomeDelivery<S>>,
         >,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -73170,7 +73194,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestWelcomeBundleBuilder<direct_request_welcome_bundle_state::SetSha256<St>, S>
     {
         self._fields.2 = ::core::option::Option::Some(value.into());
@@ -73624,12 +73648,12 @@ pub struct DirectRequestWelcomeProvenanceBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -73691,7 +73715,7 @@ where
     /// Set the `contextHash` field (required)
     pub fn context_hash(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestWelcomeProvenanceBuilder<
         direct_request_welcome_provenance_state::SetContextHash<St>,
         S,
@@ -73779,7 +73803,7 @@ where
     /// Set the `keyPackageRef` field (required)
     pub fn key_package_ref(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestWelcomeProvenanceBuilder<
         direct_request_welcome_provenance_state::SetKeyPackageRef<St>,
         S,
@@ -73801,7 +73825,7 @@ where
     /// Set the `preparationDigest` field (required)
     pub fn preparation_digest(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestWelcomeProvenanceBuilder<
         direct_request_welcome_provenance_state::SetPreparationDigest<St>,
         S,
@@ -74133,7 +74157,7 @@ pub struct DirectRequestWelcomeViewBuilder<
         >,
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::WelcomeStatus<S>>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
@@ -74318,7 +74342,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DirectRequestWelcomeViewBuilder<direct_request_welcome_view_state::SetSha256<St>, S> {
         self._fields.6 = ::core::option::Option::Some(value.into());
         DirectRequestWelcomeViewBuilder {
@@ -75248,8 +75272,8 @@ pub struct EncryptedAudioEmbedBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -75332,7 +75356,7 @@ where
     /// Set the `blobId` field (required)
     pub fn blob_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> EncryptedAudioEmbedBuilder<encrypted_audio_embed_state::SetBlobId<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         EncryptedAudioEmbedBuilder {
@@ -75351,7 +75375,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> EncryptedAudioEmbedBuilder<encrypted_audio_embed_state::SetCiphertextSha256<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EncryptedAudioEmbedBuilder {
@@ -76025,9 +76049,9 @@ pub struct EncryptedImageEmbedBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -76124,7 +76148,7 @@ where
     /// Set the `blobId` field (required)
     pub fn blob_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> EncryptedImageEmbedBuilder<encrypted_image_embed_state::SetBlobId<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         EncryptedImageEmbedBuilder {
@@ -76158,7 +76182,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> EncryptedImageEmbedBuilder<encrypted_image_embed_state::SetCiphertextSha256<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         EncryptedImageEmbedBuilder {
@@ -77528,7 +77552,7 @@ pub struct GroupInfoArtifactBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -77636,7 +77660,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> GroupInfoArtifactBuilder<group_info_artifact_state::SetSha256<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         GroupInfoArtifactBuilder {
@@ -78403,7 +78427,7 @@ pub struct KeyPackageArtifactBuilder<
         core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -78530,7 +78554,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> KeyPackageArtifactBuilder<key_package_artifact_state::SetSha256<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         KeyPackageArtifactBuilder {
@@ -86897,7 +86921,7 @@ pub struct MessageTargetBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -86947,7 +86971,7 @@ where
     /// Set the `targetMessageId` field (required)
     pub fn target_message_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MessageTargetBuilder<message_target_state::SetTargetMessageId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         MessageTargetBuilder {
@@ -87154,7 +87178,7 @@ pub struct MetadataAadBuilder<
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::MetadataCryptoContext<S>>,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<i64>,
     ),
@@ -87281,7 +87305,7 @@ where
     /// Set the `originTransitionId` field (required)
     pub fn origin_transition_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAadBuilder<metadata_aad_state::SetOriginTransitionId<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         MetadataAadBuilder {
@@ -87479,8 +87503,8 @@ pub struct MetadataAadAvatarBindingBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
     ),
@@ -87542,7 +87566,7 @@ where
     /// Set the `blobId` field (required)
     pub fn blob_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAadAvatarBindingBuilder<metadata_aad_avatar_binding_state::SetBlobId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         MetadataAadAvatarBindingBuilder {
@@ -87561,7 +87585,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAadAvatarBindingBuilder<
         metadata_aad_avatar_binding_state::SetCiphertextSha256<St>,
         S,
@@ -88246,7 +88270,7 @@ pub struct MetadataAvatarBindingBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
     ),
@@ -88323,7 +88347,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAvatarBindingBuilder<metadata_avatar_binding_state::SetCiphertextSha256<St>, S>
     {
         self._fields.1 = ::core::option::Option::Some(value.into());
@@ -88598,10 +88622,10 @@ pub struct MetadataAvatarBlobAadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<S>,
@@ -88661,7 +88685,7 @@ where
     /// Set the `blobId` field (required)
     pub fn blob_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAvatarBlobAadBuilder<metadata_avatar_blob_aad_state::SetBlobId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         MetadataAvatarBlobAadBuilder {
@@ -88680,7 +88704,7 @@ where
     /// Set the `conversationId` field (required)
     pub fn conversation_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAvatarBlobAadBuilder<metadata_avatar_blob_aad_state::SetConversationId<St>, S>
     {
         self._fields.1 = ::core::option::Option::Some(value.into());
@@ -88719,7 +88743,7 @@ where
     /// Set the `originTransitionId` field (required)
     pub fn origin_transition_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAvatarBlobAadBuilder<metadata_avatar_blob_aad_state::SetOriginTransitionId<St>, S>
     {
         self._fields.3 = ::core::option::Option::Some(value.into());
@@ -89199,15 +89223,15 @@ pub struct MetadataAvatarEmbedBuilder<
     _fields: (
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<MetadataAvatarEmbedMimeType<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<S>,
@@ -89302,7 +89326,7 @@ where
     /// Set the `blobId` field (required)
     pub fn blob_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAvatarEmbedBuilder<metadata_avatar_embed_state::SetBlobId<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         MetadataAvatarEmbedBuilder {
@@ -89336,7 +89360,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAvatarEmbedBuilder<metadata_avatar_embed_state::SetCiphertextSha256<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         MetadataAvatarEmbedBuilder {
@@ -89450,7 +89474,7 @@ where
     /// Set the `originTransitionId` field (required)
     pub fn origin_transition_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataAvatarEmbedBuilder<metadata_avatar_embed_state::SetOriginTransitionId<St>, S> {
         self._fields.10 = ::core::option::Option::Some(value.into());
         MetadataAvatarEmbedBuilder {
@@ -89794,13 +89818,13 @@ pub struct MetadataContentProjectionBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::MetadataAvatarEmbed<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<i64>,
@@ -89863,7 +89887,7 @@ where
     /// Set the `authorDeviceId` field (required)
     pub fn author_device_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataContentProjectionBuilder<metadata_content_projection_state::SetAuthorDeviceId<St>, S>
     {
         self._fields.0 = ::core::option::Option::Some(value.into());
@@ -89981,7 +90005,7 @@ where
     /// Set the `originTransitionId` field (required)
     pub fn origin_transition_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataContentProjectionBuilder<
         metadata_content_projection_state::SetOriginTransitionId<St>,
         S,
@@ -90250,7 +90274,7 @@ pub struct MetadataCryptoContextBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -90330,7 +90354,7 @@ where
     /// Set the `conversationId` field (required)
     pub fn conversation_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataCryptoContextBuilder<metadata_crypto_context_state::SetConversationId<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         MetadataCryptoContextBuilder {
@@ -90927,10 +90951,10 @@ pub struct MetadataExporterContextBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<i64>,
@@ -90992,7 +91016,7 @@ where
     /// Set the `conversationId` field (required)
     pub fn conversation_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataExporterContextBuilder<metadata_exporter_context_state::SetConversationId<St>, S>
     {
         self._fields.0 = ::core::option::Option::Some(value.into());
@@ -91050,7 +91074,7 @@ where
     /// Set the `groupContextHash` field (required)
     pub fn group_context_hash(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataExporterContextBuilder<metadata_exporter_context_state::SetGroupContextHash<St>, S>
     {
         self._fields.3 = ::core::option::Option::Some(value.into());
@@ -91544,7 +91568,7 @@ pub struct MetadataSnapshotBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::MetadataAuthorProof<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::MetadataAvatarBinding<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::MetadataCryptoContext<S>>,
         core::option::Option<i64>,
@@ -91658,7 +91682,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MetadataSnapshotBuilder<metadata_snapshot_state::SetCiphertextSha256<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         MetadataSnapshotBuilder {
@@ -92613,7 +92637,7 @@ pub struct MlsAadPriorContextBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -92689,7 +92713,7 @@ where
     /// Set the `conversationId` field (required)
     pub fn conversation_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> MlsAadPriorContextBuilder<mls_aad_prior_context_state::SetConversationId<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         MlsAadPriorContextBuilder {
@@ -95612,7 +95636,7 @@ pub struct PrivateApplicationMessageBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -95731,7 +95755,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> PrivateApplicationMessageBuilder<private_application_message_state::SetSha256<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         PrivateApplicationMessageBuilder {
@@ -95886,7 +95910,7 @@ pub struct PublicCommitBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -95992,7 +96016,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> PublicCommitBuilder<public_commit_state::SetSha256<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         PublicCommitBuilder {
@@ -97455,7 +97479,7 @@ pub struct ReadStateFrameBodyBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -97507,7 +97531,7 @@ where
     /// Set the `throughMessageId` field (required)
     pub fn through_message_id(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::IdentifierBytes>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> ReadStateFrameBodyBuilder<read_state_frame_body_state::SetThroughMessageId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         ReadStateFrameBodyBuilder {
@@ -111563,7 +111587,7 @@ pub struct UploadedBlobBindingBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::BlobPurpose<S>>,
     ),
@@ -111635,7 +111659,7 @@ where
     /// Set the `ciphertextSha256` field (required)
     pub fn ciphertext_sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> UploadedBlobBindingBuilder<uploaded_blob_binding_state::SetCiphertextSha256<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         UploadedBlobBindingBuilder {
@@ -112776,7 +112800,7 @@ pub struct WelcomeBundleBuilder<
         core::option::Option<Vec<crate::generated::blue_catbird::chat::WelcomeDelivery<S>>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -112902,7 +112926,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> WelcomeBundleBuilder<welcome_bundle_state::SetSha256<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         WelcomeBundleBuilder {
@@ -114270,7 +114294,7 @@ pub struct WelcomeViewBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::RecoveryWelcomeProvenance<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
-        core::option::Option<crate::generated::blue_catbird::chat::ArtifactHash>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::WelcomeStatus<S>>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
@@ -114459,7 +114483,7 @@ where
     /// Set the `sha256` field (required)
     pub fn sha256(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::ArtifactHash>,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> WelcomeViewBuilder<welcome_view_state::SetSha256<St>, S> {
         self._fields.7 = ::core::option::Option::Some(value.into());
         WelcomeViewBuilder {
