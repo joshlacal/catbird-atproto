@@ -141,6 +141,11 @@ pub enum GetDirectRequestOutcomeError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "RecipientAuthorityUnsupported")]
+    RecipientAuthorityUnsupported(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "AccountSessionExpired")]
     AccountSessionExpired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -314,6 +319,13 @@ impl core::fmt::Display for GetDirectRequestOutcomeError {
             }
             Self::RateLimited(msg) => {
                 write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RecipientAuthorityUnsupported(msg) => {
+                write!(f, "RecipientAuthorityUnsupported")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
