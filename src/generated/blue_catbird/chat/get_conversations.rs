@@ -190,6 +190,11 @@ pub enum GetConversationsError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "InventorySessionMismatch")]
+    InventorySessionMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -259,6 +264,13 @@ impl core::fmt::Display for GetConversationsError {
             }
             Self::AccountSessionExpired(msg) => {
                 write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InventorySessionMismatch(msg) => {
+                write!(f, "InventorySessionMismatch")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

@@ -71,6 +71,11 @@ pub enum PrepareBlobUploadError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "ConversationNotAccepted")]
+    ConversationNotAccepted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -162,6 +167,13 @@ impl core::fmt::Display for PrepareBlobUploadError {
             }
             Self::BlobQuotaExceeded(msg) => {
                 write!(f, "BlobQuotaExceeded")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ConversationNotAccepted(msg) => {
+                write!(f, "ConversationNotAccepted")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

@@ -61,6 +61,11 @@ pub struct RequestLeaveOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 )]
 #[serde(tag = "error", content = "message")]
 pub enum RequestLeaveError {
+    #[serde(rename = "ConversationNotAccepted")]
+    ConversationNotAccepted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -163,6 +168,13 @@ pub enum RequestLeaveError {
 impl core::fmt::Display for RequestLeaveError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::ConversationNotAccepted(msg) => {
+                write!(f, "ConversationNotAccepted")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::ConversationNotFound(msg) => {
                 write!(f, "ConversationNotFound")?;
                 if let Some(msg) = msg {
