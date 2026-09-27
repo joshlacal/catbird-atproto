@@ -2486,7 +2486,7 @@ pub struct DirectRequestReceiptBody<S: jacquard_common::BosStr = jacquard_common
     >,
 }
 
-/// Exact did:web:chat.catbird.blue#chat-request-receipt- plus lowercase hex SHA256 of compressed P256 SEC1 public key. Resolve authenticated authority DID document unique method/controller/P256 Multikey. Retain historical verification methods across key rotation.
+/// Exact expected coordinator authority DID plus #chat-request-receipt- and lowercase hex SHA256 of compressed P256 SEC1 public key. Resolve authenticated authority DID document unique method/controller/P256 Multikey. Retain historical verification methods across key rotation.
 pub type DirectRequestReceiptKeyId<S = jacquard_common::DefaultStr> = S;
 
 #[derive(
@@ -11356,10 +11356,10 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 111usize {
+            if <str>::len(value.as_ref()) > 347usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
-                    max: 111usize,
+                    max: 347usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -11367,10 +11367,10 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) < 111usize {
+            if <str>::len(value.as_ref()) < 98usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
-                    min: 111usize,
+                    min: 98usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -13539,12 +13539,12 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.receipt_key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 111usize {
+            if <str>::len(value.as_ref()) > 347usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field(
                         "receipt_key_id",
                     ),
-                    max: 111usize,
+                    max: 347usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -13552,12 +13552,12 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.receipt_key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) < 111usize {
+            if <str>::len(value.as_ref()) < 98usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field(
                         "receipt_key_id",
                     ),
-                    min: 111usize,
+                    min: 98usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -13704,12 +13704,12 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.receipt_key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 111usize {
+            if <str>::len(value.as_ref()) > 347usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field(
                         "receipt_key_id",
                     ),
-                    max: 111usize,
+                    max: 347usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -13717,12 +13717,12 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.receipt_key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) < 111usize {
+            if <str>::len(value.as_ref()) < 98usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field(
                         "receipt_key_id",
                     ),
-                    min: 111usize,
+                    min: 98usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -14252,10 +14252,10 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 111usize {
+            if <str>::len(value.as_ref()) > 347usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
-                    max: 111usize,
+                    max: 347usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -14263,10 +14263,10 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
         {
             let value = &self.key_id;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) < 111usize {
+            if <str>::len(value.as_ref()) < 98usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
-                    min: 111usize,
+                    min: 98usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -31573,11 +31573,11 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Exact did:web:chat.catbird.blue#chat-request-receipt- plus lowercase hex SHA256 of compressed P256 SEC1 public key. Resolve authenticated authority DID document unique method/controller/P256 Multikey. Retain historical verification methods across key rotation.",
+                            "Exact expected coordinator authority DID plus #chat-request-receipt- and lowercase hex SHA256 of compressed P256 SEC1 public key. Resolve authenticated authority DID document unique method/controller/P256 Multikey. Retain historical verification methods across key rotation.",
                         ),
                     ),
-                    min_length: Some(111usize),
-                    max_length: Some(111usize),
+                    min_length: Some(98usize),
+                    max_length: Some(347usize),
                     ..Default::default()
                 }),
             );
