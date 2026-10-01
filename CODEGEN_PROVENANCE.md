@@ -139,3 +139,42 @@ existing Space contract suite remains enabled.
 | PetrelCatbird chat `blue.catbird.chat.submitTransition.json` | `f843e0ee461008a116676038dabc49b1a1f351a1f06ae03672518a014acd9805` |
 | Generated chat `get_conversation_state.rs` | `8748643995027c4a4ce3055eae4fb67f3b944f19252ab528e3955df6635eb301` |
 | Generated chat `submit_transition.rs` | `937633a9d2102b980180b4ac3f1eb1cca7212335fc1863e1a1d57c9066de96ea` |
+
+## Upstream `com.atproto.space` v1 SignedCommit restoration (2026-10-01)
+
+This section supersedes "Task 0A / Finding 6" above. The v2 authenticated
+transition `SignedCommit` shape was a Catbird invention that upstream never
+adopted (decision D in `Catbird+Petrel/docs/DECISIONS.md`). Petrel
+re-vendored `com.atproto.space` and `com.atproto.simplespace` verbatim from
+bluesky-social/atproto PR #5187 at
+`57b0a0424fb27d8e4989e74fa37fbc0ce4527ded` (Petrel bookmark
+`spaces-upstream-defs-20261001`). `SignedCommit` now carries only `ver`,
+`hash`, `ikm`, `sig`, `mac`, and `rev`, all required. The v2 vector fixture
+`tests/fixtures/commit_v2_vectors.json` and its tests were retired.
+
+### Generation
+
+`mls-codegen` from mls-ds `d23bea50` (Jacquard 0.13.0 at
+`3287244a99262a361bd32873a871982da0a76c40`, matching this crate's pin) was run
+twice into scratch directories, each followed by `rustfmt --edition 2021`:
+
+1. baseline: Petrel `747c83bf` lexicons + PetrelCatbird `045e4e9c` lexicons;
+2. new: the re-vendored Petrel lexicons + the same PetrelCatbird lexicons.
+
+A full-tree replacement would have rewritten 459 unrelated files
+(`::core` vs `core` paths, module-root and feature-gate differences from the
+mixed generation history above). Only the files whose output differs between
+the two runs were copied in verbatim:
+
+- `src/generated/com_atproto/space.rs`
+- `src/generated/com_atproto/space/notify_credential_revoked.rs` (new)
+- `src/generated/com_atproto/simplespace.rs`
+- `src/generated/com_atproto/simplespace/{check_user_access,create_space,get_space,list_members,update_space,put_member}.rs`
+- `src/generated/com_atproto/simplespace/add_member.rs` removed (upstream renamed it `putMember`)
+
+No generated file was hand-edited.
+
+| Input or output | SHA-256 |
+| --- | --- |
+| Petrel `com/atproto/space/defs.json` | `e46a24653498f62bdcd7a0529edd572e526669595b4b5bb513c94b9113d46601` |
+| Generated `src/generated/com_atproto/space.rs` | `5427607e7db9b8ab258edcf5d47ad7126d4eb9802530d48ad97419fea5401670` |

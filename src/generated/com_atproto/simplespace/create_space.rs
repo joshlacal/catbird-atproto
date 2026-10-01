@@ -15,8 +15,8 @@
 pub struct CreateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// How the authority decides whether to authorize a requesting app.
     pub app_access: CreateSpaceAppAccess<S>,
-    /// How the authority decides whether to authorize a requesting user.
-    pub policy: CreateSpacePolicy<S>,
+    /// How the authority decides whether to authorize a user to read the space.
+    pub read_policy: CreateSpaceReadPolicy<S>,
     /// The space key. Used to differentiate multiple spaces of the same type under the same owner. Same syntax requirements as a record key. If not provided, one will be auto-generated (TID).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub skey: core::option::Option<
@@ -24,6 +24,8 @@ pub struct CreateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
     /// The NSID of the space type, describing the modality of the space (e.g. app.bsky.group, app.bsky.personal).
     pub r#type: jacquard_common::types::string::Nsid<S>,
+    /// How the authority decides whether to track and forward a user's write notifications.
+    pub write_policy: CreateSpaceWritePolicy<S>,
     #[serde(
         flatten,
         default,
@@ -47,9 +49,9 @@ pub struct CreateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub enum CreateSpaceAppAccess<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#open")]
-    Open(Box<crate::com_atproto::simplespace::Open<S>>),
+    Open(Box<crate::generated::com_atproto::simplespace::Open<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#allowList")]
-    AllowList(Box<crate::com_atproto::simplespace::AllowList<S>>),
+    AllowList(Box<crate::generated::com_atproto::simplespace::AllowList<S>>),
 }
 
 #[jacquard_derive::open_union]
@@ -60,13 +62,30 @@ pub enum CreateSpaceAppAccess<S: jacquard_common::BosStr = jacquard_common::Defa
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum CreateSpacePolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum CreateSpaceReadPolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#publicPolicy")]
-    PublicPolicy(Box<crate::com_atproto::simplespace::PublicPolicy<S>>),
+    PublicPolicy(Box<crate::generated::com_atproto::simplespace::PublicPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#memberListPolicy")]
-    MemberListPolicy(Box<crate::com_atproto::simplespace::MemberListPolicy<S>>),
+    MemberListPolicy(Box<crate::generated::com_atproto::simplespace::MemberListPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#managingAppPolicy")]
-    ManagingAppPolicy(Box<crate::com_atproto::simplespace::ManagingAppPolicy<S>>),
+    ManagingAppPolicy(Box<crate::generated::com_atproto::simplespace::ManagingAppPolicy<S>>),
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum CreateSpaceWritePolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "com.atproto.simplespace.defs#publicPolicy")]
+    PublicPolicy(Box<crate::generated::com_atproto::simplespace::PublicPolicy<S>>),
+    #[serde(rename = "com.atproto.simplespace.defs#memberListPolicy")]
+    MemberListPolicy(Box<crate::generated::com_atproto::simplespace::MemberListPolicy<S>>),
+    #[serde(rename = "com.atproto.simplespace.defs#managingAppPolicy")]
+    ManagingAppPolicy(Box<crate::generated::com_atproto::simplespace::ManagingAppPolicy<S>>),
 }
 
 #[derive(
@@ -110,7 +129,7 @@ pub enum CreateSpaceError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// The requested policy is not one the host implements.
+    /// A requested policy is not one the host implements.
     #[serde(rename = "UnsupportedPolicy")]
     UnsupportedPolicy(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -200,57 +219,73 @@ pub mod create_space_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type AppAccess;
-        type Policy;
+        type ReadPolicy;
         type Type;
+        type WritePolicy;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type AppAccess = Unset;
-        type Policy = Unset;
+        type ReadPolicy = Unset;
         type Type = Unset;
+        type WritePolicy = Unset;
     }
     ///State transition - sets the `app_access` field to Set
     pub struct SetAppAccess<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetAppAccess<St> {}
     impl<St: State> State for SetAppAccess<St> {
         type AppAccess = Set<members::app_access>;
-        type Policy = St::Policy;
+        type ReadPolicy = St::ReadPolicy;
         type Type = St::Type;
+        type WritePolicy = St::WritePolicy;
     }
-    ///State transition - sets the `policy` field to Set
-    pub struct SetPolicy<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetPolicy<St> {}
-    impl<St: State> State for SetPolicy<St> {
+    ///State transition - sets the `read_policy` field to Set
+    pub struct SetReadPolicy<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReadPolicy<St> {}
+    impl<St: State> State for SetReadPolicy<St> {
         type AppAccess = St::AppAccess;
-        type Policy = Set<members::policy>;
+        type ReadPolicy = Set<members::read_policy>;
         type Type = St::Type;
+        type WritePolicy = St::WritePolicy;
     }
     ///State transition - sets the `type` field to Set
     pub struct SetType<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetType<St> {}
     impl<St: State> State for SetType<St> {
         type AppAccess = St::AppAccess;
-        type Policy = St::Policy;
+        type ReadPolicy = St::ReadPolicy;
         type Type = Set<members::r#type>;
+        type WritePolicy = St::WritePolicy;
+    }
+    ///State transition - sets the `write_policy` field to Set
+    pub struct SetWritePolicy<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWritePolicy<St> {}
+    impl<St: State> State for SetWritePolicy<St> {
+        type AppAccess = St::AppAccess;
+        type ReadPolicy = St::ReadPolicy;
+        type Type = St::Type;
+        type WritePolicy = Set<members::write_policy>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `app_access` field
         pub struct app_access(());
-        ///Marker type for the `policy` field
-        pub struct policy(());
+        ///Marker type for the `read_policy` field
+        pub struct read_policy(());
         ///Marker type for the `type` field
         pub struct r#type(());
+        ///Marker type for the `write_policy` field
+        pub struct write_policy(());
     }
 }
 
@@ -262,11 +297,12 @@ pub struct CreateSpaceBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<CreateSpaceAppAccess<S>>,
-        core::option::Option<CreateSpacePolicy<S>>,
+        core::option::Option<CreateSpaceReadPolicy<S>>,
         core::option::Option<
             jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
         core::option::Option<jacquard_common::types::string::Nsid<S>>,
+        core::option::Option<CreateSpaceWritePolicy<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -290,7 +326,7 @@ impl CreateSpaceBuilder<create_space_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         CreateSpaceBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -301,7 +337,7 @@ impl<S: jacquard_common::BosStr> CreateSpaceBuilder<create_space_state::Empty, S
     pub fn builder() -> Self {
         CreateSpaceBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -329,13 +365,13 @@ where
 impl<St, S: jacquard_common::BosStr> CreateSpaceBuilder<St, S>
 where
     St: create_space_state::State,
-    St::Policy: create_space_state::IsUnset,
+    St::ReadPolicy: create_space_state::IsUnset,
 {
-    /// Set the `policy` field (required)
-    pub fn policy(
+    /// Set the `readPolicy` field (required)
+    pub fn read_policy(
         mut self,
-        value: impl Into<CreateSpacePolicy<S>>,
-    ) -> CreateSpaceBuilder<create_space_state::SetPolicy<St>, S> {
+        value: impl Into<CreateSpaceReadPolicy<S>>,
+    ) -> CreateSpaceBuilder<create_space_state::SetReadPolicy<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         CreateSpaceBuilder {
             _state: ::core::marker::PhantomData,
@@ -392,17 +428,38 @@ where
 impl<St, S: jacquard_common::BosStr> CreateSpaceBuilder<St, S>
 where
     St: create_space_state::State,
+    St::WritePolicy: create_space_state::IsUnset,
+{
+    /// Set the `writePolicy` field (required)
+    pub fn write_policy(
+        mut self,
+        value: impl Into<CreateSpaceWritePolicy<S>>,
+    ) -> CreateSpaceBuilder<create_space_state::SetWritePolicy<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        CreateSpaceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateSpaceBuilder<St, S>
+where
+    St: create_space_state::State,
     St::AppAccess: create_space_state::IsSet,
-    St::Policy: create_space_state::IsSet,
+    St::ReadPolicy: create_space_state::IsSet,
     St::Type: create_space_state::IsSet,
+    St::WritePolicy: create_space_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> CreateSpace<S> {
         CreateSpace {
             app_access: self._fields.0.unwrap(),
-            policy: self._fields.1.unwrap(),
+            read_policy: self._fields.1.unwrap(),
             skey: self._fields.2,
             r#type: self._fields.3.unwrap(),
+            write_policy: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -416,9 +473,10 @@ where
     ) -> CreateSpace<S> {
         CreateSpace {
             app_access: self._fields.0.unwrap(),
-            policy: self._fields.1.unwrap(),
+            read_policy: self._fields.1.unwrap(),
             skey: self._fields.2,
             r#type: self._fields.3.unwrap(),
+            write_policy: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }

@@ -6,12 +6,12 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 //! Generated bindings for the `com.atproto.simplespace` Lexicon namespace/module.
-pub mod add_member;
 pub mod check_user_access;
 pub mod create_space;
 pub mod delete_space;
 pub mod get_space;
 pub mod list_members;
+pub mod put_member;
 pub mod remove_member;
 pub mod update_space;
 
@@ -270,7 +270,7 @@ pub mod allow_list_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
