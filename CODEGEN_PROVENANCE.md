@@ -185,8 +185,10 @@ This section extends the 2026-10-01 restoration above to the October 1 alpha
 release of atproto Spaces (atproto `679724ad62eb9a02f7f40429c3c4fdd65d3e4c79`,
 published as npm `0.0.0-spaces-alpha-20261001173819`). Petrel re-vendored
 `com.atproto.space` and `com.atproto.simplespace` from that commit in
-`f2b76d1a769f3ca66871755b51f0988734fbfc8b` (Petrel lane bookmark
-`spaces-oct1-20261002`). Against the previous vendor (Petrel
+`f2b76d1a769f3ca66871755b51f0988734fbfc8b`, an ancestor of the Petrel lane
+bookmark `spaces-oct1-20261002` (that bookmark was at `16dffa8d` when this was
+written; the commits after `f2b76d1a` up to `16dffa8d` do not touch the
+`space` or `simplespace` lexicons). Against the previous vendor (Petrel
 `368b5f33bb68fc18b4b980733dba3c4a8f0be621`, atproto `57b0a042`) exactly five
 lexicons changed:
 
@@ -238,7 +240,7 @@ untouched.
 | Input or output | SHA-256 |
 | --- | --- |
 | mls-ds `d23bea50` `codegen/src/main.rs` | `f2d5432492f4675319a1209730ef43c4375e98e41c385c3ee929e0e50305f452` |
-| Petrel `f2b76d1a` `com/atproto/{space,simplespace}/*.json` (sorted `sha256  path` list) | `8c5ea869f1658df5a31e8ec527b0c5f82ea5899f514f1b1087711ec16a8e22ec` |
+| Petrel `f2b76d1a` `space/*.json` + `simplespace/*.json` (aggregate; command below) | `8c5ea869f1658df5a31e8ec527b0c5f82ea5899f514f1b1087711ec16a8e22ec` |
 | Petrel `com/atproto/space/notifyWrite.json` | `535cbfcdda1f6a2f399d4bb7d3c984ede0324f55651718e6604a93ce8dc9aec7` |
 | Petrel `com/atproto/space/listRepos.json` | `43b60646969ca2df00014696a9ca86633716da97cc2cb0929348858ac38f2cb9` |
 | Petrel `com/atproto/space/listSpaces.json` | `b10db2321de10cdc783804f7d8882ec99e4e76f417283e462f74624dd314d5b8` |
@@ -250,6 +252,15 @@ untouched.
 | Generated `space/list_spaces.rs` | `1f3d1baafd5b3bf4a9f676eb8555151961bf3d01e8b8c2d2a79c6a9e3a31c508` |
 | Generated `space/get_space_credential.rs` | `810386f9053cceed50097dd3a00cddf1e13d736713f2490421eee18da123c024` |
 | Generated `simplespace/create_space.rs` | `eb58ca2993c20e1d79065fb7dbfed229292ae337bc276c9c68d03a62ff36e5fb` |
+
+The per-file Petrel paths above are relative to `generator/lexicons/`. The
+aggregate lexicon hash hashes paths relative to
+`generator/lexicons/com/atproto`, and reproduces only from that directory:
+
+```bash
+cd Petrel/generator/lexicons/com/atproto   # at f2b76d1a
+shasum -a 256 space/*.json simplespace/*.json | LC_ALL=C sort -k2 | shasum -a 256
+```
 
 ### Consumer impact
 
