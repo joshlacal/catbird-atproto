@@ -178,3 +178,90 @@ No generated file was hand-edited.
 | --- | --- |
 | Petrel `com/atproto/space/defs.json` | `e46a24653498f62bdcd7a0529edd572e526669595b4b5bb513c94b9113d46601` |
 | Generated `src/generated/com_atproto/space.rs` | `5427607e7db9b8ab258edcf5d47ad7126d4eb9802530d48ad97419fea5401670` |
+
+## atproto Spaces October 1, 2026 alpha (2026-10-02)
+
+This section extends the 2026-10-01 restoration above to the October 1 alpha
+release of atproto Spaces (atproto `679724ad62eb9a02f7f40429c3c4fdd65d3e4c79`,
+published as npm `0.0.0-spaces-alpha-20261001173819`). Petrel re-vendored
+`com.atproto.space` and `com.atproto.simplespace` from that commit in
+`f2b76d1a769f3ca66871755b51f0988734fbfc8b` (Petrel lane bookmark
+`spaces-oct1-20261002`). Against the previous vendor (Petrel
+`368b5f33bb68fc18b4b980733dba3c4a8f0be621`, atproto `57b0a042`) exactly five
+lexicons changed:
+
+- `space.notifyWrite`: `rev` renamed `repoRev`; optional `spaceRev` and
+  `prevSpaceRev` (set only on notifications forwarded to syncers); new
+  declared errors `SpaceNotFound` and `FutureRev`.
+- `space.listRepos`: entries are `{did, repoRev, hash, spaceRev}`; the cursor
+  is an exclusive space-revision checkpoint (plain string, no `tid` format)
+  and is omitted on an empty page.
+- `space.listSpaces`: query filter `type` renamed `spaceType`.
+- `simplespace.createSpace`: required body field `type` renamed `spaceType`.
+- `space.getSpaceCredential`: descriptions only (HTTP Message Signature
+  binding instead of DPoP `cnf.jkt`).
+
+`space.notifyCredentialRevoked` (`{space, credentials[1..100]}`) was already
+present from the 2026-10-01 vendor; its lexicon is byte-identical at
+`679724ad`, and the committed `notify_credential_revoked.rs` is byte-identical
+to this run's output.
+
+### Generation
+
+Same method as 2026-10-01. `mls-codegen` from mls-ds `d23bea50810b`
+(Jacquard 0.13.0 at `3287244a99262a361bd32873a871982da0a76c40`) was exported
+with `jj file show` and built in a scratch directory, then run twice, each
+followed by `rustfmt --edition 2021`:
+
+1. baseline: Petrel `368b5f33` lexicons + PetrelCatbird `045e4e9c` lexicons;
+2. new: Petrel `f2b76d1a` lexicons + the same PetrelCatbird lexicons.
+
+The two output trees differ in exactly five files, which were copied in
+verbatim; no module index changed and no generated file was hand-edited:
+
+- `src/generated/com_atproto/space/notify_write.rs`
+- `src/generated/com_atproto/space/list_repos.rs`
+- `src/generated/com_atproto/space/list_spaces.rs`
+- `src/generated/com_atproto/space/get_space_credential.rs`
+- `src/generated/com_atproto/simplespace/create_space.rs`
+
+Positive control: the baseline run reproduces the committed 2026-10-01
+`create_space.rs`, `space.rs`, `simplespace.rs`, and every other file copied
+on 2026-10-01 byte-for-byte. Older space files that predate that copy (for
+example `notify_write.rs`) differed from the baseline only in `core::` vs
+`::core::` and `crate::com_atproto` vs `crate::generated::com_atproto` paths,
+the mixed-history drift noted above; the copied files now carry the
+`mls-codegen` form, like the other files copied on 2026-10-01. The
+`namespace-atproto-space` gates in `com_atproto.rs` and `lib.rs` are
+untouched.
+
+| Input or output | SHA-256 |
+| --- | --- |
+| mls-ds `d23bea50` `codegen/src/main.rs` | `f2d5432492f4675319a1209730ef43c4375e98e41c385c3ee929e0e50305f452` |
+| Petrel `f2b76d1a` `com/atproto/{space,simplespace}/*.json` (sorted `sha256  path` list) | `8c5ea869f1658df5a31e8ec527b0c5f82ea5899f514f1b1087711ec16a8e22ec` |
+| Petrel `com/atproto/space/notifyWrite.json` | `535cbfcdda1f6a2f399d4bb7d3c984ede0324f55651718e6604a93ce8dc9aec7` |
+| Petrel `com/atproto/space/listRepos.json` | `43b60646969ca2df00014696a9ca86633716da97cc2cb0929348858ac38f2cb9` |
+| Petrel `com/atproto/space/listSpaces.json` | `b10db2321de10cdc783804f7d8882ec99e4e76f417283e462f74624dd314d5b8` |
+| Petrel `com/atproto/space/getSpaceCredential.json` | `95fb72626acb3c4011c4a3f19d1e9d57ce0410ac4e5243747810c35b84952de5` |
+| Petrel `com/atproto/space/notifyCredentialRevoked.json` | `db181622dfceb534b08a0713a39725f13874d27d49d748e815f1f8a3b815d13e` |
+| Petrel `com/atproto/simplespace/createSpace.json` | `36d260eae7230f543c5d88c2d33f101dd6150e297a9027507bce362a1cbec037` |
+| Generated `space/notify_write.rs` | `bfd847aa69b1f3293c58e837ad7f097bbb0cbcb7e05f2843ffa69440ad1e50e6` |
+| Generated `space/list_repos.rs` | `3b6e2c06c6b176d1a80634c1fd48d71699365bd6f5e7531f1acf04049e7c5571` |
+| Generated `space/list_spaces.rs` | `1f3d1baafd5b3bf4a9f676eb8555151961bf3d01e8b8c2d2a79c6a9e3a31c508` |
+| Generated `space/get_space_credential.rs` | `810386f9053cceed50097dd3a00cddf1e13d736713f2490421eee18da123c024` |
+| Generated `simplespace/create_space.rs` | `eb58ca2993c20e1d79065fb7dbfed229292ae337bc276c9c68d03a62ff36e5fb` |
+
+### Consumer impact
+
+These are breaking renames for struct-literal and field-access consumers
+(`circle-appview`): `NotifyWrite.rev` becomes `repo_rev` and gains
+`space_rev` / `prev_space_rev`; `list_repos::Repo.rev` becomes `repo_rev` and
+gains a required `space_rev`; `ListSpaces.r#type` and `CreateSpace.r#type`
+become `space_type` (builder methods `space_type` / `maybe_space_type`); the
+`notifyWrite` response error type is now `NotifyWriteError` instead of
+`GenericError`.
+
+`tests/com_atproto_space_surface.rs` covers the new wire shapes: both
+notifyWrite hops, the declared errors, listRepos entries and empty-page cursor
+omission, an opaque cursor string, and the `spaceType` renames. Pre-Oct-1
+bodies are rejected with the specific missing field.

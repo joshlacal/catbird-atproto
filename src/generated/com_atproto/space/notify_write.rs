@@ -16,12 +16,18 @@ pub struct NotifyWrite<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     /// The repo's current commit hash (sha256 of the LtHash state) after the write. Lets the space host maintain each repo's hash for listRepos.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub hash: jacquard_common::deps::bytes::Bytes,
+    /// The previous space revision. Omitted on the first update in a space. A gap indicates missed notifications; recover using listRepos with cursor.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub prev_space_rev: core::option::Option<jacquard_common::types::string::Tid>,
     /// The DID of the account whose repo advanced.
     pub repo: jacquard_common::types::string::Did<S>,
-    /// The revision of the write.
-    pub rev: jacquard_common::types::string::Tid,
+    /// The repo revision after the write.
+    pub repo_rev: jacquard_common::types::string::Tid,
     /// Reference to the space.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// The space revision assigned by the space host. Present only on notifications forwarded to syncers.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_rev: core::option::Option<jacquard_common::types::string::Tid>,
     #[serde(
         flatten,
         default,
@@ -35,6 +41,66 @@ pub struct NotifyWrite<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum NotifyWriteError {
+    #[serde(rename = "SpaceNotFound")]
+    SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// The repo revision exceeds the permitted clock skew.
+    #[serde(rename = "FutureRev")]
+    FutureRev(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for NotifyWriteError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::SpaceNotFound(msg) => {
+                write!(f, "SpaceNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::FutureRev(msg) => {
+                write!(f, "FutureRev")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
 /** Response marker for the `com.atproto.space.notifyWrite` procedure.
 
 Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
@@ -43,7 +109,7 @@ impl jacquard_common::xrpc::XrpcResp for NotifyWriteResponse {
     const NSID: &'static str = "com.atproto.space.notifyWrite";
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ();
-    type Err = jacquard_common::xrpc::GenericError;
+    type Err = NotifyWriteError;
     fn decode_output<'de, S>(
         body: &'de [u8],
     ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
@@ -81,7 +147,7 @@ pub mod notify_write_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -89,7 +155,7 @@ pub mod notify_write_state {
     pub trait State: sealed::Sealed {
         type Hash;
         type Repo;
-        type Rev;
+        type RepoRev;
         type Space;
     }
     /// Empty state - all required fields are unset
@@ -98,7 +164,7 @@ pub mod notify_write_state {
     impl State for Empty {
         type Hash = Unset;
         type Repo = Unset;
-        type Rev = Unset;
+        type RepoRev = Unset;
         type Space = Unset;
     }
     ///State transition - sets the `hash` field to Set
@@ -107,7 +173,7 @@ pub mod notify_write_state {
     impl<St: State> State for SetHash<St> {
         type Hash = Set<members::hash>;
         type Repo = St::Repo;
-        type Rev = St::Rev;
+        type RepoRev = St::RepoRev;
         type Space = St::Space;
     }
     ///State transition - sets the `repo` field to Set
@@ -116,16 +182,16 @@ pub mod notify_write_state {
     impl<St: State> State for SetRepo<St> {
         type Hash = St::Hash;
         type Repo = Set<members::repo>;
-        type Rev = St::Rev;
+        type RepoRev = St::RepoRev;
         type Space = St::Space;
     }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetRev<St> {}
-    impl<St: State> State for SetRev<St> {
+    ///State transition - sets the `repo_rev` field to Set
+    pub struct SetRepoRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepoRev<St> {}
+    impl<St: State> State for SetRepoRev<St> {
         type Hash = St::Hash;
         type Repo = St::Repo;
-        type Rev = Set<members::rev>;
+        type RepoRev = Set<members::repo_rev>;
         type Space = St::Space;
     }
     ///State transition - sets the `space` field to Set
@@ -134,7 +200,7 @@ pub mod notify_write_state {
     impl<St: State> State for SetSpace<St> {
         type Hash = St::Hash;
         type Repo = St::Repo;
-        type Rev = St::Rev;
+        type RepoRev = St::RepoRev;
         type Space = Set<members::space>;
     }
     /// Marker types for field names
@@ -144,8 +210,8 @@ pub mod notify_write_state {
         pub struct hash(());
         ///Marker type for the `repo` field
         pub struct repo(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
+        ///Marker type for the `repo_rev` field
+        pub struct repo_rev(());
         ///Marker type for the `space` field
         pub struct space(());
     }
@@ -159,9 +225,11 @@ pub struct NotifyWriteBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::types::string::Tid>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<jacquard_common::types::string::Tid>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+        core::option::Option<jacquard_common::types::string::Tid>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -185,7 +253,7 @@ impl NotifyWriteBuilder<notify_write_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         NotifyWriteBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -196,7 +264,7 @@ impl<S: jacquard_common::BosStr> NotifyWriteBuilder<notify_write_state::Empty, S
     pub fn builder() -> Self {
         NotifyWriteBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -221,6 +289,25 @@ where
     }
 }
 
+impl<St: notify_write_state::State, S: jacquard_common::BosStr> NotifyWriteBuilder<St, S> {
+    /// Set the `prevSpaceRev` field (optional)
+    pub fn prev_space_rev(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Tid>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `prevSpaceRev` field to an Option value (optional)
+    pub fn maybe_prev_space_rev(
+        mut self,
+        value: Option<jacquard_common::types::string::Tid>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> NotifyWriteBuilder<St, S>
 where
     St: notify_write_state::State,
@@ -231,7 +318,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> NotifyWriteBuilder<notify_write_state::SetRepo<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         NotifyWriteBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -243,14 +330,14 @@ where
 impl<St, S: jacquard_common::BosStr> NotifyWriteBuilder<St, S>
 where
     St: notify_write_state::State,
-    St::Rev: notify_write_state::IsUnset,
+    St::RepoRev: notify_write_state::IsUnset,
 {
-    /// Set the `rev` field (required)
-    pub fn rev(
+    /// Set the `repoRev` field (required)
+    pub fn repo_rev(
         mut self,
         value: impl Into<jacquard_common::types::string::Tid>,
-    ) -> NotifyWriteBuilder<notify_write_state::SetRev<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+    ) -> NotifyWriteBuilder<notify_write_state::SetRepoRev<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         NotifyWriteBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -269,7 +356,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> NotifyWriteBuilder<notify_write_state::SetSpace<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         NotifyWriteBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -278,21 +365,39 @@ where
     }
 }
 
+impl<St: notify_write_state::State, S: jacquard_common::BosStr> NotifyWriteBuilder<St, S> {
+    /// Set the `spaceRev` field (optional)
+    pub fn space_rev(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Tid>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `spaceRev` field to an Option value (optional)
+    pub fn maybe_space_rev(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> NotifyWriteBuilder<St, S>
 where
     St: notify_write_state::State,
     St::Hash: notify_write_state::IsSet,
     St::Repo: notify_write_state::IsSet,
-    St::Rev: notify_write_state::IsSet,
+    St::RepoRev: notify_write_state::IsSet,
     St::Space: notify_write_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> NotifyWrite<S> {
         NotifyWrite {
             hash: self._fields.0.unwrap(),
-            repo: self._fields.1.unwrap(),
-            rev: self._fields.2.unwrap(),
-            space: self._fields.3.unwrap(),
+            prev_space_rev: self._fields.1,
+            repo: self._fields.2.unwrap(),
+            repo_rev: self._fields.3.unwrap(),
+            space: self._fields.4.unwrap(),
+            space_rev: self._fields.5,
             extra_data: Default::default(),
         }
     }
@@ -306,9 +411,11 @@ where
     ) -> NotifyWrite<S> {
         NotifyWrite {
             hash: self._fields.0.unwrap(),
-            repo: self._fields.1.unwrap(),
-            rev: self._fields.2.unwrap(),
-            space: self._fields.3.unwrap(),
+            prev_space_rev: self._fields.1,
+            repo: self._fields.2.unwrap(),
+            repo_rev: self._fields.3.unwrap(),
+            space: self._fields.4.unwrap(),
+            space_rev: self._fields.5,
             extra_data: Some(extra_data),
         }
     }

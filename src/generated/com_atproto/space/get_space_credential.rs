@@ -46,7 +46,7 @@ pub struct GetSpaceCredential<S: jacquard_common::BosStr = jacquard_common::Defa
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSpaceCredentialOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// A signed JWT space credential, bound through its cnf.jkt claim to the key that signed the request's DPoP proof.
+    /// A signed JWT space credential.
     pub credential: S,
     #[serde(
         flatten,
@@ -217,7 +217,7 @@ pub mod get_space_credential_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
