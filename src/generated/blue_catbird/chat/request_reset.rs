@@ -62,6 +62,11 @@ pub struct RequestResetOutput<S: jacquard_common::BosStr = jacquard_common::Defa
 )]
 #[serde(tag = "error", content = "message")]
 pub enum RequestResetError {
+    #[serde(rename = "ConversationNotAccepted")]
+    ConversationNotAccepted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -149,6 +154,13 @@ pub enum RequestResetError {
 impl core::fmt::Display for RequestResetError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::ConversationNotAccepted(msg) => {
+                write!(f, "ConversationNotAccepted")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::ConversationNotFound(msg) => {
                 write!(f, "ConversationNotFound")?;
                 if let Some(msg) = msg {

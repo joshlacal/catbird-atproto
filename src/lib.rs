@@ -12,41 +12,38 @@ extern crate alloc;
     clippy::unnecessary_lazy_evaluations
 )]
 pub mod generated {
+    #[cfg(feature = "namespace-bluecatbird")]
     pub mod app_bsky;
     #[cfg(feature = "namespace-bluecatbird")]
     pub mod blue_catbird;
     pub mod builder_types;
+    #[cfg(any(
+        feature = "namespace-bluecatbird",
+        feature = "namespace-site-standard",
+        feature = "namespace-atproto-space"
+    ))]
     pub mod com_atproto;
     #[cfg(feature = "namespace-site-standard")]
     pub mod site_standard;
 }
 
+#[cfg(feature = "namespace-bluecatbird")]
 pub use generated::app_bsky;
 #[cfg(feature = "namespace-bluecatbird")]
 pub use generated::blue_catbird;
 pub use generated::builder_types;
-pub mod com_atproto {
-    pub use crate::generated::com_atproto::admin;
-    pub use crate::generated::com_atproto::identity;
-    pub use crate::generated::com_atproto::label;
-    pub use crate::generated::com_atproto::lexicon;
-    pub use crate::generated::com_atproto::moderation;
-    pub use crate::generated::com_atproto::repo;
-    pub use crate::generated::com_atproto::server;
-    #[cfg(feature = "namespace-atproto-space")]
-    pub use crate::generated::com_atproto::simplespace;
-    #[cfg(feature = "namespace-atproto-space")]
-    pub use crate::generated::com_atproto::space;
-    pub use crate::generated::com_atproto::sync;
-    pub use crate::generated::com_atproto::temp;
-}
+#[cfg(any(
+    feature = "namespace-bluecatbird",
+    feature = "namespace-site-standard",
+    feature = "namespace-atproto-space"
+))]
+pub use generated::com_atproto;
 #[cfg(feature = "namespace-site-standard")]
 pub use generated::site_standard;
 pub use jacquard_common;
 pub use jacquard_common::types;
 pub use jacquard_derive;
 pub use jacquard_lexicon;
-
 #[cfg(feature = "namespace-bluecatbird")]
 pub mod catbird {
     pub mod bsky_chat {
@@ -160,3 +157,6 @@ mod bytes_test {
         );
     }
 }
+
+#[cfg(feature = "namespace-bluecatbird")]
+pub mod push_registration;

@@ -26,10 +26,12 @@ pub struct GetSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 pub struct GetSpaceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// How the authority decides whether to authorize a requesting app.
     pub app_access: GetSpaceOutputAppAccess<S>,
-    /// How the authority decides whether to authorize a requesting user.
-    pub policy: GetSpaceOutputPolicy<S>,
+    /// How the authority decides whether to authorize a user to read the space.
+    pub read_policy: GetSpaceOutputReadPolicy<S>,
     /// URI of the space.
     pub uri: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// How the authority decides whether to track and forward a user's write notifications.
+    pub write_policy: GetSpaceOutputWritePolicy<S>,
     #[serde(
         flatten,
         default,
@@ -53,9 +55,9 @@ pub struct GetSpaceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultS
 )]
 pub enum GetSpaceOutputAppAccess<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#open")]
-    Open(Box<crate::com_atproto::simplespace::Open<S>>),
+    Open(Box<crate::generated::com_atproto::simplespace::Open<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#allowList")]
-    AllowList(Box<crate::com_atproto::simplespace::AllowList<S>>),
+    AllowList(Box<crate::generated::com_atproto::simplespace::AllowList<S>>),
 }
 
 #[jacquard_derive::open_union]
@@ -66,13 +68,30 @@ pub enum GetSpaceOutputAppAccess<S: jacquard_common::BosStr = jacquard_common::D
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum GetSpaceOutputPolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum GetSpaceOutputReadPolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#publicPolicy")]
-    PublicPolicy(Box<crate::com_atproto::simplespace::PublicPolicy<S>>),
+    PublicPolicy(Box<crate::generated::com_atproto::simplespace::PublicPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#memberListPolicy")]
-    MemberListPolicy(Box<crate::com_atproto::simplespace::MemberListPolicy<S>>),
+    MemberListPolicy(Box<crate::generated::com_atproto::simplespace::MemberListPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#managingAppPolicy")]
-    ManagingAppPolicy(Box<crate::com_atproto::simplespace::ManagingAppPolicy<S>>),
+    ManagingAppPolicy(Box<crate::generated::com_atproto::simplespace::ManagingAppPolicy<S>>),
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum GetSpaceOutputWritePolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "com.atproto.simplespace.defs#publicPolicy")]
+    PublicPolicy(Box<crate::generated::com_atproto::simplespace::PublicPolicy<S>>),
+    #[serde(rename = "com.atproto.simplespace.defs#memberListPolicy")]
+    MemberListPolicy(Box<crate::generated::com_atproto::simplespace::MemberListPolicy<S>>),
+    #[serde(rename = "com.atproto.simplespace.defs#managingAppPolicy")]
+    ManagingAppPolicy(Box<crate::generated::com_atproto::simplespace::ManagingAppPolicy<S>>),
 }
 
 #[derive(
@@ -154,7 +173,7 @@ pub mod get_space_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

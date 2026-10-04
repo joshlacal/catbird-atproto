@@ -32,7 +32,7 @@ pub struct ListMembers<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 pub struct ListMembersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub members: Vec<crate::com_atproto::simplespace::list_members::Member<S>>,
+    pub members: Vec<crate::generated::com_atproto::simplespace::list_members::Member<S>>,
     #[serde(
         flatten,
         default,
@@ -102,6 +102,8 @@ impl core::fmt::Display for ListMembersError {
 )]
 pub struct Member<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
+    pub read: bool,
+    pub write: bool,
     #[serde(
         flatten,
         default,
@@ -167,7 +169,7 @@ pub mod list_members_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -333,31 +335,57 @@ pub mod member_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Did;
+        type Read;
+        type Write;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Did = Unset;
+        type Read = Unset;
+        type Write = Unset;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetDid<St> {}
     impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
+        type Read = St::Read;
+        type Write = St::Write;
+    }
+    ///State transition - sets the `read` field to Set
+    pub struct SetRead<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRead<St> {}
+    impl<St: State> State for SetRead<St> {
+        type Did = St::Did;
+        type Read = Set<members::read>;
+        type Write = St::Write;
+    }
+    ///State transition - sets the `write` field to Set
+    pub struct SetWrite<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWrite<St> {}
+    impl<St: State> State for SetWrite<St> {
+        type Did = St::Did;
+        type Read = St::Read;
+        type Write = Set<members::write>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `did` field
         pub struct did(());
+        ///Marker type for the `read` field
+        pub struct read(());
+        ///Marker type for the `write` field
+        pub struct write(());
     }
 }
 
@@ -367,7 +395,11 @@ pub struct MemberBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<jacquard_common::types::string::Did<S>>,),
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -390,7 +422,7 @@ impl MemberBuilder<member_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         MemberBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -401,7 +433,7 @@ impl<S: jacquard_common::BosStr> MemberBuilder<member_state::Empty, S> {
     pub fn builder() -> Self {
         MemberBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -429,12 +461,48 @@ where
 impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
 where
     St: member_state::State,
+    St::Read: member_state::IsUnset,
+{
+    /// Set the `read` field (required)
+    pub fn read(mut self, value: impl Into<bool>) -> MemberBuilder<member_state::SetRead<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        MemberBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
+where
+    St: member_state::State,
+    St::Write: member_state::IsUnset,
+{
+    /// Set the `write` field (required)
+    pub fn write(mut self, value: impl Into<bool>) -> MemberBuilder<member_state::SetWrite<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        MemberBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
+where
+    St: member_state::State,
     St::Did: member_state::IsSet,
+    St::Read: member_state::IsSet,
+    St::Write: member_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> Member<S> {
         Member {
             did: self._fields.0.unwrap(),
+            read: self._fields.1.unwrap(),
+            write: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -448,6 +516,8 @@ where
     ) -> Member<S> {
         Member {
             did: self._fields.0.unwrap(),
+            read: self._fields.1.unwrap(),
+            write: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -519,6 +589,8 @@ fn lexicon_doc_com_atproto_simplespace_listMembers(
                     ::jacquard_lexicon::lexicon::LexObject {
                         required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("read"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("write"),
                         ]),
                         properties: {
                             #[allow(unused_mut)]
@@ -530,6 +602,22 @@ fn lexicon_doc_com_atproto_simplespace_listMembers(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("read"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("write"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
                                         ..Default::default()
                                     },
                                 ),

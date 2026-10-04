@@ -5,6 +5,100 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetPendingWelcomesSupportedProtocolVersions<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _1,
+    _2,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetPendingWelcomesSupportedProtocolVersions<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::_1 => "1",
+            Self::_2 => "2",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "1" => Self::_1,
+            "2" => Self::_2,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display
+    for GetPendingWelcomesSupportedProtocolVersions<S>
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetPendingWelcomesSupportedProtocolVersions<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize
+    for GetPendingWelcomesSupportedProtocolVersions<S>
+{
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetPendingWelcomesSupportedProtocolVersions<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default
+    for GetPendingWelcomesSupportedProtocolVersions<S>
+{
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for GetPendingWelcomesSupportedProtocolVersions<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetPendingWelcomesSupportedProtocolVersions<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetPendingWelcomesSupportedProtocolVersions::_1 => {
+                GetPendingWelcomesSupportedProtocolVersions::_1
+            }
+            GetPendingWelcomesSupportedProtocolVersions::_2 => {
+                GetPendingWelcomesSupportedProtocolVersions::_2
+            }
+            GetPendingWelcomesSupportedProtocolVersions::Other(v) => {
+                GetPendingWelcomesSupportedProtocolVersions::Other(v.into_static())
+            }
+        }
+    }
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
@@ -21,6 +115,9 @@ pub struct GetPendingWelcomes<S: jacquard_common::BosStr = jacquard_common::Defa
     /// (min length: 1, max length: 512)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub page_cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub supported_protocol_versions:
+        core::option::Option<Vec<GetPendingWelcomesSupportedProtocolVersions<S>>>,
 }
 
 #[derive(
@@ -32,8 +129,11 @@ pub struct GetPendingWelcomes<S: jacquard_common::BosStr = jacquard_common::Defa
 )]
 pub struct GetPendingWelcomesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub has_more: bool,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub inventory_scope:
+        core::option::Option<crate::generated::blue_catbird::chat::DirectRequestInventoryScope<S>>,
     pub inventory_session_id: S,
-    pub items: Vec<crate::generated::blue_catbird::chat::WelcomeView<S>>,
+    pub items: Vec<GetPendingWelcomesOutputItemsItem<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub next_page_cursor: core::option::Option<S>,
     pub snapshot_event_cursor: S,
@@ -49,6 +149,23 @@ pub struct GetPendingWelcomesOutput<S: jacquard_common::BosStr = jacquard_common
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum GetPendingWelcomesOutputItemsItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
+{
+    #[serde(rename = "blue.catbird.chat.defs#welcomeView")]
+    WelcomeView(Box<crate::generated::blue_catbird::chat::WelcomeView<S>>),
+    #[serde(rename = "blue.catbird.chat.defs#directRequestWelcomeView")]
+    DirectRequestWelcomeView(
+        Box<crate::generated::blue_catbird::chat::DirectRequestWelcomeView<S>>,
+    ),
 }
 
 #[derive(
@@ -331,6 +448,7 @@ pub struct GetPendingWelcomesBuilder<
         core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<S>,
+        core::option::Option<Vec<GetPendingWelcomesSupportedProtocolVersions<S>>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -356,7 +474,7 @@ impl GetPendingWelcomesBuilder<get_pending_welcomes_state::Empty, jacquard_commo
     pub fn new() -> Self {
         GetPendingWelcomesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -367,7 +485,7 @@ impl<S: jacquard_common::BosStr> GetPendingWelcomesBuilder<get_pending_welcomes_
     pub fn builder() -> Self {
         GetPendingWelcomesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -445,6 +563,27 @@ impl<St: get_pending_welcomes_state::State, S: jacquard_common::BosStr>
     }
 }
 
+impl<St: get_pending_welcomes_state::State, S: jacquard_common::BosStr>
+    GetPendingWelcomesBuilder<St, S>
+{
+    /// Set the `supportedProtocolVersions` field (optional)
+    pub fn supported_protocol_versions(
+        mut self,
+        value: impl Into<Option<Vec<GetPendingWelcomesSupportedProtocolVersions<S>>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `supportedProtocolVersions` field to an Option value (optional)
+    pub fn maybe_supported_protocol_versions(
+        mut self,
+        value: Option<Vec<GetPendingWelcomesSupportedProtocolVersions<S>>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> GetPendingWelcomesBuilder<St, S>
 where
     St: get_pending_welcomes_state::State,
@@ -459,6 +598,7 @@ where
             inventory_session_id: self._fields.1.unwrap(),
             limit: self._fields.2.unwrap(),
             page_cursor: self._fields.3,
+            supported_protocol_versions: self._fields.4,
         }
     }
 }

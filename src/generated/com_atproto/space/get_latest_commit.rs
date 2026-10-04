@@ -26,7 +26,7 @@ pub struct GetLatestCommit<S: jacquard_common::BosStr = jacquard_common::Default
 )]
 pub struct GetLatestCommitOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// The account's current signed commit.
-    pub commit: crate::com_atproto::space::SignedCommit<S>,
+    pub commit: crate::generated::com_atproto::space::SignedCommit<S>,
     #[serde(
         flatten,
         default,
@@ -167,7 +167,7 @@ pub mod get_latest_commit_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
