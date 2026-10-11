@@ -187,9 +187,19 @@ definitions. No generated file was hand-edited.
 | Input | jj change / commit |
 | --- | --- |
 | `Petrel/generator/lexicons` | `qlruxysw` / `c3310596874757e8ee2940892d5bc37368b4e75b` (local) |
-| `PetrelCatbird/lexicons` | `rwyusyut` / `4d6c2b1d329e434a8a05a57d57cb20002ea858e1` (pushed as `labyrinth-head-regen-20261011`) |
+| `PetrelCatbird/lexicons` | `rwyusyut` / `4d6c2b1d329e434a8a05a57d57cb20002ea858e1` (local; sits on unpushed local main) |
 | `mls-ds/codegen` | `slmrqksv` / `5210cfdcb030ca6edce11984ca2d00f62ef91b7e` (`labyrinth-backend-20261004`) |
 | rustfmt | 1.9.0-stable (8bab26f4f6 2026-07-14) |
+
+The Labyrinth lexicons are published on PetrelCatbird branch
+`labyrinth-head-regen-20261011` (`55e4eff49f45c14f5240b3211ec2c81ae76b3c22`),
+a lexicon-only port onto PetrelCatbird `main`. Its
+`lexicons/blue/catbird/labyrinth` tree has the same hash as below, and the
+same command over it produces byte-identical `blue_catbird/labyrinth.rs`,
+`blue_catbird/labyrinth/` and `blue_catbird/chat/declaration.rs`, and the same
+`labyrinthHead` additions in `chat.rs`. Its `chat.rs` differs elsewhere only
+because PetrelCatbird `main` does not yet have the encrypted-request chat
+lexicons this crate's base already carries.
 
 Tree hashes are SHA-256 over sorted lines of `SHA256(file-bytes)  path`:
 
