@@ -254,6 +254,25 @@ impl jacquard_common::xrpc::XrpcResp for LabyrinthRelayResponse {
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = LabyrinthRelayOutput;
     type Err = LabyrinthRelayError;
+    fn encode_output<S: jacquard_common::BosStr>(
+        output: &Self::Output<S>,
+    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError>
+    where
+        Self::Output<S>: serde::Serialize,
+    {
+        Ok(output.body.to_vec())
+    }
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+        Self::Output<S>: serde::Deserialize<'de>,
+    {
+        Ok(LabyrinthRelayOutput {
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
+        })
+    }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for LabyrinthRelay<S> {

@@ -226,3 +226,31 @@ Tree hashes are SHA-256 over sorted lines of `SHA256(file-bytes)  path`:
 - `catbird-mls` at `labyrinth-backend-20261004` (`06349f0b`), with
   `labyrinth` at `main` (`f18a3471`):
   `cargo check --features labyrinth --all-targets` passes.
+
+## `labyrinthRelay` raw-byte output (2026-10-14)
+
+`labyrinthRelay` declares `output.encoding: "application/json"` with no
+schema: the response is the relayed endpoint's body, byte for byte.
+Jacquard generated a raw `LabyrinthRelayOutput { body }` but kept the
+default JSON codec, so decoding a relayed body failed (Codex P1 on #10).
+mls-codegen now gives every schemaless `application/json` output the raw
+`encode_output`/`decode_output` Jacquard already emits for other raw
+encodings (mls-ds `codegen/src/main.rs`, `patch_schemaless_json_outputs`).
+In this corpus `labyrinthRelay` is the only such output.
+
+Regenerated with the canonical command above, with mls-codegen at mls-ds
+`ee9b1686e295` (branch `claude/project-thread-3h43ay`, mls-ds #57), Petrel
+`c4f915c98fb3` (local) and PetrelCatbird `55e4eff49f45` (PetrelCatbird #5, now on
+`main`). Only the new `XrpcResp` codec methods in
+`blue_catbird/labyrinth/labyrinth_relay.rs` were taken. The rest of that
+regen differs only by unrelated drift (a newer Petrel revision, and
+`::core::marker::PhantomData` instead of `core::marker::PhantomData`).
+With that one import line rewritten, the committed file equals the
+regenerated file:
+
+| Generated output | SHA-256 |
+| --- | --- |
+| `blue_catbird/labyrinth/labyrinth_relay.rs` as regenerated | `9060bc6d6085c44c9d78b23c8212338f1ee2619fda7bd7b9f8efa1c965a60681` |
+
+`tests/labyrinth_relay_contract.rs` checks that a relayed JSON body survives
+decode and encode unchanged.
