@@ -7,4 +7,5 @@
 pub mod bskychat;
 pub mod chat;
 pub mod circle;
+pub mod labyrinth;
 pub mod mlsDS;

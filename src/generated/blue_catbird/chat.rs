@@ -4586,6 +4586,41 @@ pub struct KeyPackageReplenishmentBody<
     >,
 }
 
+/// The participant's latest Labyrinth epoch head in the mls-ds head directory (blue.catbird.labyrinth.getEpochHead serves the full record). attestationKeyId is the chat device keyId whose key attested the head. Absent when the participant has published no head.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
+)]
+
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LabyrinthHead<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub attestation_key_id: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub epoch_head: jacquard_common::deps::bytes::Bytes,
+    pub epoch_number: i64,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_labyrinth_head_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 
 #[derive(
     serde::Serialize,
@@ -6397,6 +6432,10 @@ pub struct ParticipantView<S: jacquard_common::BosStr = jacquard_common::Default
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invitation_provenance: core::option::Option<
         crate::generated::blue_catbird::chat::InvitationProvenance<S>,
+    >,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labyrinth_head: core::option::Option<
+        crate::generated::blue_catbird::chat::LabyrinthHead<S>,
     >,
     pub leaf_count: i64,
     pub role: crate::generated::blue_catbird::chat::MemberRole<S>,
@@ -18876,6 +18915,59 @@ for KeyPackageReplenishmentBody<S> {
                     ),
                     min: 1usize,
                     actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for LabyrinthHead<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "labyrinthHead"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.attestation_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 128usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "attestation_key_id",
+                    ),
+                    max: 128usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.epoch_number;
+            if *value > 1099511627776i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "epoch_number",
+                    ),
+                    max: 1099511627776i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.epoch_number;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "epoch_number",
+                    ),
+                    min: 0i64,
+                    actual: *value,
                 });
             }
         }
@@ -36233,6 +36325,58 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 }),
             );
             map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("labyrinthHead"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "The participant's latest Labyrinth epoch head in the mls-ds head directory (blue.catbird.labyrinth.getEpochHead serves the full record). attestationKeyId is the chat device keyId whose key attested the head. Absent when the participant has published no head.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochNumber"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochHead"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("attestationKeyId")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "attestationKeyId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epochHead",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epochNumber",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(1099511627776i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("leafChange"),
                 ::jacquard_lexicon::lexicon::LexUserType::Union(::jacquard_lexicon::lexicon::LexRefUnion {
                     refs: vec![
@@ -40018,6 +40162,17 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "#invitationProvenance",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labyrinthHead",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#labyrinthHead",
                                 ),
                                 ..Default::default()
                             }),
@@ -82946,6 +83101,231 @@ where
     }
 }
 
+fn deserialize_labyrinth_head_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod labyrinth_head_state {
+
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type AttestationKeyId;
+        type EpochHead;
+        type EpochNumber;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type AttestationKeyId = Unset;
+        type EpochHead = Unset;
+        type EpochNumber = Unset;
+    }
+    ///State transition - sets the `attestation_key_id` field to Set
+    pub struct SetAttestationKeyId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAttestationKeyId<St> {}
+    impl<St: State> State for SetAttestationKeyId<St> {
+        type AttestationKeyId = Set<members::attestation_key_id>;
+        type EpochHead = St::EpochHead;
+        type EpochNumber = St::EpochNumber;
+    }
+    ///State transition - sets the `epoch_head` field to Set
+    pub struct SetEpochHead<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEpochHead<St> {}
+    impl<St: State> State for SetEpochHead<St> {
+        type AttestationKeyId = St::AttestationKeyId;
+        type EpochHead = Set<members::epoch_head>;
+        type EpochNumber = St::EpochNumber;
+    }
+    ///State transition - sets the `epoch_number` field to Set
+    pub struct SetEpochNumber<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEpochNumber<St> {}
+    impl<St: State> State for SetEpochNumber<St> {
+        type AttestationKeyId = St::AttestationKeyId;
+        type EpochHead = St::EpochHead;
+        type EpochNumber = Set<members::epoch_number>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `attestation_key_id` field
+        pub struct attestation_key_id(());
+        ///Marker type for the `epoch_head` field
+        pub struct epoch_head(());
+        ///Marker type for the `epoch_number` field
+        pub struct epoch_number(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct LabyrinthHeadBuilder<
+    St: labyrinth_head_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<i64>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl LabyrinthHead<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> LabyrinthHeadBuilder<
+        labyrinth_head_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        LabyrinthHeadBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> LabyrinthHead<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LabyrinthHeadBuilder<labyrinth_head_state::Empty, S> {
+        LabyrinthHeadBuilder::builder()
+    }
+}
+
+impl LabyrinthHeadBuilder<labyrinth_head_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        LabyrinthHeadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> LabyrinthHeadBuilder<labyrinth_head_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabyrinthHeadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabyrinthHeadBuilder<St, S>
+where
+    St: labyrinth_head_state::State,
+    St::AttestationKeyId: labyrinth_head_state::IsUnset,
+{
+    /// Set the `attestationKeyId` field (required)
+    pub fn attestation_key_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> LabyrinthHeadBuilder<labyrinth_head_state::SetAttestationKeyId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        LabyrinthHeadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabyrinthHeadBuilder<St, S>
+where
+    St: labyrinth_head_state::State,
+    St::EpochHead: labyrinth_head_state::IsUnset,
+{
+    /// Set the `epochHead` field (required)
+    pub fn epoch_head(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> LabyrinthHeadBuilder<labyrinth_head_state::SetEpochHead<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        LabyrinthHeadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabyrinthHeadBuilder<St, S>
+where
+    St: labyrinth_head_state::State,
+    St::EpochNumber: labyrinth_head_state::IsUnset,
+{
+    /// Set the `epochNumber` field (required)
+    pub fn epoch_number(
+        mut self,
+        value: impl Into<i64>,
+    ) -> LabyrinthHeadBuilder<labyrinth_head_state::SetEpochNumber<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        LabyrinthHeadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabyrinthHeadBuilder<St, S>
+where
+    St: labyrinth_head_state::State,
+    St::AttestationKeyId: labyrinth_head_state::IsSet,
+    St::EpochHead: labyrinth_head_state::IsSet,
+    St::EpochNumber: labyrinth_head_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> LabyrinthHead<S> {
+        LabyrinthHead {
+            attestation_key_id: self._fields.0.unwrap(),
+            epoch_head: self._fields.1.unwrap(),
+            epoch_number: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> LabyrinthHead<S> {
+        LabyrinthHead {
+            attestation_key_id: self._fields.0.unwrap(),
+            epoch_head: self._fields.1.unwrap(),
+            epoch_number: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 fn deserialize_leaf_recovery_cancellation_body_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -98952,6 +99332,7 @@ pub struct ParticipantViewBuilder<
         core::option::Option<
             crate::generated::blue_catbird::chat::InvitationProvenance<S>,
         >,
+        core::option::Option<crate::generated::blue_catbird::chat::LabyrinthHead<S>>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::MemberRole<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ParticipantStatus<S>>,
@@ -98982,7 +99363,7 @@ impl ParticipantViewBuilder<participant_view_state::Empty, jacquard_common::Defa
     pub fn new() -> Self {
         ParticipantViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -98995,7 +99376,7 @@ impl<
     pub fn builder() -> Self {
         ParticipantViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -99025,6 +99406,28 @@ impl<
     }
 }
 
+impl<
+    St: participant_view_state::State,
+    S: jacquard_common::BosStr,
+> ParticipantViewBuilder<St, S> {
+    /// Set the `labyrinthHead` field (optional)
+    pub fn labyrinth_head(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::LabyrinthHead<S>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `labyrinthHead` field to an Option value (optional)
+    pub fn maybe_labyrinth_head(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::LabyrinthHead<S>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ParticipantViewBuilder<St, S>
 where
     St: participant_view_state::State,
@@ -99035,7 +99438,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ParticipantViewBuilder<participant_view_state::SetLeafCount<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ParticipantViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -99054,7 +99457,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::MemberRole<S>>,
     ) -> ParticipantViewBuilder<participant_view_state::SetRole<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ParticipantViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -99073,7 +99476,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::ParticipantStatus<S>>,
     ) -> ParticipantViewBuilder<participant_view_state::SetStatus<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ParticipantViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -99092,7 +99495,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> ParticipantViewBuilder<participant_view_state::SetUserDid<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ParticipantViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -99113,10 +99516,11 @@ where
     pub fn build(self) -> ParticipantView<S> {
         ParticipantView {
             invitation_provenance: self._fields.0,
-            leaf_count: self._fields.1.unwrap(),
-            role: self._fields.2.unwrap(),
-            status: self._fields.3.unwrap(),
-            user_did: self._fields.4.unwrap(),
+            labyrinth_head: self._fields.1,
+            leaf_count: self._fields.2.unwrap(),
+            role: self._fields.3.unwrap(),
+            status: self._fields.4.unwrap(),
+            user_did: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -99130,10 +99534,11 @@ where
     ) -> ParticipantView<S> {
         ParticipantView {
             invitation_provenance: self._fields.0,
-            leaf_count: self._fields.1.unwrap(),
-            role: self._fields.2.unwrap(),
-            status: self._fields.3.unwrap(),
-            user_did: self._fields.4.unwrap(),
+            labyrinth_head: self._fields.1,
+            leaf_count: self._fields.2.unwrap(),
+            role: self._fields.3.unwrap(),
+            status: self._fields.4.unwrap(),
+            user_did: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }

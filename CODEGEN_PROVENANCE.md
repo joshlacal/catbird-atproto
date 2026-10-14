@@ -139,3 +139,90 @@ existing Space contract suite remains enabled.
 | PetrelCatbird chat `blue.catbird.chat.submitTransition.json` | `f843e0ee461008a116676038dabc49b1a1f351a1f06ae03672518a014acd9805` |
 | Generated chat `get_conversation_state.rs` | `8748643995027c4a4ce3055eae4fb67f3b944f19252ab528e3955df6635eb301` |
 | Generated chat `submit_transition.rs` | `937633a9d2102b980180b4ac3f1eb1cca7212335fc1863e1a1d57c9066de96ea` |
+
+## Labyrinth namespace and `participantView.labyrinthHead` (2026-10-11)
+
+This regen adds the generated `blue.catbird.labyrinth.*` namespace, the
+optional `labyrinthHead` field on `blue.catbird.chat.defs#participantView`
+(with its `#labyrinthHead` object), and protocol version `"2"` on
+`blue.catbird.chat.declaration`. It replaces the hand-written
+`LabyrinthHead` shim mls-ds used on `labyrinth-backend-20261004`. The base is
+`integration/clean-chat-merge-20261004` (`5819783a`).
+
+### Canonical command
+
+Run from a workspace root holding `Petrel`, `PetrelCatbird`, `mls-ds` and
+`catbird-atproto`, into a scratch output directory:
+
+```sh
+cargo run --manifest-path mls-ds/Cargo.toml -p mls-codegen -- \
+  --lexdir Petrel/generator/lexicons \
+  --lexdir PetrelCatbird/lexicons \
+  --outdir "$RAW"
+cp -R "$RAW" "$CANON"
+find "$CANON" -name '*.rs' -print0 | xargs -0 rustfmt
+```
+
+### Scope
+
+A full regen at these inputs also changes `lib.rs`, 62 `com_atproto` files
+(different Petrel lexicon revision) and `blue_catbird/circle.rs` (this
+PetrelCatbird line has no Circle Space declaration). None of that was
+copied. Only these generator outputs were copied in, unmodified:
+
+| File | Source |
+| --- | --- |
+| `blue_catbird/labyrinth.rs`, `blue_catbird/labyrinth/` (46 files) | `$CANON` (rustfmt, as the rest of the tree) |
+| `blue_catbird/chat/declaration.rs` | `$CANON` |
+| `blue_catbird/chat.rs` | `$RAW` |
+| `blue_catbird.rs` | `$RAW` |
+
+`chat.rs` and `blue_catbird.rs` are committed on the base without rustfmt
+(the raw output reproduces the base files exactly apart from the Labyrinth
+additions), so they were taken from `$RAW` to keep the diff to the new
+definitions. No generated file was hand-edited.
+
+### Pinned inputs
+
+| Input | jj change / commit |
+| --- | --- |
+| `Petrel/generator/lexicons` | `qlruxysw` / `c3310596874757e8ee2940892d5bc37368b4e75b` (local) |
+| `PetrelCatbird/lexicons` | `rwyusyut` / `4d6c2b1d329e434a8a05a57d57cb20002ea858e1` (local; sits on unpushed local main) |
+| `mls-ds/codegen` | `slmrqksv` / `5210cfdcb030ca6edce11984ca2d00f62ef91b7e` (`labyrinth-backend-20261004`) |
+| rustfmt | 1.9.0-stable (8bab26f4f6 2026-07-14) |
+
+The Labyrinth lexicons are published on PetrelCatbird branch
+`labyrinth-head-regen-20261011` (`55e4eff49f45c14f5240b3211ec2c81ae76b3c22`),
+a lexicon-only port onto PetrelCatbird `main`. Its
+`lexicons/blue/catbird/labyrinth` tree has the same hash as below, and the
+same command over it produces byte-identical `blue_catbird/labyrinth.rs`,
+`blue_catbird/labyrinth/` and `blue_catbird/chat/declaration.rs`, and the same
+`labyrinthHead` additions in `chat.rs`. Its `chat.rs` differs elsewhere only
+because PetrelCatbird `main` does not yet have the encrypted-request chat
+lexicons this crate's base already carries.
+
+Tree hashes are SHA-256 over sorted lines of `SHA256(file-bytes)  path`:
+
+| Input or generated output | SHA-256 |
+| --- | --- |
+| `PetrelCatbird/lexicons` tree (`*.json`) | `0ab028c047bb9d8d3351b87204b56db98c74c2183b684d93432a9514ad7f72ad` |
+| `PetrelCatbird/lexicons/blue/catbird/labyrinth` tree | `305f594868979202eeda53dcdc1e0dc2471b70a0cd9bb9db966cad8e8b166b5a` |
+| `Petrel/generator/lexicons` tree (`*.json`) | `1f8da52e6a2ed2ba4696d85d26ae4234c55e68a95e1ac8eba7c2182e4653cc83` |
+| `blue.catbird.chat.defs.json` blob | `d830abb92430704e52aaf0b47eda435a01be9fd1d5f61d52daf42c2b22a48bcd` |
+| `blue.catbird.chat.declaration.json` blob | `99532fb6e3a2b52b7d34c568b15865b501d5b227947d655a6513734a0595ca92` |
+| Generated `blue_catbird/chat.rs` | `d2291a52f9b5a3777882d03ada4d3f81983268bb8c9bbec1c3a24e258203f86e` |
+| Generated `blue_catbird/chat/declaration.rs` | `d8a9205e955c4110f7065662af00b966325fc0c32b336a988b37222ee0a136fe` |
+| Generated `blue_catbird.rs` | `a6bd3d81d167daea2ecbb03721fe7f0a429052fc7b2792ce992112c954ce9830` |
+| Generated `blue_catbird/labyrinth.rs` | `827091893d3a1e417035a067609d4537796ab85ec4caec5691aefeb60dc13ae0` |
+| Generated `blue_catbird/labyrinth/` tree | `3b8d9f12c8969dc2ae4be49da9cd21a5c35e9e25a6b65dc69465d3e947200c95` |
+
+### Verification
+
+- `catbird-atproto`: `cargo check` passes.
+- `mls-ds` at `labyrinth-backend-20261004` (`5210cfdc`), no shim:
+  `cargo check --workspace --all-targets --features catbird-server/test-support`
+  passes, and
+  `conversation_state_response_carries_participant_labyrinth_head` passes.
+- `catbird-mls` at `labyrinth-backend-20261004` (`06349f0b`), with
+  `labyrinth` at `main` (`f18a3471`):
+  `cargo check --features labyrinth --all-targets` passes.
