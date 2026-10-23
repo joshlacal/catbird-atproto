@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -22,6 +23,7 @@ def fingerprint(root):
 
 
 def normalize_projection(stage, overlay):
+    normalize_named_byte_fields(stage)
     # Namespace feature gates belong to the reproducible projection rather than
     # one-off edits to the generated module index.
     index = stage / "com_atproto.rs"
@@ -66,6 +68,59 @@ def normalize_projection(stage, overlay):
     }
 ''')
     relay.write_text(text)
+
+
+def normalize_named_byte_fields(stage):
+    """Carry the bytes codec across Jacquard's transparent named aliases.
+
+    Jacquard 0.13 annotates inline bytes but drops that annotation for refs to
+    named bytes definitions. Without it JSON `$bytes` maps cannot decode and
+    DAG-CBOR serializes the alias as an integer array instead of a byte string.
+    Discover aliases from generated definitions so the fix follows the schema
+    corpus and does not depend on private field/type names.
+    """
+    files = sorted(stage.rglob("*.rs"))
+    aliases = set()
+    for path in files:
+        module = "::".join(path.relative_to(stage).with_suffix("").parts)
+        for name in re.findall(
+            r"pub type (\w+) = jacquard_common::deps::bytes::Bytes;", path.read_text()
+        ):
+            aliases.add(f"crate::generated::{module}::{name}")
+    if not aliases:
+        raise ValueError("Review named-byte projection after a Jacquard type change")
+
+    field_pattern = re.compile(r"(?m)^(    )pub (\w+): ([^,]+),$")
+    count = 0
+    for path in files:
+        text = path.read_text()
+
+        def annotate(match):
+            nonlocal count
+            field_type = "".join(match[3].split())
+            if field_type in aliases:
+                helper = 'with = "jacquard_common::serde_bytes_helper"'
+            elif any(field_type == f"core::option::Option<{alias}>" for alias in aliases):
+                helper = 'default, with = "jacquard_common::opt_serde_bytes_helper"'
+            elif any(alias in field_type for alias in aliases):
+                raise ValueError(f"Unsupported named-byte field shape in {path}: {field_type}")
+            else:
+                return match[0]
+            # Fail if upstream starts providing its own codec; do not silently
+            # stack conflicting serde attributes on an upgraded generator.
+            attributes = text[max(0, text.rfind("\n    pub ", 0, match.start())):match.start()]
+            if "serde_bytes_helper" in attributes:
+                # Only the contiguous attributes on this field are relevant.
+                last_field_end = attributes.rfind(",\n")
+                if "serde_bytes_helper" in attributes[last_field_end + 2:]:
+                    raise ValueError(f"Review upstream byte codec for {path}:{match[2]}")
+            count += 1
+            return f"{match[1]}#[serde({helper})]\n{match[0]}"
+
+        updated = field_pattern.sub(annotate, text)
+        if updated != text:
+            path.write_text(updated)
+    print(f"Preserved bytes codec on {count} named byte fields")
 
 
 def main():
