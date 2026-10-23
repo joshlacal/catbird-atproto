@@ -2,7 +2,9 @@
 
 extern crate alloc;
 
+// Jacquard emits the schema minimum literally, including `usize < 0` for minLength 0.
 #[allow(
+    clippy::absurd_extreme_comparisons,
     clippy::manual_strip,
     clippy::needless_update,
     clippy::new_ret_no_self,

@@ -39,7 +39,7 @@ pub struct AppPassword<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ListAppPasswordsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub passwords: Vec<crate::com_atproto::server::list_app_passwords::AppPassword<S>>,
+    pub passwords: Vec<crate::generated::com_atproto::server::list_app_passwords::AppPassword<S>>,
     #[serde(
         flatten,
         default,
@@ -189,7 +189,7 @@ pub mod app_password_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

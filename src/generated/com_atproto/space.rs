@@ -20,13 +20,14 @@ pub mod list_records;
 pub mod list_repo_ops;
 pub mod list_repos;
 pub mod list_spaces;
+pub mod notify_credential_revoked;
 pub mod notify_space_deleted;
 pub mod notify_write;
 pub mod put_record;
 pub mod register_notify;
 pub mod unregister_notify;
 
-/// A signed commit over the current state of a permissioned repo (v2 authenticated transition).
+/// A commit over the current state of a permissioned repo. Carries no signature: the repo host authenticates it to a syncer with a MAC in the Atproto-Space-Mac response header.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -35,58 +36,22 @@ pub mod unregister_notify;
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SignedCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Operation action (create, update, delete) for record transitions.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub action: core::option::Option<S>,
-    /// New record CID for create/update transitions.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
-    /// Repository DID.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
-    /// sha256 digest of the new LtHash state (32 bytes).
+pub struct Commit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// sha256 digest of the LtHash state (32 bytes).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub hash: jacquard_common::deps::bytes::Bytes,
-    /// Per-signature input keying material (legacy v1 compatibility).
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub ikm: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    /// HMAC digest (legacy v1 compatibility).
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub mac: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    /// Canonical operation path (collection/rkey) for record transitions.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub path: core::option::Option<S>,
-    /// Previous record CID for update/delete transitions.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub prev_cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
-    /// sha256 digest of the previous LtHash state (32 bytes), if any.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub prev_hash: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    /// Previous commit revision (TID), if any.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub prev_rev: core::option::Option<jacquard_common::types::string::Tid>,
-    /// Commit revision (TID), bound into the signed transcript.
+    pub data: jacquard_common::deps::bytes::Bytes,
+    /// The author DID of the repo.
+    pub repo: jacquard_common::types::string::Did<S>,
+    /// Commit revision (TID).
     pub rev: jacquard_common::types::string::Tid,
-    /// Cryptographic signature over the canonical commit domain and fields.
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub sig: jacquard_common::deps::bytes::Bytes,
-    /// Canonical permissioned-space URI.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub space: core::option::Option<jacquard_common::types::string::AtUri<S>>,
-    /// Record value bytes or digest for create/update transitions.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub val: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    /// Commit format version (1 for legacy v1, 2 for authenticated-transition v2).
+    /// Reference to the space.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// Commit format version, currently 1.
     pub ver: i64,
     #[serde(
         flatten,
         default,
-        deserialize_with = "deserialize_signed_commit_extra_data",
+        deserialize_with = "deserialize_commit_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -97,12 +62,12 @@ pub struct SignedCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SignedCommit<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Commit<S> {
     fn nsid() -> &'static str {
         "com.atproto.space.defs"
     }
     fn def_name() -> &'static str {
-        "signedCommit"
+        "commit"
     }
     fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_com_atproto_space_defs()
@@ -112,7 +77,7 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sig
     }
 }
 
-fn deserialize_signed_commit_extra_data<'de, S, D>(
+fn deserialize_commit_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
     core::option::Option<
@@ -136,7 +101,7 @@ where
     Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
-pub mod signed_commit_state {
+pub mod commit_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
@@ -146,189 +111,152 @@ pub mod signed_commit_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Hash;
+        type Data;
+        type Repo;
         type Rev;
-        type Sig;
+        type Space;
         type Ver;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Hash = Unset;
+        type Data = Unset;
+        type Repo = Unset;
         type Rev = Unset;
-        type Sig = Unset;
+        type Space = Unset;
         type Ver = Unset;
     }
-    ///State transition - sets the `hash` field to Set
-    pub struct SetHash<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetHash<St> {}
-    impl<St: State> State for SetHash<St> {
-        type Hash = Set<members::hash>;
+    ///State transition - sets the `data` field to Set
+    pub struct SetData<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetData<St> {}
+    impl<St: State> State for SetData<St> {
+        type Data = Set<members::data>;
+        type Repo = St::Repo;
         type Rev = St::Rev;
-        type Sig = St::Sig;
+        type Space = St::Space;
+        type Ver = St::Ver;
+    }
+    ///State transition - sets the `repo` field to Set
+    pub struct SetRepo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepo<St> {}
+    impl<St: State> State for SetRepo<St> {
+        type Data = St::Data;
+        type Repo = Set<members::repo>;
+        type Rev = St::Rev;
+        type Space = St::Space;
         type Ver = St::Ver;
     }
     ///State transition - sets the `rev` field to Set
     pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetRev<St> {}
     impl<St: State> State for SetRev<St> {
-        type Hash = St::Hash;
+        type Data = St::Data;
+        type Repo = St::Repo;
         type Rev = Set<members::rev>;
-        type Sig = St::Sig;
+        type Space = St::Space;
         type Ver = St::Ver;
     }
-    ///State transition - sets the `sig` field to Set
-    pub struct SetSig<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetSig<St> {}
-    impl<St: State> State for SetSig<St> {
-        type Hash = St::Hash;
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Data = St::Data;
+        type Repo = St::Repo;
         type Rev = St::Rev;
-        type Sig = Set<members::sig>;
+        type Space = Set<members::space>;
         type Ver = St::Ver;
     }
     ///State transition - sets the `ver` field to Set
     pub struct SetVer<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetVer<St> {}
     impl<St: State> State for SetVer<St> {
-        type Hash = St::Hash;
+        type Data = St::Data;
+        type Repo = St::Repo;
         type Rev = St::Rev;
-        type Sig = St::Sig;
+        type Space = St::Space;
         type Ver = Set<members::ver>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `hash` field
-        pub struct hash(());
+        ///Marker type for the `data` field
+        pub struct data(());
+        ///Marker type for the `repo` field
+        pub struct repo(());
         ///Marker type for the `rev` field
         pub struct rev(());
-        ///Marker type for the `sig` field
-        pub struct sig(());
+        ///Marker type for the `space` field
+        pub struct space(());
         ///Marker type for the `ver` field
         pub struct ver(());
     }
 }
 
 /// Builder for constructing an instance of this type.
-pub struct SignedCommitBuilder<
-    St: signed_commit_state::State,
+pub struct CommitBuilder<
+    St: commit_state::State,
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<S>,
-        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<S>,
-        core::option::Option<jacquard_common::types::string::Cid<S>>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::types::string::Tid>,
-        core::option::Option<jacquard_common::types::string::Tid>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<jacquard_common::types::string::AtUri<S>>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl SignedCommit<jacquard_common::DefaultStr> {
+impl Commit<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SignedCommitBuilder<signed_commit_state::Empty, jacquard_common::DefaultStr> {
-        SignedCommitBuilder::new()
+    pub fn new() -> CommitBuilder<commit_state::Empty, jacquard_common::DefaultStr> {
+        CommitBuilder::new()
     }
 }
 
-impl<S: jacquard_common::BosStr> SignedCommit<S> {
+impl<S: jacquard_common::BosStr> Commit<S> {
     /// Create a new builder for this type
-    pub fn builder() -> SignedCommitBuilder<signed_commit_state::Empty, S> {
-        SignedCommitBuilder::builder()
+    pub fn builder() -> CommitBuilder<commit_state::Empty, S> {
+        CommitBuilder::builder()
     }
 }
 
-impl SignedCommitBuilder<signed_commit_state::Empty, jacquard_common::DefaultStr> {
+impl CommitBuilder<commit_state::Empty, jacquard_common::DefaultStr> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
-        SignedCommitBuilder {
+        CommitBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None,
-            ),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<S: jacquard_common::BosStr> SignedCommitBuilder<signed_commit_state::Empty, S> {
+impl<S: jacquard_common::BosStr> CommitBuilder<commit_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
-        SignedCommitBuilder {
+        CommitBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None,
-            ),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `action` field (optional)
-    pub fn action(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.0 = value.into();
-        self
-    }
-    /// Set the `action` field to an Option value (optional)
-    pub fn maybe_action(mut self, value: Option<S>) -> Self {
-        self._fields.0 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `cid` field (optional)
-    pub fn cid(mut self, value: impl Into<Option<jacquard_common::types::string::Cid<S>>>) -> Self {
-        self._fields.1 = value.into();
-        self
-    }
-    /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<S>>) -> Self {
-        self._fields.1 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `did` field (optional)
-    pub fn did(mut self, value: impl Into<Option<jacquard_common::types::string::Did<S>>>) -> Self {
-        self._fields.2 = value.into();
-        self
-    }
-    /// Set the `did` field to an Option value (optional)
-    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
-        self._fields.2 = value;
-        self
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> SignedCommitBuilder<St, S>
+impl<St, S: jacquard_common::BosStr> CommitBuilder<St, S>
 where
-    St: signed_commit_state::State,
-    St::Hash: signed_commit_state::IsUnset,
+    St: commit_state::State,
+    St::Data: commit_state::IsUnset,
 {
-    /// Set the `hash` field (required)
-    pub fn hash(
+    /// Set the `data` field (required)
+    pub fn data(
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> SignedCommitBuilder<signed_commit_state::SetHash<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
-        SignedCommitBuilder {
+    ) -> CommitBuilder<commit_state::SetData<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        CommitBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
@@ -336,105 +264,37 @@ where
     }
 }
 
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `ikm` field (optional)
-    pub fn ikm(mut self, value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>) -> Self {
-        self._fields.4 = value.into();
-        self
-    }
-    /// Set the `ikm` field to an Option value (optional)
-    pub fn maybe_ikm(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.4 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `mac` field (optional)
-    pub fn mac(mut self, value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>) -> Self {
-        self._fields.5 = value.into();
-        self
-    }
-    /// Set the `mac` field to an Option value (optional)
-    pub fn maybe_mac(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.5 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `path` field (optional)
-    pub fn path(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.6 = value.into();
-        self
-    }
-    /// Set the `path` field to an Option value (optional)
-    pub fn maybe_path(mut self, value: Option<S>) -> Self {
-        self._fields.6 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `prevCid` field (optional)
-    pub fn prev_cid(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Cid<S>>>,
-    ) -> Self {
-        self._fields.7 = value.into();
-        self
-    }
-    /// Set the `prevCid` field to an Option value (optional)
-    pub fn maybe_prev_cid(mut self, value: Option<jacquard_common::types::string::Cid<S>>) -> Self {
-        self._fields.7 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `prevHash` field (optional)
-    pub fn prev_hash(
-        mut self,
-        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
-    ) -> Self {
-        self._fields.8 = value.into();
-        self
-    }
-    /// Set the `prevHash` field to an Option value (optional)
-    pub fn maybe_prev_hash(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.8 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `prevRev` field (optional)
-    pub fn prev_rev(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Tid>>,
-    ) -> Self {
-        self._fields.9 = value.into();
-        self
-    }
-    /// Set the `prevRev` field to an Option value (optional)
-    pub fn maybe_prev_rev(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
-        self._fields.9 = value;
-        self
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> SignedCommitBuilder<St, S>
+impl<St, S: jacquard_common::BosStr> CommitBuilder<St, S>
 where
-    St: signed_commit_state::State,
-    St::Rev: signed_commit_state::IsUnset,
+    St: commit_state::State,
+    St::Repo: commit_state::IsUnset,
+{
+    /// Set the `repo` field (required)
+    pub fn repo(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> CommitBuilder<commit_state::SetRepo<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        CommitBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CommitBuilder<St, S>
+where
+    St: commit_state::State,
+    St::Rev: commit_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
         value: impl Into<jacquard_common::types::string::Tid>,
-    ) -> SignedCommitBuilder<signed_commit_state::SetRev<St>, S> {
-        self._fields.10 = ::core::option::Option::Some(value.into());
-        SignedCommitBuilder {
+    ) -> CommitBuilder<commit_state::SetRev<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        CommitBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
@@ -442,66 +302,18 @@ where
     }
 }
 
-impl<St, S: jacquard_common::BosStr> SignedCommitBuilder<St, S>
+impl<St, S: jacquard_common::BosStr> CommitBuilder<St, S>
 where
-    St: signed_commit_state::State,
-    St::Sig: signed_commit_state::IsUnset,
+    St: commit_state::State,
+    St::Space: commit_state::IsUnset,
 {
-    /// Set the `sig` field (required)
-    pub fn sig(
-        mut self,
-        value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> SignedCommitBuilder<signed_commit_state::SetSig<St>, S> {
-        self._fields.11 = ::core::option::Option::Some(value.into());
-        SignedCommitBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `space` field (optional)
+    /// Set the `space` field (required)
     pub fn space(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::AtUri<S>>>,
-    ) -> Self {
-        self._fields.12 = value.into();
-        self
-    }
-    /// Set the `space` field to an Option value (optional)
-    pub fn maybe_space(mut self, value: Option<jacquard_common::types::string::AtUri<S>>) -> Self {
-        self._fields.12 = value;
-        self
-    }
-}
-
-impl<St: signed_commit_state::State, S: jacquard_common::BosStr> SignedCommitBuilder<St, S> {
-    /// Set the `val` field (optional)
-    pub fn val(mut self, value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>) -> Self {
-        self._fields.13 = value.into();
-        self
-    }
-    /// Set the `val` field to an Option value (optional)
-    pub fn maybe_val(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.13 = value;
-        self
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> SignedCommitBuilder<St, S>
-where
-    St: signed_commit_state::State,
-    St::Ver: signed_commit_state::IsUnset,
-{
-    /// Set the `ver` field (required)
-    pub fn ver(
-        mut self,
-        value: impl Into<i64>,
-    ) -> SignedCommitBuilder<signed_commit_state::SetVer<St>, S> {
-        self._fields.14 = ::core::option::Option::Some(value.into());
-        SignedCommitBuilder {
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> CommitBuilder<commit_state::SetSpace<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        CommitBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
@@ -509,32 +321,39 @@ where
     }
 }
 
-impl<St, S: jacquard_common::BosStr> SignedCommitBuilder<St, S>
+impl<St, S: jacquard_common::BosStr> CommitBuilder<St, S>
 where
-    St: signed_commit_state::State,
-    St::Hash: signed_commit_state::IsSet,
-    St::Rev: signed_commit_state::IsSet,
-    St::Sig: signed_commit_state::IsSet,
-    St::Ver: signed_commit_state::IsSet,
+    St: commit_state::State,
+    St::Ver: commit_state::IsUnset,
+{
+    /// Set the `ver` field (required)
+    pub fn ver(mut self, value: impl Into<i64>) -> CommitBuilder<commit_state::SetVer<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        CommitBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CommitBuilder<St, S>
+where
+    St: commit_state::State,
+    St::Data: commit_state::IsSet,
+    St::Repo: commit_state::IsSet,
+    St::Rev: commit_state::IsSet,
+    St::Space: commit_state::IsSet,
+    St::Ver: commit_state::IsSet,
 {
     /// Build the final struct.
-    pub fn build(self) -> SignedCommit<S> {
-        SignedCommit {
-            action: self._fields.0,
-            cid: self._fields.1,
-            did: self._fields.2,
-            hash: self._fields.3.unwrap(),
-            ikm: self._fields.4,
-            mac: self._fields.5,
-            path: self._fields.6,
-            prev_cid: self._fields.7,
-            prev_hash: self._fields.8,
-            prev_rev: self._fields.9,
-            rev: self._fields.10.unwrap(),
-            sig: self._fields.11.unwrap(),
-            space: self._fields.12,
-            val: self._fields.13,
-            ver: self._fields.14.unwrap(),
+    pub fn build(self) -> Commit<S> {
+        Commit {
+            data: self._fields.0.unwrap(),
+            repo: self._fields.1.unwrap(),
+            rev: self._fields.2.unwrap(),
+            space: self._fields.3.unwrap(),
+            ver: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -545,23 +364,13 @@ where
             jacquard_common::deps::smol_str::SmolStr,
             jacquard_common::types::value::Data<S>,
         >,
-    ) -> SignedCommit<S> {
-        SignedCommit {
-            action: self._fields.0,
-            cid: self._fields.1,
-            did: self._fields.2,
-            hash: self._fields.3.unwrap(),
-            ikm: self._fields.4,
-            mac: self._fields.5,
-            path: self._fields.6,
-            prev_cid: self._fields.7,
-            prev_hash: self._fields.8,
-            prev_rev: self._fields.9,
-            rev: self._fields.10.unwrap(),
-            sig: self._fields.11.unwrap(),
-            space: self._fields.12,
-            val: self._fields.13,
-            ver: self._fields.14.unwrap(),
+    ) -> Commit<S> {
+        Commit {
+            data: self._fields.0.unwrap(),
+            repo: self._fields.1.unwrap(),
+            rev: self._fields.2.unwrap(),
+            space: self._fields.3.unwrap(),
+            ver: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -574,19 +383,20 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("signedCommit"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("commit"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "A signed commit over the current state of a permissioned repo (v2 authenticated transition).",
+                            "A commit over the current state of a permissioned repo. Carries no signature: the repo host authenticates it to a syncer with a MAC in the Atproto-Space-Mac response header.",
                         ),
                     ),
                     required: Some(
                         vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("ver"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repo"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("space"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("hash"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sig")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("data")
                         ],
                     ),
                     properties: {
@@ -594,120 +404,24 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "action",
+                                "data",
                             ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Operation action (create, update, delete) for record transitions.",
-                                    ),
-                                ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
                                 ..Default::default()
                             }),
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "cid",
+                                "repo",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "New record CID for create/update transitions.",
+                                        "The author DID of the repo.",
                                     ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "did",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Repository DID."),
                                 ),
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "hash",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "ikm",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "mac",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "path",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Canonical operation path (collection/rkey) for record transitions.",
-                                    ),
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "prevCid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Previous record CID for update/delete transitions.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "prevHash",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "prevRev",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Previous commit revision (TID), if any.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
                                 ),
                                 ..Default::default()
                             }),
@@ -719,7 +433,7 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "Commit revision (TID), bound into the signed transcript.",
+                                        "Commit revision (TID).",
                                     ),
                                 ),
                                 format: Some(
@@ -730,33 +444,17 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sig",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "space",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "Canonical permissioned-space URI.",
+                                        "Reference to the space.",
                                     ),
                                 ),
                                 format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "val",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
                                 ..Default::default()
                             }),
                         );

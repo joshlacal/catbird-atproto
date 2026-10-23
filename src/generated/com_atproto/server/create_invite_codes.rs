@@ -64,7 +64,7 @@ pub struct CreateInviteCodes<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateInviteCodesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub codes: Vec<crate::com_atproto::server::create_invite_codes::AccountCodes<S>>,
+    pub codes: Vec<crate::generated::com_atproto::server::create_invite_codes::AccountCodes<S>>,
     #[serde(
         flatten,
         default,
@@ -151,7 +151,7 @@ pub mod account_codes_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -422,7 +422,7 @@ pub mod create_invite_codes_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

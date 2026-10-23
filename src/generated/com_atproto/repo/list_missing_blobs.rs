@@ -29,7 +29,7 @@ pub struct ListMissingBlobs<S: jacquard_common::BosStr = jacquard_common::Defaul
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ListMissingBlobsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub blobs: Vec<crate::com_atproto::repo::list_missing_blobs::RecordBlob<S>>,
+    pub blobs: Vec<crate::generated::com_atproto::repo::list_missing_blobs::RecordBlob<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     #[serde(
@@ -120,7 +120,7 @@ pub mod list_missing_blobs_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -253,7 +253,7 @@ pub mod record_blob_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

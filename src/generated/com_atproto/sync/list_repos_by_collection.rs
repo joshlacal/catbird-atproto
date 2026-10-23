@@ -32,7 +32,7 @@ pub struct ListReposByCollection<S: jacquard_common::BosStr = jacquard_common::D
 pub struct ListReposByCollectionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub repos: Vec<crate::com_atproto::sync::list_repos_by_collection::Repo<S>>,
+    pub repos: Vec<crate::generated::com_atproto::sync::list_repos_by_collection::Repo<S>>,
     #[serde(
         flatten,
         default,
@@ -120,7 +120,7 @@ pub mod list_repos_by_collection_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -297,7 +297,7 @@ pub mod repo_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -22,7 +22,7 @@ pub struct ListSpaces<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub r#type: core::option::Option<jacquard_common::types::string::Nsid<S>>,
+    pub space_type: core::option::Option<jacquard_common::types::string::Nsid<S>>,
 }
 
 #[derive(
@@ -230,16 +230,19 @@ impl<St: list_spaces_state::State, S: jacquard_common::BosStr> ListSpacesBuilder
 }
 
 impl<St: list_spaces_state::State, S: jacquard_common::BosStr> ListSpacesBuilder<St, S> {
-    /// Set the `type` field (optional)
-    pub fn r#type(
+    /// Set the `spaceType` field (optional)
+    pub fn space_type(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Nsid<S>>>,
     ) -> Self {
         self._fields.3 = value.into();
         self
     }
-    /// Set the `type` field to an Option value (optional)
-    pub fn maybe_type(mut self, value: Option<jacquard_common::types::string::Nsid<S>>) -> Self {
+    /// Set the `spaceType` field to an Option value (optional)
+    pub fn maybe_space_type(
+        mut self,
+        value: Option<jacquard_common::types::string::Nsid<S>>,
+    ) -> Self {
         self._fields.3 = value;
         self
     }
@@ -255,7 +258,7 @@ where
             cursor: self._fields.0,
             did: self._fields.1,
             limit: self._fields.2,
-            r#type: self._fields.3,
+            space_type: self._fields.3,
         }
     }
 }
@@ -456,12 +459,12 @@ fn lexicon_doc_com_atproto_space_listSpaces() -> jacquard_lexicon::lexicon::Lexi
                                 );
                                 map.insert(
                                     ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                        "type",
+                                        "spaceType",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
-                                                "Filter to spaces of this type.",
+                                                "Filter to spaces of this space type.",
                                             ),
                                         ),
                                         format: Some(

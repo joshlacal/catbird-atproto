@@ -8,6 +8,7 @@
 //! Generated bindings for the `blue.catbird.labyrinth` Lexicon namespace/module.
 pub mod append_batch;
 pub mod append_owner_batch;
+pub mod append_space_batch;
 pub mod batch;
 pub mod create_device;
 pub mod create_epoch;
@@ -30,6 +31,8 @@ pub mod get_epoch;
 pub mod get_epoch_head;
 pub mod get_member_devices;
 pub mod get_messages;
+pub mod get_space_membership;
+pub mod get_thread_storage;
 pub mod get_virtual_device;
 pub mod labyrinth_relay;
 pub mod list_batches;
@@ -38,6 +41,7 @@ pub mod list_epoch_members;
 pub mod list_epochs;
 pub mod list_owner_batches;
 pub mod list_owner_threads;
+pub mod list_space_batches;
 pub mod list_threads;
 pub mod list_virtual_devices;
 pub mod mailbox_keys;
@@ -365,6 +369,68 @@ pub struct ServerOrder<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+/// Authoritative tombstone overlay for an item in an immutable sender batch. Apply after verifying the source record.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SpaceBatchRedaction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub message_id: S,
+    pub redaction: crate::generated::blue_catbird::labyrinth::Redaction<S>,
+    pub timestamp: i64,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_space_batch_redaction_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// An immutable Space batch reference and its authenticated sequencer order. Server tombstones remain authoritative even if the source ciphertext is still readable.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SpaceBatchView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub author: jacquard_common::types::string::Did<S>,
+    pub cid: jacquard_common::types::string::Cid<S>,
+    /// Immutable UUID identifying this conversation storage lifecycle. A recreated Space requires a new generation.
+    pub generation: S,
+    /// Original batch item count. Only a complete distinct redaction overlay can replace a purged source record.
+    pub item_count: i64,
+    pub order: crate::generated::blue_catbird::labyrinth::ServerOrder<S>,
+    pub redactions: Vec<crate::generated::blue_catbird::labyrinth::SpaceBatchRedaction<S>>,
+    pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
+    /// Conversation Space reference, bound to the storage generation.
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_space_batch_view_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 /// [CB-18] Binds an epoch head to the account's MLS chat identity: Ed25519 by a chat device transport key over 'catbird.labyrinth.epoch_head_attest:' || did || ':' || head.
 
 #[derive(
@@ -647,6 +713,123 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ser
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for SpaceBatchRedaction<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.labyrinth.defs"
+    }
+    fn def_name() -> &'static str {
+        "spaceBatchRedaction"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_labyrinth_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.message_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 128usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("message_id"),
+                    max: 128usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.timestamp;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("timestamp"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SpaceBatchView<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.labyrinth.defs"
+    }
+    fn def_name() -> &'static str {
+        "spaceBatchView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_labyrinth_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.generation;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("generation"),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.generation;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("generation"),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.item_count;
+            if *value > 256i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("item_count"),
+                    max: 256i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.item_count;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("item_count"),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.redactions;
+            #[allow(unused_comparisons)]
+            if value.len() > 256usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("redactions"),
+                    max: 256usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        {
+            let value = &self.rkey;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 64usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("rkey"),
+                    max: 64usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     for TransportAttestation<S>
 {
     fn nsid() -> &'static str {
@@ -691,7 +874,7 @@ pub mod epoch_public_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1589,6 +1772,189 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "spaceBatchRedaction",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Authoritative tombstone overlay for an item in an immutable sender batch. Apply after verifying the source record.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("timestamp"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("redaction")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "messageId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "redaction",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "blue.catbird.labyrinth.defs#redaction",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "timestamp",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("spaceBatchView"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "An immutable Space batch reference and its authenticated sequencer order. Server tombstones remain authoritative even if the source ciphertext is still readable.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("space"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("generation"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("order"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("redactions"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("itemCount")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "author",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "generation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Immutable UUID identifying this conversation storage lifecycle. A recreated Space requires a new generation.",
+                                    ),
+                                ),
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "itemCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(256i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "order",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "blue.catbird.labyrinth.defs#serverOrder",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "redactions",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "blue.catbird.labyrinth.defs#spaceBatchRedaction",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                max_length: Some(256usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::RecordKey,
+                                ),
+                                max_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "space",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Conversation Space reference, bound to the storage generation.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "transportAttestation",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -1665,7 +2031,7 @@ pub mod mek_recipient_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1887,7 +2253,7 @@ pub mod owner_message_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2256,7 +2622,7 @@ pub mod sealed_message_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2580,7 +2946,7 @@ pub mod server_order_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2753,6 +3119,674 @@ where
     }
 }
 
+fn deserialize_space_batch_redaction_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod space_batch_redaction_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type MessageId;
+        type Redaction;
+        type Timestamp;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type MessageId = Unset;
+        type Redaction = Unset;
+        type Timestamp = Unset;
+    }
+    ///State transition - sets the `message_id` field to Set
+    pub struct SetMessageId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMessageId<St> {}
+    impl<St: State> State for SetMessageId<St> {
+        type MessageId = Set<members::message_id>;
+        type Redaction = St::Redaction;
+        type Timestamp = St::Timestamp;
+    }
+    ///State transition - sets the `redaction` field to Set
+    pub struct SetRedaction<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRedaction<St> {}
+    impl<St: State> State for SetRedaction<St> {
+        type MessageId = St::MessageId;
+        type Redaction = Set<members::redaction>;
+        type Timestamp = St::Timestamp;
+    }
+    ///State transition - sets the `timestamp` field to Set
+    pub struct SetTimestamp<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTimestamp<St> {}
+    impl<St: State> State for SetTimestamp<St> {
+        type MessageId = St::MessageId;
+        type Redaction = St::Redaction;
+        type Timestamp = Set<members::timestamp>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `message_id` field
+        pub struct message_id(());
+        ///Marker type for the `redaction` field
+        pub struct redaction(());
+        ///Marker type for the `timestamp` field
+        pub struct timestamp(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct SpaceBatchRedactionBuilder<
+    St: space_batch_redaction_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::labyrinth::Redaction<S>>,
+        core::option::Option<i64>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl SpaceBatchRedaction<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SpaceBatchRedactionBuilder<space_batch_redaction_state::Empty, jacquard_common::DefaultStr>
+    {
+        SpaceBatchRedactionBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> SpaceBatchRedaction<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SpaceBatchRedactionBuilder<space_batch_redaction_state::Empty, S> {
+        SpaceBatchRedactionBuilder::builder()
+    }
+}
+
+impl SpaceBatchRedactionBuilder<space_batch_redaction_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        SpaceBatchRedactionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> SpaceBatchRedactionBuilder<space_batch_redaction_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SpaceBatchRedactionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchRedactionBuilder<St, S>
+where
+    St: space_batch_redaction_state::State,
+    St::MessageId: space_batch_redaction_state::IsUnset,
+{
+    /// Set the `messageId` field (required)
+    pub fn message_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> SpaceBatchRedactionBuilder<space_batch_redaction_state::SetMessageId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        SpaceBatchRedactionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchRedactionBuilder<St, S>
+where
+    St: space_batch_redaction_state::State,
+    St::Redaction: space_batch_redaction_state::IsUnset,
+{
+    /// Set the `redaction` field (required)
+    pub fn redaction(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::labyrinth::Redaction<S>>,
+    ) -> SpaceBatchRedactionBuilder<space_batch_redaction_state::SetRedaction<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        SpaceBatchRedactionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchRedactionBuilder<St, S>
+where
+    St: space_batch_redaction_state::State,
+    St::Timestamp: space_batch_redaction_state::IsUnset,
+{
+    /// Set the `timestamp` field (required)
+    pub fn timestamp(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SpaceBatchRedactionBuilder<space_batch_redaction_state::SetTimestamp<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        SpaceBatchRedactionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchRedactionBuilder<St, S>
+where
+    St: space_batch_redaction_state::State,
+    St::MessageId: space_batch_redaction_state::IsSet,
+    St::Redaction: space_batch_redaction_state::IsSet,
+    St::Timestamp: space_batch_redaction_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> SpaceBatchRedaction<S> {
+        SpaceBatchRedaction {
+            message_id: self._fields.0.unwrap(),
+            redaction: self._fields.1.unwrap(),
+            timestamp: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> SpaceBatchRedaction<S> {
+        SpaceBatchRedaction {
+            message_id: self._fields.0.unwrap(),
+            redaction: self._fields.1.unwrap(),
+            timestamp: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_space_batch_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod space_batch_view_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Author;
+        type Cid;
+        type Generation;
+        type ItemCount;
+        type Order;
+        type Redactions;
+        type Rkey;
+        type Space;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Author = Unset;
+        type Cid = Unset;
+        type Generation = Unset;
+        type ItemCount = Unset;
+        type Order = Unset;
+        type Redactions = Unset;
+        type Rkey = Unset;
+        type Space = Unset;
+    }
+    ///State transition - sets the `author` field to Set
+    pub struct SetAuthor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthor<St> {}
+    impl<St: State> State for SetAuthor<St> {
+        type Author = Set<members::author>;
+        type Cid = St::Cid;
+        type Generation = St::Generation;
+        type ItemCount = St::ItemCount;
+        type Order = St::Order;
+        type Redactions = St::Redactions;
+        type Rkey = St::Rkey;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
+        type Author = St::Author;
+        type Cid = Set<members::cid>;
+        type Generation = St::Generation;
+        type ItemCount = St::ItemCount;
+        type Order = St::Order;
+        type Redactions = St::Redactions;
+        type Rkey = St::Rkey;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `generation` field to Set
+    pub struct SetGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGeneration<St> {}
+    impl<St: State> State for SetGeneration<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type Generation = Set<members::generation>;
+        type ItemCount = St::ItemCount;
+        type Order = St::Order;
+        type Redactions = St::Redactions;
+        type Rkey = St::Rkey;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `item_count` field to Set
+    pub struct SetItemCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetItemCount<St> {}
+    impl<St: State> State for SetItemCount<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type Generation = St::Generation;
+        type ItemCount = Set<members::item_count>;
+        type Order = St::Order;
+        type Redactions = St::Redactions;
+        type Rkey = St::Rkey;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `order` field to Set
+    pub struct SetOrder<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOrder<St> {}
+    impl<St: State> State for SetOrder<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type Generation = St::Generation;
+        type ItemCount = St::ItemCount;
+        type Order = Set<members::order>;
+        type Redactions = St::Redactions;
+        type Rkey = St::Rkey;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `redactions` field to Set
+    pub struct SetRedactions<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRedactions<St> {}
+    impl<St: State> State for SetRedactions<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type Generation = St::Generation;
+        type ItemCount = St::ItemCount;
+        type Order = St::Order;
+        type Redactions = Set<members::redactions>;
+        type Rkey = St::Rkey;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `rkey` field to Set
+    pub struct SetRkey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRkey<St> {}
+    impl<St: State> State for SetRkey<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type Generation = St::Generation;
+        type ItemCount = St::ItemCount;
+        type Order = St::Order;
+        type Redactions = St::Redactions;
+        type Rkey = Set<members::rkey>;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type Generation = St::Generation;
+        type ItemCount = St::ItemCount;
+        type Order = St::Order;
+        type Redactions = St::Redactions;
+        type Rkey = St::Rkey;
+        type Space = Set<members::space>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `author` field
+        pub struct author(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
+        ///Marker type for the `generation` field
+        pub struct generation(());
+        ///Marker type for the `item_count` field
+        pub struct item_count(());
+        ///Marker type for the `order` field
+        pub struct order(());
+        ///Marker type for the `redactions` field
+        pub struct redactions(());
+        ///Marker type for the `rkey` field
+        pub struct rkey(());
+        ///Marker type for the `space` field
+        pub struct space(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct SpaceBatchViewBuilder<
+    St: space_batch_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::labyrinth::ServerOrder<S>>,
+        core::option::Option<
+            Vec<crate::generated::blue_catbird::labyrinth::SpaceBatchRedaction<S>>,
+        >,
+        core::option::Option<
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
+        >,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl SpaceBatchView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SpaceBatchViewBuilder<space_batch_view_state::Empty, jacquard_common::DefaultStr>
+    {
+        SpaceBatchViewBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> SpaceBatchView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SpaceBatchViewBuilder<space_batch_view_state::Empty, S> {
+        SpaceBatchViewBuilder::builder()
+    }
+}
+
+impl SpaceBatchViewBuilder<space_batch_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> SpaceBatchViewBuilder<space_batch_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Author: space_batch_view_state::IsUnset,
+{
+    /// Set the `author` field (required)
+    pub fn author(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetAuthor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Cid: space_batch_view_state::IsUnset,
+{
+    /// Set the `cid` field (required)
+    pub fn cid(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetCid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Generation: space_batch_view_state::IsUnset,
+{
+    /// Set the `generation` field (required)
+    pub fn generation(
+        mut self,
+        value: impl Into<S>,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetGeneration<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::ItemCount: space_batch_view_state::IsUnset,
+{
+    /// Set the `itemCount` field (required)
+    pub fn item_count(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetItemCount<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Order: space_batch_view_state::IsUnset,
+{
+    /// Set the `order` field (required)
+    pub fn order(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::labyrinth::ServerOrder<S>>,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetOrder<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Redactions: space_batch_view_state::IsUnset,
+{
+    /// Set the `redactions` field (required)
+    pub fn redactions(
+        mut self,
+        value: impl Into<Vec<crate::generated::blue_catbird::labyrinth::SpaceBatchRedaction<S>>>,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetRedactions<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Rkey: space_batch_view_state::IsUnset,
+{
+    /// Set the `rkey` field (required)
+    pub fn rkey(
+        mut self,
+        value: impl Into<
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
+        >,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetRkey<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Space: space_batch_view_state::IsUnset,
+{
+    /// Set the `space` field (required)
+    pub fn space(
+        mut self,
+        value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
+    ) -> SpaceBatchViewBuilder<space_batch_view_state::SetSpace<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        SpaceBatchViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SpaceBatchViewBuilder<St, S>
+where
+    St: space_batch_view_state::State,
+    St::Author: space_batch_view_state::IsSet,
+    St::Cid: space_batch_view_state::IsSet,
+    St::Generation: space_batch_view_state::IsSet,
+    St::ItemCount: space_batch_view_state::IsSet,
+    St::Order: space_batch_view_state::IsSet,
+    St::Redactions: space_batch_view_state::IsSet,
+    St::Rkey: space_batch_view_state::IsSet,
+    St::Space: space_batch_view_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> SpaceBatchView<S> {
+        SpaceBatchView {
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            generation: self._fields.2.unwrap(),
+            item_count: self._fields.3.unwrap(),
+            order: self._fields.4.unwrap(),
+            redactions: self._fields.5.unwrap(),
+            rkey: self._fields.6.unwrap(),
+            space: self._fields.7.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> SpaceBatchView<S> {
+        SpaceBatchView {
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            generation: self._fields.2.unwrap(),
+            item_count: self._fields.3.unwrap(),
+            order: self._fields.4.unwrap(),
+            redactions: self._fields.5.unwrap(),
+            rkey: self._fields.6.unwrap(),
+            space: self._fields.7.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 fn deserialize_transport_attestation_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -2781,7 +3815,7 @@ pub mod transport_attestation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -25,7 +25,7 @@ pub struct ResolveIdentity<S: jacquard_common::BosStr = jacquard_common::Default
 )]
 pub struct ResolveIdentityOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    pub value: crate::com_atproto::identity::IdentityInfo<S>,
+    pub value: crate::generated::com_atproto::identity::IdentityInfo<S>,
     #[serde(
         flatten,
         default,
@@ -145,7 +145,7 @@ pub mod resolve_identity_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

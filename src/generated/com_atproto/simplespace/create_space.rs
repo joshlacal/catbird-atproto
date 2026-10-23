@@ -23,7 +23,7 @@ pub struct CreateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
         jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
     >,
     /// The NSID of the space type, describing the modality of the space (e.g. app.bsky.group, app.bsky.personal).
-    pub r#type: jacquard_common::types::string::Nsid<S>,
+    pub space_type: jacquard_common::types::string::Nsid<S>,
     /// How the authority decides whether to track and forward a user's write notifications.
     pub write_policy: CreateSpaceWritePolicy<S>,
     #[serde(
@@ -227,7 +227,7 @@ pub mod create_space_state {
     pub trait State: sealed::Sealed {
         type AppAccess;
         type ReadPolicy;
-        type Type;
+        type SpaceType;
         type WritePolicy;
     }
     /// Empty state - all required fields are unset
@@ -236,7 +236,7 @@ pub mod create_space_state {
     impl State for Empty {
         type AppAccess = Unset;
         type ReadPolicy = Unset;
-        type Type = Unset;
+        type SpaceType = Unset;
         type WritePolicy = Unset;
     }
     ///State transition - sets the `app_access` field to Set
@@ -245,7 +245,7 @@ pub mod create_space_state {
     impl<St: State> State for SetAppAccess<St> {
         type AppAccess = Set<members::app_access>;
         type ReadPolicy = St::ReadPolicy;
-        type Type = St::Type;
+        type SpaceType = St::SpaceType;
         type WritePolicy = St::WritePolicy;
     }
     ///State transition - sets the `read_policy` field to Set
@@ -254,16 +254,16 @@ pub mod create_space_state {
     impl<St: State> State for SetReadPolicy<St> {
         type AppAccess = St::AppAccess;
         type ReadPolicy = Set<members::read_policy>;
-        type Type = St::Type;
+        type SpaceType = St::SpaceType;
         type WritePolicy = St::WritePolicy;
     }
-    ///State transition - sets the `type` field to Set
-    pub struct SetType<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetType<St> {}
-    impl<St: State> State for SetType<St> {
+    ///State transition - sets the `space_type` field to Set
+    pub struct SetSpaceType<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpaceType<St> {}
+    impl<St: State> State for SetSpaceType<St> {
         type AppAccess = St::AppAccess;
         type ReadPolicy = St::ReadPolicy;
-        type Type = Set<members::r#type>;
+        type SpaceType = Set<members::space_type>;
         type WritePolicy = St::WritePolicy;
     }
     ///State transition - sets the `write_policy` field to Set
@@ -272,7 +272,7 @@ pub mod create_space_state {
     impl<St: State> State for SetWritePolicy<St> {
         type AppAccess = St::AppAccess;
         type ReadPolicy = St::ReadPolicy;
-        type Type = St::Type;
+        type SpaceType = St::SpaceType;
         type WritePolicy = Set<members::write_policy>;
     }
     /// Marker types for field names
@@ -282,8 +282,8 @@ pub mod create_space_state {
         pub struct app_access(());
         ///Marker type for the `read_policy` field
         pub struct read_policy(());
-        ///Marker type for the `type` field
-        pub struct r#type(());
+        ///Marker type for the `space_type` field
+        pub struct space_type(());
         ///Marker type for the `write_policy` field
         pub struct write_policy(());
     }
@@ -409,13 +409,13 @@ impl<St: create_space_state::State, S: jacquard_common::BosStr> CreateSpaceBuild
 impl<St, S: jacquard_common::BosStr> CreateSpaceBuilder<St, S>
 where
     St: create_space_state::State,
-    St::Type: create_space_state::IsUnset,
+    St::SpaceType: create_space_state::IsUnset,
 {
-    /// Set the `type` field (required)
-    pub fn r#type(
+    /// Set the `spaceType` field (required)
+    pub fn space_type(
         mut self,
         value: impl Into<jacquard_common::types::string::Nsid<S>>,
-    ) -> CreateSpaceBuilder<create_space_state::SetType<St>, S> {
+    ) -> CreateSpaceBuilder<create_space_state::SetSpaceType<St>, S> {
         self._fields.3 = ::core::option::Option::Some(value.into());
         CreateSpaceBuilder {
             _state: ::core::marker::PhantomData,
@@ -449,7 +449,7 @@ where
     St: create_space_state::State,
     St::AppAccess: create_space_state::IsSet,
     St::ReadPolicy: create_space_state::IsSet,
-    St::Type: create_space_state::IsSet,
+    St::SpaceType: create_space_state::IsSet,
     St::WritePolicy: create_space_state::IsSet,
 {
     /// Build the final struct.
@@ -458,7 +458,7 @@ where
             app_access: self._fields.0.unwrap(),
             read_policy: self._fields.1.unwrap(),
             skey: self._fields.2,
-            r#type: self._fields.3.unwrap(),
+            space_type: self._fields.3.unwrap(),
             write_policy: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
@@ -475,7 +475,7 @@ where
             app_access: self._fields.0.unwrap(),
             read_policy: self._fields.1.unwrap(),
             skey: self._fields.2,
-            r#type: self._fields.3.unwrap(),
+            space_type: self._fields.3.unwrap(),
             write_policy: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }

@@ -27,7 +27,7 @@ pub struct ResolveLexiconOutput<S: jacquard_common::BosStr = jacquard_common::De
     /// The CID of the lexicon schema record.
     pub cid: jacquard_common::types::string::Cid<S>,
     /// The resolved lexicon schema record.
-    pub schema: crate::com_atproto::lexicon::schema::Schema<S>,
+    pub schema: crate::generated::com_atproto::lexicon::schema::Schema<S>,
     /// The AT-URI of the lexicon schema record.
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(
@@ -123,7 +123,7 @@ pub mod resolve_lexicon_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
