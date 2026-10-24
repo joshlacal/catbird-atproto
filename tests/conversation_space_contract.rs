@@ -1,5 +1,7 @@
 use catbird_atproto::blue_catbird::labyrinth::{
     delete_space_generation::{DeleteSpaceGeneration, DeleteSpaceGenerationOutput},
+    find_meks::FindMeksError,
+    get_attachment_blob::GetAttachmentBlobError,
     get_space_membership::GetSpaceMembershipOutput,
     get_thread_storage::GetThreadStorageOutput,
     list_space_batches::ListSpaceBatches,
@@ -91,4 +93,15 @@ fn permanent_deletion_is_bound_to_the_exact_space_generation() {
     let parsed: DeleteSpaceGenerationOutput = decode(&response).unwrap();
     assert!(parsed.deleted);
     assert_eq!(serde_json::to_value(parsed).unwrap(), response);
+}
+
+#[test]
+fn deleted_generation_is_a_typed_error_on_both_remaining_read_paths() {
+    let wire = serde_json::json!({"error": "SpaceDeleted", "message": "generation permanently deleted"});
+    let meks: FindMeksError = decode(&wire).unwrap();
+    let attachment: GetAttachmentBlobError = decode(&wire).unwrap();
+    assert!(matches!(meks, FindMeksError::SpaceDeleted(_)));
+    assert!(matches!(attachment, GetAttachmentBlobError::SpaceDeleted(_)));
+    assert_eq!(serde_json::to_value(meks).unwrap(), wire);
+    assert_eq!(serde_json::to_value(attachment).unwrap(), wire);
 }
