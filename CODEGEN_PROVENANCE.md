@@ -18,16 +18,16 @@ This generation reconciles Rust parent revisions
 `142e1d96880afdc4c207a54020648dcb9695d771` and
 `8bab4018ba20ff0342edf2ec8922304e5dd2cdbc`. Private input retains the newer chat
 security contracts, Labyrinth history, and immutable conversation-Space
-placement/generation contract, current authority policy lookup, and complete-redaction item counts (schema revision
-`00297e38852fac893fa8e8ce01bc11335e7245e1`). The exact corpus and projection
+placement/generation contract, current authority policy lookup, permanent generation deletion, and complete-redaction item counts (schema revision
+`a671898ddc0f4aa8f5131f143d03fc8b74f2e550`). The exact corpus and projection
 fingerprints below are SHA-256 of sorted lines containing the per-file SHA-256,
 two spaces, the root-relative path, and LF.
 
 | Input/output | Files | Aggregate SHA-256 |
 | --- | ---: | --- |
 | Petrel `generator/lexicons` | 432 | `dda23340246bae282db0282257a03d016108b71f673bf6384c96e7528f07ecb6` |
-| PetrelCatbird `lexicons` | 188 | `d32d5661282e426bb70253af3ccc378b06a1e3213f6868754d74c83372986beb` |
-| Rust `src/generated` | 643 | `9f9035c25ae8d9a6e41ec203d7bafc34f2997cd99e3c025d140d0b2a29c0d4ca` |
+| PetrelCatbird `lexicons` | 189 | `35ba46d6d9c994b6f91710a7927db4918b477790981910edfe1f5826d1c4a9d4` |
+| Rust `src/generated` | 644 | `0f75263f15ceea7533013cde6846c4e95137f16385edce981a23ea75cfdfb6bd` |
 
 Build `gen-lexicons` from the workspace's `mls-ds/codegen` using its locked
 Cargo graph. The reviewed `codegen/src/main.rs` has SHA-256
@@ -55,7 +55,7 @@ those aliases from generated declarations and carries the same codec to all
 `named_bytes_contract` covers both representations and direct/named parity. It stages complete output,
 keeps the previous tree in temporary recovery storage, and checks every generated
 file including unexpected stale files. The full second-run comparison passed for
-all 643 files. `com_atproto_space_surface` and `conversation_space_contract`
+all 644 files. `com_atproto_space_surface` and `conversation_space_contract`
 exercise the new wire shapes; these local contract checks do not qualify runtime
 authentication, migration, device rendering, or production interoperability.
 

@@ -18,6 +18,7 @@ pub mod create_virtual_device;
 pub mod delete_account_data;
 pub mod delete_attachment_ref;
 pub mod delete_orf_state;
+pub mod delete_space_generation;
 pub mod delete_virtual_device;
 pub mod device;
 pub mod epoch;

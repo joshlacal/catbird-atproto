@@ -1,7 +1,9 @@
 use catbird_atproto::blue_catbird::labyrinth::{
     delete_space_generation::{DeleteSpaceGeneration, DeleteSpaceGenerationOutput},
-    get_space_membership::GetSpaceMembershipOutput, get_thread_storage::GetThreadStorageOutput,
-    list_space_batches::ListSpaceBatches, SpaceBatchView,
+    get_space_membership::GetSpaceMembershipOutput,
+    get_thread_storage::GetThreadStorageOutput,
+    list_space_batches::ListSpaceBatches,
+    SpaceBatchView,
 };
 
 const GENERATION: &str = "a4c334f4-1581-4f8c-9767-e6e7e23e70e2";
