@@ -171,8 +171,10 @@ pub struct AddressableDevice<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub generation: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub prior: crate::generated::blue_catbird::chat::MlsAadPriorContext<S>,
     pub protocol_version: crate::generated::blue_catbird::chat::ProtocolVersion<S>,
@@ -201,6 +203,7 @@ pub struct ApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultS
 )]
 pub struct ApplicationAttachmentBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub purpose: S,
@@ -285,6 +288,7 @@ pub struct ApplicationEntry<S: jacquard_common::BosStr = jacquard_common::Defaul
 pub struct ApplicationFrame<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub body: crate::generated::blue_catbird::chat::ApplicationFrameBody<S>,
     pub context: crate::generated::blue_catbird::chat::ApplicationFrameContext<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub protocol: S,
     pub version: i64,
@@ -332,6 +336,7 @@ pub enum ApplicationFrameBody<S: jacquard_common::BosStr = jacquard_common::Defa
 pub struct ApplicationFrameContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub confirmation_tag: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub epoch: i64,
     pub generation: i64,
@@ -453,9 +458,11 @@ pub type BareDid<S = jacquard_common::DefaultStr> = jacquard_common::types::stri
 )]
 pub struct BlobAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub attachment_index: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub context: crate::generated::blue_catbird::chat::ApplicationFrameContext<S>,
     pub media_type: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub plaintext_size: i64,
     pub protocol: S,
@@ -518,6 +525,7 @@ pub struct BlobUploadPreparationBody<S: jacquard_common::BosStr = jacquard_commo
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub auth_generation: i64,
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -552,6 +560,7 @@ pub struct BlobUploadPreparationBody<S: jacquard_common::BosStr = jacquard_commo
 )]
 pub struct BlobUploadView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
@@ -637,10 +646,12 @@ pub type CipherSuite<S = jacquard_common::DefaultStr> = S;
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CommitAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub generation: i64,
     pub prior: crate::generated::blue_catbird::chat::MlsAadPriorContext<S>,
     pub protocol_version: crate::generated::blue_catbird::chat::ProtocolVersion<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     #[serde(
         flatten,
@@ -1475,8 +1486,10 @@ pub struct DirectRequestAcceptanceBody<S: jacquard_common::BosStr = jacquard_com
 pub struct DirectRequestAcceptanceCommitReceiptBody<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub acceptance_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub authority_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub entry_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub key_id: crate::generated::blue_catbird::chat::DirectRequestReceiptKeyId<S>,
     pub next: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
@@ -1559,6 +1572,7 @@ pub struct DirectRequestAcceptanceProof<S: jacquard_common::BosStr = jacquard_co
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectRequestApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub message_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -1622,6 +1636,7 @@ pub struct DirectRequestCancellationBody<S: jacquard_common::BosStr = jacquard_c
     pub auth_generation: i64,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub protocol_version: S,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
@@ -1654,8 +1669,10 @@ pub struct DirectRequestCancelledReceipt<S: jacquard_common::BosStr = jacquard_c
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: S,
@@ -1681,6 +1698,7 @@ pub struct DirectRequestCancelledReceipt<S: jacquard_common::BosStr = jacquard_c
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectRequestCommitAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub protocol_version: S,
     #[serde(
@@ -1711,6 +1729,7 @@ pub struct DirectRequestContext<S: jacquard_common::BosStr = jacquard_common::De
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub protocol_version: S,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
@@ -1826,8 +1845,10 @@ pub struct DirectRequestExistingDirectReceipt<
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: DirectRequestExistingDirectReceiptRequestKind<S>,
@@ -1952,8 +1973,10 @@ pub struct DirectRequestExpiredReceipt<S: jacquard_common::BosStr = jacquard_com
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: S,
@@ -1987,7 +2010,9 @@ pub struct DirectRequestGrantBody<S: jacquard_common::BosStr = jacquard_common::
     pub grant_revision: i64,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key_package_ref: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key_package_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub profile: crate::generated::blue_catbird::chat::DirectRequestProfile<S>,
     pub protocol_version: S,
@@ -2051,6 +2076,7 @@ pub struct DirectRequestIntroduction<S: jacquard_common::BosStr = jacquard_commo
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectRequestInventoryScope<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub scope_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub supported_protocol_versions: Vec<crate::generated::blue_catbird::chat::ProtocolVersion<S>>,
     #[serde(
@@ -2250,6 +2276,7 @@ pub struct DirectRequestPreparationSnapshot<
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub minimum_import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub prepared_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub profile: crate::generated::blue_catbird::chat::DirectRequestProfile<S>,
@@ -2290,7 +2317,9 @@ pub struct DirectRequestPreparationView<S: jacquard_common::BosStr = jacquard_co
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub minimum_import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_signature: jacquard_common::deps::bytes::Bytes,
@@ -2352,6 +2381,7 @@ pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_co
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub artifacts: crate::generated::blue_catbird::chat::DirectRequestBootstrapArtifacts<S>,
     pub auth_generation: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -2361,7 +2391,9 @@ pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_co
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub next: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub profile: crate::generated::blue_catbird::chat::DirectRequestProfile<S>,
     pub protocol_version: S,
@@ -2398,8 +2430,10 @@ pub struct DirectRequestPublishedReceipt<S: jacquard_common::BosStr = jacquard_c
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: S,
@@ -2460,8 +2494,10 @@ pub struct DirectRequestRejectedReceipt<S: jacquard_common::BosStr = jacquard_co
     pub actor_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub auth_generation: i64,
     pub code: crate::generated::blue_catbird::chat::DirectRequestErrorCode<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub recorded_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub request_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: DirectRequestRejectedReceiptRequestKind<S>,
@@ -2607,10 +2643,12 @@ pub struct DirectRequestState<S: jacquard_common::BosStr = jacquard_common::Defa
     pub acceptance_proof:
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestAcceptanceProof<S>>,
     pub consent: DirectRequestStateConsent<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub first_message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
@@ -2788,6 +2826,7 @@ pub struct DirectRequestWelcomeBundle<S: jacquard_common::BosStr = jacquard_comm
     pub deliveries: Vec<crate::generated::blue_catbird::chat::DirectRequestWelcomeDelivery<S>>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub opaque_welcome: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     #[serde(
         flatten,
@@ -2837,12 +2876,15 @@ pub struct DirectRequestWelcomeDelivery<S: jacquard_common::BosStr = jacquard_co
 )]
 pub struct DirectRequestWelcomeProvenance<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub grant_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub grant_revision: i64,
     /// Request-specific whole-second timestamp rendered with canonical .000Z. Nonzero fractional seconds are rejected as InvalidBootstrap; they are never truncated.
     pub import_until: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key_package_ref: crate::generated::blue_catbird::chat::ArtifactHash,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_digest: crate::generated::blue_catbird::chat::ArtifactHash,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     #[serde(
@@ -2874,6 +2916,7 @@ pub struct DirectRequestWelcomeView<S: jacquard_common::BosStr = jacquard_common
     pub provenance: crate::generated::blue_catbird::chat::DirectRequestWelcomeProvenance<S>,
     pub recipient_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub status: crate::generated::blue_catbird::chat::WelcomeStatus<S>,
     pub transition_seq: i64,
@@ -2976,7 +3019,9 @@ pub struct EditFrameVariant<S: jacquard_common::BosStr = jacquard_common::Defaul
 )]
 pub struct EncryptedAudioEmbed<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub algorithm: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub duration_millis: i64,
@@ -3130,9 +3175,11 @@ pub struct EncryptedImageEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub algorithm: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub alt_text: core::option::Option<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub blurhash: core::option::Option<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub height: i64,
@@ -3424,6 +3471,7 @@ pub struct GroupInfoArtifact<S: jacquard_common::BosStr = jacquard_common::Defau
     pub bytes: jacquard_common::deps::bytes::Bytes,
     pub content_type: S,
     pub framing: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     #[serde(
         flatten,
@@ -3514,6 +3562,7 @@ pub struct KeyPackageArtifact<S: jacquard_common::BosStr = jacquard_common::Defa
     pub framing: S,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key_package_ref: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     #[serde(
         flatten,
@@ -4244,6 +4293,7 @@ pub struct MessageFrameVariant<S: jacquard_common::BosStr = jacquard_common::Def
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MessageTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub target_message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub target_seq: i64,
     #[serde(
@@ -4276,6 +4326,7 @@ pub struct MetadataAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub ciphertext_size: i64,
     pub coordinate: crate::generated::blue_catbird::chat::MetadataCryptoContext<S>,
     pub metadata_version: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub protocol: S,
     pub version: i64,
@@ -4301,7 +4352,9 @@ pub struct MetadataAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataAadAvatarBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub purpose: S,
@@ -4364,6 +4417,7 @@ pub struct MetadataAuthorProof<S: jacquard_common::BosStr = jacquard_common::Def
 )]
 pub struct MetadataAvatarBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub purpose: S,
@@ -4391,9 +4445,12 @@ pub struct MetadataAvatarBinding<S: jacquard_common::BosStr = jacquard_common::D
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataAvatarBlobAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub media_type: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub original_metadata_version: i64,
     pub plaintext_size: i64,
@@ -4426,9 +4483,11 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub algorithm: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub alt_text: core::option::Option<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub blob_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub blurhash: core::option::Option<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub height: i64,
@@ -4437,6 +4496,7 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub mime_type: MetadataAvatarEmbedMimeType<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub nonce: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub original_metadata_version: i64,
     pub plaintext_size: i64,
@@ -4553,6 +4613,7 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataContentProjection<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub author_device_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub author_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub author_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
@@ -4561,6 +4622,7 @@ pub struct MetadataContentProjection<S: jacquard_common::BosStr = jacquard_commo
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub description: core::option::Option<S>,
     pub metadata_version: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub origin_transition_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub protocol: S,
     pub title: S,
@@ -4589,6 +4651,7 @@ pub struct MetadataContentProjection<S: jacquard_common::BosStr = jacquard_commo
 pub struct MetadataCryptoContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub confirmation_tag: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub epoch: i64,
     pub generation: i64,
@@ -4647,9 +4710,11 @@ pub struct MetadataEntry<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MetadataExporterContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub epoch: i64,
     pub generation: i64,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub group_context_hash: crate::generated::blue_catbird::chat::ArtifactHash,
     pub metadata_version: i64,
     pub protocol: S,
@@ -4711,6 +4776,7 @@ pub struct MetadataSnapshot<S: jacquard_common::BosStr = jacquard_common::Defaul
         core::option::Option<crate::generated::blue_catbird::chat::MetadataAvatarBinding<S>>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub coordinate: crate::generated::blue_catbird::chat::MetadataCryptoContext<S>,
@@ -4779,6 +4845,7 @@ pub struct MetadataTransitionBody<S: jacquard_common::BosStr = jacquard_common::
 pub struct MlsAadPriorContext<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub confirmation_tag: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub conversation_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub epoch: i64,
     pub generation: i64,
@@ -5054,6 +5121,7 @@ pub struct PrivateApplicationMessage<S: jacquard_common::BosStr = jacquard_commo
     pub bytes: jacquard_common::deps::bytes::Bytes,
     pub content_type: S,
     pub framing: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     #[serde(
         flatten,
@@ -5116,6 +5184,7 @@ pub struct PublicCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub bytes: jacquard_common::deps::bytes::Bytes,
     pub content_type: S,
     pub framing: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     #[serde(
         flatten,
@@ -5499,6 +5568,7 @@ pub struct ReactionFrameVariant<S: jacquard_common::BosStr = jacquard_common::De
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReadStateFrameBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub through_message_id: crate::generated::blue_catbird::chat::IdentifierBytes,
     pub through_seq: i64,
     #[serde(
@@ -7124,6 +7194,7 @@ pub struct TypingEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub struct UploadedBlobBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub blob_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext_sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub ciphertext_size: i64,
     pub purpose: crate::generated::blue_catbird::chat::BlobPurpose<S>,
@@ -7235,6 +7306,7 @@ pub struct WelcomeBundle<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub framing: S,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub opaque_welcome: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub welcome_id: crate::generated::blue_catbird::chat::OperationId<S>,
     #[serde(
@@ -7355,6 +7427,7 @@ pub struct WelcomeView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub provenance: crate::generated::blue_catbird::chat::RecoveryWelcomeProvenance<S>,
     pub recipient_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     pub recipient_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sha256: crate::generated::blue_catbird::chat::ArtifactHash,
     pub status: crate::generated::blue_catbird::chat::WelcomeStatus<S>,
     pub transition_seq: i64,

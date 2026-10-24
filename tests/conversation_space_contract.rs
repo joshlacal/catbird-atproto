@@ -1,4 +1,5 @@
 use catbird_atproto::blue_catbird::labyrinth::{
+    delete_space_generation::{DeleteSpaceGeneration, DeleteSpaceGenerationOutput},
     get_space_membership::GetSpaceMembershipOutput, get_thread_storage::GetThreadStorageOutput,
     list_space_batches::ListSpaceBatches, SpaceBatchView,
 };
@@ -75,4 +76,17 @@ fn authority_membership_preserves_generation_and_current_chat_position() {
     assert_eq!(parsed.chat_generation, 2);
     assert_eq!(parsed.chat_seq, 11);
     assert_eq!(serde_json::to_value(&parsed).unwrap(), value);
+}
+
+#[test]
+fn permanent_deletion_is_bound_to_the_exact_space_generation() {
+    let request = serde_json::json!({"space": SPACE, "generation": GENERATION});
+    let parsed: DeleteSpaceGeneration = decode(&request).unwrap();
+    assert_eq!(serde_json::to_value(parsed).unwrap(), request);
+    assert!(decode::<DeleteSpaceGeneration>(&serde_json::json!({"space": SPACE})).is_err());
+
+    let response = serde_json::json!({"space": SPACE, "generation": GENERATION, "deleted": true});
+    let parsed: DeleteSpaceGenerationOutput = decode(&response).unwrap();
+    assert!(parsed.deleted);
+    assert_eq!(serde_json::to_value(parsed).unwrap(), response);
 }

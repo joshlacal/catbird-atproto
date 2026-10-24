@@ -27,7 +27,7 @@ two spaces, the root-relative path, and LF.
 | --- | ---: | --- |
 | Petrel `generator/lexicons` | 432 | `dda23340246bae282db0282257a03d016108b71f673bf6384c96e7528f07ecb6` |
 | PetrelCatbird `lexicons` | 188 | `d32d5661282e426bb70253af3ccc378b06a1e3213f6868754d74c83372986beb` |
-| Rust `src/generated` | 643 | `43ba06fdb7b4c7eac434234d7b8092608f84d7af47d3d6e69b2bdfe2bdc2234e` |
+| Rust `src/generated` | 643 | `9f9035c25ae8d9a6e41ec203d7bafc34f2997cd99e3c025d140d0b2a29c0d4ca` |
 
 Build `gen-lexicons` from the workspace's `mls-ds/codegen` using its locked
 Cargo graph. The reviewed `codegen/src/main.rs` has SHA-256
@@ -46,8 +46,13 @@ cargo fmt --check
 cargo clippy --locked --all-targets --all-features
 ```
 
-`Scripts/regenerate.py` owns the namespace feature gates and raw-body
-`labyrinthRelay` codec as a maintained projection step. It stages complete output,
+`Scripts/regenerate.py` owns the namespace feature gates, raw-body
+`labyrinthRelay` codec, and byte-codec annotations for named byte aliases as
+maintained projection steps. The pinned Jacquard generator annotates inline
+bytes but omits the annotation for named bytes refs. The wrapper discovers
+those aliases from generated declarations and carries the same codec to all
+73 fields: JSON accepts `$bytes` and DAG-CBOR uses actual byte strings.
+`named_bytes_contract` covers both representations and direct/named parity. It stages complete output,
 keeps the previous tree in temporary recovery storage, and checks every generated
 file including unexpected stale files. The full second-run comparison passed for
 all 643 files. `com_atproto_space_surface` and `conversation_space_contract`
