@@ -19,15 +19,15 @@ This generation reconciles Rust parent revisions
 `8bab4018ba20ff0342edf2ec8922304e5dd2cdbc`. Private input retains the newer chat
 security contracts, Labyrinth history, and immutable conversation-Space
 placement/generation contract, current authority policy lookup, permanent generation deletion, and complete-redaction item counts (schema revision
-`a671898ddc0f4aa8f5131f143d03fc8b74f2e550`). The exact corpus and projection
+`1c8f6139781f51764c4829cdcb66c273ef7f787c`). The exact corpus and projection
 fingerprints below are SHA-256 of sorted lines containing the per-file SHA-256,
 two spaces, the root-relative path, and LF.
 
 | Input/output | Files | Aggregate SHA-256 |
 | --- | ---: | --- |
 | Petrel `generator/lexicons` | 432 | `dda23340246bae282db0282257a03d016108b71f673bf6384c96e7528f07ecb6` |
-| PetrelCatbird `lexicons` | 189 | `35ba46d6d9c994b6f91710a7927db4918b477790981910edfe1f5826d1c4a9d4` |
-| Rust `src/generated` | 644 | `0f75263f15ceea7533013cde6846c4e95137f16385edce981a23ea75cfdfb6bd` |
+| PetrelCatbird `lexicons` | 189 | `a627cf74bcf876c954f79cbc4b3cab6618a1eed2401385655310575bf63e853f` |
+| Rust `src/generated` | 644 | `ddaae592e19921ce41b3e5153b93b38de9f1d69f66cb1fffacfbd2e9b7e7f5d8` |
 
 Build `gen-lexicons` from the workspace's `mls-ds/codegen` using its locked
 Cargo graph. The reviewed `codegen/src/main.rs` has SHA-256
@@ -63,6 +63,12 @@ The generated module allows Clippy's `absurd_extreme_comparisons` lint because
 Jacquard emits a literal `usize < 0` check for schema `minLength: 0`. This is
 a redundant false condition, not a weakened field validator; handwritten code
 does not inherit this generated-module-only allowance.
+
+The terminal-deletion contract also declares `SpaceDeleted` for `findMeks` and
+`getAttachmentBlob`. A deleted conversation storage generation returns no data;
+callers must not rebind or fall back to another placement. The overlay merges
+current main `3dc8b613abbab900f650f7e1a4e42884cc42b0e1` while retaining all 48
+main-only source changes plus the newer chat security definitions.
 
 ## Historical October chat provenance
 

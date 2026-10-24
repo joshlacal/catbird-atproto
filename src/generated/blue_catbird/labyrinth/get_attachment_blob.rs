@@ -60,6 +60,12 @@ pub enum GetAttachmentBlobError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// The conversation Space storage generation is permanently deleted.
+    #[serde(rename = "SpaceDeleted")]
+    SpaceDeleted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -95,6 +101,13 @@ impl core::fmt::Display for GetAttachmentBlobError {
             }
             Self::RelayUnavailable(msg) => {
                 write!(f, "RelayUnavailable")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::SpaceDeleted(msg) => {
+                write!(f, "SpaceDeleted")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

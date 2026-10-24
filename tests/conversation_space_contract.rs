@@ -97,11 +97,15 @@ fn permanent_deletion_is_bound_to_the_exact_space_generation() {
 
 #[test]
 fn deleted_generation_is_a_typed_error_on_both_remaining_read_paths() {
-    let wire = serde_json::json!({"error": "SpaceDeleted", "message": "generation permanently deleted"});
+    let wire =
+        serde_json::json!({"error": "SpaceDeleted", "message": "generation permanently deleted"});
     let meks: FindMeksError = decode(&wire).unwrap();
     let attachment: GetAttachmentBlobError = decode(&wire).unwrap();
     assert!(matches!(meks, FindMeksError::SpaceDeleted(_)));
-    assert!(matches!(attachment, GetAttachmentBlobError::SpaceDeleted(_)));
+    assert!(matches!(
+        attachment,
+        GetAttachmentBlobError::SpaceDeleted(_)
+    ));
     assert_eq!(serde_json::to_value(meks).unwrap(), wire);
     assert_eq!(serde_json::to_value(attachment).unwrap(), wire);
 }
