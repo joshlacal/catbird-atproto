@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      RUSTUP_TOOLCHAIN: '1.97.1'
+      RUSTUP_TOOLCHAIN: '1.99.1'
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
       CMAKE_POLICY_VERSION_MINIMUM: '3.5'
@@ -37,7 +37,7 @@ jobs:
           path: catbird-mls
       - name: Install compiler
         run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
-      - uses: actions/cache@v4
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/registry
