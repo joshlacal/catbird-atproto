@@ -23,10 +23,10 @@ jobs:
       CARGO_BUILD_JOBS: '2'
       CMAKE_POLICY_VERSION_MINIMUM: '3.5'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: catbird-atproto
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: joshlacal/catbird-mls
           # Head of codex/main-consolidation-native-20261002: the last public
