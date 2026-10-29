@@ -4,7 +4,7 @@ Agent instructions for this repository (`CLAUDE.md` imports this file).
 
 ## Overview
 
-`catbird-atproto` is the **shared AT Protocol type surface for every Rust crate** in the workspace. It is a standalone Rust library crate (`catbird-atproto`, edition 2021) whose entire public API is **generated from Lexicon schemas** by [Jacquard](https://github.com/) (`jacquard-lexicon` / `jacquard-common` / `jacquard-derive`, pinned at `0.9`).
+`catbird-atproto` is the **shared AT Protocol type surface for every Rust crate** in the workspace. It is a standalone Rust library crate (`catbird-atproto`, edition 2021) whose entire public API is **generated from Lexicon schemas** by [Jacquard](https://tangled.org/nonbinary.computer/jacquard) (`jacquard-lexicon` / `jacquard-common` / `jacquard-derive`, pinned to git rev `3287244a99262a361bd32873a871982da0a76c40`, version 0.13.0).
 
 - Path dependency only — never published. Consumers pull it in via `path = "..."` (see [Consumers](#consumers)).
 - The crate is buildable in isolation and does **not** depend on `audiopus_sys`, so it compiles in ~2s with no CMake workaround needed.
@@ -30,6 +30,7 @@ cargo fmt --check && cargo clippy --all-targets --all-features
 Features (`Cargo.toml`):
 - `namespace-bluecatbird` (**default**) — gates the `blue_catbird` (`blue.catbird.*`) namespace.
 - `namespace-site-standard` — gates the `site_standard` (`site.standard.*`) namespace and the `com_atproto` types it references.
+- `namespace-atproto-space` — gates the `com.atproto.space` and `com.atproto.simplespace` (permissioned-data Spaces) modules. `Scripts/regenerate.py` adds this gate after generation.
 - `streaming` — pulls in `jacquard-common/websocket` + `serde_ipld_dagcbor` for firehose/event-stream consumers.
 
 ## Codegen Is Source of Truth
@@ -47,25 +48,25 @@ The canonical Rust codegen reads the same split corpus as the Swift/Kotlin gener
 
 ### Regenerate
 
-From the **workspace root** (`Catbird+Petrel/`):
+There is **one canonical regeneration command**: `Scripts/regenerate.py` in this repository, run with the `gen-lexicons` binary of `mls-codegen` (`mls-ds/codegen/`). Run it from this repository with `Petrel/`, `PetrelCatbird/` and `mls-ds/` checked out beside it; the script reads `../Petrel/generator/lexicons` and `../PetrelCatbird/lexicons` by default.
+
+The generator must come from **mls-ds at or after the generator fixes `11abdd83d` and `ee9b1686`**. `11abdd83d` gives fields that refer to a named bytes definition (`#artifactHash`, `#identifierBytes`) the same codec as inline bytes, so JSON accepts `$bytes` and DAG-CBOR writes byte strings. `ee9b1686` gives the schemaless `labyrinthRelay` output its raw-body codec. The script no longer patches either codec in, so an older generator produces wrong codecs; `check` reports the drift, and `tests/named_bytes_contract.rs` and `tests/labyrinth_relay_contract.rs` cover both.
 
 ```bash
 # Checkpoint first — generators have destroyed uncommitted work.
-cd catbird-atproto && jj new && cd ..
+cd catbird-atproto && jj new
 
-./scripts/regenerate-atproto-types.sh
+cargo build --locked --manifest-path ../mls-ds/Cargo.toml -p mls-codegen --bin gen-lexicons
+GEN=../mls-ds/target/debug/gen-lexicons   # or "$CARGO_TARGET_DIR/debug/gen-lexicons"
+python3 Scripts/regenerate.py generate --generator "$GEN"
+python3 Scripts/regenerate.py check --generator "$GEN"   # a second run must match byte for byte
 ```
 
-The script runs the `mls-codegen` crate (`gen-lexicons` binary, `mls-ds/codegen/`) against Petrel core plus PetrelCatbird overlay lexicons, writes into `catbird-atproto/src/generated/`, then `rustfmt`s the output:
+The script runs the generator into a temporary directory and gates `com_atproto::{space, simplespace}` behind the `namespace-atproto-space` feature. That gate is the one post-generation step, because `mls-codegen` cannot put a module behind a Cargo feature. It then runs `rustfmt --edition 2021`. `generate` replaces `src/generated/` and keeps the previous tree in the temporary directory; `check` compares every file with `src/generated/` and changes nothing. The script never rewrites generated declarations: fix generator bugs in `mls-ds/codegen`.
 
-```bash
-cargo run --manifest-path mls-ds/Cargo.toml -p mls-codegen -- \
-    --lexdir Petrel/generator/lexicons \
-    --lexdir PetrelCatbird/lexicons \
-    --outdir catbird-atproto/src/generated
-```
+Do **not** regenerate with the workspace-level `./scripts/regenerate-atproto-types.sh` or a bare `cargo run -p mls-codegen -- --outdir catbird-atproto/src/generated`. Both skip the namespace gate and do not pin the rustfmt edition, so they do not reproduce the committed tree. `CODEGEN_PROVENANCE.md` records the current generator revision, input corpus and output hashes; update it with every regeneration.
 
-After regenerating: `cd catbird-atproto && jj diff` to verify, then rebuild this crate **and every consumer** ([Consumers](#consumers)) and reconcile breakage. If output is wrong, `jj op undo` and fix the **lexicon or the generator** — never patch generated files. For the cross-language path (Swift/Kotlin too), use the `/regen-lexicons` skill.
+After regenerating: `jj diff` to verify, then `cargo fmt --check`, `cargo test --locked --features streaming,namespace-atproto-space` and `cargo clippy --locked --all-targets --all-features`, then rebuild **every consumer** ([Consumers](#consumers)) and reconcile breakage. If output is wrong, `jj op undo` and fix the **lexicon or the generator** — never patch generated files. For the cross-language path (Swift/Kotlin too), use the `/regen-lexicons` skill, but take the Rust step from `Scripts/regenerate.py`.
 
 ## Source Map
 
@@ -97,7 +98,7 @@ Path-dependency consumers (regenerating types here may break their builds — re
 | `nest/catbird` | `catbird-atproto = { path = "../../catbird-atproto" }` |
 | `mls-ds`, `catbird-firehose`, others | path deps as needed |
 
-When a lexicon contract changes, the reconcile loop is: edit lexicon → `regenerate-atproto-types.sh` → rebuild `catbird-atproto` → rebuild each consumer and fix call sites.
+When a lexicon contract changes, the reconcile loop is: edit lexicon → `Scripts/regenerate.py generate` then `check` → rebuild `catbird-atproto` → rebuild each consumer and fix call sites.
 
 ## Gotchas
 
@@ -108,6 +109,6 @@ When a lexicon contract changes, the reconcile loop is: edit lexicon → `regene
 
 ## Coding Style
 
-- `cargo fmt` + `cargo clippy` clean before committing (generated output is already `rustfmt`ed by the regen script).
+- `cargo fmt` + `cargo clippy` clean before committing (generated output is already `rustfmt`ed by `Scripts/regenerate.py`).
 - Standard Rust conventions. The only files you should hand-edit are `src/lib.rs` and the `catbird::` shim within it — never `src/generated/`.
 - Commit prefix: scope as `catbird-atproto:` (e.g. `catbird-atproto: wire chat_bsky namespace`). For lexicon-driven changes, the substantive edit belongs in the lexicon repo; the regenerated diff here is a follow-on.

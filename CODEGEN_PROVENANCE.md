@@ -1,8 +1,82 @@
 # Generated contract provenance
 
-October 23 source reconciliation preserves the current chat recovery contracts and replaces the permissioned-data API with the exact October 22 upstream corpus. Full generation uses Petrel core and PetrelCatbird overlay sources together; no generated declarations are edited by hand. Local contract checks do not qualify a running host or application.
+October 23 source reconciliation preserves the current chat recovery contracts and replaces the permissioned-data API with the exact October 22 upstream corpus. On October 29 the generated tree was re-baselined on the current `mls-codegen`, which now emits the byte and relay codecs that `Scripts/regenerate.py` used to add with regular-expression rewrites (review finding GC-1). Full generation uses Petrel core and PetrelCatbird overlay sources together; no generated declarations are edited by hand. Local contract checks do not qualify a running host or application.
 
-Current reproduction details are recorded below; historical provenance follows.
+Current reproduction details are recorded below; historical provenance follows. Commands quoted in the historical records, including sections titled "Canonical command", are what was run at the time. The command under [Canonical regeneration](#canonical-regeneration) supersedes all of them.
+
+## Canonical regeneration
+
+There is one canonical regeneration command: `Scripts/regenerate.py`, run with the `gen-lexicons` binary built from mls-ds `codegen/` (the `mls-codegen` crate). Run it from this repository with `Petrel`, `PetrelCatbird` and `mls-ds` checked out beside it; the script reads `../Petrel/generator/lexicons` and `../PetrelCatbird/lexicons` by default. Running `mls-codegen` straight into `src/generated`, or the workspace-level `scripts/regenerate-atproto-types.sh`, skips the namespace gate and does not pin the `rustfmt` edition, so neither reproduces the committed tree.
+
+The generator must come from mls-ds at or after both of these generator fixes:
+
+- `11abdd83d` ("mls-codegen: inline refs to top-level bytes defs so Jacquard applies serde_bytes_helper"). Fields that refer to a named bytes definition, such as `#artifactHash` or `#identifierBytes`, get the same codec as inline bytes: JSON accepts `$bytes` and DAG-CBOR writes real byte strings.
+- `ee9b1686` ("codegen: give schemaless application/json outputs raw-byte codecs"). `labyrinthRelay`, the only such output in this corpus, decodes and encodes the relayed body byte for byte.
+
+An older generator omits those codecs, and the script no longer adds them. `check` reports the drift, and the `named_bytes_contract` and `labyrinth_relay_contract` tests cover both codecs.
+
+```sh
+# From this repository. Checkpoint with jj first: `generate` replaces src/generated.
+jj new
+cargo build --locked --manifest-path ../mls-ds/Cargo.toml -p mls-codegen --bin gen-lexicons
+GEN=../mls-ds/target/debug/gen-lexicons   # or "$CARGO_TARGET_DIR/debug/gen-lexicons"
+python3 Scripts/regenerate.py generate --generator "$GEN"
+python3 Scripts/regenerate.py check --generator "$GEN"
+cargo fmt --check
+cargo test --locked --features streaming,namespace-atproto-space
+cargo clippy --locked --all-targets --all-features
+```
+
+`Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space` and `com.atproto.simplespace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
+
+## Current generation (re-baselined 2026-10-29)
+
+The generator is mls-ds `codegen/` at `63e696dc302b0f9454bf356ba0454ff5859691cf` (bookmark `codex/spaces-release-20261023`, mls-ds PR #62), which contains `11abdd83d` and `ee9b1686`. It was built with mls-ds's locked Cargo graph and Jacquard `3287244a99262a361bd32873a871982da0a76c40` (0.13.0, the same pin as this crate), using Rust 1.97.1 and rustfmt 1.9.0 (edition 2021).
+
+| Generator file | SHA-256 |
+| --- | --- |
+| mls-ds `codegen/src/main.rs` | `8206a05d17053ce5eabe91e88fa08cee320627eaa340e260df713548e4ab7e17` |
+| mls-ds `codegen/Cargo.toml` | `5d8756af56b27bfe9039c576e416f4652936fd1af4e84a996b278dfa251506b6` |
+| mls-ds `Cargo.lock` | `137e23181784c9613b22eda115b78581c354f30b4fd734630ad778225112ab98` |
+
+The lexicon corpus is unchanged from the October 22 alpha regeneration below. That is Petrel `generator/lexicons` at `4037e7760e2d1bb71db9a6cfdd0cd4134d4dd3bc`, whose lexicons are identical to the runtime pin `e115236537041a900ec971be05185a70cca73e8a`, and PetrelCatbird `lexicons` at `8672c80ffeb3b9cfbdb6bd98f66efa09b13fe0db`.
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 432 | `dda23340246bae282db0282257a03d016108b71f673bf6384c96e7528f07ecb6` |
+| PetrelCatbird `lexicons` | 189 | `a627cf74bcf876c954f79cbc4b3cab6618a1eed2401385655310575bf63e853f` |
+| Rust `src/generated` | 644 | `658975648f2676238891e66fbbf6def4f547023ed847736f2bd54b583b462481` |
+
+Each aggregate is the SHA-256 of one line per file, written as the file's SHA-256, two spaces, its path relative to the directory, and LF. The lines are concatenated in Python `pathlib` sort order, which `Scripts/regenerate.py` also uses. That order compares paths one component at a time, so `com_atproto/...` sorts before `com_atproto.rs`. A byte-order sort of the path strings, such as `LC_ALL=C sort`, puts those the other way round and gives a different value for `src/generated`. Sorting whole lines, which sorts by hash, does not reproduce these values either. This command reproduces all three:
+
+```sh
+python3 -c 'import hashlib,pathlib,sys; r=pathlib.Path(sys.argv[1]); print(hashlib.sha256("".join(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(r)}\n" for p in sorted(r.rglob("*")) if p.is_file()).encode()).hexdigest())' src/generated
+```
+
+### Change from the 2026-10-23 tree
+
+The 2026-10-23 tree (`e7ff2a3b`, aggregate `ddaae592e19921ce41b3e5153b93b38de9f1d69f66cb1fffacfbd2e9b7e7f5d8`) came from an older `mls-codegen` with `main.rs` SHA-256 `f2d5432492f4675319a1209730ef43c4375e98e41c385c3ee929e0e50305f452`. Two regex rewrites in the script were applied on top. One added serde byte codecs to 73 fields typed by named bytes aliases; the other added the raw `labyrinthRelay` codec. The current generator does both, so the rewrites are gone. 643 of the 644 files are byte-identical, including `blue_catbird/labyrinth/labyrinth_relay.rs`, where the generator's codec equals the old rewrite. Only `blue_catbird/chat.rs` changes (499 lines added, 548 removed):
+
+- 73 fields, with their 73 builder-state fields and 73 builder setters, are spelled `jacquard_common::deps::bytes::Bytes` instead of the `ArtifactHash` or `IdentifierBytes` alias. Both aliases are still generated as type aliases of `Bytes`, so the Rust types are identical. The serde byte-codec attributes are unchanged: the file has 149 `jacquard_common::serde_bytes_helper` and 2 `jacquard_common::opt_serde_bytes_helper` uses before and after.
+- 24 `IdentifierBytes` fields regain the doc comment from `#identifierBytes`.
+- In the embedded `blue.catbird.chat.defs` lexicon document, those 73 properties are inline `bytes` with the same 32- or 16-byte length bounds instead of `#artifactHash` or `#identifierBytes` refs.
+
+The wire format is unchanged. `named_bytes_contract` covers JSON `$bytes` and DAG-CBOR byte strings for named and direct bytes; `labyrinth_relay_contract` covers the raw relay body. `com_atproto_space_surface` and `conversation_space_contract` exercise the Space wire shapes. These local contract checks do not qualify runtime authentication, migration, device rendering, or production interoperability.
+
+Verification on 2026-10-29 (macOS, Rust 1.97.1, rustfmt 1.9.0, Python 3.15.0):
+`generate` wrote 644 files, and the resulting diff is identical to the one an
+earlier trial run of the same generator produced. A second run with `check`
+printed `Roundtrip verified: 644 generated files`. `cargo fmt --check` passed.
+`cargo build --locked` passed with default features and with `--all-features`.
+`cargo test --locked --features streaming,namespace-atproto-space` passed 44
+tests with 0 failures. `cargo clippy --locked --all-targets --all-features`
+exited 0 with the same 18 warnings in generated code as the 2026-10-23 tree:
+16 `len_zero` and 2 `result_large_err`, in the same files.
+
+The generated module allows Clippy's `absurd_extreme_comparisons` lint because
+Jacquard emits a literal `usize < 0` check for schema `minLength: 0`. This is
+a redundant false condition, not a weakened field validator; handwritten code
+does not inherit this generated-module-only allowance.
 
 ## October 22 alpha regeneration (2026-10-23)
 
@@ -19,50 +93,27 @@ This generation reconciles Rust parent revisions
 `8bab4018ba20ff0342edf2ec8922304e5dd2cdbc`. Private input retains the newer chat
 security contracts, Labyrinth history, and immutable conversation-Space
 placement/generation contract, current authority policy lookup, permanent generation deletion, and complete-redaction item counts (schema revision
-`1c8f6139781f51764c4829cdcb66c273ef7f787c`). The exact corpus and projection
-fingerprints below are SHA-256 of sorted lines containing the per-file SHA-256,
-two spaces, the root-relative path, and LF.
+`1c8f6139781f51764c4829cdcb66c273ef7f787c`). The corpus fingerprints are
+the ones in the current table above. The output of this generation was
+superseded on 2026-10-29:
 
 | Input/output | Files | Aggregate SHA-256 |
 | --- | ---: | --- |
 | Petrel `generator/lexicons` | 432 | `dda23340246bae282db0282257a03d016108b71f673bf6384c96e7528f07ecb6` |
 | PetrelCatbird `lexicons` | 189 | `a627cf74bcf876c954f79cbc4b3cab6618a1eed2401385655310575bf63e853f` |
-| Rust `src/generated` | 644 | `ddaae592e19921ce41b3e5153b93b38de9f1d69f66cb1fffacfbd2e9b7e7f5d8` |
+| Rust `src/generated` (superseded) | 644 | `ddaae592e19921ce41b3e5153b93b38de9f1d69f66cb1fffacfbd2e9b7e7f5d8` |
 
-Build `gen-lexicons` from the workspace's `mls-ds/codegen` using its locked
-Cargo graph. The reviewed `codegen/src/main.rs` has SHA-256
-`f2d5432492f4675319a1209730ef43c4375e98e41c385c3ee929e0e50305f452`, its
-Cargo manifest has SHA-256
-`5d8756af56b27bfe9039c576e416f4652936fd1af4e84a996b278dfa251506b6`, and
-Jacquard is pinned to `3287244a99262a361bd32873a871982da0a76c40` (0.13.0).
-Use Rust 1.97.1 and rustfmt 1.9.0 (edition 2021).
-
-```sh
-# First checkpoint only this lane's source tree using jj.
-python3 Scripts/regenerate.py generate --generator /absolute/path/to/gen-lexicons
-python3 Scripts/regenerate.py check --generator /absolute/path/to/gen-lexicons
-cargo test --locked --features streaming,namespace-atproto-space
-cargo fmt --check
-cargo clippy --locked --all-targets --all-features
-```
-
-`Scripts/regenerate.py` owns the namespace feature gates, raw-body
-`labyrinthRelay` codec, and byte-codec annotations for named byte aliases as
-maintained projection steps. The pinned Jacquard generator annotates inline
-bytes but omits the annotation for named bytes refs. The wrapper discovers
-those aliases from generated declarations and carries the same codec to all
-73 fields: JSON accepts `$bytes` and DAG-CBOR uses actual byte strings.
-`named_bytes_contract` covers both representations and direct/named parity. It stages complete output,
-keeps the previous tree in temporary recovery storage, and checks every generated
-file including unexpected stale files. The full second-run comparison passed for
-all 644 files. `com_atproto_space_surface` and `conversation_space_contract`
-exercise the new wire shapes; these local contract checks do not qualify runtime
-authentication, migration, device rendering, or production interoperability.
-
-The generated module allows Clippy's `absurd_extreme_comparisons` lint because
-Jacquard emits a literal `usize < 0` check for schema `minLength: 0`. This is
-a redundant false condition, not a weakened field validator; handwritten code
-does not inherit this generated-module-only allowance.
+That tree was built with `gen-lexicons` from mls-ds `codegen/` whose
+`main.rs` had SHA-256
+`f2d5432492f4675319a1209730ef43c4375e98e41c385c3ee929e0e50305f452` and whose
+Cargo manifest had SHA-256
+`5d8756af56b27bfe9039c576e416f4652936fd1af4e84a996b278dfa251506b6`, with
+Jacquard `3287244a99262a361bd32873a871982da0a76c40` (0.13.0), Rust 1.97.1
+and rustfmt 1.9.0. At that time `Scripts/regenerate.py` also rewrote the
+generated output. It added byte-codec annotations to the 73 fields typed by
+named bytes aliases, because that generator annotated inline bytes but not
+named bytes refs, and it added the raw-body `labyrinthRelay` codec. Both
+rewrites were removed with the 2026-10-29 re-baseline.
 
 The terminal-deletion contract also declares `SpaceDeleted` for `findMeks` and
 `getAttachmentBlob`. A deleted conversation storage generation returns no data;
