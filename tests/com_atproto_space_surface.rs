@@ -15,7 +15,12 @@ fn space_namespace_is_publicly_reachable() {
     assert_public_type::<
         catbird_atproto::com_atproto::space::notify_credential_revoked::NotifyCredentialRevoked,
     >();
-    assert_public_type::<catbird_atproto::com_atproto::simplespace::put_member::PutMember>();
+    assert_public_type::<catbird_atproto::com_atproto::memberspace::put_member::PutMember>();
+    assert_public_type::<catbird_atproto::com_atproto::memberspace::member::Member>();
+    assert_public_type::<catbird_atproto::com_atproto::space::policy::Policy>();
+    assert_public_type::<catbird_atproto::com_atproto::space::clear_records::ClearRecords>();
+    assert_public_type::<catbird_atproto::com_atproto::space::remove_writer::RemoveWriter>();
+    assert_public_type::<catbird_atproto::com_atproto::personalspace::policy::Policy>();
 }
 
 const UPSTREAM_V1_JSON: &str = r#"{
@@ -251,13 +256,11 @@ fn list_spaces_filter_is_space_type() {
 
 #[test]
 fn create_space_requires_space_type() {
-    use catbird_atproto::com_atproto::simplespace::create_space::CreateSpace;
+    use catbird_atproto::com_atproto::space::create_space::CreateSpace;
 
     let body = serde_json::json!({
         "spaceType": "app.bsky.group",
-        "readPolicy": {"$type": "com.atproto.simplespace.defs#memberListPolicy"},
-        "writePolicy": {"$type": "com.atproto.simplespace.defs#memberListPolicy"},
-        "appAccess": {"$type": "com.atproto.simplespace.defs#open"},
+        "policy": {"$type": "com.atproto.memberspace.policy"},
     });
     let parsed: CreateSpace = decode(&body).unwrap();
     assert_eq!(parsed.space_type.as_str(), "app.bsky.group");
@@ -270,4 +273,86 @@ fn create_space_requires_space_type() {
     legacy["type"] = space_type;
     let err = decode::<CreateSpace>(&legacy).unwrap_err().to_string();
     assert!(err.contains("missing field `spaceType`"), "{err}");
+}
+
+// --- atproto Spaces October 29, 2026 alpha (atproto 5d88b414) wire shapes ---
+
+#[test]
+fn space_policy_union_keeps_each_policy_type_tag() {
+    use catbird_atproto::com_atproto::space::create_space::{CreateSpace, CreateSpacePolicy};
+
+    let cases = [
+        serde_json::json!({"$type": "com.atproto.personalspace.policy"}),
+        serde_json::json!({
+            "$type": "com.atproto.memberspace.policy",
+            "publicRead": true,
+            "allowedApps": ["did:web:app.example#forum"],
+        }),
+        serde_json::json!({
+            "$type": "com.atproto.managedspace.policy",
+            "managingApp": "did:web:app.example#forum",
+        }),
+    ];
+    for policy in cases {
+        let body = serde_json::json!({"spaceType": "app.bsky.group", "policy": policy});
+        let parsed: CreateSpace = decode(&body).unwrap();
+        match (&parsed.policy, policy["$type"].as_str().unwrap()) {
+            (CreateSpacePolicy::PersonalspacePolicy(_), "com.atproto.personalspace.policy") => {}
+            (CreateSpacePolicy::MemberspacePolicy(p), "com.atproto.memberspace.policy") => {
+                assert_eq!(p.public_read, Some(true));
+                let apps = p.allowed_apps.as_ref().unwrap();
+                assert_eq!(apps[0].as_str(), "did:web:app.example#forum");
+            }
+            (CreateSpacePolicy::ManagedspacePolicy(p), "com.atproto.managedspace.policy") => {
+                assert_eq!(p.managing_app.as_str(), "did:web:app.example#forum");
+            }
+            (other, tag) => panic!("{tag} decoded as {other:?}"),
+        }
+        let encoded = serde_json::to_value(&parsed).unwrap();
+        assert_eq!(encoded["policy"]["$type"], policy["$type"]);
+    }
+}
+
+#[test]
+fn get_space_returns_uri_and_policy() {
+    use catbird_atproto::com_atproto::space::get_space::{GetSpaceOutput, GetSpaceOutputPolicy};
+
+    let body = serde_json::json!({
+        "uri": SPACE_URI,
+        "policy": {"$type": "com.atproto.managedspace.policy", "managingApp": "did:web:app.example"},
+    });
+    let parsed: GetSpaceOutput = decode(&body).unwrap();
+    assert_eq!(parsed.uri.as_str(), SPACE_URI);
+    assert!(matches!(
+        parsed.policy,
+        GetSpaceOutputPolicy::ManagedspacePolicy(_)
+    ));
+}
+
+#[test]
+fn moved_member_and_access_methods_use_their_new_nsids() {
+    use catbird_atproto::com_atproto::managedspace::check_user_access::CheckUserAccess;
+    use catbird_atproto::com_atproto::memberspace::put_member::PutMember;
+    use jacquard_common::xrpc::XrpcRequest;
+
+    assert_eq!(
+        <CheckUserAccess as XrpcRequest>::NSID,
+        "com.atproto.managedspace.checkUserAccess"
+    );
+    assert_eq!(
+        <PutMember as XrpcRequest>::NSID,
+        "com.atproto.memberspace.putMember"
+    );
+}
+
+#[test]
+fn get_space_credential_keeps_its_error_names() {
+    use catbird_atproto::com_atproto::space::get_space_credential::GetSpaceCredentialError;
+
+    for name in ["SpaceNotFound", "UserNotAuthorized"] {
+        let body = serde_json::json!({"error": name, "message": "denied"});
+        let parsed: GetSpaceCredentialError = decode(&body).unwrap();
+        let encoded = serde_json::to_value(&parsed).unwrap();
+        assert_eq!(encoded["error"], name);
+    }
 }

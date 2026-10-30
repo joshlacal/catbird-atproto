@@ -78,6 +78,7 @@ pub struct GetSpaceCredentialOutput<S: jacquard_common::BosStr = jacquard_common
 )]
 #[serde(tag = "error", content = "message")]
 pub enum GetSpaceCredentialError {
+    /// The space does not exist. An authority may also answer this in place of UserNotAuthorized, so that a refusal does not disclose that the space exists to a user who may not read it.
     #[serde(rename = "SpaceNotFound")]
     SpaceNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]

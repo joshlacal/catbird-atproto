@@ -8,11 +8,15 @@ pub mod admin;
 pub mod identity;
 pub mod label;
 pub mod lexicon;
+#[cfg(feature = "namespace-atproto-space")]
+pub mod managedspace;
+#[cfg(feature = "namespace-atproto-space")]
+pub mod memberspace;
 pub mod moderation;
+#[cfg(feature = "namespace-atproto-space")]
+pub mod personalspace;
 pub mod repo;
 pub mod server;
-#[cfg(feature = "namespace-atproto-space")]
-pub mod simplespace;
 #[cfg(feature = "namespace-atproto-space")]
 pub mod space;
 pub mod sync;
