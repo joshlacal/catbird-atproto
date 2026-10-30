@@ -8,14 +8,13 @@ Current reproduction details are recorded below; historical provenance follows. 
 
 There is one canonical regeneration command: `Scripts/regenerate.py`, run with the `gen-lexicons` binary built from mls-ds `codegen/` (the `mls-codegen` crate). Run it from this repository with `Petrel`, `PetrelCatbird` and `mls-ds` checked out beside it; the script reads `../Petrel/generator/lexicons` and `../PetrelCatbird/lexicons` by default. Running `mls-codegen` straight into `src/generated`, or the workspace-level `scripts/regenerate-atproto-types.sh`, skips the namespace gate and does not pin the `rustfmt` edition, so neither reproduces the committed tree.
 
-The generator must come from mls-ds at or after both of these generator fixes:
+The generator must come from mls-ds at or after all three of these generator fixes (mls-ds main `2df124d6` contains them):
 
 - `11abdd83d` ("mls-codegen: inline refs to top-level bytes defs so Jacquard applies serde_bytes_helper"). Fields that refer to a named bytes definition, such as `#artifactHash` or `#identifierBytes`, get the same codec as inline bytes: JSON accepts `$bytes` and DAG-CBOR writes real byte strings.
 - `ee9b1686` ("codegen: give schemaless application/json outputs raw-byte codecs"). `labyrinthRelay`, the only such output in this corpus, decodes and encodes the relayed body byte for byte.
-
 - `4f980cb5` ("mls-codegen: Qualify union variants that Jacquard names alike"). Jacquard names a union arm that points at another lexicon's `main` definition after the last NSID segment and does not disambiguate such arms inside one two-segment namespace, so the October 29 `com.atproto.space` policy unions got three variants named `Policy`. The generator now names them `PersonalspacePolicy`, `MemberspacePolicy` and `ManagedspacePolicy`; the serde tags are unchanged.
 
-An older generator omits those codecs or emits the colliding variants, and the script adds neither. `check` reports the drift, and the `named_bytes_contract` and `labyrinth_relay_contract` tests cover both codecs.
+An older generator omits those codecs or emits the colliding variants, and the script adds none of them. `check` reports the drift, and the `named_bytes_contract` and `labyrinth_relay_contract` tests cover both codecs.
 
 ```sh
 # From this repository. Checkpoint with jj first: `generate` replaces src/generated.
@@ -33,9 +32,9 @@ cargo clippy --locked --all-targets --all-features
 
 ## Current generation (October 29 Spaces alpha, regenerated 2026-10-30)
 
-The lexicon corpus is Petrel `generator/lexicons` at `92b05b81966c07a2a7d3d96a68f9230dd7787c5d` (bookmark `claude/spaces-oct29-20261030`). Its `com/atproto/{space,memberspace,managedspace,personalspace}` lexicons are JSON-equal to atproto `5d88b414` (npm `0.0.0-spaces-alpha-20261029171913`), and `com/atproto/simplespace` is gone. PetrelCatbird `lexicons` is unchanged from the previous generation (its tree at `3208d02e38e9b7b176d8c2cf46d1e92feb555974` has the same aggregate as `8672c80f`).
+The lexicon corpus is Petrel `generator/lexicons` at `92b05b81966c07a2a7d3d96a68f9230dd7787c5d` (bookmark `claude/spaces-oct29-20261030`, merged as Petrel main `e5b6039b`, PR #36; lexicons identical). Its `com/atproto/{space,memberspace,managedspace,personalspace}` lexicons are JSON-equal to atproto `5d88b414` (npm `0.0.0-spaces-alpha-20261029171913`), and `com/atproto/simplespace` is gone. PetrelCatbird `lexicons` is unchanged from the previous generation (its tree at `3208d02e38e9b7b176d8c2cf46d1e92feb555974` has the same aggregate as `8672c80f`).
 
-The generator is mls-ds `codegen/` at `4f980cb51c8a9826c03eba4341db97d68091d567` (bookmark `claude/spaces-oct29-codegen-20261030`), which is `f8c711a5` (`codex/spaces-release-20261023`) plus the union-variant fix above. Its `codegen/src/main.rs` before that fix is byte-identical to `63e696dc`. It was built with mls-ds's locked Cargo graph and Jacquard `3287244a99262a361bd32873a871982da0a76c40` (0.13.0), using Rust 1.97.1 and rustfmt 1.9.0 (edition 2021).
+The generator is mls-ds `codegen/` at `4f980cb51c8a9826c03eba4341db97d68091d567` (bookmark `claude/spaces-oct29-codegen-20261030`, merged as mls-ds main `2df124d6`, PR #63; `codegen/` and `Cargo.lock` identical), which is `f8c711a5` (`codex/spaces-release-20261023`) plus the union-variant fix above. Its `codegen/src/main.rs` before that fix is byte-identical to `63e696dc`. It was built with mls-ds's locked Cargo graph and Jacquard `3287244a99262a361bd32873a871982da0a76c40` (0.13.0), using Rust 1.97.1 and rustfmt 1.9.0 (edition 2021).
 
 | Generator file | SHA-256 |
 | --- | --- |
@@ -60,7 +59,7 @@ Only the Spaces modules behind `namespace-atproto-space` change (25 paths, 2,399
 - New `com.atproto.space` methods: `clearRecords`, `removeWriter`, `importRepo`, `exportSpaceMeta` and `importSpaceMeta`.
 - `space/get_space_credential.rs` changes only its `SpaceNotFound` description.
 
-This is a breaking API change for Rust consumers that enable `namespace-atproto-space`. `catbird-mls` and `mls-ds` do not enable it. `nest/circle-appview` does, and still imports `com_atproto::simplespace`; it must migrate when it moves its pin off `d6638bb5`.
+This is a breaking API change for Rust consumers that enable `namespace-atproto-space`. `catbird-mls` and `mls-ds` do not enable it. `nest/circle-appview` does; nest main (`035badce`, PR #26) pins `f40e8795`, whose tree is identical to this generation, and uses the `memberspace` and `managedspace` policy types instead of `com_atproto::simplespace`.
 
 Verification on 2026-10-30 (macOS, Rust 1.97.1, rustfmt 1.9.0, Python 3.15.0):
 `generate` wrote 656 files and renamed 12 colliding union variants (three in
