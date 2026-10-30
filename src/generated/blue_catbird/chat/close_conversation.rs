@@ -141,6 +141,12 @@ pub enum CloseConversationError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// The bounded encrypted request lifecycle reserve cannot accommodate this operation. No first-execution effects are committed; retry the same signed operation after capacity is available.
+    #[serde(rename = "CapacityUnavailable")]
+    CapacityUnavailable(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -265,6 +271,13 @@ impl core::fmt::Display for CloseConversationError {
                 }
                 Ok(())
             }
+            Self::CapacityUnavailable(msg) => {
+                write!(f, "CapacityUnavailable")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -310,7 +323,7 @@ pub mod close_conversation_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -37,13 +37,13 @@ pub struct ListRepoOps<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ListRepoOpsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The account's current signed commit. Included when the response reaches the head of the oplog; omitted on backfill responses.
+    /// The account's current commit. Included when the response reaches the head of the oplog; omitted on backfill responses.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub commit: core::option::Option<crate::com_atproto::space::SignedCommit<S>>,
+    pub commit: core::option::Option<crate::generated::com_atproto::space::Commit<S>>,
     /// Pass as `cursor` to fetch the next page. Absent once the response reaches the head of the oplog.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub ops: Vec<crate::com_atproto::space::list_repo_ops::OpEntry<S>>,
+    pub ops: Vec<crate::generated::com_atproto::space::list_repo_ops::OpEntry<S>>,
     #[serde(
         flatten,
         default,
@@ -69,6 +69,12 @@ pub struct ListRepoOpsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 #[serde(tag = "error", content = "message")]
 pub enum ListRepoOpsError {
+    /// The Atproto-Space-Want-Mac header is missing or malformed, names an unsupported type or version, or carries an invalid key share.
+    #[serde(rename = "BadSpaceMac")]
+    BadSpaceMac(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "SpaceNotFound")]
     SpaceNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -106,6 +112,13 @@ pub enum ListRepoOpsError {
 impl core::fmt::Display for ListRepoOpsError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::BadSpaceMac(msg) => {
+                write!(f, "BadSpaceMac")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::SpaceNotFound(msg) => {
                 write!(f, "SpaceNotFound")?;
                 if let Some(msg) = msg {
@@ -241,7 +254,7 @@ pub mod list_repo_ops_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -471,7 +484,7 @@ pub mod op_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

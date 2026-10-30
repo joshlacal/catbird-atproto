@@ -129,6 +129,7 @@ where
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum DeclarationProtocolVersion<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     _1,
+    _2,
     Other(S),
 }
 
@@ -136,6 +137,7 @@ impl<S: jacquard_common::BosStr> DeclarationProtocolVersion<S> {
     pub fn as_str(&self) -> &str {
         match self {
             Self::_1 => "1",
+            Self::_2 => "2",
             Self::Other(s) => s.as_ref(),
         }
     }
@@ -143,6 +145,7 @@ impl<S: jacquard_common::BosStr> DeclarationProtocolVersion<S> {
     pub fn from_value(s: S) -> Self {
         match s.as_ref() {
             "1" => Self::_1,
+            "2" => Self::_2,
             _ => Self::Other(s),
         }
     }
@@ -196,6 +199,7 @@ where
     fn into_static(self) -> Self::Output {
         match self {
             DeclarationProtocolVersion::_1 => DeclarationProtocolVersion::_1,
+            DeclarationProtocolVersion::_2 => DeclarationProtocolVersion::_2,
             DeclarationProtocolVersion::Other(v) => {
                 DeclarationProtocolVersion::Other(v.into_static())
             }
@@ -305,7 +309,7 @@ pub mod declaration_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

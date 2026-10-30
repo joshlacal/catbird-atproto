@@ -83,6 +83,11 @@ pub enum SubmitTransitionError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "ConversationNotAccepted")]
+    ConversationNotAccepted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -329,6 +334,13 @@ impl core::fmt::Display for SubmitTransitionError {
             }
             Self::ConversationLeafLimitReached(msg) => {
                 write!(f, "ConversationLeafLimitReached")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ConversationNotAccepted(msg) => {
+                write!(f, "ConversationNotAccepted")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

@@ -68,6 +68,11 @@ pub enum ActivateResetError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "ConversationNotAccepted")]
+    ConversationNotAccepted(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -192,6 +197,13 @@ impl core::fmt::Display for ActivateResetError {
         match self {
             Self::AdminRequired(msg) => {
                 write!(f, "AdminRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ConversationNotAccepted(msg) => {
+                write!(f, "ConversationNotAccepted")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -396,7 +408,7 @@ pub mod activate_reset_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

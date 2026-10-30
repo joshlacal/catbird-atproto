@@ -30,9 +30,11 @@ pub struct ListRepos<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ListReposOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Pass this cursor on the next request. Omitted when no repos are returned.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub repos: Vec<crate::com_atproto::space::list_repos::Repo<S>>,
+    /// Returned in ascending spaceRev order. A repo may reappear if updated while paginating.
+    pub repos: Vec<crate::generated::com_atproto::space::list_repos::Repo<S>>,
     #[serde(
         flatten,
         default,
@@ -101,13 +103,15 @@ impl core::fmt::Display for ListReposError {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Repo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The repo's current commit data (sha256 of the LtHash state), as last reported to the authority.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub data: jacquard_common::deps::bytes::Bytes,
     /// The DID of a repo that holds data in the space.
     pub did: jacquard_common::types::string::Did<S>,
-    /// The repo's current commit hash (sha256 of the LtHash state), as last reported to the authority.
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub hash: jacquard_common::deps::bytes::Bytes,
     /// The repo's current revision (TID), as last reported to the authority. May lag the repo host, which is the source of truth.
-    pub rev: jacquard_common::types::string::Tid,
+    pub repo_rev: jacquard_common::types::string::Tid,
+    /// The space revision at which this repo was last updated.
+    pub space_rev: jacquard_common::types::string::Tid,
     #[serde(
         flatten,
         default,
@@ -173,7 +177,7 @@ pub mod list_repos_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -339,57 +343,73 @@ pub mod repo_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Data;
         type Did;
-        type Hash;
-        type Rev;
+        type RepoRev;
+        type SpaceRev;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Data = Unset;
         type Did = Unset;
-        type Hash = Unset;
-        type Rev = Unset;
+        type RepoRev = Unset;
+        type SpaceRev = Unset;
+    }
+    ///State transition - sets the `data` field to Set
+    pub struct SetData<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetData<St> {}
+    impl<St: State> State for SetData<St> {
+        type Data = Set<members::data>;
+        type Did = St::Did;
+        type RepoRev = St::RepoRev;
+        type SpaceRev = St::SpaceRev;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetDid<St> {}
     impl<St: State> State for SetDid<St> {
+        type Data = St::Data;
         type Did = Set<members::did>;
-        type Hash = St::Hash;
-        type Rev = St::Rev;
+        type RepoRev = St::RepoRev;
+        type SpaceRev = St::SpaceRev;
     }
-    ///State transition - sets the `hash` field to Set
-    pub struct SetHash<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetHash<St> {}
-    impl<St: State> State for SetHash<St> {
+    ///State transition - sets the `repo_rev` field to Set
+    pub struct SetRepoRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepoRev<St> {}
+    impl<St: State> State for SetRepoRev<St> {
+        type Data = St::Data;
         type Did = St::Did;
-        type Hash = Set<members::hash>;
-        type Rev = St::Rev;
+        type RepoRev = Set<members::repo_rev>;
+        type SpaceRev = St::SpaceRev;
     }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetRev<St> {}
-    impl<St: State> State for SetRev<St> {
+    ///State transition - sets the `space_rev` field to Set
+    pub struct SetSpaceRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpaceRev<St> {}
+    impl<St: State> State for SetSpaceRev<St> {
+        type Data = St::Data;
         type Did = St::Did;
-        type Hash = St::Hash;
-        type Rev = Set<members::rev>;
+        type RepoRev = St::RepoRev;
+        type SpaceRev = Set<members::space_rev>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `data` field
+        pub struct data(());
         ///Marker type for the `did` field
         pub struct did(());
-        ///Marker type for the `hash` field
-        pub struct hash(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
+        ///Marker type for the `repo_rev` field
+        pub struct repo_rev(());
+        ///Marker type for the `space_rev` field
+        pub struct space_rev(());
     }
 }
 
@@ -400,8 +420,9 @@ pub struct RepoBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Tid>,
         core::option::Option<jacquard_common::types::string::Tid>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -426,7 +447,7 @@ impl RepoBuilder<repo_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         RepoBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -437,7 +458,26 @@ impl<S: jacquard_common::BosStr> RepoBuilder<repo_state::Empty, S> {
     pub fn builder() -> Self {
         RepoBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoBuilder<St, S>
+where
+    St: repo_state::State,
+    St::Data: repo_state::IsUnset,
+{
+    /// Set the `data` field (required)
+    pub fn data(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> RepoBuilder<repo_state::SetData<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        RepoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
     }
@@ -453,25 +493,6 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> RepoBuilder<repo_state::SetDid<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
-        RepoBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> RepoBuilder<St, S>
-where
-    St: repo_state::State,
-    St::Hash: repo_state::IsUnset,
-{
-    /// Set the `hash` field (required)
-    pub fn hash(
-        mut self,
-        value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> RepoBuilder<repo_state::SetHash<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         RepoBuilder {
             _state: ::core::marker::PhantomData,
@@ -484,13 +505,13 @@ where
 impl<St, S: jacquard_common::BosStr> RepoBuilder<St, S>
 where
     St: repo_state::State,
-    St::Rev: repo_state::IsUnset,
+    St::RepoRev: repo_state::IsUnset,
 {
-    /// Set the `rev` field (required)
-    pub fn rev(
+    /// Set the `repoRev` field (required)
+    pub fn repo_rev(
         mut self,
         value: impl Into<jacquard_common::types::string::Tid>,
-    ) -> RepoBuilder<repo_state::SetRev<St>, S> {
+    ) -> RepoBuilder<repo_state::SetRepoRev<St>, S> {
         self._fields.2 = ::core::option::Option::Some(value.into());
         RepoBuilder {
             _state: ::core::marker::PhantomData,
@@ -503,16 +524,37 @@ where
 impl<St, S: jacquard_common::BosStr> RepoBuilder<St, S>
 where
     St: repo_state::State,
+    St::SpaceRev: repo_state::IsUnset,
+{
+    /// Set the `spaceRev` field (required)
+    pub fn space_rev(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Tid>,
+    ) -> RepoBuilder<repo_state::SetSpaceRev<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        RepoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoBuilder<St, S>
+where
+    St: repo_state::State,
+    St::Data: repo_state::IsSet,
     St::Did: repo_state::IsSet,
-    St::Hash: repo_state::IsSet,
-    St::Rev: repo_state::IsSet,
+    St::RepoRev: repo_state::IsSet,
+    St::SpaceRev: repo_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> Repo<S> {
         Repo {
-            did: self._fields.0.unwrap(),
-            hash: self._fields.1.unwrap(),
-            rev: self._fields.2.unwrap(),
+            data: self._fields.0.unwrap(),
+            did: self._fields.1.unwrap(),
+            repo_rev: self._fields.2.unwrap(),
+            space_rev: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -525,9 +567,10 @@ where
         >,
     ) -> Repo<S> {
         Repo {
-            did: self._fields.0.unwrap(),
-            hash: self._fields.1.unwrap(),
-            rev: self._fields.2.unwrap(),
+            data: self._fields.0.unwrap(),
+            did: self._fields.1.unwrap(),
+            repo_rev: self._fields.2.unwrap(),
+            space_rev: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -557,6 +600,11 @@ fn lexicon_doc_com_atproto_space_listRepos() -> jacquard_lexicon::lexicon::Lexic
                                         "cursor",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(
+                                            ::jacquard_common::CowStr::new_static(
+                                                "Return repos updated after this space revision (exclusive). Use a previous response's cursor or a previously processed spaceRev.",
+                                            ),
+                                        ),
                                         ..Default::default()
                                     }),
                                 );
@@ -598,13 +646,22 @@ fn lexicon_doc_com_atproto_space_listRepos() -> jacquard_lexicon::lexicon::Lexic
                     required: Some(
                         vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("hash")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repoRev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("data"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("spaceRev")
                         ],
                     ),
                     properties: {
                         #[allow(unused_mut)]
                         let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "data",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                ..Default::default()
+                            }),
+                        );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "did",
@@ -623,20 +680,28 @@ fn lexicon_doc_com_atproto_space_listRepos() -> jacquard_lexicon::lexicon::Lexic
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "hash",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "rev",
+                                "repoRev",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "The repo's current revision (TID), as last reported to the authority. May lag the repo host, which is the source of truth.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "spaceRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The space revision at which this repo was last updated.",
                                     ),
                                 ),
                                 format: Some(

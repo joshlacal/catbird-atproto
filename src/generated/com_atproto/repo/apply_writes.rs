@@ -237,11 +237,11 @@ pub struct ApplyWrites<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub enum ApplyWritesWritesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.repo.applyWrites#create")]
-    Create(Box<crate::com_atproto::repo::apply_writes::Create<S>>),
+    Create(Box<crate::generated::com_atproto::repo::apply_writes::Create<S>>),
     #[serde(rename = "com.atproto.repo.applyWrites#update")]
-    Update(Box<crate::com_atproto::repo::apply_writes::Update<S>>),
+    Update(Box<crate::generated::com_atproto::repo::apply_writes::Update<S>>),
     #[serde(rename = "com.atproto.repo.applyWrites#delete")]
-    Delete(Box<crate::com_atproto::repo::apply_writes::Delete<S>>),
+    Delete(Box<crate::generated::com_atproto::repo::apply_writes::Delete<S>>),
 }
 
 #[derive(
@@ -260,7 +260,7 @@ pub enum ApplyWritesWritesItem<S: jacquard_common::BosStr = jacquard_common::Def
 )]
 pub struct ApplyWritesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub commit: core::option::Option<crate::com_atproto::repo::CommitMeta<S>>,
+    pub commit: core::option::Option<crate::generated::com_atproto::repo::CommitMeta<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub results: core::option::Option<Vec<ApplyWritesOutputResultsItem<S>>>,
     #[serde(
@@ -285,11 +285,11 @@ pub struct ApplyWritesOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 pub enum ApplyWritesOutputResultsItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.repo.applyWrites#createResult")]
-    CreateResult(Box<crate::com_atproto::repo::apply_writes::CreateResult<S>>),
+    CreateResult(Box<crate::generated::com_atproto::repo::apply_writes::CreateResult<S>>),
     #[serde(rename = "com.atproto.repo.applyWrites#updateResult")]
-    UpdateResult(Box<crate::com_atproto::repo::apply_writes::UpdateResult<S>>),
+    UpdateResult(Box<crate::generated::com_atproto::repo::apply_writes::UpdateResult<S>>),
     #[serde(rename = "com.atproto.repo.applyWrites#deleteResult")]
-    DeleteResult(Box<crate::com_atproto::repo::apply_writes::DeleteResult<S>>),
+    DeleteResult(Box<crate::generated::com_atproto::repo::apply_writes::DeleteResult<S>>),
 }
 
 #[derive(
@@ -632,7 +632,7 @@ pub mod create_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1211,7 +1211,7 @@ pub mod create_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1418,7 +1418,7 @@ pub mod delete_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1607,7 +1607,7 @@ pub mod apply_writes_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1830,7 +1830,7 @@ pub mod update_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2056,7 +2056,7 @@ pub mod update_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

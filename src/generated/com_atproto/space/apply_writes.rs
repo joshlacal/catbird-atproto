@@ -235,11 +235,11 @@ pub struct ApplyWrites<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub enum ApplyWritesWritesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.space.applyWrites#create")]
-    Create(Box<crate::com_atproto::space::apply_writes::Create<S>>),
+    Create(Box<crate::generated::com_atproto::space::apply_writes::Create<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#update")]
-    Update(Box<crate::com_atproto::space::apply_writes::Update<S>>),
+    Update(Box<crate::generated::com_atproto::space::apply_writes::Update<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#delete")]
-    Delete(Box<crate::com_atproto::space::apply_writes::Delete<S>>),
+    Delete(Box<crate::generated::com_atproto::space::apply_writes::Delete<S>>),
 }
 
 #[derive(
@@ -281,11 +281,11 @@ pub struct ApplyWritesOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 pub enum ApplyWritesOutputResultsItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.space.applyWrites#createResult")]
-    CreateResult(Box<crate::com_atproto::space::apply_writes::CreateResult<S>>),
+    CreateResult(Box<crate::generated::com_atproto::space::apply_writes::CreateResult<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#updateResult")]
-    UpdateResult(Box<crate::com_atproto::space::apply_writes::UpdateResult<S>>),
+    UpdateResult(Box<crate::generated::com_atproto::space::apply_writes::UpdateResult<S>>),
     #[serde(rename = "com.atproto.space.applyWrites#deleteResult")]
-    DeleteResult(Box<crate::com_atproto::space::apply_writes::DeleteResult<S>>),
+    DeleteResult(Box<crate::generated::com_atproto::space::apply_writes::DeleteResult<S>>),
 }
 
 #[derive(
@@ -653,7 +653,7 @@ pub mod create_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1228,7 +1228,7 @@ pub mod create_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1435,7 +1435,7 @@ pub mod delete_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1624,7 +1624,7 @@ pub mod apply_writes_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1862,7 +1862,7 @@ pub mod update_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2088,7 +2088,7 @@ pub mod update_result_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

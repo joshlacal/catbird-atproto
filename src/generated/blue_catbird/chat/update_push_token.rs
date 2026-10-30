@@ -20,7 +20,10 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdatePushToken<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// APNs device token (e.g. hex-encoded). Omit to unregister/clear.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub registration:
+        core::option::Option<crate::generated::blue_catbird::chat::SignedPushRegistration<S>>,
+    /// Provider token; required with an enabled signed registration, omitted to disable. For signed bindings its SHA256 must equal the signed tokenSha256.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub token: core::option::Option<S>,
     #[serde(
@@ -45,6 +48,9 @@ pub struct UpdatePushToken<S: jacquard_common::BosStr = jacquard_common::Default
 )]
 pub struct UpdatePushTokenOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub device: crate::generated::blue_catbird::chat::DeviceView<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub push_binding:
+        core::option::Option<crate::generated::blue_catbird::chat::PushRegistrationBinding<S>>,
     #[serde(
         flatten,
         default,
@@ -107,6 +113,26 @@ pub enum UpdatePushTokenError {
     ),
     #[serde(rename = "RateLimited")]
     RateLimited(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "InvalidSignature")]
+    InvalidSignature(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "StaleAuthGeneration")]
+    StaleAuthGeneration(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RegistrationConflict")]
+    RegistrationConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "CapacityUnavailable")]
+    CapacityUnavailable(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -173,6 +199,34 @@ impl core::fmt::Display for UpdatePushTokenError {
             }
             Self::RateLimited(msg) => {
                 write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidSignature(msg) => {
+                write!(f, "InvalidSignature")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::StaleAuthGeneration(msg) => {
+                write!(f, "StaleAuthGeneration")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RegistrationConflict(msg) => {
+                write!(f, "RegistrationConflict")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::CapacityUnavailable(msg) => {
+                write!(f, "CapacityUnavailable")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

@@ -13,10 +13,6 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetRepo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ///  Defaults to `false`.
-    #[serde(default = "_default_exclude_values")]
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub exclude_values: core::option::Option<bool>,
     pub repo: jacquard_common::types::string::Did<S>,
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
@@ -41,6 +37,12 @@ pub struct GetRepoOutput {
 )]
 #[serde(tag = "error", content = "message")]
 pub enum GetRepoError {
+    /// The Atproto-Space-Want-Mac header is missing or malformed, names an unsupported type or version, or carries an invalid key share.
+    #[serde(rename = "BadSpaceMac")]
+    BadSpaceMac(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "SpaceNotFound")]
     SpaceNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -78,6 +80,13 @@ pub enum GetRepoError {
 impl core::fmt::Display for GetRepoError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::BadSpaceMac(msg) => {
+                write!(f, "BadSpaceMac")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::SpaceNotFound(msg) => {
                 write!(f, "SpaceNotFound")?;
                 if let Some(msg) = msg {
@@ -130,7 +139,7 @@ Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self:
 pub struct GetRepoResponse;
 impl jacquard_common::xrpc::XrpcResp for GetRepoResponse {
     const NSID: &'static str = "com.atproto.space.getRepo";
-    const ENCODING: &'static str = "application/vnd.ipld.car";
+    const ENCODING: &'static str = "application/octet-stream";
     type Output<S: jacquard_common::BosStr> = GetRepoOutput;
     type Err = GetRepoError;
     fn encode_output<S: jacquard_common::BosStr>(
@@ -171,15 +180,11 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetRepoRequest {
     type Response = GetRepoResponse;
 }
 
-fn _default_exclude_values() -> core::option::Option<bool> {
-    Some(false)
-}
-
 pub mod get_repo_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -226,7 +231,6 @@ pub struct GetRepoBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<bool>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
@@ -252,7 +256,7 @@ impl GetRepoBuilder<get_repo_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         GetRepoBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -263,22 +267,9 @@ impl<S: jacquard_common::BosStr> GetRepoBuilder<get_repo_state::Empty, S> {
     pub fn builder() -> Self {
         GetRepoBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
-    }
-}
-
-impl<St: get_repo_state::State, S: jacquard_common::BosStr> GetRepoBuilder<St, S> {
-    /// Set the `excludeValues` field (optional)
-    pub fn exclude_values(mut self, value: impl Into<Option<bool>>) -> Self {
-        self._fields.0 = value.into();
-        self
-    }
-    /// Set the `excludeValues` field to an Option value (optional)
-    pub fn maybe_exclude_values(mut self, value: Option<bool>) -> Self {
-        self._fields.0 = value;
-        self
     }
 }
 
@@ -292,7 +283,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> GetRepoBuilder<get_repo_state::SetRepo<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetRepoBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -311,7 +302,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> GetRepoBuilder<get_repo_state::SetSpace<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetRepoBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -329,9 +320,8 @@ where
     /// Build the final struct.
     pub fn build(self) -> GetRepo<S> {
         GetRepo {
-            exclude_values: self._fields.0,
-            repo: self._fields.1.unwrap(),
-            space: self._fields.2.unwrap(),
+            repo: self._fields.0.unwrap(),
+            space: self._fields.1.unwrap(),
         }
     }
 }

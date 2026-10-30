@@ -17,20 +17,6 @@ pub mod metadata;
 pub mod report_record;
 pub mod update_preferences;
 
-/// An author-owned private posting audience
-
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct Circle;
-impl Circle {
-    pub const KEY: &'static str = "tid";
-    pub const NAME: &'static str = "Catbird Circle";
-    pub const COLLECTIONS: &'static [&'static str] = &[
-        "blue.catbird.circle.metadata",
-        "app.bsky.feed.post",
-        "app.bsky.feed.like",
-    ];
-}
-
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
@@ -326,7 +312,7 @@ pub mod circle_summary_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -839,7 +825,7 @@ pub mod feed_item_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1024,7 +1010,7 @@ pub mod notification_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

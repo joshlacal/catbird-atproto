@@ -29,7 +29,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: joshlacal/catbird-mls
-          ref: 1495be65e0b74336267b642b895401373d4f507b
+          # Head of codex/main-consolidation-native-20261002: the last public
+          # clean-chat-line revision before catbird-mls added the private
+          # labyrinth path dependency. 1495be65 predates the direct-request
+          # chat surface and no longer compiles against this SDK.
+          ref: 94a55cab94918415fe8e585c7ed720fe63063f67
           path: catbird-mls
       - name: Install compiler
         run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal

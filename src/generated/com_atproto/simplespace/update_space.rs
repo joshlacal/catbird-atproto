@@ -16,11 +16,14 @@ pub struct UpdateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     /// How the authority decides whether to authorize a requesting app. When supplied, replaces the current policy wholesale.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub app_access: core::option::Option<UpdateSpaceAppAccess<S>>,
-    /// How the authority decides whether to authorize a requesting user. When supplied, replaces the current policy wholesale.
+    /// How the authority decides whether to authorize a user to read the space. When supplied, replaces the current read policy wholesale.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub policy: core::option::Option<UpdateSpacePolicy<S>>,
+    pub read_policy: core::option::Option<UpdateSpaceReadPolicy<S>>,
     /// Reference to the space to update.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// How the authority decides whether to track and forward a user's write notifications. When supplied, replaces the current write policy wholesale.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub write_policy: core::option::Option<UpdateSpaceWritePolicy<S>>,
     #[serde(
         flatten,
         default,
@@ -44,9 +47,9 @@ pub struct UpdateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub enum UpdateSpaceAppAccess<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#open")]
-    Open(Box<crate::com_atproto::simplespace::Open<S>>),
+    Open(Box<crate::generated::com_atproto::simplespace::Open<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#allowList")]
-    AllowList(Box<crate::com_atproto::simplespace::AllowList<S>>),
+    AllowList(Box<crate::generated::com_atproto::simplespace::AllowList<S>>),
 }
 
 #[jacquard_derive::open_union]
@@ -57,13 +60,30 @@ pub enum UpdateSpaceAppAccess<S: jacquard_common::BosStr = jacquard_common::Defa
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum UpdateSpacePolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum UpdateSpaceReadPolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.simplespace.defs#publicPolicy")]
-    PublicPolicy(Box<crate::com_atproto::simplespace::PublicPolicy<S>>),
+    PublicPolicy(Box<crate::generated::com_atproto::simplespace::PublicPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#memberListPolicy")]
-    MemberListPolicy(Box<crate::com_atproto::simplespace::MemberListPolicy<S>>),
+    MemberListPolicy(Box<crate::generated::com_atproto::simplespace::MemberListPolicy<S>>),
     #[serde(rename = "com.atproto.simplespace.defs#managingAppPolicy")]
-    ManagingAppPolicy(Box<crate::com_atproto::simplespace::ManagingAppPolicy<S>>),
+    ManagingAppPolicy(Box<crate::generated::com_atproto::simplespace::ManagingAppPolicy<S>>),
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum UpdateSpaceWritePolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "com.atproto.simplespace.defs#publicPolicy")]
+    PublicPolicy(Box<crate::generated::com_atproto::simplespace::PublicPolicy<S>>),
+    #[serde(rename = "com.atproto.simplespace.defs#memberListPolicy")]
+    MemberListPolicy(Box<crate::generated::com_atproto::simplespace::MemberListPolicy<S>>),
+    #[serde(rename = "com.atproto.simplespace.defs#managingAppPolicy")]
+    ManagingAppPolicy(Box<crate::generated::com_atproto::simplespace::ManagingAppPolicy<S>>),
 }
 
 #[derive(
@@ -88,7 +108,7 @@ pub enum UpdateSpaceError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// The requested policy is not one the host implements.
+    /// A requested policy is not one the host implements.
     #[serde(rename = "UnsupportedPolicy")]
     UnsupportedPolicy(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -197,7 +217,7 @@ pub mod update_space_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -233,8 +253,9 @@ pub struct UpdateSpaceBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<UpdateSpaceAppAccess<S>>,
-        core::option::Option<UpdateSpacePolicy<S>>,
+        core::option::Option<UpdateSpaceReadPolicy<S>>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+        core::option::Option<UpdateSpaceWritePolicy<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -258,7 +279,7 @@ impl UpdateSpaceBuilder<update_space_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         UpdateSpaceBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -269,7 +290,7 @@ impl<S: jacquard_common::BosStr> UpdateSpaceBuilder<update_space_state::Empty, S
     pub fn builder() -> Self {
         UpdateSpaceBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -289,13 +310,13 @@ impl<St: update_space_state::State, S: jacquard_common::BosStr> UpdateSpaceBuild
 }
 
 impl<St: update_space_state::State, S: jacquard_common::BosStr> UpdateSpaceBuilder<St, S> {
-    /// Set the `policy` field (optional)
-    pub fn policy(mut self, value: impl Into<Option<UpdateSpacePolicy<S>>>) -> Self {
+    /// Set the `readPolicy` field (optional)
+    pub fn read_policy(mut self, value: impl Into<Option<UpdateSpaceReadPolicy<S>>>) -> Self {
         self._fields.1 = value.into();
         self
     }
-    /// Set the `policy` field to an Option value (optional)
-    pub fn maybe_policy(mut self, value: Option<UpdateSpacePolicy<S>>) -> Self {
+    /// Set the `readPolicy` field to an Option value (optional)
+    pub fn maybe_read_policy(mut self, value: Option<UpdateSpaceReadPolicy<S>>) -> Self {
         self._fields.1 = value;
         self
     }
@@ -320,6 +341,19 @@ where
     }
 }
 
+impl<St: update_space_state::State, S: jacquard_common::BosStr> UpdateSpaceBuilder<St, S> {
+    /// Set the `writePolicy` field (optional)
+    pub fn write_policy(mut self, value: impl Into<Option<UpdateSpaceWritePolicy<S>>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `writePolicy` field to an Option value (optional)
+    pub fn maybe_write_policy(mut self, value: Option<UpdateSpaceWritePolicy<S>>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> UpdateSpaceBuilder<St, S>
 where
     St: update_space_state::State,
@@ -329,8 +363,9 @@ where
     pub fn build(self) -> UpdateSpace<S> {
         UpdateSpace {
             app_access: self._fields.0,
-            policy: self._fields.1,
+            read_policy: self._fields.1,
             space: self._fields.2.unwrap(),
+            write_policy: self._fields.3,
             extra_data: Default::default(),
         }
     }
@@ -344,8 +379,9 @@ where
     ) -> UpdateSpace<S> {
         UpdateSpace {
             app_access: self._fields.0,
-            policy: self._fields.1,
+            read_policy: self._fields.1,
             space: self._fields.2.unwrap(),
+            write_policy: self._fields.3,
             extra_data: Some(extra_data),
         }
     }

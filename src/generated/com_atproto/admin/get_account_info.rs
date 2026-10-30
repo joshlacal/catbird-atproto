@@ -25,7 +25,7 @@ pub struct GetAccountInfo<S: jacquard_common::BosStr = jacquard_common::DefaultS
 )]
 pub struct GetAccountInfoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    pub value: crate::com_atproto::admin::AccountView<S>,
+    pub value: crate::generated::com_atproto::admin::AccountView<S>,
     #[serde(
         flatten,
         default,
@@ -71,7 +71,7 @@ pub mod get_account_info_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -112,7 +112,7 @@ pub struct GetInviteCodes<S: jacquard_common::BosStr = jacquard_common::DefaultS
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetInviteCodesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub codes: Vec<crate::com_atproto::server::InviteCode<S>>,
+    pub codes: Vec<crate::generated::com_atproto::server::InviteCode<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     #[serde(
@@ -171,7 +171,7 @@ pub mod get_invite_codes_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

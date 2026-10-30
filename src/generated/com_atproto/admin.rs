@@ -42,15 +42,16 @@ pub struct AccountView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invite_note: core::option::Option<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub invited_by: core::option::Option<crate::com_atproto::server::InviteCode<S>>,
+    pub invited_by: core::option::Option<crate::generated::com_atproto::server::InviteCode<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub invites: core::option::Option<Vec<crate::com_atproto::server::InviteCode<S>>>,
+    pub invites: core::option::Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub invites_disabled: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub related_records: core::option::Option<Vec<jacquard_common::types::value::Data<S>>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub threat_signatures: core::option::Option<Vec<crate::com_atproto::admin::ThreatSignature<S>>>,
+    pub threat_signatures:
+        core::option::Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
     #[serde(
         flatten,
         default,
@@ -273,7 +274,7 @@ pub mod account_view_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -341,11 +342,11 @@ pub struct AccountViewBuilder<
         core::option::Option<jacquard_common::types::string::Handle<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<S>,
-        core::option::Option<crate::com_atproto::server::InviteCode<S>>,
-        core::option::Option<Vec<crate::com_atproto::server::InviteCode<S>>>,
+        core::option::Option<crate::generated::com_atproto::server::InviteCode<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>,
         core::option::Option<bool>,
         core::option::Option<Vec<jacquard_common::types::value::Data<S>>>,
-        core::option::Option<Vec<crate::com_atproto::admin::ThreatSignature<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -515,7 +516,7 @@ impl<St: account_view_state::State, S: jacquard_common::BosStr> AccountViewBuild
     /// Set the `invitedBy` field (optional)
     pub fn invited_by(
         mut self,
-        value: impl Into<Option<crate::com_atproto::server::InviteCode<S>>>,
+        value: impl Into<Option<crate::generated::com_atproto::server::InviteCode<S>>>,
     ) -> Self {
         self._fields.7 = value.into();
         self
@@ -523,7 +524,7 @@ impl<St: account_view_state::State, S: jacquard_common::BosStr> AccountViewBuild
     /// Set the `invitedBy` field to an Option value (optional)
     pub fn maybe_invited_by(
         mut self,
-        value: Option<crate::com_atproto::server::InviteCode<S>>,
+        value: Option<crate::generated::com_atproto::server::InviteCode<S>>,
     ) -> Self {
         self._fields.7 = value;
         self
@@ -534,7 +535,7 @@ impl<St: account_view_state::State, S: jacquard_common::BosStr> AccountViewBuild
     /// Set the `invites` field (optional)
     pub fn invites(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::server::InviteCode<S>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>>,
     ) -> Self {
         self._fields.8 = value.into();
         self
@@ -542,7 +543,7 @@ impl<St: account_view_state::State, S: jacquard_common::BosStr> AccountViewBuild
     /// Set the `invites` field to an Option value (optional)
     pub fn maybe_invites(
         mut self,
-        value: Option<Vec<crate::com_atproto::server::InviteCode<S>>>,
+        value: Option<Vec<crate::generated::com_atproto::server::InviteCode<S>>>,
     ) -> Self {
         self._fields.8 = value;
         self
@@ -585,7 +586,7 @@ impl<St: account_view_state::State, S: jacquard_common::BosStr> AccountViewBuild
     /// Set the `threatSignatures` field (optional)
     pub fn threat_signatures(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::admin::ThreatSignature<S>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>>,
     ) -> Self {
         self._fields.11 = value.into();
         self
@@ -593,7 +594,7 @@ impl<St: account_view_state::State, S: jacquard_common::BosStr> AccountViewBuild
     /// Set the `threatSignatures` field to an Option value (optional)
     pub fn maybe_threat_signatures(
         mut self,
-        value: Option<Vec<crate::com_atproto::admin::ThreatSignature<S>>>,
+        value: Option<Vec<crate::generated::com_atproto::admin::ThreatSignature<S>>>,
     ) -> Self {
         self._fields.11 = value;
         self
@@ -998,7 +999,7 @@ pub mod repo_blob_ref_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1205,7 +1206,7 @@ pub mod repo_ref_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1353,7 +1354,7 @@ pub mod status_attr_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

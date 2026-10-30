@@ -55,6 +55,12 @@ pub struct GetRecordOutput<S: jacquard_common::BosStr = jacquard_common::Default
 )]
 #[serde(tag = "error", content = "message")]
 pub enum GetRecordError {
+    /// The Atproto-Space-Want-Mac header is missing or malformed, names an unsupported type or version, or carries an invalid key share.
+    #[serde(rename = "BadSpaceMac")]
+    BadSpaceMac(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RecordNotFound")]
     RecordNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -97,6 +103,13 @@ pub enum GetRecordError {
 impl core::fmt::Display for GetRecordError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::BadSpaceMac(msg) => {
+                write!(f, "BadSpaceMac")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::RecordNotFound(msg) => {
                 write!(f, "RecordNotFound")?;
                 if let Some(msg) = msg {
@@ -182,7 +195,7 @@ pub mod get_record_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

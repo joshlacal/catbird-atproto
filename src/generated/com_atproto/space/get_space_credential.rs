@@ -16,6 +16,11 @@ pub struct GetSpaceCredential<S: jacquard_common::BosStr = jacquard_common::Defa
     /// Optional client attestation JWT establishing the app's identity. Required only when the space gates on app identity.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub client_attestation: core::option::Option<S>,
+    /// P-256 did:key to bind the credential to. Each request using the credential is signed by this key.
+    pub credential_kid: S,
+    /// Optional delegation token establishing the user being acted for. Required only when the space gates on the user.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub delegation_token: core::option::Option<S>,
     /// Reference to the space.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
@@ -46,7 +51,7 @@ pub struct GetSpaceCredential<S: jacquard_common::BosStr = jacquard_common::Defa
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSpaceCredentialOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// A signed JWT space credential, bound through its cnf.jkt claim to the key that signed the request's DPoP proof.
+    /// A signed JWT space credential.
     pub credential: S,
     #[serde(
         flatten,
@@ -217,29 +222,41 @@ pub mod get_space_credential_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CredentialKid;
         type Space;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CredentialKid = Unset;
         type Space = Unset;
+    }
+    ///State transition - sets the `credential_kid` field to Set
+    pub struct SetCredentialKid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCredentialKid<St> {}
+    impl<St: State> State for SetCredentialKid<St> {
+        type CredentialKid = Set<members::credential_kid>;
+        type Space = St::Space;
     }
     ///State transition - sets the `space` field to Set
     pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetSpace<St> {}
     impl<St: State> State for SetSpace<St> {
+        type CredentialKid = St::CredentialKid;
         type Space = Set<members::space>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `credential_kid` field
+        pub struct credential_kid(());
         ///Marker type for the `space` field
         pub struct space(());
     }
@@ -252,6 +269,8 @@ pub struct GetSpaceCredentialBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
@@ -279,7 +298,7 @@ impl GetSpaceCredentialBuilder<get_space_credential_state::Empty, jacquard_commo
     pub fn new() -> Self {
         GetSpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -290,7 +309,7 @@ impl<S: jacquard_common::BosStr> GetSpaceCredentialBuilder<get_space_credential_
     pub fn builder() -> Self {
         GetSpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -314,6 +333,40 @@ impl<St: get_space_credential_state::State, S: jacquard_common::BosStr>
 impl<St, S: jacquard_common::BosStr> GetSpaceCredentialBuilder<St, S>
 where
     St: get_space_credential_state::State,
+    St::CredentialKid: get_space_credential_state::IsUnset,
+{
+    /// Set the `credentialKid` field (required)
+    pub fn credential_kid(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetSpaceCredentialBuilder<get_space_credential_state::SetCredentialKid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        GetSpaceCredentialBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_space_credential_state::State, S: jacquard_common::BosStr>
+    GetSpaceCredentialBuilder<St, S>
+{
+    /// Set the `delegationToken` field (optional)
+    pub fn delegation_token(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `delegationToken` field to an Option value (optional)
+    pub fn maybe_delegation_token(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetSpaceCredentialBuilder<St, S>
+where
+    St: get_space_credential_state::State,
     St::Space: get_space_credential_state::IsUnset,
 {
     /// Set the `space` field (required)
@@ -321,7 +374,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> GetSpaceCredentialBuilder<get_space_credential_state::SetSpace<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         GetSpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -333,13 +386,16 @@ where
 impl<St, S: jacquard_common::BosStr> GetSpaceCredentialBuilder<St, S>
 where
     St: get_space_credential_state::State,
+    St::CredentialKid: get_space_credential_state::IsSet,
     St::Space: get_space_credential_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> GetSpaceCredential<S> {
         GetSpaceCredential {
             client_attestation: self._fields.0,
-            space: self._fields.1.unwrap(),
+            credential_kid: self._fields.1.unwrap(),
+            delegation_token: self._fields.2,
+            space: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -353,7 +409,9 @@ where
     ) -> GetSpaceCredential<S> {
         GetSpaceCredential {
             client_attestation: self._fields.0,
-            space: self._fields.1.unwrap(),
+            credential_kid: self._fields.1.unwrap(),
+            delegation_token: self._fields.2,
+            space: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
