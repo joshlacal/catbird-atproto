@@ -7,14 +7,21 @@
 
 //! Generated bindings for the `com.atproto.space` Lexicon namespace/module.
 pub mod apply_writes;
+pub mod clear_records;
 pub mod create_record;
+pub mod create_space;
 pub mod delete_record;
+pub mod delete_space;
+pub mod export_space_meta;
 pub mod get_blob;
 pub mod get_delegation_token;
 pub mod get_latest_commit;
 pub mod get_record;
 pub mod get_repo;
+pub mod get_space;
 pub mod get_space_credential;
+pub mod import_repo;
+pub mod import_space_meta;
 pub mod list_blobs;
 pub mod list_records;
 pub mod list_repo_ops;
@@ -23,9 +30,12 @@ pub mod list_spaces;
 pub mod notify_credential_revoked;
 pub mod notify_space_deleted;
 pub mod notify_write;
+pub mod policy;
 pub mod put_record;
 pub mod register_notify;
+pub mod remove_writer;
 pub mod unregister_notify;
+pub mod update_space;
 
 /// A commit over the current state of a permissioned repo. Carries no signature: the repo host authenticates it to a syncer with a MAC in the Atproto-Space-Mac response header.
 

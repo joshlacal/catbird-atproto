@@ -30,7 +30,7 @@ cargo fmt --check && cargo clippy --all-targets --all-features
 Features (`Cargo.toml`):
 - `namespace-bluecatbird` (**default**) — gates the `blue_catbird` (`blue.catbird.*`) namespace.
 - `namespace-site-standard` — gates the `site_standard` (`site.standard.*`) namespace and the `com_atproto` types it references.
-- `namespace-atproto-space` — gates the `com.atproto.space` and `com.atproto.simplespace` (permissioned-data Spaces) modules. `Scripts/regenerate.py` adds this gate after generation.
+- `namespace-atproto-space` — gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` (permissioned-data Spaces) modules. `Scripts/regenerate.py` adds this gate after generation. The October 29, 2026 alpha removed `com.atproto.simplespace`; its methods moved to `space` (create/update/get/delete) and `memberspace`/`managedspace` (members, checkUserAccess).
 - `streaming` — pulls in `jacquard-common/websocket` + `serde_ipld_dagcbor` for firehose/event-stream consumers.
 
 ## Codegen Is Source of Truth
@@ -62,7 +62,7 @@ python3 Scripts/regenerate.py generate --generator "$GEN"
 python3 Scripts/regenerate.py check --generator "$GEN"   # a second run must match byte for byte
 ```
 
-The script runs the generator into a temporary directory and gates `com_atproto::{space, simplespace}` behind the `namespace-atproto-space` feature. That gate is the one post-generation step, because `mls-codegen` cannot put a module behind a Cargo feature. It then runs `rustfmt --edition 2021`. `generate` replaces `src/generated/` and keeps the previous tree in the temporary directory; `check` compares every file with `src/generated/` and changes nothing. The script never rewrites generated declarations: fix generator bugs in `mls-ds/codegen`.
+The script runs the generator into a temporary directory and gates `com_atproto::{space, memberspace, managedspace, personalspace}` behind the `namespace-atproto-space` feature. That gate is the one post-generation step, because `mls-codegen` cannot put a module behind a Cargo feature. It then runs `rustfmt --edition 2021`. `generate` replaces `src/generated/` and keeps the previous tree in the temporary directory; `check` compares every file with `src/generated/` and changes nothing. The script never rewrites generated declarations: fix generator bugs in `mls-ds/codegen`.
 
 Do **not** regenerate with the workspace-level `./scripts/regenerate-atproto-types.sh` or a bare `cargo run -p mls-codegen -- --outdir catbird-atproto/src/generated`. Both skip the namespace gate and do not pin the rustfmt edition, so they do not reproduce the committed tree. `CODEGEN_PROVENANCE.md` records the current generator revision, input corpus and output hashes; update it with every regeneration.
 
