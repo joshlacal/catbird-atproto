@@ -28,7 +28,7 @@ def normalize_projection(stage):
     # raw labyrinthRelay output codec come from mls-codegen itself.
     index = stage / "com_atproto.rs"
     text = index.read_text()
-    for namespace in ["space", "simplespace"]:
+    for namespace in ["space", "memberspace", "managedspace", "personalspace"]:
         marker = f"pub mod {namespace};"
         if text.count(marker) != 1:
             raise ValueError(f"Expected one generated {namespace} module")
