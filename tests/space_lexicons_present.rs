@@ -80,6 +80,9 @@ fn clean_slate_labyrinth_chat_and_push_types_roundtrip() {
     let _ = core::mem::size_of::<SequencerReceipt>();
     let _check_receipt_fields = |r: &SequencerReceipt| {
         let _: &catbird_atproto::jacquard_common::deps::bytes::Bytes = &r.archive_commitment;
+        let _: &catbird_atproto::jacquard_common::deps::bytes::Bytes = &r.group_id;
+        let _: i64 = r.epoch;
+        let _: &str = r.entry_id.as_ref();
         let _: i64 = r.issued_at_ms;
     };
 
