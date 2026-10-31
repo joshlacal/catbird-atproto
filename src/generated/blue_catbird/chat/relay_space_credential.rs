@@ -13,6 +13,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RelaySpaceCredential<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     /// DID of the Space authority / host serving com.atproto.space.getSpaceCredential.
     pub authority_did: jacquard_common::types::string::Did<S>,
     /// Client ephemeral P-256 did:key for RFC 9421 proof-of-possession.
@@ -20,7 +21,7 @@ pub struct RelaySpaceCredential<S: jacquard_common::BosStr = jacquard_common::De
     pub cnf_key: core::option::Option<S>,
     /// Single-use PDS delegation JWT bound to the client's ephemeral cnf.jkt / did:key.
     pub delegation_token: S,
-    /// Canonical at-space:// URI.
+    /// Canonical at-space:// or at://.../space/... URI.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
@@ -70,8 +71,33 @@ pub struct RelaySpaceCredentialOutput<S: jacquard_common::BosStr = jacquard_comm
 )]
 #[serde(tag = "error", content = "message")]
 pub enum RelaySpaceCredentialError {
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "CutoverRequired")]
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceNotRegistered")]
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceRevoked")]
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidDelegationToken")]
     InvalidDelegationToken(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "InvalidRequest")]
+    InvalidRequest(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -82,6 +108,11 @@ pub enum RelaySpaceCredentialError {
     ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -102,8 +133,43 @@ pub enum RelaySpaceCredentialError {
 impl core::fmt::Display for RelaySpaceCredentialError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::CutoverRequired(msg) => {
+                write!(f, "CutoverRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceNotRegistered(msg) => {
+                write!(f, "DeviceNotRegistered")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceRevoked(msg) => {
+                write!(f, "DeviceRevoked")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::InvalidDelegationToken(msg) => {
                 write!(f, "InvalidDelegationToken")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidRequest(msg) => {
+                write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -118,6 +184,13 @@ impl core::fmt::Display for RelaySpaceCredentialError {
             }
             Self::NotAuthorized(msg) => {
                 write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -181,6 +254,7 @@ pub mod relay_space_credential_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ActorDeviceId;
         type AuthorityDid;
         type DelegationToken;
         type Space;
@@ -189,14 +263,25 @@ pub mod relay_space_credential_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ActorDeviceId = Unset;
         type AuthorityDid = Unset;
         type DelegationToken = Unset;
         type Space = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+        type AuthorityDid = St::AuthorityDid;
+        type DelegationToken = St::DelegationToken;
+        type Space = St::Space;
     }
     ///State transition - sets the `authority_did` field to Set
     pub struct SetAuthorityDid<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetAuthorityDid<St> {}
     impl<St: State> State for SetAuthorityDid<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type AuthorityDid = Set<members::authority_did>;
         type DelegationToken = St::DelegationToken;
         type Space = St::Space;
@@ -205,6 +290,7 @@ pub mod relay_space_credential_state {
     pub struct SetDelegationToken<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetDelegationToken<St> {}
     impl<St: State> State for SetDelegationToken<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type AuthorityDid = St::AuthorityDid;
         type DelegationToken = Set<members::delegation_token>;
         type Space = St::Space;
@@ -213,6 +299,7 @@ pub mod relay_space_credential_state {
     pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetSpace<St> {}
     impl<St: State> State for SetSpace<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type AuthorityDid = St::AuthorityDid;
         type DelegationToken = St::DelegationToken;
         type Space = Set<members::space>;
@@ -220,6 +307,8 @@ pub mod relay_space_credential_state {
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
         ///Marker type for the `authority_did` field
         pub struct authority_did(());
         ///Marker type for the `delegation_token` field
@@ -236,6 +325,7 @@ pub struct RelaySpaceCredentialBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
@@ -265,7 +355,7 @@ impl RelaySpaceCredentialBuilder<relay_space_credential_state::Empty, jacquard_c
     pub fn new() -> Self {
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -278,7 +368,26 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RelaySpaceCredentialBuilder<St, S>
+where
+    St: relay_space_credential_state::State,
+    St::ActorDeviceId: relay_space_credential_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        RelaySpaceCredentialBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
     }
@@ -294,7 +403,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetAuthorityDid<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -308,12 +417,12 @@ impl<St: relay_space_credential_state::State, S: jacquard_common::BosStr>
 {
     /// Set the `cnfKey` field (optional)
     pub fn cnf_key(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.1 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `cnfKey` field to an Option value (optional)
     pub fn maybe_cnf_key(mut self, value: Option<S>) -> Self {
-        self._fields.1 = value;
+        self._fields.2 = value;
         self
     }
 }
@@ -328,7 +437,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetDelegationToken<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -347,7 +456,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetSpace<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -359,6 +468,7 @@ where
 impl<St, S: jacquard_common::BosStr> RelaySpaceCredentialBuilder<St, S>
 where
     St: relay_space_credential_state::State,
+    St::ActorDeviceId: relay_space_credential_state::IsSet,
     St::AuthorityDid: relay_space_credential_state::IsSet,
     St::DelegationToken: relay_space_credential_state::IsSet,
     St::Space: relay_space_credential_state::IsSet,
@@ -366,10 +476,11 @@ where
     /// Build the final struct.
     pub fn build(self) -> RelaySpaceCredential<S> {
         RelaySpaceCredential {
-            authority_did: self._fields.0.unwrap(),
-            cnf_key: self._fields.1,
-            delegation_token: self._fields.2.unwrap(),
-            space: self._fields.3.unwrap(),
+            actor_device_id: self._fields.0.unwrap(),
+            authority_did: self._fields.1.unwrap(),
+            cnf_key: self._fields.2,
+            delegation_token: self._fields.3.unwrap(),
+            space: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -382,10 +493,11 @@ where
         >,
     ) -> RelaySpaceCredential<S> {
         RelaySpaceCredential {
-            authority_did: self._fields.0.unwrap(),
-            cnf_key: self._fields.1,
-            delegation_token: self._fields.2.unwrap(),
-            space: self._fields.3.unwrap(),
+            actor_device_id: self._fields.0.unwrap(),
+            authority_did: self._fields.1.unwrap(),
+            cnf_key: self._fields.2,
+            delegation_token: self._fields.3.unwrap(),
+            space: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }

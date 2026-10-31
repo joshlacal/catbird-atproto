@@ -14,8 +14,13 @@
 )]
 pub struct AcknowledgeEntries<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    pub auth_generation: i64,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub generation: i64,
+    pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    pub signed_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub up_to_seq: i64,
     #[serde(
         flatten,
@@ -65,8 +70,23 @@ pub struct AcknowledgeEntriesOutput<S: jacquard_common::BosStr = jacquard_common
 )]
 #[serde(tag = "error", content = "message")]
 pub enum AcknowledgeEntriesError {
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "CutoverRequired")]
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -90,8 +110,18 @@ pub enum AcknowledgeEntriesError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "InvalidSignature")]
+    InvalidSignature(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -107,8 +137,29 @@ pub enum AcknowledgeEntriesError {
 impl core::fmt::Display for AcknowledgeEntriesError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::ConversationNotFound(msg) => {
                 write!(f, "ConversationNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::CutoverRequired(msg) => {
+                write!(f, "CutoverRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -142,8 +193,22 @@ impl core::fmt::Display for AcknowledgeEntriesError {
                 }
                 Ok(())
             }
+            Self::InvalidSignature(msg) => {
+                write!(f, "InvalidSignature")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::NotAuthorized(msg) => {
                 write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -201,8 +266,12 @@ pub mod acknowledge_entries_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type ActorDeviceId;
+        type AuthGeneration;
         type ConversationId;
         type Generation;
+        type KeyId;
+        type Signature;
+        type SignedAt;
         type UpToSeq;
     }
     /// Empty state - all required fields are unset
@@ -210,8 +279,12 @@ pub mod acknowledge_entries_state {
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type ActorDeviceId = Unset;
+        type AuthGeneration = Unset;
         type ConversationId = Unset;
         type Generation = Unset;
+        type KeyId = Unset;
+        type Signature = Unset;
+        type SignedAt = Unset;
         type UpToSeq = Unset;
     }
     ///State transition - sets the `actor_device_id` field to Set
@@ -219,8 +292,25 @@ pub mod acknowledge_entries_state {
     impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
     impl<St: State> State for SetActorDeviceId<St> {
         type ActorDeviceId = Set<members::actor_device_id>;
+        type AuthGeneration = St::AuthGeneration;
         type ConversationId = St::ConversationId;
         type Generation = St::Generation;
+        type KeyId = St::KeyId;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
+        type UpToSeq = St::UpToSeq;
+    }
+    ///State transition - sets the `auth_generation` field to Set
+    pub struct SetAuthGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthGeneration<St> {}
+    impl<St: State> State for SetAuthGeneration<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type AuthGeneration = Set<members::auth_generation>;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type KeyId = St::KeyId;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
         type UpToSeq = St::UpToSeq;
     }
     ///State transition - sets the `conversation_id` field to Set
@@ -228,8 +318,12 @@ pub mod acknowledge_entries_state {
     impl<St: State> sealed::Sealed for SetConversationId<St> {}
     impl<St: State> State for SetConversationId<St> {
         type ActorDeviceId = St::ActorDeviceId;
+        type AuthGeneration = St::AuthGeneration;
         type ConversationId = Set<members::conversation_id>;
         type Generation = St::Generation;
+        type KeyId = St::KeyId;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
         type UpToSeq = St::UpToSeq;
     }
     ///State transition - sets the `generation` field to Set
@@ -237,8 +331,51 @@ pub mod acknowledge_entries_state {
     impl<St: State> sealed::Sealed for SetGeneration<St> {}
     impl<St: State> State for SetGeneration<St> {
         type ActorDeviceId = St::ActorDeviceId;
+        type AuthGeneration = St::AuthGeneration;
         type ConversationId = St::ConversationId;
         type Generation = Set<members::generation>;
+        type KeyId = St::KeyId;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
+        type UpToSeq = St::UpToSeq;
+    }
+    ///State transition - sets the `key_id` field to Set
+    pub struct SetKeyId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyId<St> {}
+    impl<St: State> State for SetKeyId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type AuthGeneration = St::AuthGeneration;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type KeyId = Set<members::key_id>;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
+        type UpToSeq = St::UpToSeq;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type AuthGeneration = St::AuthGeneration;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type KeyId = St::KeyId;
+        type Signature = Set<members::signature>;
+        type SignedAt = St::SignedAt;
+        type UpToSeq = St::UpToSeq;
+    }
+    ///State transition - sets the `signed_at` field to Set
+    pub struct SetSignedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignedAt<St> {}
+    impl<St: State> State for SetSignedAt<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type AuthGeneration = St::AuthGeneration;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type KeyId = St::KeyId;
+        type Signature = St::Signature;
+        type SignedAt = Set<members::signed_at>;
         type UpToSeq = St::UpToSeq;
     }
     ///State transition - sets the `up_to_seq` field to Set
@@ -246,8 +383,12 @@ pub mod acknowledge_entries_state {
     impl<St: State> sealed::Sealed for SetUpToSeq<St> {}
     impl<St: State> State for SetUpToSeq<St> {
         type ActorDeviceId = St::ActorDeviceId;
+        type AuthGeneration = St::AuthGeneration;
         type ConversationId = St::ConversationId;
         type Generation = St::Generation;
+        type KeyId = St::KeyId;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
         type UpToSeq = Set<members::up_to_seq>;
     }
     /// Marker types for field names
@@ -255,10 +396,18 @@ pub mod acknowledge_entries_state {
     pub mod members {
         ///Marker type for the `actor_device_id` field
         pub struct actor_device_id(());
+        ///Marker type for the `auth_generation` field
+        pub struct auth_generation(());
         ///Marker type for the `conversation_id` field
         pub struct conversation_id(());
         ///Marker type for the `generation` field
         pub struct generation(());
+        ///Marker type for the `key_id` field
+        pub struct key_id(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+        ///Marker type for the `signed_at` field
+        pub struct signed_at(());
         ///Marker type for the `up_to_seq` field
         pub struct up_to_seq(());
     }
@@ -272,8 +421,12 @@ pub struct AcknowledgeEntriesBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -300,7 +453,7 @@ impl AcknowledgeEntriesBuilder<acknowledge_entries_state::Empty, jacquard_common
     pub fn new() -> Self {
         AcknowledgeEntriesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -311,7 +464,7 @@ impl<S: jacquard_common::BosStr> AcknowledgeEntriesBuilder<acknowledge_entries_s
     pub fn builder() -> Self {
         AcknowledgeEntriesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -339,6 +492,25 @@ where
 impl<St, S: jacquard_common::BosStr> AcknowledgeEntriesBuilder<St, S>
 where
     St: acknowledge_entries_state::State,
+    St::AuthGeneration: acknowledge_entries_state::IsUnset,
+{
+    /// Set the `authGeneration` field (required)
+    pub fn auth_generation(
+        mut self,
+        value: impl Into<i64>,
+    ) -> AcknowledgeEntriesBuilder<acknowledge_entries_state::SetAuthGeneration<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        AcknowledgeEntriesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AcknowledgeEntriesBuilder<St, S>
+where
+    St: acknowledge_entries_state::State,
     St::ConversationId: acknowledge_entries_state::IsUnset,
 {
     /// Set the `conversationId` field (required)
@@ -346,7 +518,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
     ) -> AcknowledgeEntriesBuilder<acknowledge_entries_state::SetConversationId<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         AcknowledgeEntriesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -365,7 +537,64 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> AcknowledgeEntriesBuilder<acknowledge_entries_state::SetGeneration<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        AcknowledgeEntriesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AcknowledgeEntriesBuilder<St, S>
+where
+    St: acknowledge_entries_state::State,
+    St::KeyId: acknowledge_entries_state::IsUnset,
+{
+    /// Set the `keyId` field (required)
+    pub fn key_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::KeyId<S>>,
+    ) -> AcknowledgeEntriesBuilder<acknowledge_entries_state::SetKeyId<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        AcknowledgeEntriesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AcknowledgeEntriesBuilder<St, S>
+where
+    St: acknowledge_entries_state::State,
+    St::Signature: acknowledge_entries_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> AcknowledgeEntriesBuilder<acknowledge_entries_state::SetSignature<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        AcknowledgeEntriesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AcknowledgeEntriesBuilder<St, S>
+where
+    St: acknowledge_entries_state::State,
+    St::SignedAt: acknowledge_entries_state::IsUnset,
+{
+    /// Set the `signedAt` field (required)
+    pub fn signed_at(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> AcknowledgeEntriesBuilder<acknowledge_entries_state::SetSignedAt<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         AcknowledgeEntriesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -384,7 +613,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> AcknowledgeEntriesBuilder<acknowledge_entries_state::SetUpToSeq<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         AcknowledgeEntriesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -397,17 +626,25 @@ impl<St, S: jacquard_common::BosStr> AcknowledgeEntriesBuilder<St, S>
 where
     St: acknowledge_entries_state::State,
     St::ActorDeviceId: acknowledge_entries_state::IsSet,
+    St::AuthGeneration: acknowledge_entries_state::IsSet,
     St::ConversationId: acknowledge_entries_state::IsSet,
     St::Generation: acknowledge_entries_state::IsSet,
+    St::KeyId: acknowledge_entries_state::IsSet,
+    St::Signature: acknowledge_entries_state::IsSet,
+    St::SignedAt: acknowledge_entries_state::IsSet,
     St::UpToSeq: acknowledge_entries_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> AcknowledgeEntries<S> {
         AcknowledgeEntries {
             actor_device_id: self._fields.0.unwrap(),
-            conversation_id: self._fields.1.unwrap(),
-            generation: self._fields.2.unwrap(),
-            up_to_seq: self._fields.3.unwrap(),
+            auth_generation: self._fields.1.unwrap(),
+            conversation_id: self._fields.2.unwrap(),
+            generation: self._fields.3.unwrap(),
+            key_id: self._fields.4.unwrap(),
+            signature: self._fields.5.unwrap(),
+            signed_at: self._fields.6.unwrap(),
+            up_to_seq: self._fields.7.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -421,9 +658,13 @@ where
     ) -> AcknowledgeEntries<S> {
         AcknowledgeEntries {
             actor_device_id: self._fields.0.unwrap(),
-            conversation_id: self._fields.1.unwrap(),
-            generation: self._fields.2.unwrap(),
-            up_to_seq: self._fields.3.unwrap(),
+            auth_generation: self._fields.1.unwrap(),
+            conversation_id: self._fields.2.unwrap(),
+            generation: self._fields.3.unwrap(),
+            key_id: self._fields.4.unwrap(),
+            signature: self._fields.5.unwrap(),
+            signed_at: self._fields.6.unwrap(),
+            up_to_seq: self._fields.7.unwrap(),
             extra_data: Some(extra_data),
         }
     }

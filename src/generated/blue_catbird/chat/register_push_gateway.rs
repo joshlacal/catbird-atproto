@@ -14,11 +14,18 @@
 )]
 pub struct RegisterPushGateway<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub app_id: S,
+    pub auth_generation: i64,
     pub device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub enabled: core::option::Option<bool>,
     /// HTTPS endpoint ending in /xrpc/blue.catbird.push.deliver (DNS-pinned SSRF-validated on port 443).
     pub gateway_url: jacquard_common::types::string::UriValue<S>,
-    /// Opaque CSPRNG base64url push routing key issued by the Push Gateway.
+    pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    /// Opaque CSPRNG base64url push routing key issued by the Push Gateway (empty when enabled is false).
     pub push_key: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    pub signed_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     #[serde(
         flatten,
         default,
@@ -66,6 +73,21 @@ pub struct RegisterPushGatewayOutput<S: jacquard_common::BosStr = jacquard_commo
 )]
 #[serde(tag = "error", content = "message")]
 pub enum RegisterPushGatewayError {
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "CutoverRequired")]
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "DeviceNotRegistered")]
     DeviceNotRegistered(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -86,8 +108,18 @@ pub enum RegisterPushGatewayError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "InvalidSignature")]
+    InvalidSignature(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -103,6 +135,27 @@ pub enum RegisterPushGatewayError {
 impl core::fmt::Display for RegisterPushGatewayError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::CutoverRequired(msg) => {
+                write!(f, "CutoverRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::DeviceNotRegistered(msg) => {
                 write!(f, "DeviceNotRegistered")?;
                 if let Some(msg) = msg {
@@ -131,8 +184,22 @@ impl core::fmt::Display for RegisterPushGatewayError {
                 }
                 Ok(())
             }
+            Self::InvalidSignature(msg) => {
+                write!(f, "InvalidSignature")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::NotAuthorized(msg) => {
                 write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -190,66 +257,150 @@ pub mod register_push_gateway_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type AppId;
+        type AuthGeneration;
         type DeviceId;
         type GatewayUrl;
+        type KeyId;
         type PushKey;
+        type Signature;
+        type SignedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type AppId = Unset;
+        type AuthGeneration = Unset;
         type DeviceId = Unset;
         type GatewayUrl = Unset;
+        type KeyId = Unset;
         type PushKey = Unset;
+        type Signature = Unset;
+        type SignedAt = Unset;
     }
     ///State transition - sets the `app_id` field to Set
     pub struct SetAppId<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetAppId<St> {}
     impl<St: State> State for SetAppId<St> {
         type AppId = Set<members::app_id>;
+        type AuthGeneration = St::AuthGeneration;
         type DeviceId = St::DeviceId;
         type GatewayUrl = St::GatewayUrl;
+        type KeyId = St::KeyId;
         type PushKey = St::PushKey;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `auth_generation` field to Set
+    pub struct SetAuthGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthGeneration<St> {}
+    impl<St: State> State for SetAuthGeneration<St> {
+        type AppId = St::AppId;
+        type AuthGeneration = Set<members::auth_generation>;
+        type DeviceId = St::DeviceId;
+        type GatewayUrl = St::GatewayUrl;
+        type KeyId = St::KeyId;
+        type PushKey = St::PushKey;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetDeviceId<St> {}
     impl<St: State> State for SetDeviceId<St> {
         type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
         type DeviceId = Set<members::device_id>;
         type GatewayUrl = St::GatewayUrl;
+        type KeyId = St::KeyId;
         type PushKey = St::PushKey;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
     }
     ///State transition - sets the `gateway_url` field to Set
     pub struct SetGatewayUrl<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetGatewayUrl<St> {}
     impl<St: State> State for SetGatewayUrl<St> {
         type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
         type DeviceId = St::DeviceId;
         type GatewayUrl = Set<members::gateway_url>;
+        type KeyId = St::KeyId;
         type PushKey = St::PushKey;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `key_id` field to Set
+    pub struct SetKeyId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyId<St> {}
+    impl<St: State> State for SetKeyId<St> {
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type DeviceId = St::DeviceId;
+        type GatewayUrl = St::GatewayUrl;
+        type KeyId = Set<members::key_id>;
+        type PushKey = St::PushKey;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
     }
     ///State transition - sets the `push_key` field to Set
     pub struct SetPushKey<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetPushKey<St> {}
     impl<St: State> State for SetPushKey<St> {
         type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
         type DeviceId = St::DeviceId;
         type GatewayUrl = St::GatewayUrl;
+        type KeyId = St::KeyId;
         type PushKey = Set<members::push_key>;
+        type Signature = St::Signature;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type DeviceId = St::DeviceId;
+        type GatewayUrl = St::GatewayUrl;
+        type KeyId = St::KeyId;
+        type PushKey = St::PushKey;
+        type Signature = Set<members::signature>;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `signed_at` field to Set
+    pub struct SetSignedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignedAt<St> {}
+    impl<St: State> State for SetSignedAt<St> {
+        type AppId = St::AppId;
+        type AuthGeneration = St::AuthGeneration;
+        type DeviceId = St::DeviceId;
+        type GatewayUrl = St::GatewayUrl;
+        type KeyId = St::KeyId;
+        type PushKey = St::PushKey;
+        type Signature = St::Signature;
+        type SignedAt = Set<members::signed_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `app_id` field
         pub struct app_id(());
+        ///Marker type for the `auth_generation` field
+        pub struct auth_generation(());
         ///Marker type for the `device_id` field
         pub struct device_id(());
         ///Marker type for the `gateway_url` field
         pub struct gateway_url(());
+        ///Marker type for the `key_id` field
+        pub struct key_id(());
         ///Marker type for the `push_key` field
         pub struct push_key(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+        ///Marker type for the `signed_at` field
+        pub struct signed_at(());
     }
 }
 
@@ -261,9 +412,14 @@ pub struct RegisterPushGatewayBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
+        core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<bool>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -289,7 +445,7 @@ impl RegisterPushGatewayBuilder<register_push_gateway_state::Empty, jacquard_com
     pub fn new() -> Self {
         RegisterPushGatewayBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -300,7 +456,7 @@ impl<S: jacquard_common::BosStr> RegisterPushGatewayBuilder<register_push_gatewa
     pub fn builder() -> Self {
         RegisterPushGatewayBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -328,6 +484,25 @@ where
 impl<St, S: jacquard_common::BosStr> RegisterPushGatewayBuilder<St, S>
 where
     St: register_push_gateway_state::State,
+    St::AuthGeneration: register_push_gateway_state::IsUnset,
+{
+    /// Set the `authGeneration` field (required)
+    pub fn auth_generation(
+        mut self,
+        value: impl Into<i64>,
+    ) -> RegisterPushGatewayBuilder<register_push_gateway_state::SetAuthGeneration<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        RegisterPushGatewayBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RegisterPushGatewayBuilder<St, S>
+where
+    St: register_push_gateway_state::State,
     St::DeviceId: register_push_gateway_state::IsUnset,
 {
     /// Set the `deviceId` field (required)
@@ -335,12 +510,27 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
     ) -> RegisterPushGatewayBuilder<register_push_gateway_state::SetDeviceId<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         RegisterPushGatewayBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: register_push_gateway_state::State, S: jacquard_common::BosStr>
+    RegisterPushGatewayBuilder<St, S>
+{
+    /// Set the `enabled` field (optional)
+    pub fn enabled(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `enabled` field to an Option value (optional)
+    pub fn maybe_enabled(mut self, value: Option<bool>) -> Self {
+        self._fields.3 = value;
+        self
     }
 }
 
@@ -354,7 +544,26 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::UriValue<S>>,
     ) -> RegisterPushGatewayBuilder<register_push_gateway_state::SetGatewayUrl<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        RegisterPushGatewayBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RegisterPushGatewayBuilder<St, S>
+where
+    St: register_push_gateway_state::State,
+    St::KeyId: register_push_gateway_state::IsUnset,
+{
+    /// Set the `keyId` field (required)
+    pub fn key_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::KeyId<S>>,
+    ) -> RegisterPushGatewayBuilder<register_push_gateway_state::SetKeyId<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         RegisterPushGatewayBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -373,7 +582,45 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RegisterPushGatewayBuilder<register_push_gateway_state::SetPushKey<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        RegisterPushGatewayBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RegisterPushGatewayBuilder<St, S>
+where
+    St: register_push_gateway_state::State,
+    St::Signature: register_push_gateway_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> RegisterPushGatewayBuilder<register_push_gateway_state::SetSignature<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        RegisterPushGatewayBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RegisterPushGatewayBuilder<St, S>
+where
+    St: register_push_gateway_state::State,
+    St::SignedAt: register_push_gateway_state::IsUnset,
+{
+    /// Set the `signedAt` field (required)
+    pub fn signed_at(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> RegisterPushGatewayBuilder<register_push_gateway_state::SetSignedAt<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         RegisterPushGatewayBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -386,17 +633,26 @@ impl<St, S: jacquard_common::BosStr> RegisterPushGatewayBuilder<St, S>
 where
     St: register_push_gateway_state::State,
     St::AppId: register_push_gateway_state::IsSet,
+    St::AuthGeneration: register_push_gateway_state::IsSet,
     St::DeviceId: register_push_gateway_state::IsSet,
     St::GatewayUrl: register_push_gateway_state::IsSet,
+    St::KeyId: register_push_gateway_state::IsSet,
     St::PushKey: register_push_gateway_state::IsSet,
+    St::Signature: register_push_gateway_state::IsSet,
+    St::SignedAt: register_push_gateway_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> RegisterPushGateway<S> {
         RegisterPushGateway {
             app_id: self._fields.0.unwrap(),
-            device_id: self._fields.1.unwrap(),
-            gateway_url: self._fields.2.unwrap(),
-            push_key: self._fields.3.unwrap(),
+            auth_generation: self._fields.1.unwrap(),
+            device_id: self._fields.2.unwrap(),
+            enabled: self._fields.3,
+            gateway_url: self._fields.4.unwrap(),
+            key_id: self._fields.5.unwrap(),
+            push_key: self._fields.6.unwrap(),
+            signature: self._fields.7.unwrap(),
+            signed_at: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -410,9 +666,14 @@ where
     ) -> RegisterPushGateway<S> {
         RegisterPushGateway {
             app_id: self._fields.0.unwrap(),
-            device_id: self._fields.1.unwrap(),
-            gateway_url: self._fields.2.unwrap(),
-            push_key: self._fields.3.unwrap(),
+            auth_generation: self._fields.1.unwrap(),
+            device_id: self._fields.2.unwrap(),
+            enabled: self._fields.3,
+            gateway_url: self._fields.4.unwrap(),
+            key_id: self._fields.5.unwrap(),
+            push_key: self._fields.6.unwrap(),
+            signature: self._fields.7.unwrap(),
+            signed_at: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }

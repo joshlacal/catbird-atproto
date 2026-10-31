@@ -17,11 +17,8 @@ pub mod cancel_leave;
 pub mod close_conversation;
 pub mod create_conversation;
 pub mod declaration;
-pub mod delete_blob;
 pub mod device;
 pub mod enroll_device;
-pub mod get_blob;
-pub mod get_blob_usage;
 pub mod get_conversation_state;
 pub mod get_conversations;
 pub mod get_device_key;
@@ -32,7 +29,6 @@ pub mod get_leaf_recovery_inbox;
 pub mod get_own_devices;
 pub mod get_pending_welcomes;
 pub mod get_subscription_ticket;
-pub mod prepare_blob_upload;
 pub mod prepare_direct_request;
 pub mod publish_direct_request;
 pub mod publish_direct_request_keys;
@@ -51,8 +47,6 @@ pub mod submit_transition;
 
 #[cfg(feature = "streaming")]
 pub mod subscribe_events;
-pub mod update_push_token;
-pub mod upload_blob;
 
 /// Frozen-audience notice closing one exact device-leaf interval inclusively; another device of the same DID does not extend it.
 
@@ -290,7 +284,7 @@ pub enum ApplicationEmbed<S: jacquard_common::BosStr = jacquard_common::DefaultS
     ),
 }
 
-/// conversationId must byte-equal signedRequest.body.prior.conversationId before append or fingerprinting. When payloadPruned is true, signedRequest is absent while seq contiguity and entry metadata remain intact.
+/// conversationId must byte-equal signedRequest.body.prior.conversationId before append or fingerprinting. Clients strictly validate the signed request and verify its 64-byte Ed25519 signature over the exact CATBIRD-CHAT-MESSAGE\0 canonical signing transcript before decryption, attribution, display, or effects. The immutable outer-entry fingerprint is raw SHA-256 of UTF8(CATBIRD-CHAT-APPLICATION-ENTRY-FINGERPRINT\0) followed by canonical DAG-CBOR of exactly {entryId: UUID bytes16, conversationId: UUID bytes16, seq: safe integer, requestDigest: bytes32, signature: bytes64, receivedAt: canonical text}. requestDigest is raw SHA-256 of the exact send signing transcript, so it commits every signed actor, device, coordinate, message, artifact, and blob-binding field; signature and server row identity/time are committed separately. Raw JSON, generated DTO bytes, plaintext-only digests, and unsigned outer surrogates are forbidden. Application visibility is per concrete authenticated (userDid,deviceId) MLS leaf. The genesis creator device begins at creation seq; an ordinary Add begins that added device at its Welcome-producing transition; that exact device's Remove or reset closes its interval inclusively. Reset begins only the activator device's successor interval at the same reset seq. A sibling registered device, logical roster member, or zero-leaf device inherits no ciphertext. Re-addition opens a new interval and never backfills the gap. When payloadPruned is true, signedRequest is absent while seq contiguity and entry metadata remain intact.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -1030,7 +1024,7 @@ pub enum ConversationCreationResult<S: jacquard_common::BosStr = jacquard_common
     ),
 }
 
-///The union is closed across applicationEntry and control variants.
+///The union is closed. For each of its signed-request non-application variants, the immutable control outer-entry fingerprint is raw SHA-256 of UTF8(CATBIRD-CHAT-CONTROL-ENTRY-FINGERPRINT\0) followed by canonical DAG-CBOR of exactly {entryKind,entryId:bytes16,conversationId:bytes16,seq:positive-safe-integer,requestDigest:bytes32,signature:bytes64,serverFields,receivedAt:canonical-text}. entryKind is the exact full type ID of the selected conversationEntry variant. requestDigest is raw SHA-256 of the exact variant domain-prefixed canonical unsigned signing transcript. signature is the exact 64-byte signedRequest signature. serverFields is always present: {} for an ordinary five-field control row, {recovery: exact #leafRecoveryView} for participantAcceptanceEntry, or {tombstone: exact #conversationCloseTombstone} for conversationCloseEntry. Unknown, missing, or extra fields reject at the row, selected variant, serverFields, and fingerprint-projection levels. Every nested closed-union value in an unsigned signing projection carries its exact full $type. Missing, wrong, or unknown nested tags reject before signature acceptance. Exact row/body conversation binding, closed variant consistency, canonical transcript reconstruction, and historical Ed25519 signature verification all succeed before fingerprinting. Raw JSON, generated DTO bytes, and signature-containing wrapper bytes are forbidden fingerprint inputs. accountDeletedEntry is sequencer-recorded under #mls-receipt-1.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -3093,6 +3087,10 @@ pub struct EncryptedAudioEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub plaintext_size: i64,
     pub purpose: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub setter_did: core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_blob_cid: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub transcript: core::option::Option<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub waveform: jacquard_common::deps::bytes::Bytes,
@@ -3251,6 +3249,10 @@ pub struct EncryptedImageEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub nonce: jacquard_common::deps::bytes::Bytes,
     pub plaintext_size: i64,
     pub purpose: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub setter_did: core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_blob_cid: core::option::Option<S>,
     pub width: i64,
     #[serde(
         flatten,
@@ -4570,6 +4572,10 @@ pub struct MetadataAvatarEmbed<S: jacquard_common::BosStr = jacquard_common::Def
     pub original_metadata_version: i64,
     pub plaintext_size: i64,
     pub purpose: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub setter_did: core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_blob_cid: core::option::Option<S>,
     pub width: i64,
     #[serde(
         flatten,
@@ -15488,6 +15494,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                 });
             }
         }
+        if let Some(ref value) = self.setter_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("setter_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.setter_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("setter_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.space_blob_cid {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 256usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "space_blob_cid",
+                    ),
+                    max: 256usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.space_blob_cid {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 16usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "space_blob_cid",
+                    ),
+                    min: 16usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         if let Some(ref value) = self.transcript {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 16384usize {
@@ -15647,6 +15697,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.setter_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("setter_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.setter_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("setter_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.space_blob_cid {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 256usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "space_blob_cid",
+                    ),
+                    max: 256usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.space_blob_cid {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 16usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "space_blob_cid",
+                    ),
+                    min: 16usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -19038,6 +19132,50 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     ),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.setter_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("setter_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.setter_did {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("setter_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.space_blob_cid {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 256usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "space_blob_cid",
+                    ),
+                    max: 256usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.space_blob_cid {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 16usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "space_blob_cid",
+                    ),
+                    min: 16usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -25339,7 +25477,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "conversationId must byte-equal signedRequest.body.prior.conversationId before append or fingerprinting. When payloadPruned is true, signedRequest is absent while seq contiguity and entry metadata remain intact.",
+                            "conversationId must byte-equal signedRequest.body.prior.conversationId before append or fingerprinting. Clients strictly validate the signed request and verify its 64-byte Ed25519 signature over the exact CATBIRD-CHAT-MESSAGE\\0 canonical signing transcript before decryption, attribution, display, or effects. The immutable outer-entry fingerprint is raw SHA-256 of UTF8(CATBIRD-CHAT-APPLICATION-ENTRY-FINGERPRINT\\0) followed by canonical DAG-CBOR of exactly {entryId: UUID bytes16, conversationId: UUID bytes16, seq: safe integer, requestDigest: bytes32, signature: bytes64, receivedAt: canonical text}. requestDigest is raw SHA-256 of the exact send signing transcript, so it commits every signed actor, device, coordinate, message, artifact, and blob-binding field; signature and server row identity/time are committed separately. Raw JSON, generated DTO bytes, plaintext-only digests, and unsigned outer surrogates are forbidden. Application visibility is per concrete authenticated (userDid,deviceId) MLS leaf. The genesis creator device begins at creation seq; an ordinary Add begins that added device at its Welcome-producing transition; that exact device's Remove or reset closes its interval inclusively. Reset begins only the activator device's successor interval at the same reset seq. A sibling registered device, logical roster member, or zero-leaf device inherits no ciphertext. Re-addition opens a new interval and never backfills the gap. When payloadPruned is true, signedRequest is absent while seq contiguity and entry metadata remain intact.",
                         ),
                     ),
                     required: Some(
@@ -33343,6 +33481,25 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "setterDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "spaceBlobCid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(16usize),
+                                max_length: Some(256usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "transcript",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -33538,6 +33695,25 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 "purpose",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "setterDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "spaceBlobCid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(16usize),
+                                max_length: Some(256usize),
                                 ..Default::default()
                             }),
                         );
@@ -36977,6 +37153,25 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 "purpose",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "setterDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "spaceBlobCid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(16usize),
+                                max_length: Some(256usize),
                                 ..Default::default()
                             }),
                         );
@@ -76665,6 +76860,8 @@ pub struct EncryptedAudioEmbedBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
@@ -76693,7 +76890,7 @@ impl EncryptedAudioEmbedBuilder<encrypted_audio_embed_state::Empty, jacquard_com
         EncryptedAudioEmbedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -76706,7 +76903,7 @@ impl<S: jacquard_common::BosStr> EncryptedAudioEmbedBuilder<encrypted_audio_embe
         EncryptedAudioEmbedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -76906,14 +77103,50 @@ where
 impl<St: encrypted_audio_embed_state::State, S: jacquard_common::BosStr>
     EncryptedAudioEmbedBuilder<St, S>
 {
+    /// Set the `setterDid` field (optional)
+    pub fn setter_did(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::BareDid<S>>>,
+    ) -> Self {
+        self._fields.10 = value.into();
+        self
+    }
+    /// Set the `setterDid` field to an Option value (optional)
+    pub fn maybe_setter_did(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> Self {
+        self._fields.10 = value;
+        self
+    }
+}
+
+impl<St: encrypted_audio_embed_state::State, S: jacquard_common::BosStr>
+    EncryptedAudioEmbedBuilder<St, S>
+{
+    /// Set the `spaceBlobCid` field (optional)
+    pub fn space_blob_cid(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.11 = value.into();
+        self
+    }
+    /// Set the `spaceBlobCid` field to an Option value (optional)
+    pub fn maybe_space_blob_cid(mut self, value: Option<S>) -> Self {
+        self._fields.11 = value;
+        self
+    }
+}
+
+impl<St: encrypted_audio_embed_state::State, S: jacquard_common::BosStr>
+    EncryptedAudioEmbedBuilder<St, S>
+{
     /// Set the `transcript` field (optional)
     pub fn transcript(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.10 = value.into();
+        self._fields.12 = value.into();
         self
     }
     /// Set the `transcript` field to an Option value (optional)
     pub fn maybe_transcript(mut self, value: Option<S>) -> Self {
-        self._fields.10 = value;
+        self._fields.12 = value;
         self
     }
 }
@@ -76928,7 +77161,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> EncryptedAudioEmbedBuilder<encrypted_audio_embed_state::SetWaveform<St>, S> {
-        self._fields.11 = ::core::option::Option::Some(value.into());
+        self._fields.13 = ::core::option::Option::Some(value.into());
         EncryptedAudioEmbedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -76965,8 +77198,10 @@ where
             nonce: self._fields.7.unwrap(),
             plaintext_size: self._fields.8.unwrap(),
             purpose: self._fields.9.unwrap(),
-            transcript: self._fields.10,
-            waveform: self._fields.11.unwrap(),
+            setter_did: self._fields.10,
+            space_blob_cid: self._fields.11,
+            transcript: self._fields.12,
+            waveform: self._fields.13.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -76989,8 +77224,10 @@ where
             nonce: self._fields.7.unwrap(),
             plaintext_size: self._fields.8.unwrap(),
             purpose: self._fields.9.unwrap(),
-            transcript: self._fields.10,
-            waveform: self._fields.11.unwrap(),
+            setter_did: self._fields.10,
+            space_blob_cid: self._fields.11,
+            transcript: self._fields.12,
+            waveform: self._fields.13.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -77443,6 +77680,8 @@ pub struct EncryptedImageEmbedBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<S>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -77470,7 +77709,8 @@ impl EncryptedImageEmbedBuilder<encrypted_image_embed_state::Empty, jacquard_com
         EncryptedImageEmbedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -77483,7 +77723,8 @@ impl<S: jacquard_common::BosStr> EncryptedImageEmbedBuilder<encrypted_image_embe
         EncryptedImageEmbedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -77710,6 +77951,42 @@ where
     }
 }
 
+impl<St: encrypted_image_embed_state::State, S: jacquard_common::BosStr>
+    EncryptedImageEmbedBuilder<St, S>
+{
+    /// Set the `setterDid` field (optional)
+    pub fn setter_did(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::BareDid<S>>>,
+    ) -> Self {
+        self._fields.12 = value.into();
+        self
+    }
+    /// Set the `setterDid` field to an Option value (optional)
+    pub fn maybe_setter_did(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> Self {
+        self._fields.12 = value;
+        self
+    }
+}
+
+impl<St: encrypted_image_embed_state::State, S: jacquard_common::BosStr>
+    EncryptedImageEmbedBuilder<St, S>
+{
+    /// Set the `spaceBlobCid` field (optional)
+    pub fn space_blob_cid(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.13 = value.into();
+        self
+    }
+    /// Set the `spaceBlobCid` field to an Option value (optional)
+    pub fn maybe_space_blob_cid(mut self, value: Option<S>) -> Self {
+        self._fields.13 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> EncryptedImageEmbedBuilder<St, S>
 where
     St: encrypted_image_embed_state::State,
@@ -77720,7 +77997,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> EncryptedImageEmbedBuilder<encrypted_image_embed_state::SetWidth<St>, S> {
-        self._fields.12 = ::core::option::Option::Some(value.into());
+        self._fields.14 = ::core::option::Option::Some(value.into());
         EncryptedImageEmbedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -77759,7 +78036,9 @@ where
             nonce: self._fields.9.unwrap(),
             plaintext_size: self._fields.10.unwrap(),
             purpose: self._fields.11.unwrap(),
-            width: self._fields.12.unwrap(),
+            setter_did: self._fields.12,
+            space_blob_cid: self._fields.13,
+            width: self._fields.14.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -77784,7 +78063,9 @@ where
             nonce: self._fields.9.unwrap(),
             plaintext_size: self._fields.10.unwrap(),
             purpose: self._fields.11.unwrap(),
-            width: self._fields.12.unwrap(),
+            setter_did: self._fields.12,
+            space_blob_cid: self._fields.13,
+            width: self._fields.14.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -90841,6 +91122,8 @@ pub struct MetadataAvatarEmbedBuilder<
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<S>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -90869,7 +91152,7 @@ impl MetadataAvatarEmbedBuilder<metadata_avatar_embed_state::Empty, jacquard_com
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None,
+                None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -90883,7 +91166,7 @@ impl<S: jacquard_common::BosStr> MetadataAvatarEmbedBuilder<metadata_avatar_embe
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None,
+                None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -91149,6 +91432,42 @@ where
     }
 }
 
+impl<St: metadata_avatar_embed_state::State, S: jacquard_common::BosStr>
+    MetadataAvatarEmbedBuilder<St, S>
+{
+    /// Set the `setterDid` field (optional)
+    pub fn setter_did(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::BareDid<S>>>,
+    ) -> Self {
+        self._fields.14 = value.into();
+        self
+    }
+    /// Set the `setterDid` field to an Option value (optional)
+    pub fn maybe_setter_did(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> Self {
+        self._fields.14 = value;
+        self
+    }
+}
+
+impl<St: metadata_avatar_embed_state::State, S: jacquard_common::BosStr>
+    MetadataAvatarEmbedBuilder<St, S>
+{
+    /// Set the `spaceBlobCid` field (optional)
+    pub fn space_blob_cid(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.15 = value.into();
+        self
+    }
+    /// Set the `spaceBlobCid` field to an Option value (optional)
+    pub fn maybe_space_blob_cid(mut self, value: Option<S>) -> Self {
+        self._fields.15 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> MetadataAvatarEmbedBuilder<St, S>
 where
     St: metadata_avatar_embed_state::State,
@@ -91159,7 +91478,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> MetadataAvatarEmbedBuilder<metadata_avatar_embed_state::SetWidth<St>, S> {
-        self._fields.14 = ::core::option::Option::Some(value.into());
+        self._fields.16 = ::core::option::Option::Some(value.into());
         MetadataAvatarEmbedBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -91202,7 +91521,9 @@ where
             original_metadata_version: self._fields.11.unwrap(),
             plaintext_size: self._fields.12.unwrap(),
             purpose: self._fields.13.unwrap(),
-            width: self._fields.14.unwrap(),
+            setter_did: self._fields.14,
+            space_blob_cid: self._fields.15,
+            width: self._fields.16.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -91229,7 +91550,9 @@ where
             original_metadata_version: self._fields.11.unwrap(),
             plaintext_size: self._fields.12.unwrap(),
             purpose: self._fields.13.unwrap(),
-            width: self._fields.14.unwrap(),
+            setter_did: self._fields.14,
+            space_blob_cid: self._fields.15,
+            width: self._fields.16.unwrap(),
             extra_data: Some(extra_data),
         }
     }

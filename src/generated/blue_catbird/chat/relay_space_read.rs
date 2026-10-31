@@ -13,9 +13,10 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RelaySpaceRead<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     /// Space credential JWT forwarded in Authorization / Atproto-Space-Credential.
     pub credential: S,
-    /// Read-only com.atproto.space.* NSID (listRepos, getSpace, listRecords, getRecord, listRepoOps, getRepo, getBlob).
+    /// Read-only com.atproto.space.* NSID (listRepos, getSpace, listRecords, getRecord, listRepoOps, getLatestCommit, getRepo, getBlob).
     pub nsid: S,
     /// Raw URL-encoded query string without leading '?'.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -64,8 +65,33 @@ pub struct RelaySpaceReadOutput {
 )]
 #[serde(tag = "error", content = "message")]
 pub enum RelaySpaceReadError {
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "CutoverRequired")]
+    CutoverRequired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceNotRegistered")]
+    DeviceNotRegistered(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceRevoked")]
+    DeviceRevoked(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidNsid")]
     InvalidNsid(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "InvalidRequest")]
+    InvalidRequest(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -76,6 +102,11 @@ pub enum RelaySpaceReadError {
     ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -96,8 +127,43 @@ pub enum RelaySpaceReadError {
 impl core::fmt::Display for RelaySpaceReadError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::CutoverRequired(msg) => {
+                write!(f, "CutoverRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceNotRegistered(msg) => {
+                write!(f, "DeviceNotRegistered")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceRevoked(msg) => {
+                write!(f, "DeviceRevoked")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::InvalidNsid(msg) => {
                 write!(f, "InvalidNsid")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidRequest(msg) => {
+                write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -112,6 +178,13 @@ impl core::fmt::Display for RelaySpaceReadError {
             }
             Self::NotAuthorized(msg) => {
                 write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -194,6 +267,7 @@ pub mod relay_space_read_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ActorDeviceId;
         type Credential;
         type Nsid;
         type Signature;
@@ -205,6 +279,7 @@ pub mod relay_space_read_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ActorDeviceId = Unset;
         type Credential = Unset;
         type Nsid = Unset;
         type Signature = Unset;
@@ -212,10 +287,23 @@ pub mod relay_space_read_state {
         type SpaceAudience = Unset;
         type TargetDid = Unset;
     }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+        type Credential = St::Credential;
+        type Nsid = St::Nsid;
+        type Signature = St::Signature;
+        type SignatureInput = St::SignatureInput;
+        type SpaceAudience = St::SpaceAudience;
+        type TargetDid = St::TargetDid;
+    }
     ///State transition - sets the `credential` field to Set
     pub struct SetCredential<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetCredential<St> {}
     impl<St: State> State for SetCredential<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type Credential = Set<members::credential>;
         type Nsid = St::Nsid;
         type Signature = St::Signature;
@@ -227,6 +315,7 @@ pub mod relay_space_read_state {
     pub struct SetNsid<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetNsid<St> {}
     impl<St: State> State for SetNsid<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type Credential = St::Credential;
         type Nsid = Set<members::nsid>;
         type Signature = St::Signature;
@@ -238,6 +327,7 @@ pub mod relay_space_read_state {
     pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetSignature<St> {}
     impl<St: State> State for SetSignature<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type Credential = St::Credential;
         type Nsid = St::Nsid;
         type Signature = Set<members::signature>;
@@ -249,6 +339,7 @@ pub mod relay_space_read_state {
     pub struct SetSignatureInput<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetSignatureInput<St> {}
     impl<St: State> State for SetSignatureInput<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type Credential = St::Credential;
         type Nsid = St::Nsid;
         type Signature = St::Signature;
@@ -260,6 +351,7 @@ pub mod relay_space_read_state {
     pub struct SetSpaceAudience<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetSpaceAudience<St> {}
     impl<St: State> State for SetSpaceAudience<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type Credential = St::Credential;
         type Nsid = St::Nsid;
         type Signature = St::Signature;
@@ -271,6 +363,7 @@ pub mod relay_space_read_state {
     pub struct SetTargetDid<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetTargetDid<St> {}
     impl<St: State> State for SetTargetDid<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type Credential = St::Credential;
         type Nsid = St::Nsid;
         type Signature = St::Signature;
@@ -281,6 +374,8 @@ pub mod relay_space_read_state {
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
         ///Marker type for the `credential` field
         pub struct credential(());
         ///Marker type for the `nsid` field
@@ -303,6 +398,7 @@ pub struct RelaySpaceReadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<S>,
@@ -335,7 +431,7 @@ impl RelaySpaceReadBuilder<relay_space_read_state::Empty, jacquard_common::Defau
     pub fn new() -> Self {
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -346,7 +442,26 @@ impl<S: jacquard_common::BosStr> RelaySpaceReadBuilder<relay_space_read_state::E
     pub fn builder() -> Self {
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RelaySpaceReadBuilder<St, S>
+where
+    St: relay_space_read_state::State,
+    St::ActorDeviceId: relay_space_read_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> RelaySpaceReadBuilder<relay_space_read_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        RelaySpaceReadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
     }
@@ -362,7 +477,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetCredential<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -381,7 +496,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetNsid<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -393,12 +508,12 @@ where
 impl<St: relay_space_read_state::State, S: jacquard_common::BosStr> RelaySpaceReadBuilder<St, S> {
     /// Set the `query` field (optional)
     pub fn query(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.2 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `query` field to an Option value (optional)
     pub fn maybe_query(mut self, value: Option<S>) -> Self {
-        self._fields.2 = value;
+        self._fields.3 = value;
         self
     }
 }
@@ -413,7 +528,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetSignature<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -432,7 +547,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetSignatureInput<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -451,7 +566,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetSpaceAudience<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -470,7 +585,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetTargetDid<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -482,12 +597,12 @@ where
 impl<St: relay_space_read_state::State, S: jacquard_common::BosStr> RelaySpaceReadBuilder<St, S> {
     /// Set the `wantMac` field (optional)
     pub fn want_mac(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.7 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `wantMac` field to an Option value (optional)
     pub fn maybe_want_mac(mut self, value: Option<S>) -> Self {
-        self._fields.7 = value;
+        self._fields.8 = value;
         self
     }
 }
@@ -495,6 +610,7 @@ impl<St: relay_space_read_state::State, S: jacquard_common::BosStr> RelaySpaceRe
 impl<St, S: jacquard_common::BosStr> RelaySpaceReadBuilder<St, S>
 where
     St: relay_space_read_state::State,
+    St::ActorDeviceId: relay_space_read_state::IsSet,
     St::Credential: relay_space_read_state::IsSet,
     St::Nsid: relay_space_read_state::IsSet,
     St::Signature: relay_space_read_state::IsSet,
@@ -505,14 +621,15 @@ where
     /// Build the final struct.
     pub fn build(self) -> RelaySpaceRead<S> {
         RelaySpaceRead {
-            credential: self._fields.0.unwrap(),
-            nsid: self._fields.1.unwrap(),
-            query: self._fields.2,
-            signature: self._fields.3.unwrap(),
-            signature_input: self._fields.4.unwrap(),
-            space_audience: self._fields.5.unwrap(),
-            target_did: self._fields.6.unwrap(),
-            want_mac: self._fields.7,
+            actor_device_id: self._fields.0.unwrap(),
+            credential: self._fields.1.unwrap(),
+            nsid: self._fields.2.unwrap(),
+            query: self._fields.3,
+            signature: self._fields.4.unwrap(),
+            signature_input: self._fields.5.unwrap(),
+            space_audience: self._fields.6.unwrap(),
+            target_did: self._fields.7.unwrap(),
+            want_mac: self._fields.8,
             extra_data: Default::default(),
         }
     }
@@ -525,14 +642,15 @@ where
         >,
     ) -> RelaySpaceRead<S> {
         RelaySpaceRead {
-            credential: self._fields.0.unwrap(),
-            nsid: self._fields.1.unwrap(),
-            query: self._fields.2,
-            signature: self._fields.3.unwrap(),
-            signature_input: self._fields.4.unwrap(),
-            space_audience: self._fields.5.unwrap(),
-            target_did: self._fields.6.unwrap(),
-            want_mac: self._fields.7,
+            actor_device_id: self._fields.0.unwrap(),
+            credential: self._fields.1.unwrap(),
+            nsid: self._fields.2.unwrap(),
+            query: self._fields.3,
+            signature: self._fields.4.unwrap(),
+            signature_input: self._fields.5.unwrap(),
+            space_audience: self._fields.6.unwrap(),
+            target_did: self._fields.7.unwrap(),
+            want_mac: self._fields.8,
             extra_data: Some(extra_data),
         }
     }
