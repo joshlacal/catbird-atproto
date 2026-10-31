@@ -30,19 +30,16 @@ pub struct VirtualDevice<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     /// Sealed with AAD 'virtual_device:epoch_root_key'.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub encrypted_epoch_root_key: jacquard_common::deps::bytes::Bytes,
-    /// Sealed with AAD 'virtual_device:epoch_storage_private_key'.
+    /// Sealed HawkEncSecret (96 bytes) with AAD 'virtual_device:epoch_storage_private_key'.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub encrypted_epoch_storage_key_priv: jacquard_common::deps::bytes::Bytes,
     /// Sealed with AAD 'virtual_device:mailbox_root_key'.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub encrypted_mailbox_root_salt: jacquard_common::deps::bytes::Bytes,
-    /// Sealed with AAD 'virtual_device:ocmf_client_state'.
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub encrypted_orf_client_state: jacquard_common::deps::bytes::Bytes,
-    /// The virtual device's epochStorageKeyPubkey.
+    /// The virtual device's Hawk encryption public key: X25519(32) || ML-KEM-768 ek(1184) (1,216 bytes, I16).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub epoch_storage_key_pubkey: jacquard_common::deps::bytes::Bytes,
-    /// pk_sign(deviceKey, 0x30, epochStorageKeyPubkey).
+    /// pk_sign(deviceKey, 0x32, epochStorageKeyPubkey) (100% PQ domain tag 0x32, I16).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub epoch_storage_key_sig: jacquard_common::deps::bytes::Bytes,
     /// [CB-39] Last successful restore or keep-alive, stamped by the server from its own clock (clients never write it). Keychain and passkey bundles expire 180 days after max(createdAt, lastUsedAt).
@@ -281,7 +278,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState;
         type EpochStorageKeyPubkey;
         type EpochStorageKeySig;
         type Mechanism;
@@ -298,7 +294,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = Unset;
         type EncryptedEpochStorageKeyPriv = Unset;
         type EncryptedMailboxRootSalt = Unset;
-        type EncryptedOrfClientState = Unset;
         type EpochStorageKeyPubkey = Unset;
         type EpochStorageKeySig = Unset;
         type Mechanism = Unset;
@@ -315,7 +310,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -332,7 +326,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -349,7 +342,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -366,7 +358,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -383,7 +374,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = Set<members::encrypted_epoch_root_key>;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -400,7 +390,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = Set<members::encrypted_epoch_storage_key_priv>;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -417,24 +406,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = Set<members::encrypted_mailbox_root_salt>;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
-        type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
-        type EpochStorageKeySig = St::EpochStorageKeySig;
-        type Mechanism = St::Mechanism;
-        type VdeviceId = St::VdeviceId;
-    }
-    ///State transition - sets the `encrypted_orf_client_state` field to Set
-    pub struct SetEncryptedOrfClientState<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetEncryptedOrfClientState<St> {}
-    impl<St: State> State for SetEncryptedOrfClientState<St> {
-        type CreatedAt = St::CreatedAt;
-        type DeviceKeyPubkey = St::DeviceKeyPubkey;
-        type EncryptedDeviceKeyPriv = St::EncryptedDeviceKeyPriv;
-        type EncryptedEpochNumber = St::EncryptedEpochNumber;
-        type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
-        type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
-        type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = Set<members::encrypted_orf_client_state>;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -451,7 +422,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = Set<members::epoch_storage_key_pubkey>;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -468,7 +438,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = Set<members::epoch_storage_key_sig>;
         type Mechanism = St::Mechanism;
@@ -485,7 +454,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = Set<members::mechanism>;
@@ -502,7 +470,6 @@ pub mod virtual_device_state {
         type EncryptedEpochRootKey = St::EncryptedEpochRootKey;
         type EncryptedEpochStorageKeyPriv = St::EncryptedEpochStorageKeyPriv;
         type EncryptedMailboxRootSalt = St::EncryptedMailboxRootSalt;
-        type EncryptedOrfClientState = St::EncryptedOrfClientState;
         type EpochStorageKeyPubkey = St::EpochStorageKeyPubkey;
         type EpochStorageKeySig = St::EpochStorageKeySig;
         type Mechanism = St::Mechanism;
@@ -525,8 +492,6 @@ pub mod virtual_device_state {
         pub struct encrypted_epoch_storage_key_priv(());
         ///Marker type for the `encrypted_mailbox_root_salt` field
         pub struct encrypted_mailbox_root_salt(());
-        ///Marker type for the `encrypted_orf_client_state` field
-        pub struct encrypted_orf_client_state(());
         ///Marker type for the `epoch_storage_key_pubkey` field
         pub struct epoch_storage_key_pubkey(());
         ///Marker type for the `epoch_storage_key_sig` field
@@ -546,7 +511,6 @@ pub struct VirtualDeviceBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::types::string::Datetime>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -585,7 +549,6 @@ impl VirtualDeviceBuilder<virtual_device_state::Empty, jacquard_common::DefaultS
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -599,7 +562,6 @@ impl<S: jacquard_common::BosStr> VirtualDeviceBuilder<virtual_device_state::Empt
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -742,25 +704,6 @@ where
 impl<St, S: jacquard_common::BosStr> VirtualDeviceBuilder<St, S>
 where
     St: virtual_device_state::State,
-    St::EncryptedOrfClientState: virtual_device_state::IsUnset,
-{
-    /// Set the `encryptedOrfClientState` field (required)
-    pub fn encrypted_orf_client_state(
-        mut self,
-        value: impl Into<jacquard_common::deps::bytes::Bytes>,
-    ) -> VirtualDeviceBuilder<virtual_device_state::SetEncryptedOrfClientState<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
-        VirtualDeviceBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> VirtualDeviceBuilder<St, S>
-where
-    St: virtual_device_state::State,
     St::EpochStorageKeyPubkey: virtual_device_state::IsUnset,
 {
     /// Set the `epochStorageKeyPubkey` field (required)
@@ -768,7 +711,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> VirtualDeviceBuilder<virtual_device_state::SetEpochStorageKeyPubkey<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         VirtualDeviceBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -787,7 +730,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> VirtualDeviceBuilder<virtual_device_state::SetEpochStorageKeySig<St>, S> {
-        self._fields.9 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         VirtualDeviceBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -802,7 +745,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self._fields.10 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `lastUsedAt` field to an Option value (optional)
@@ -810,7 +753,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self._fields.10 = value;
+        self._fields.9 = value;
         self
     }
 }
@@ -825,7 +768,7 @@ where
         mut self,
         value: impl Into<VirtualDeviceMechanism<S>>,
     ) -> VirtualDeviceBuilder<virtual_device_state::SetMechanism<St>, S> {
-        self._fields.11 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         VirtualDeviceBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -840,7 +783,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.12 = value.into();
+        self._fields.11 = value.into();
         self
     }
     /// Set the `passkeyCredentialId` field to an Option value (optional)
@@ -848,7 +791,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: Option<jacquard_common::deps::bytes::Bytes>,
     ) -> Self {
-        self._fields.12 = value;
+        self._fields.11 = value;
         self
     }
 }
@@ -859,7 +802,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.13 = value.into();
+        self._fields.12 = value.into();
         self
     }
     /// Set the `passkeyWrappedCode` field to an Option value (optional)
@@ -867,7 +810,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: Option<jacquard_common::deps::bytes::Bytes>,
     ) -> Self {
-        self._fields.13 = value;
+        self._fields.12 = value;
         self
     }
 }
@@ -882,7 +825,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> VirtualDeviceBuilder<virtual_device_state::SetVdeviceId<St>, S> {
-        self._fields.14 = ::core::option::Option::Some(value.into());
+        self._fields.13 = ::core::option::Option::Some(value.into());
         VirtualDeviceBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -901,7 +844,6 @@ where
     St::EncryptedEpochRootKey: virtual_device_state::IsSet,
     St::EncryptedEpochStorageKeyPriv: virtual_device_state::IsSet,
     St::EncryptedMailboxRootSalt: virtual_device_state::IsSet,
-    St::EncryptedOrfClientState: virtual_device_state::IsSet,
     St::EpochStorageKeyPubkey: virtual_device_state::IsSet,
     St::EpochStorageKeySig: virtual_device_state::IsSet,
     St::Mechanism: virtual_device_state::IsSet,
@@ -917,14 +859,13 @@ where
             encrypted_epoch_root_key: self._fields.4.unwrap(),
             encrypted_epoch_storage_key_priv: self._fields.5.unwrap(),
             encrypted_mailbox_root_salt: self._fields.6.unwrap(),
-            encrypted_orf_client_state: self._fields.7.unwrap(),
-            epoch_storage_key_pubkey: self._fields.8.unwrap(),
-            epoch_storage_key_sig: self._fields.9.unwrap(),
-            last_used_at: self._fields.10,
-            mechanism: self._fields.11.unwrap(),
-            passkey_credential_id: self._fields.12,
-            passkey_wrapped_code: self._fields.13,
-            vdevice_id: self._fields.14.unwrap(),
+            epoch_storage_key_pubkey: self._fields.7.unwrap(),
+            epoch_storage_key_sig: self._fields.8.unwrap(),
+            last_used_at: self._fields.9,
+            mechanism: self._fields.10.unwrap(),
+            passkey_credential_id: self._fields.11,
+            passkey_wrapped_code: self._fields.12,
+            vdevice_id: self._fields.13.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -944,14 +885,13 @@ where
             encrypted_epoch_root_key: self._fields.4.unwrap(),
             encrypted_epoch_storage_key_priv: self._fields.5.unwrap(),
             encrypted_mailbox_root_salt: self._fields.6.unwrap(),
-            encrypted_orf_client_state: self._fields.7.unwrap(),
-            epoch_storage_key_pubkey: self._fields.8.unwrap(),
-            epoch_storage_key_sig: self._fields.9.unwrap(),
-            last_used_at: self._fields.10,
-            mechanism: self._fields.11.unwrap(),
-            passkey_credential_id: self._fields.12,
-            passkey_wrapped_code: self._fields.13,
-            vdevice_id: self._fields.14.unwrap(),
+            epoch_storage_key_pubkey: self._fields.7.unwrap(),
+            epoch_storage_key_sig: self._fields.8.unwrap(),
+            last_used_at: self._fields.9,
+            mechanism: self._fields.10.unwrap(),
+            passkey_credential_id: self._fields.11,
+            passkey_wrapped_code: self._fields.12,
+            vdevice_id: self._fields.13.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -982,7 +922,6 @@ fn lexicon_doc_blue_catbird_labyrinth_virtualDevice(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("epochStorageKeySig"),
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptedDeviceKeyPriv"),
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptedEpochStorageKeyPriv"),
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptedOrfClientState"),
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptedMailboxRootSalt"),
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptedEpochRootKey"),
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptedEpochNumber"),
@@ -1046,7 +985,7 @@ fn lexicon_doc_blue_catbird_labyrinth_virtualDevice(
                                     "encryptedEpochStorageKeyPriv",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                    max_length: Some(256usize),
+                                    max_length: Some(512usize),
                                     ..Default::default()
                                 }),
                             );
@@ -1061,20 +1000,11 @@ fn lexicon_doc_blue_catbird_labyrinth_virtualDevice(
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "encryptedOrfClientState",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                    max_length: Some(256usize),
-                                    ..Default::default()
-                                }),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "epochStorageKeyPubkey",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                    max_length: Some(32usize),
-                                    min_length: Some(32usize),
+                                    max_length: Some(1216usize),
+                                    min_length: Some(1216usize),
                                     ..Default::default()
                                 }),
                             );

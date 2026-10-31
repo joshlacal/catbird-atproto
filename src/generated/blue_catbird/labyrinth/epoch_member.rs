@@ -24,7 +24,7 @@ pub struct EpochMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     /// HMAC(epochDeviceMacKey, deviceKeyPubkey).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub device_mac: jacquard_common::deps::bytes::Bytes,
-    /// labyrinth_hpke(epochStorageKey, openerAuth, distPsk, 'epoch__'||seq, entropy); present for devices that carried over when the epoch opened.
+    /// hawk_encrypt_auth(epochStorageKey, openerAuth, distPsk, 'epoch__'||seq, entropy) (1,169 bytes, I16); present for devices that carried over when the epoch opened.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
     pub encrypted_entropy: core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -485,7 +485,7 @@ fn lexicon_doc_blue_catbird_labyrinth_epochMember() -> jacquard_lexicon::lexicon
                                     "encryptedEntropy",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                    max_length: Some(128usize),
+                                    max_length: Some(1200usize),
                                     ..Default::default()
                                 }),
                             );

@@ -1305,3 +1305,14 @@ where
         }
     }
 }
+
+// Space declaration descriptor constants for `blue.catbird.circle`.
+// An author-owned private posting audience
+pub const NSID: &str = "blue.catbird.circle";
+pub const KEY_TYPE: &str = "tid";
+pub const NAME: &str = "Catbird Circle";
+pub const COLLECTIONS: &[&str] = &[
+    "blue.catbird.circle.metadata",
+    "app.bsky.feed.post",
+    "app.bsky.feed.like",
+];

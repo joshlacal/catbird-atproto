@@ -33,10 +33,10 @@ pub struct Device<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
     pub epoch_storage_auth_key_sig: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    /// Labyrinth HPKE encryption key.
+    /// Hawk encryption public key: X25519(32) || ML-KEM-768 ek(1184) (1,216 bytes, I16).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub epoch_storage_key_pubkey: jacquard_common::deps::bytes::Bytes,
-    /// pk_sign(deviceKey, 0x30, epochStorageKeyPubkey).
+    /// pk_sign(deviceKey, 0x32, epochStorageKeyPubkey) (100% PQ domain tag 0x32, I16).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub epoch_storage_key_sig: jacquard_common::deps::bytes::Bytes,
     /// Set once when the device is revoked; the revoking device opens a new epoch that excludes it ([CB-11]).
@@ -607,8 +607,8 @@ fn lexicon_doc_blue_catbird_labyrinth_device() -> jacquard_lexicon::lexicon::Lex
                                     "epochStorageKeyPubkey",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                    max_length: Some(32usize),
-                                    min_length: Some(32usize),
+                                    max_length: Some(1216usize),
+                                    min_length: Some(1216usize),
                                     ..Default::default()
                                 }),
                             );

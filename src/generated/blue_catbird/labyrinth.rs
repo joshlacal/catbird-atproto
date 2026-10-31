@@ -9,7 +9,10 @@
 pub mod append_batch;
 pub mod append_owner_batch;
 pub mod append_space_batch;
+pub mod attachment_manifest;
 pub mod batch;
+pub mod conversation;
+pub mod conversation_policy;
 pub mod create_device;
 pub mod create_epoch;
 pub mod create_epoch_member;
@@ -45,9 +48,11 @@ pub mod list_owner_threads;
 pub mod list_space_batches;
 pub mod list_threads;
 pub mod list_virtual_devices;
+pub mod mailbox;
 pub mod mailbox_keys;
 pub mod mark_device_revoked;
 pub mod mek;
+pub mod otc_session;
 pub mod owner_batch;
 pub mod publish_epoch_head;
 pub mod purge_mailbox;
@@ -74,11 +79,14 @@ pub struct EpochPublic<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     /// Hawk encryption public key: X25519(32) || ML-KEM-768 ek(1184).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub encryption_pubkey: jacquard_common::deps::bytes::Bytes,
-    /// sha256 epoch head (SPEC §5.3).
+    /// sha256 epoch head (SPEC §5.3, Gate 3 membersHash bound).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub epoch_head: jacquard_common::deps::bytes::Bytes,
     /// epochSequenceID, starting at 0.
     pub epoch_number: i64,
+    /// [Gate 3] SHA-256 over canonical sorted active epoch member deviceKeyPubkeys bound into epochHead.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub members_hash: jacquard_common::deps::bytes::Bytes,
     /// XEdDSA by the previous epoch's signing key over 'minos.unstructured_signature.epoch_prev:' || head.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
@@ -152,8 +160,17 @@ pub struct OwnerMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub encrypted: jacquard_common::deps::bytes::Bytes,
     /// Epoch whose root key derived the message key.
     pub epoch_number: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub frame_nonce: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     /// Message id.
     pub message_id: S,
+    /// Sequenced MLS entry seq when archived from a live conversation.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub seq: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>,
     /// Conversation id.
     pub thread_id: S,
     /// ms since Unix epoch.
@@ -299,7 +316,7 @@ where
     }
 }
 
-/// One v1.1 sender-encrypted message (SPEC §7.2). A redacted item ([CB-38]) keeps messageId, timestamp, mekId and senderTransportPubkey, carries redaction, and has an empty signedEncMessage.
+/// One v1.1 sender-encrypted message (SPEC §7.2, I13). A redacted item ([CB-38]) keeps messageId, timestamp, mekId and senderTransportPubkey, carries redaction, and has an empty signedEncMessage.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -309,6 +326,10 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SealedMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// 32-byte random nonce committing archiveCommitment = SHA-256('catbird.labyrinth.archive.v1:' || canonicalPlaintextBytes || frameNonce) (I13).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub frame_nonce: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     /// 12-byte MEK id.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub mek_id: jacquard_common::deps::bytes::Bytes,
@@ -320,6 +341,12 @@ pub struct SealedMessage<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     /// Sender chat device Ed25519 key.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub sender_transport_pubkey: jacquard_common::deps::bytes::Bytes,
+    /// Sequenced MLS entry seq from sequencerReceipt (I13).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub seq: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>,
     /// Ed25519 sig(64) || suite-tagged AEAD ciphertext of the padded frame; empty once redacted.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub signed_enc_message: jacquard_common::deps::bytes::Bytes,
@@ -329,6 +356,42 @@ pub struct SealedMessage<S: jacquard_common::BosStr = jacquard_common::DefaultSt
         flatten,
         default,
         deserialize_with = "deserialize_sealed_message_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// [I13] Sequencer receipt signed by {sequencerDid}#mls-receipt-1 binding Labyrinth history items to live MLS applicationAad.archiveCommitment.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SequencerReceipt<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub archive_commitment: jacquard_common::deps::bytes::Bytes,
+    pub conversation_id: S,
+    pub generation: i64,
+    pub issued_at_ms: i64,
+    pub kid: S,
+    pub sender_device_id: S,
+    pub sender_did: jacquard_common::types::string::Did<S>,
+    pub seq: i64,
+    pub sequencer_did: jacquard_common::types::string::Did<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_sequencer_receipt_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -554,6 +617,24 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Own
                 });
             }
         }
+        if let Some(ref value) = self.seq {
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.seq {
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
         {
             let value = &self.thread_id;
             #[allow(unused_comparisons)]
@@ -646,12 +727,168 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sea
                 });
             }
         }
+        if let Some(ref value) = self.seq {
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.seq {
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
         {
             let value = &self.timestamp;
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("timestamp"),
                     min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SequencerReceipt<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.labyrinth.defs"
+    }
+    fn def_name() -> &'static str {
+        "sequencerReceipt"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_labyrinth_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.conversation_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "conversation_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.generation;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("generation"),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.generation;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("generation"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.issued_at_ms;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("issued_at_ms"),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.issued_at_ms;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("issued_at_ms"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.kid;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 320usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("kid"),
+                    max: 320usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.sender_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "sender_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.sender_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "sender_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.seq;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.seq;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
+                    min: 1i64,
                     actual: *value,
                 });
             }
@@ -886,6 +1123,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey;
         type EpochHead;
         type EpochNumber;
+        type MembersHash;
         type SelfSig;
         type SigningPubkey;
     }
@@ -898,6 +1136,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey = Unset;
         type EpochHead = Unset;
         type EpochNumber = Unset;
+        type MembersHash = Unset;
         type SelfSig = Unset;
         type SigningPubkey = Unset;
     }
@@ -910,6 +1149,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey = St::EncryptionPubkey;
         type EpochHead = St::EpochHead;
         type EpochNumber = St::EpochNumber;
+        type MembersHash = St::MembersHash;
         type SelfSig = St::SelfSig;
         type SigningPubkey = St::SigningPubkey;
     }
@@ -922,6 +1162,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey = St::EncryptionPubkey;
         type EpochHead = St::EpochHead;
         type EpochNumber = St::EpochNumber;
+        type MembersHash = St::MembersHash;
         type SelfSig = St::SelfSig;
         type SigningPubkey = St::SigningPubkey;
     }
@@ -934,6 +1175,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey = Set<members::encryption_pubkey>;
         type EpochHead = St::EpochHead;
         type EpochNumber = St::EpochNumber;
+        type MembersHash = St::MembersHash;
         type SelfSig = St::SelfSig;
         type SigningPubkey = St::SigningPubkey;
     }
@@ -946,6 +1188,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey = St::EncryptionPubkey;
         type EpochHead = Set<members::epoch_head>;
         type EpochNumber = St::EpochNumber;
+        type MembersHash = St::MembersHash;
         type SelfSig = St::SelfSig;
         type SigningPubkey = St::SigningPubkey;
     }
@@ -958,6 +1201,20 @@ pub mod epoch_public_state {
         type EncryptionPubkey = St::EncryptionPubkey;
         type EpochHead = St::EpochHead;
         type EpochNumber = Set<members::epoch_number>;
+        type MembersHash = St::MembersHash;
+        type SelfSig = St::SelfSig;
+        type SigningPubkey = St::SigningPubkey;
+    }
+    ///State transition - sets the `members_hash` field to Set
+    pub struct SetMembersHash<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMembersHash<St> {}
+    impl<St: State> State for SetMembersHash<St> {
+        type Attestation = St::Attestation;
+        type AuthPubkey = St::AuthPubkey;
+        type EncryptionPubkey = St::EncryptionPubkey;
+        type EpochHead = St::EpochHead;
+        type EpochNumber = St::EpochNumber;
+        type MembersHash = Set<members::members_hash>;
         type SelfSig = St::SelfSig;
         type SigningPubkey = St::SigningPubkey;
     }
@@ -970,6 +1227,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey = St::EncryptionPubkey;
         type EpochHead = St::EpochHead;
         type EpochNumber = St::EpochNumber;
+        type MembersHash = St::MembersHash;
         type SelfSig = Set<members::self_sig>;
         type SigningPubkey = St::SigningPubkey;
     }
@@ -982,6 +1240,7 @@ pub mod epoch_public_state {
         type EncryptionPubkey = St::EncryptionPubkey;
         type EpochHead = St::EpochHead;
         type EpochNumber = St::EpochNumber;
+        type MembersHash = St::MembersHash;
         type SelfSig = St::SelfSig;
         type SigningPubkey = Set<members::signing_pubkey>;
     }
@@ -998,6 +1257,8 @@ pub mod epoch_public_state {
         pub struct epoch_head(());
         ///Marker type for the `epoch_number` field
         pub struct epoch_number(());
+        ///Marker type for the `members_hash` field
+        pub struct members_hash(());
         ///Marker type for the `self_sig` field
         pub struct self_sig(());
         ///Marker type for the `signing_pubkey` field
@@ -1017,6 +1278,7 @@ pub struct EpochPublicBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
@@ -1044,7 +1306,7 @@ impl EpochPublicBuilder<epoch_public_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         EpochPublicBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1055,7 +1317,7 @@ impl<S: jacquard_common::BosStr> EpochPublicBuilder<epoch_public_state::Empty, S
     pub fn builder() -> Self {
         EpochPublicBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1156,18 +1418,37 @@ where
     }
 }
 
+impl<St, S: jacquard_common::BosStr> EpochPublicBuilder<St, S>
+where
+    St: epoch_public_state::State,
+    St::MembersHash: epoch_public_state::IsUnset,
+{
+    /// Set the `membersHash` field (required)
+    pub fn members_hash(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> EpochPublicBuilder<epoch_public_state::SetMembersHash<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        EpochPublicBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
 impl<St: epoch_public_state::State, S: jacquard_common::BosStr> EpochPublicBuilder<St, S> {
     /// Set the `prevSig` field (optional)
     pub fn prev_sig(
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.5 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `prevSig` field to an Option value (optional)
     pub fn maybe_prev_sig(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.5 = value;
+        self._fields.6 = value;
         self
     }
 }
@@ -1178,7 +1459,7 @@ impl<St: epoch_public_state::State, S: jacquard_common::BosStr> EpochPublicBuild
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.6 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `previousEpochHead` field to an Option value (optional)
@@ -1186,7 +1467,7 @@ impl<St: epoch_public_state::State, S: jacquard_common::BosStr> EpochPublicBuild
         mut self,
         value: Option<jacquard_common::deps::bytes::Bytes>,
     ) -> Self {
-        self._fields.6 = value;
+        self._fields.7 = value;
         self
     }
 }
@@ -1201,7 +1482,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> EpochPublicBuilder<epoch_public_state::SetSelfSig<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EpochPublicBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1220,7 +1501,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> EpochPublicBuilder<epoch_public_state::SetSigningPubkey<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         EpochPublicBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1237,6 +1518,7 @@ where
     St::EncryptionPubkey: epoch_public_state::IsSet,
     St::EpochHead: epoch_public_state::IsSet,
     St::EpochNumber: epoch_public_state::IsSet,
+    St::MembersHash: epoch_public_state::IsSet,
     St::SelfSig: epoch_public_state::IsSet,
     St::SigningPubkey: epoch_public_state::IsSet,
 {
@@ -1248,10 +1530,11 @@ where
             encryption_pubkey: self._fields.2.unwrap(),
             epoch_head: self._fields.3.unwrap(),
             epoch_number: self._fields.4.unwrap(),
-            prev_sig: self._fields.5,
-            previous_epoch_head: self._fields.6,
-            self_sig: self._fields.7.unwrap(),
-            signing_pubkey: self._fields.8.unwrap(),
+            members_hash: self._fields.5.unwrap(),
+            prev_sig: self._fields.6,
+            previous_epoch_head: self._fields.7,
+            self_sig: self._fields.8.unwrap(),
+            signing_pubkey: self._fields.9.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -1269,10 +1552,11 @@ where
             encryption_pubkey: self._fields.2.unwrap(),
             epoch_head: self._fields.3.unwrap(),
             epoch_number: self._fields.4.unwrap(),
-            prev_sig: self._fields.5,
-            previous_epoch_head: self._fields.6,
-            self_sig: self._fields.7.unwrap(),
-            signing_pubkey: self._fields.8.unwrap(),
+            members_hash: self._fields.5.unwrap(),
+            prev_sig: self._fields.6,
+            previous_epoch_head: self._fields.7,
+            self_sig: self._fields.8.unwrap(),
+            signing_pubkey: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -1298,6 +1582,7 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("authPubkey"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptionPubkey"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("signingPubkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("membersHash"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("epochHead"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("selfSig"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("attestation")
@@ -1354,6 +1639,16 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                 minimum: Some(0i64),
                                 maximum: Some(1099511627776i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "membersHash",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
                                 ..Default::default()
                             }),
                         );
@@ -1501,6 +1796,16 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "frameNonce",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "messageId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1508,6 +1813,27 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                                     ::jacquard_common::CowStr::new_static("Message id."),
                                 ),
                                 max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerReceipt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#sequencerReceipt",
+                                ),
                                 ..Default::default()
                             }),
                         );
@@ -1633,7 +1959,7 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "One v1.1 sender-encrypted message (SPEC §7.2). A redacted item ([CB-38]) keeps messageId, timestamp, mekId and senderTransportPubkey, carries redaction, and has an empty signedEncMessage.",
+                            "One v1.1 sender-encrypted message (SPEC §7.2, I13). A redacted item ([CB-38]) keeps messageId, timestamp, mekId and senderTransportPubkey, carries redaction, and has an empty signedEncMessage.",
                         ),
                     ),
                     required: Some(
@@ -1648,6 +1974,16 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                     properties: {
                         #[allow(unused_mut)]
                         let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "frameNonce",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "mekId",
@@ -1691,6 +2027,27 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerReceipt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#sequencerReceipt",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "signedEncMessage",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
@@ -1705,6 +2062,139 @@ fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::Lexic
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                 minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "sequencerReceipt",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "[I13] Sequencer receipt signed by {sequencerDid}#mls-receipt-1 binding Labyrinth history items to live MLS applicationAad.archiveCommitment.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("conversationId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("generation"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDeviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("archiveCommitment"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("issuedAtMs"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("kid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "archiveCommitment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "conversationId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "generation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "issuedAtMs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "kid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                max_length: Some(320usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderDeviceId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signature",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
                                 ..Default::default()
                             }),
                         );
@@ -2371,7 +2861,10 @@ pub struct OwnerMessageBuilder<
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<i64>,
@@ -2398,7 +2891,7 @@ impl OwnerMessageBuilder<owner_message_state::Empty, jacquard_common::DefaultStr
     pub fn new() -> Self {
         OwnerMessageBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2409,7 +2902,7 @@ impl<S: jacquard_common::BosStr> OwnerMessageBuilder<owner_message_state::Empty,
     pub fn builder() -> Self {
         OwnerMessageBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2453,6 +2946,22 @@ where
     }
 }
 
+impl<St: owner_message_state::State, S: jacquard_common::BosStr> OwnerMessageBuilder<St, S> {
+    /// Set the `frameNonce` field (optional)
+    pub fn frame_nonce(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `frameNonce` field to an Option value (optional)
+    pub fn maybe_frame_nonce(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> OwnerMessageBuilder<St, S>
 where
     St: owner_message_state::State,
@@ -2463,12 +2972,44 @@ where
         mut self,
         value: impl Into<S>,
     ) -> OwnerMessageBuilder<owner_message_state::SetMessageId<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         OwnerMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: owner_message_state::State, S: jacquard_common::BosStr> OwnerMessageBuilder<St, S> {
+    /// Set the `seq` field (optional)
+    pub fn seq(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `seq` field to an Option value (optional)
+    pub fn maybe_seq(mut self, value: Option<i64>) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St: owner_message_state::State, S: jacquard_common::BosStr> OwnerMessageBuilder<St, S> {
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
     }
 }
 
@@ -2482,7 +3023,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> OwnerMessageBuilder<owner_message_state::SetThreadId<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         OwnerMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2501,7 +3042,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> OwnerMessageBuilder<owner_message_state::SetTimestamp<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         OwnerMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2520,7 +3061,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> OwnerMessageBuilder<owner_message_state::SetVersion<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         OwnerMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2544,10 +3085,13 @@ where
         OwnerMessage {
             encrypted: self._fields.0.unwrap(),
             epoch_number: self._fields.1.unwrap(),
-            message_id: self._fields.2.unwrap(),
-            thread_id: self._fields.3.unwrap(),
-            timestamp: self._fields.4.unwrap(),
-            version: self._fields.5.unwrap(),
+            frame_nonce: self._fields.2,
+            message_id: self._fields.3.unwrap(),
+            seq: self._fields.4,
+            sequencer_receipt: self._fields.5,
+            thread_id: self._fields.6.unwrap(),
+            timestamp: self._fields.7.unwrap(),
+            version: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -2562,10 +3106,13 @@ where
         OwnerMessage {
             encrypted: self._fields.0.unwrap(),
             epoch_number: self._fields.1.unwrap(),
-            message_id: self._fields.2.unwrap(),
-            thread_id: self._fields.3.unwrap(),
-            timestamp: self._fields.4.unwrap(),
-            version: self._fields.5.unwrap(),
+            frame_nonce: self._fields.2,
+            message_id: self._fields.3.unwrap(),
+            seq: self._fields.4,
+            sequencer_receipt: self._fields.5,
+            thread_id: self._fields.6.unwrap(),
+            timestamp: self._fields.7.unwrap(),
+            version: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -2719,9 +3266,12 @@ pub struct SealedMessageBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<S>,
         core::option::Option<crate::generated::blue_catbird::labyrinth::Redaction<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
     ),
@@ -2747,7 +3297,7 @@ impl SealedMessageBuilder<sealed_message_state::Empty, jacquard_common::DefaultS
     pub fn new() -> Self {
         SealedMessageBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2758,9 +3308,25 @@ impl<S: jacquard_common::BosStr> SealedMessageBuilder<sealed_message_state::Empt
     pub fn builder() -> Self {
         SealedMessageBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: sealed_message_state::State, S: jacquard_common::BosStr> SealedMessageBuilder<St, S> {
+    /// Set the `frameNonce` field (optional)
+    pub fn frame_nonce(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `frameNonce` field to an Option value (optional)
+    pub fn maybe_frame_nonce(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
+        self._fields.0 = value;
+        self
     }
 }
 
@@ -2774,7 +3340,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> SealedMessageBuilder<sealed_message_state::SetMekId<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         SealedMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2793,7 +3359,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> SealedMessageBuilder<sealed_message_state::SetMessageId<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         SealedMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2808,7 +3374,7 @@ impl<St: sealed_message_state::State, S: jacquard_common::BosStr> SealedMessageB
         mut self,
         value: impl Into<Option<crate::generated::blue_catbird::labyrinth::Redaction<S>>>,
     ) -> Self {
-        self._fields.2 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `redaction` field to an Option value (optional)
@@ -2816,7 +3382,7 @@ impl<St: sealed_message_state::State, S: jacquard_common::BosStr> SealedMessageB
         mut self,
         value: Option<crate::generated::blue_catbird::labyrinth::Redaction<S>>,
     ) -> Self {
-        self._fields.2 = value;
+        self._fields.3 = value;
         self
     }
 }
@@ -2831,12 +3397,44 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> SealedMessageBuilder<sealed_message_state::SetSenderTransportPubkey<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         SealedMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: sealed_message_state::State, S: jacquard_common::BosStr> SealedMessageBuilder<St, S> {
+    /// Set the `seq` field (optional)
+    pub fn seq(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `seq` field to an Option value (optional)
+    pub fn maybe_seq(mut self, value: Option<i64>) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: sealed_message_state::State, S: jacquard_common::BosStr> SealedMessageBuilder<St, S> {
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::labyrinth::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
     }
 }
 
@@ -2850,7 +3448,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> SealedMessageBuilder<sealed_message_state::SetSignedEncMessage<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         SealedMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2869,7 +3467,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> SealedMessageBuilder<sealed_message_state::SetTimestamp<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         SealedMessageBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2890,12 +3488,15 @@ where
     /// Build the final struct.
     pub fn build(self) -> SealedMessage<S> {
         SealedMessage {
-            mek_id: self._fields.0.unwrap(),
-            message_id: self._fields.1.unwrap(),
-            redaction: self._fields.2,
-            sender_transport_pubkey: self._fields.3.unwrap(),
-            signed_enc_message: self._fields.4.unwrap(),
-            timestamp: self._fields.5.unwrap(),
+            frame_nonce: self._fields.0,
+            mek_id: self._fields.1.unwrap(),
+            message_id: self._fields.2.unwrap(),
+            redaction: self._fields.3,
+            sender_transport_pubkey: self._fields.4.unwrap(),
+            seq: self._fields.5,
+            sequencer_receipt: self._fields.6,
+            signed_enc_message: self._fields.7.unwrap(),
+            timestamp: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -2908,12 +3509,553 @@ where
         >,
     ) -> SealedMessage<S> {
         SealedMessage {
-            mek_id: self._fields.0.unwrap(),
-            message_id: self._fields.1.unwrap(),
-            redaction: self._fields.2,
-            sender_transport_pubkey: self._fields.3.unwrap(),
-            signed_enc_message: self._fields.4.unwrap(),
-            timestamp: self._fields.5.unwrap(),
+            frame_nonce: self._fields.0,
+            mek_id: self._fields.1.unwrap(),
+            message_id: self._fields.2.unwrap(),
+            redaction: self._fields.3,
+            sender_transport_pubkey: self._fields.4.unwrap(),
+            seq: self._fields.5,
+            sequencer_receipt: self._fields.6,
+            signed_enc_message: self._fields.7.unwrap(),
+            timestamp: self._fields.8.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_sequencer_receipt_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod sequencer_receipt_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ArchiveCommitment;
+        type ConversationId;
+        type Generation;
+        type IssuedAtMs;
+        type Kid;
+        type SenderDeviceId;
+        type SenderDid;
+        type Seq;
+        type SequencerDid;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ArchiveCommitment = Unset;
+        type ConversationId = Unset;
+        type Generation = Unset;
+        type IssuedAtMs = Unset;
+        type Kid = Unset;
+        type SenderDeviceId = Unset;
+        type SenderDid = Unset;
+        type Seq = Unset;
+        type SequencerDid = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `archive_commitment` field to Set
+    pub struct SetArchiveCommitment<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetArchiveCommitment<St> {}
+    impl<St: State> State for SetArchiveCommitment<St> {
+        type ArchiveCommitment = Set<members::archive_commitment>;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `conversation_id` field to Set
+    pub struct SetConversationId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConversationId<St> {}
+    impl<St: State> State for SetConversationId<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = Set<members::conversation_id>;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `generation` field to Set
+    pub struct SetGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGeneration<St> {}
+    impl<St: State> State for SetGeneration<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = Set<members::generation>;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `issued_at_ms` field to Set
+    pub struct SetIssuedAtMs<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIssuedAtMs<St> {}
+    impl<St: State> State for SetIssuedAtMs<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = Set<members::issued_at_ms>;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `kid` field to Set
+    pub struct SetKid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKid<St> {}
+    impl<St: State> State for SetKid<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = Set<members::kid>;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_device_id` field to Set
+    pub struct SetSenderDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDeviceId<St> {}
+    impl<St: State> State for SetSenderDeviceId<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = Set<members::sender_device_id>;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_did` field to Set
+    pub struct SetSenderDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDid<St> {}
+    impl<St: State> State for SetSenderDid<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = Set<members::sender_did>;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `seq` field to Set
+    pub struct SetSeq<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSeq<St> {}
+    impl<St: State> State for SetSeq<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = Set<members::seq>;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sequencer_did` field to Set
+    pub struct SetSequencerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSequencerDid<St> {}
+    impl<St: State> State for SetSequencerDid<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = Set<members::sequencer_did>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type Generation = St::Generation;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `archive_commitment` field
+        pub struct archive_commitment(());
+        ///Marker type for the `conversation_id` field
+        pub struct conversation_id(());
+        ///Marker type for the `generation` field
+        pub struct generation(());
+        ///Marker type for the `issued_at_ms` field
+        pub struct issued_at_ms(());
+        ///Marker type for the `kid` field
+        pub struct kid(());
+        ///Marker type for the `sender_device_id` field
+        pub struct sender_device_id(());
+        ///Marker type for the `sender_did` field
+        pub struct sender_did(());
+        ///Marker type for the `seq` field
+        pub struct seq(());
+        ///Marker type for the `sequencer_did` field
+        pub struct sequencer_did(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct SequencerReceiptBuilder<
+    St: sequencer_receipt_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl SequencerReceipt<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::Empty, jacquard_common::DefaultStr> {
+        SequencerReceiptBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> SequencerReceipt<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SequencerReceiptBuilder<sequencer_receipt_state::Empty, S> {
+        SequencerReceiptBuilder::builder()
+    }
+}
+
+impl SequencerReceiptBuilder<sequencer_receipt_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> SequencerReceiptBuilder<sequencer_receipt_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::ArchiveCommitment: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `archiveCommitment` field (required)
+    pub fn archive_commitment(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetArchiveCommitment<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::ConversationId: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `conversationId` field (required)
+    pub fn conversation_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetConversationId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::Generation: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `generation` field (required)
+    pub fn generation(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetGeneration<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::IssuedAtMs: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `issuedAtMs` field (required)
+    pub fn issued_at_ms(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetIssuedAtMs<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::Kid: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `kid` field (required)
+    pub fn kid(
+        mut self,
+        value: impl Into<S>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetKid<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::SenderDeviceId: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `senderDeviceId` field (required)
+    pub fn sender_device_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSenderDeviceId<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::SenderDid: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `senderDid` field (required)
+    pub fn sender_did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSenderDid<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::Seq: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `seq` field (required)
+    pub fn seq(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSeq<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::SequencerDid: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `sequencerDid` field (required)
+    pub fn sequencer_did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSequencerDid<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::Signature: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSignature<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
+    St::ArchiveCommitment: sequencer_receipt_state::IsSet,
+    St::ConversationId: sequencer_receipt_state::IsSet,
+    St::Generation: sequencer_receipt_state::IsSet,
+    St::IssuedAtMs: sequencer_receipt_state::IsSet,
+    St::Kid: sequencer_receipt_state::IsSet,
+    St::SenderDeviceId: sequencer_receipt_state::IsSet,
+    St::SenderDid: sequencer_receipt_state::IsSet,
+    St::Seq: sequencer_receipt_state::IsSet,
+    St::SequencerDid: sequencer_receipt_state::IsSet,
+    St::Signature: sequencer_receipt_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> SequencerReceipt<S> {
+        SequencerReceipt {
+            archive_commitment: self._fields.0.unwrap(),
+            conversation_id: self._fields.1.unwrap(),
+            generation: self._fields.2.unwrap(),
+            issued_at_ms: self._fields.3.unwrap(),
+            kid: self._fields.4.unwrap(),
+            sender_device_id: self._fields.5.unwrap(),
+            sender_did: self._fields.6.unwrap(),
+            seq: self._fields.7.unwrap(),
+            sequencer_did: self._fields.8.unwrap(),
+            signature: self._fields.9.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> SequencerReceipt<S> {
+        SequencerReceipt {
+            archive_commitment: self._fields.0.unwrap(),
+            conversation_id: self._fields.1.unwrap(),
+            generation: self._fields.2.unwrap(),
+            issued_at_ms: self._fields.3.unwrap(),
+            kid: self._fields.4.unwrap(),
+            sender_device_id: self._fields.5.unwrap(),
+            sender_did: self._fields.6.unwrap(),
+            seq: self._fields.7.unwrap(),
+            sequencer_did: self._fields.8.unwrap(),
+            signature: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }

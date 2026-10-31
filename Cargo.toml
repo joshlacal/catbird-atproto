@@ -5,7 +5,7 @@ edition = "2021"
 description = "Shared generated AT Protocol lexicon surface for Catbird Rust crates"
 
 [features]
-default = ["namespace-bluecatbird"]
+default = ["namespace-bluecatbird", "namespace-atproto-space"]
 namespace-atproto-space = []
 namespace-bluecatbird = []
 namespace-site-standard = []

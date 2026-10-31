@@ -5,7 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// Sender-encrypted messages for one conversation, stored once per conversation in the sender's repo inside the conversation space ([CB-15], [CB-20]). rkey = TID.
+/// Sender-encrypted messages for one conversation, stored once per conversation in the sender's repo inside the conversation space ([CB-15], [CB-20]). rkey = '<16-hex-first-seq>-<tid>' so listRecords(reverse=true) sorts strictly by MLS seq.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -375,10 +375,10 @@ fn lexicon_doc_blue_catbird_labyrinth_batch() -> jacquard_lexicon::lexicon::Lexi
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Sender-encrypted messages for one conversation, stored once per conversation in the sender's repo inside the conversation space ([CB-15], [CB-20]). rkey = TID.",
+                            "Sender-encrypted messages for one conversation, stored once per conversation in the sender's repo inside the conversation space ([CB-15], [CB-20]). rkey = '<16-hex-first-seq>-<tid>' so listRecords(reverse=true) sorts strictly by MLS seq.",
                         ),
                     ),
-                    key: Some(::jacquard_common::CowStr::new_static("tid")),
+                    key: Some(::jacquard_common::CowStr::new_static("any")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
                         required: Some(
                             vec![

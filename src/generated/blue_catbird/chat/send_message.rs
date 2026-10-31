@@ -36,6 +36,9 @@ pub struct SendMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub struct SendMessageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub entry: crate::generated::blue_catbird::chat::ApplicationEntry<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     #[serde(
         flatten,
         default,

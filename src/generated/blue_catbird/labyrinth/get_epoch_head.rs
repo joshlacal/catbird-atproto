@@ -27,7 +27,13 @@ pub struct GetEpochHead<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetEpochHeadOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// [Gate 6] Contiguous verified hash-chained EpochPublic headers from floorSeq..=epoch.epochNumber proving directory consistency.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub chain: core::option::Option<Vec<crate::generated::blue_catbird::labyrinth::EpochPublic<S>>>,
     pub epoch: crate::generated::blue_catbird::labyrinth::EpochPublic<S>,
+    /// Lowest epochNumber retained in the directory hash chain.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub floor_seq: core::option::Option<i64>,
     /// When mls-ds recorded it.
     pub received_at: jacquard_common::types::string::Datetime,
     #[serde(
