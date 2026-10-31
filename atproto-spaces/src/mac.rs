@@ -9,6 +9,7 @@ use subtle::ConstantTimeEq;
 type HmacSha256 = Hmac<Sha256>;
 
 pub const SPACE_MAC_HEADER_NAME: &str = "atproto-space-mac";
+pub const SPACE_WANT_MAC_HEADER_NAME: &str = "atproto-space-want-mac";
 pub const COMMIT_MAC_TYPE: &str = "atproto-space-repo";
 pub const RECORD_MAC_TYPE: &str = "atproto-space-record";
 pub const COMMIT_MAC_DOMAIN: &[u8] = b"atproto-space-repo-v1";
@@ -240,4 +241,84 @@ fn update_len_prefixed(mac: &mut HmacSha256, bytes: &[u8], field: &str) -> Resul
     mac.update(&len.to_be_bytes());
     mac.update(bytes);
     Ok(())
+}
+
+/// Format `Atproto-Space-Want-Mac` structured header (`type="...", ver=1, key_share="did:key:zDn..."`).
+pub fn format_want_mac_header(key_share_did_key: &str, mac_type: &str) -> Result<String> {
+    if key_share_did_key.is_empty()
+        || !key_share_did_key
+            .bytes()
+            .all(|b| (0x20..=0x7e).contains(&b))
+    {
+        return Err(SpacesError::MacMismatch(
+            "invalid key_share for Atproto-Space-Want-Mac".into(),
+        ));
+    }
+    let escaped = key_share_did_key.replace('\\', "\\\\").replace('"', "\\\"");
+    Ok(format!(
+        "type=\"{mac_type}\", ver=1, key_share=\"{escaped}\""
+    ))
+}
+
+/// Parse `Atproto-Space-Want-Mac` structured header and return `key_share` `did:key:zDn...`.
+pub fn parse_want_mac_header(header_value: &str, expected_type: &str) -> Result<String> {
+    if header_value.is_empty() || header_value.len() > 8192 {
+        return Err(SpacesError::MacMismatch(
+            "empty or oversized Atproto-Space-Want-Mac header".into(),
+        ));
+    }
+    let mut mac_type: Option<String> = None;
+    let mut ver: Option<u64> = None;
+    let mut key_share: Option<String> = None;
+
+    for member in header_value.split(',') {
+        let member = member.trim_matches([' ', '\t']);
+        let Some((k, raw_v)) = member.split_once('=') else {
+            return Err(SpacesError::MacMismatch(
+                "malformed Atproto-Space-Want-Mac member".into(),
+            ));
+        };
+        let k = k.trim_matches([' ', '\t']);
+        let raw_v = raw_v.trim_matches([' ', '\t']);
+        match k {
+            "type" => {
+                let s = raw_v
+                    .strip_prefix('"')
+                    .and_then(|s| s.strip_suffix('"'))
+                    .ok_or_else(|| {
+                        SpacesError::MacMismatch("Want-Mac type must be quoted".into())
+                    })?;
+                mac_type = Some(s.to_string());
+            }
+            "ver" => {
+                ver = Some(raw_v.parse().map_err(|_| {
+                    SpacesError::MacMismatch("Want-Mac ver must be integer".into())
+                })?);
+            }
+            "key_share" => {
+                let s = raw_v
+                    .strip_prefix('"')
+                    .and_then(|s| s.strip_suffix('"'))
+                    .ok_or_else(|| {
+                        SpacesError::MacMismatch("Want-Mac key_share must be quoted".into())
+                    })?;
+                if s.is_empty() {
+                    return Err(SpacesError::MacMismatch("empty key_share".into()));
+                }
+                key_share = Some(s.to_string());
+            }
+            _ => {
+                return Err(SpacesError::MacMismatch(
+                    "unknown key in Atproto-Space-Want-Mac".into(),
+                ));
+            }
+        }
+    }
+
+    if mac_type.as_deref() != Some(expected_type) || ver != Some(1) {
+        return Err(SpacesError::MacMismatch(
+            "Atproto-Space-Want-Mac type or ver mismatch".into(),
+        ));
+    }
+    key_share.ok_or_else(|| SpacesError::MacMismatch("missing key_share".into()))
 }

@@ -68,6 +68,7 @@ dependencies = [
  "hmac",
  "http",
  "ipld-core",
+ "jacquard-common",
  "k256",
  "multibase",
  "multihash",

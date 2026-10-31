@@ -94,7 +94,7 @@ fn rfc9180_p256_kem_encapsulate_and_decapsulate_roundtrip_and_vector() {
 #[test]
 fn commit_and_record_macs_verify_and_reject_tampering() {
     let secret = [0x42u8; 32];
-    let space = "at://did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11";
+    let space = "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11";
     let repo = "did:plc:alice00000000000000000000";
     let rev = "3l2xyz0000001";
     let data = [0xabu8; 32];
@@ -109,7 +109,7 @@ fn commit_and_record_macs_verify_and_reject_tampering() {
     assert!(verify_commit_mac(&secret, &commit_hdr, space, repo, rev, &bad_data).is_err());
     assert!(verify_commit_mac(&secret, &commit_hdr, space, "did:plc:mallory", rev, &data).is_err());
 
-    let uri = format!("at://{repo}/blue.catbird.labyrinth.batch/3l2xyz0000001?space={space}");
+    let uri = format!("{space}/{repo}/blue.catbird.labyrinth.batch/3l2xyz0000001");
     let cid = compute_dagcbor_cid(b"\xa1dtest");
     let record_mac = compute_record_mac(&secret, &uri, &cid.to_bytes()).expect("record mac");
     let record_hdr = format_record_mac_header(&record_mac);
@@ -238,7 +238,7 @@ fn verify_space_token_retries_once_on_rotated_did_web_key() {
         let now_sec = 1_762_000_000u64;
         let claims = SpaceTokenClaims {
             iss: "did:web:mls.catbird.blue".to_string(),
-            sub: "at://did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11"
+            sub: "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11"
                 .to_string(),
             aud: None,
             iat: now_sec,
@@ -281,7 +281,7 @@ fn verify_space_token_retries_once_on_rotated_did_web_key() {
 #[test]
 fn star_lite_roundtrips_canonical_sorted_records_and_rejects_violations() {
     let space =
-        "at://did:plc:alice00000000000000000000/blue.catbird.labyrinth.mailbox/labyrinth-mailbox";
+        "at://did:plc:alice00000000000000000000/space/blue.catbird.labyrinth.mailbox/labyrinth-mailbox";
     let repo = "did:plc:alice00000000000000000000";
     let rev = "3l2xyz0000009";
 
@@ -333,7 +333,7 @@ fn star_lite_roundtrips_canonical_sorted_records_and_rejects_violations() {
     assert_eq!(parsed.records[1].cid, cid_2);
 
     // Mismatched expected space or repo must fail
-    assert!(read_star_repo(&star_bytes, "at://did:plc:other/x.y.z/1", repo).is_err());
+    assert!(read_star_repo(&star_bytes, "at://did:plc:other/space/x.y.z/1", repo).is_err());
     assert!(read_star_repo(&star_bytes, space, "did:plc:other").is_err());
 
     // Unordered entries passed to write_star_repo must either sort or reject if raw stream is unsorted;

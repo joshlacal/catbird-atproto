@@ -3,11 +3,15 @@
 //! Designed to compile cleanly on both native targets and `wasm32-unknown-unknown`
 //! with zero `tokio` dependencies.
 
+pub mod credential_cache;
+pub mod did_resolver;
+pub mod host;
 pub mod http_signature;
 pub mod kem;
 pub mod lthash;
 pub mod mac;
 pub mod star;
+pub mod sync_engine;
 pub mod tokens;
 
 use thiserror::Error;
@@ -79,7 +83,7 @@ pub enum SpacesError {
 
 pub type Result<T> = std::result::Result<T, SpacesError>;
 
-/// Parsed `at://{authority}/{space_type}/{rkey}` Space URI.
+/// Parsed `at://{authority}/space/{space_type}/{rkey}` Space URI.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SpaceUri {
     pub raw: String,
@@ -89,6 +93,10 @@ pub struct SpaceUri {
 }
 
 impl SpaceUri {
+    pub fn new(authority: &str, space_type: &str, skey: &str) -> Result<Self> {
+        Self::parse(&format!("at://{authority}/space/{space_type}/{skey}"))
+    }
+
     pub fn parse(raw: &str) -> Result<Self> {
         if raw.is_empty()
             || raw.len() > 2048
@@ -102,21 +110,36 @@ impl SpaceUri {
             return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
         };
         let parts: Vec<&str> = rest.split('/').collect();
-        if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
+        if parts.len() != 4 || parts[1] != "space" || parts.iter().any(|p| p.is_empty()) {
             return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
         }
         let authority = parts[0];
-        let space_type = parts[1];
-        let rkey = parts[2];
+        let space_type = parts[2];
+        let rkey = parts[3];
         if !is_valid_did(authority) || !is_valid_nsid(space_type) || !is_valid_rkey(rkey) {
             return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
         }
+        jacquard_common::types::aturi::AtSpaceUri::new(
+            jacquard_common::deps::smol_str::SmolStr::from(raw),
+        )
+        .map_err(|_| SpacesError::InvalidSpaceUri(raw.to_string()))?;
         Ok(Self {
             raw: raw.to_string(),
             authority: authority.to_string(),
             space_type: space_type.to_string(),
             rkey: rkey.to_string(),
         })
+    }
+
+    /// Canonical `SpaceRecordURI` (`at://{authority}/space/{space_type}/{skey}/{author_did}/{collection}/{rkey}`).
+    pub fn record_uri(&self, author_did: &str, collection: &str, rkey: &str) -> Result<String> {
+        if !is_valid_did(author_did) || !is_valid_nsid(collection) || !is_valid_rkey(rkey) {
+            return Err(SpacesError::InvalidSpaceUri(format!(
+                "{}/{author_did}/{collection}/{rkey}",
+                self.raw
+            )));
+        }
+        Ok(format!("{}/{author_did}/{collection}/{rkey}", self.raw))
     }
 }
 
