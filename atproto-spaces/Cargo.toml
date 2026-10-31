@@ -1,0 +1,40 @@
+[package]
+name = "atproto-spaces"
+version = "0.1.0"
+edition = "2021"
+description = "WASM-compatible ATProto Spaces (Proposal 0016 / atproto#5187) cryptography, tokens, STAR-lite, sync engine, and SpaceHost"
+
+[features]
+default = ["send"]
+send = []
+
+[dependencies]
+async-trait = "0.1"
+base64 = "0.22"
+blake3 = "1"
+bytes = { version = "1", features = ["serde"] }
+catbird-atproto = { path = "..", default-features = false, features = ["namespace-atproto-space", "namespace-bluecatbird"] }
+ciborium = "0.2"
+cid = "0.11"
+hkdf = "0.12"
+hmac = "0.12"
+http = "1"
+ipld-core = "0.4"
+k256 = { version = "0.13", features = ["ecdsa", "jwk"] }
+multibase = "0.9"
+multihash = "0.19.3"
+p256 = { version = "0.13", features = ["ecdsa", "jwk", "pem", "ecdh"] }
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_bytes = "0.11"
+serde_ipld_dagcbor = "0.6"
+serde_json = "1"
+sha2 = "0.10"
+subtle = "2"
+thiserror = "1"
+url = "2"
+uuid = { version = "1", features = ["v4", "serde", "js"] }
+web-time = "1"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }

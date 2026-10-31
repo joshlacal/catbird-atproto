@@ -1,3 +1,6 @@
+[workspace]
+members = [".", "atproto-spaces"]
+
 [package]
 name = "catbird-atproto"
 version = "0.1.0"
