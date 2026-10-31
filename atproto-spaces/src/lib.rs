@@ -13,6 +13,7 @@ pub mod mac;
 pub mod star;
 pub mod sync_engine;
 pub mod tokens;
+pub mod vectors;
 
 use thiserror::Error;
 

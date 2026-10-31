@@ -32,6 +32,14 @@ pub struct VerifiedStarRecord {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StarCommitMetadata {
+    pub space: String,
+    pub repo: String,
+    pub rev: String,
+    pub data: [u8; 32],
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ParsedStarRepo {
     pub space: String,
     pub repo: String,
@@ -114,13 +122,22 @@ pub fn write_star_repo(
     Ok(out)
 }
 
-/// Parse and structurally validate a `STAR-lite` archive against `(expected_space, expected_repo)`.
-/// Note: Callers MUST verify `Atproto-Space-Mac` and compare `LtHash` commitment against `parsed.data`!
-pub fn read_star_repo(
+/// Parse and validate ONLY the leading `STAR-lite` metadata frame (`<= 64 KiB`) without
+/// deserializing any record frames, allowing callers to verify `Atproto-Space-Mac` FIRST.
+pub fn read_star_metadata(
     bytes: &[u8],
     expected_space: &str,
     expected_repo: &str,
-) -> Result<ParsedStarRepo> {
+) -> Result<StarCommitMetadata> {
+    let (meta, _) = read_star_metadata_with_cursor(bytes, expected_space, expected_repo)?;
+    Ok(meta)
+}
+
+fn read_star_metadata_with_cursor<'a>(
+    bytes: &'a [u8],
+    expected_space: &str,
+    expected_repo: &str,
+) -> Result<(StarCommitMetadata, &'a [u8])> {
     if bytes.len() < 4 || bytes.len() > MAX_STAR_ARCHIVE_BYTES {
         return Err(SpacesError::StarFormat(
             "truncated or oversized STAR-lite archive".into(),
@@ -133,6 +150,11 @@ pub fn read_star_repo(
     }
     let mut cursor = &bytes[4..];
     let meta_frame = read_varint_frame(&mut cursor)?;
+    if meta_frame.len() > 64 * 1024 {
+        return Err(SpacesError::StarFormat(
+            "STAR-lite metadata frame exceeds 64 KiB".into(),
+        ));
+    }
     validate_no_cbor_floats_and_canonical(meta_frame, true)?;
 
     let meta: StarMetadataOwned = serde_ipld_dagcbor::from_slice(meta_frame)
@@ -179,6 +201,27 @@ pub fn read_star_repo(
             "non-canonical or unknown-key STAR metadata DAG-CBOR".into(),
         ));
     }
+
+    Ok((
+        StarCommitMetadata {
+            space: meta.space,
+            repo: meta.repo,
+            rev: meta.rev,
+            data,
+        },
+        cursor,
+    ))
+}
+
+/// Parse and structurally validate a `STAR-lite` archive against `(expected_space, expected_repo)`.
+/// Note: Callers MUST verify `Atproto-Space-Mac` (e.g. via `read_star_metadata`) and compare `LtHash` commitment against `parsed.data`!
+pub fn read_star_repo(
+    bytes: &[u8],
+    expected_space: &str,
+    expected_repo: &str,
+) -> Result<ParsedStarRepo> {
+    let (meta, mut cursor) = read_star_metadata_with_cursor(bytes, expected_space, expected_repo)?;
+    let data = meta.data;
 
     let mut records = Vec::new();
     let mut prev_path: Option<String> = None;

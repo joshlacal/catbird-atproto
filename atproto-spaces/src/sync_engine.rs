@@ -17,7 +17,7 @@ use crate::mac::{
     format_want_mac_header, verify_commit_mac, verify_record_mac, COMMIT_MAC_TYPE, RECORD_MAC_TYPE,
     SPACE_MAC_HEADER_NAME, SPACE_WANT_MAC_HEADER_NAME,
 };
-use crate::star::{read_star_repo, validate_canonical_dagcbor_record};
+use crate::star::{read_star_metadata, read_star_repo, validate_canonical_dagcbor_record};
 use crate::{Result, SpaceUri, SpacesError};
 use catbird_atproto::com_atproto::space::get_record::GetRecordOutput;
 use catbird_atproto::com_atproto::space::list_records::ListRecordsOutput;
@@ -616,16 +616,17 @@ where
             .to_str()
             .map_err(|_| SpacesError::MacMismatch("non-ASCII Atproto-Space-Mac".into()))?;
 
-        let parsed = read_star_repo(&resp.body, space_uri, writer_did)?;
-        // Verify commit MAC BEFORE trusting parsed records or mutating state!
+        let meta = read_star_metadata(&resp.body, space_uri, writer_did)?;
+        // Verify commit MAC BEFORE deserializing record frames or mutating state!
         verify_commit_mac(
             &encap.shared_secret,
             mac_header,
             space_uri,
             writer_did,
-            &parsed.rev,
-            &parsed.data,
+            &meta.rev,
+            &meta.data,
         )?;
+        let parsed = read_star_repo(&resp.body, space_uri, writer_did)?;
 
         let mut rebuilt_lt = LtHash::empty();
         let mut rebuilt_cids = BTreeMap::new();

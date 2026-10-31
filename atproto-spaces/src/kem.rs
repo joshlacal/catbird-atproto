@@ -86,7 +86,7 @@ pub fn encapsulate_p256_deterministic(
     kem_context.extend_from_slice(enc_uncompressed.as_bytes());
     kem_context.extend_from_slice(pk_rm_uncompressed.as_bytes());
 
-    let shared_secret = extract_and_expand(&dh.raw_secret_bytes(), &kem_context)?;
+    let shared_secret = extract_and_expand(dh.raw_secret_bytes(), &kem_context)?;
     Ok(KemEncapsulation {
         shared_secret,
         key_share_did_key: encode_p256_did_key(&pk_e),
@@ -107,7 +107,7 @@ pub fn decapsulate_p256(secret: &SecretKey, key_share_did_key: &str) -> Result<[
     kem_context.extend_from_slice(enc_uncompressed.as_bytes());
     kem_context.extend_from_slice(pk_rm_uncompressed.as_bytes());
 
-    extract_and_expand(&dh.raw_secret_bytes(), &kem_context)
+    extract_and_expand(dh.raw_secret_bytes(), &kem_context)
 }
 
 fn extract_and_expand(dh: &[u8], kem_context: &[u8]) -> Result<[u8; 32]> {

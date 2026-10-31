@@ -2,30 +2,21 @@
 //! and Push Gateway lexicon bindings are generated in `catbird-atproto`.
 
 use catbird_atproto::blue_catbird::chat::{
-    acknowledge_entries::AcknowledgeEntries,
-    register_push_gateway::RegisterPushGateway,
-    relay_space_credential::RelaySpaceCredential,
-    relay_space_read::RelaySpaceRead,
+    acknowledge_entries::AcknowledgeEntries, register_push_gateway::RegisterPushGateway,
+    relay_space_credential::RelaySpaceCredential, relay_space_read::RelaySpaceRead,
     AccountDeletedEntry, ApplicationAad, ApplicationEntry, ConversationEntry, SequencerReceipt,
 };
 use catbird_atproto::blue_catbird::labyrinth::{
-    attachment_manifest::AttachmentManifest,
-    batch::Batch,
-    conversation,
-    conversation_policy::ConversationPolicy,
-    device::Device,
-    epoch_member::EpochMember,
-    mailbox,
-    otc_session::OtcSession,
-    virtual_device::VirtualDevice,
-    EpochPublic, SealedMessage,
+    attachment_manifest::AttachmentManifest, batch::Batch, conversation,
+    conversation_policy::ConversationPolicy, device::Device, epoch_member::EpochMember, mailbox,
+    otc_session::OtcSession, virtual_device::VirtualDevice, EpochPublic, SealedMessage,
 };
 use catbird_atproto::blue_catbird::push::{deliver::Deliver, register_key::RegisterKey};
 use catbird_atproto::com_atproto::space::{
     apply_writes::ApplyWrites, get_blob::GetBlob, get_repo::GetRepo,
     get_space_credential::GetSpaceCredential, list_repo_ops::ListRepoOps,
-    notify_credential_revoked::NotifyCredentialRevoked,
-    notify_space_deleted::NotifySpaceDeleted, remove_writer::RemoveWriter,
+    notify_credential_revoked::NotifyCredentialRevoked, notify_space_deleted::NotifySpaceDeleted,
+    remove_writer::RemoveWriter,
 };
 
 #[test]
