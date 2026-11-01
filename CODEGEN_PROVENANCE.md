@@ -44,9 +44,9 @@ The generator is mls-ds `codegen/` at `4f980cb51c8a9826c03eba4341db97d68091d567`
 
 | Input/output | Files | Aggregate SHA-256 |
 | --- | ---: | --- |
-| Petrel `generator/lexicons` | 441 | `a5c5fbc0a9c38ceb74192fa0aea31d93f73e381b3ddb02e55d73fef7f94e975d` |
-| PetrelCatbird `lexicons` | 189 | `a627cf74bcf876c954f79cbc4b3cab6618a1eed2401385655310575bf63e853f` |
-| Rust `src/generated` | 656 | `fa30c62726693ae02f750855015f51ea9667620c6ebc1b6adbefac2c81482320` |
+| Petrel `generator/lexicons` | 440 | `bb26f58ea428020fa9b2db848265dd09a9105af29f163fad8dc1e4521ccf1c42` |
+| PetrelCatbird `lexicons` | 202 | `4fa7a1d14c3f89ff25ddd147d6e8b746c753bd04fd74bf5900ecacb335d2dadf` |
+| Rust `src/generated` | 670 | `94a67cc19d7972b940498609315c61aa17f2a428de78dcee1984638c53390697` |
 
 The aggregates use the method described under the previous generation below.
 
