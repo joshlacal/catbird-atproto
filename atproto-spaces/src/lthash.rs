@@ -42,8 +42,8 @@ impl LtHash {
             )));
         }
         let mut lanes = [0u16; LTHASH_LANES];
-        for (i, chunk) in bytes.chunks_exact(2).enumerate() {
-            lanes[i] = u16::from_le_bytes([chunk[0], chunk[1]]);
+        for (i, chunk) in bytes.as_chunks::<2>().0.iter().enumerate() {
+            lanes[i] = u16::from_le_bytes(*chunk);
         }
         Ok(Self { lanes })
     }
@@ -55,8 +55,8 @@ impl LtHash {
             LTHASH_BYTES,
             "LtHash::add requires {LTHASH_BYTES} element bytes"
         );
-        for (lane, chunk) in self.lanes.iter_mut().zip(entry_bytes.chunks_exact(2)) {
-            let rhs = u16::from_le_bytes([chunk[0], chunk[1]]);
+        for (lane, chunk) in self.lanes.iter_mut().zip(entry_bytes.as_chunks::<2>().0) {
+            let rhs = u16::from_le_bytes(*chunk);
             *lane = lane.wrapping_add(rhs);
         }
     }
@@ -68,8 +68,8 @@ impl LtHash {
             LTHASH_BYTES,
             "LtHash::remove requires {LTHASH_BYTES} element bytes"
         );
-        for (lane, chunk) in self.lanes.iter_mut().zip(entry_bytes.chunks_exact(2)) {
-            let rhs = u16::from_le_bytes([chunk[0], chunk[1]]);
+        for (lane, chunk) in self.lanes.iter_mut().zip(entry_bytes.as_chunks::<2>().0) {
+            let rhs = u16::from_le_bytes(*chunk);
             *lane = lane.wrapping_sub(rhs);
         }
     }
