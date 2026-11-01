@@ -7,5 +7,7 @@
 pub mod bskychat;
 pub mod chat;
 pub mod circle;
+pub mod intel;
 pub mod labyrinth;
 pub mod mlsDS;
+pub mod onboarding;

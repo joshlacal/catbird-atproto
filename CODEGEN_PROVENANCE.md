@@ -30,7 +30,19 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (October 29 Spaces alpha, regenerated 2026-10-30)
+## Current generation (Community Intelligence & Onboarding lexicons, regenerated 2026-11-01)
+
+This generation adds the 8 `blue.catbird.intel.*` (`defs`, `listCommunities`, `getCommunity`) and `blue.catbird.onboarding.*` (`defs`, `getCatalog`, `getCalibrationSwipes`, `previewTimeline`, `solveBundle`) schemas from `PetrelCatbird` on top of the October 29 Spaces alpha corpus. `Petrel` `generator/lexicons` (`92b05b81`, 441 files) and the `mls-ds` `codegen/` generator (`2df124d6`) are unchanged.
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 441 | `a5c5fbc0a9c38ceb74192fa0aea31d93f73e381b3ddb02e55d73fef7f94e975d` |
+| PetrelCatbird `lexicons` | 197 | `511a42dc42aa7f450032eeca1672d455d31a843d28059770bffd979fb460192d` |
+| Rust `src/generated` | 664 | `f5e5ad746e5abdbbe25cea7f95a7429478683033c547cb8b79a455b0a4982571` |
+
+Only `src/generated/blue_catbird.rs` (+2 module exports), `src/generated/blue_catbird/intel.rs` + `src/generated/blue_catbird/intel/{get_community,list_communities}.rs`, and `src/generated/blue_catbird/onboarding.rs` + `src/generated/blue_catbird/onboarding/{get_calibration_swipes,get_catalog,preview_timeline,solve_bundle}.rs` are added (9 files, 9,972 insertions, 0 deletions); all existing 656 generated files remain byte-identical. `Scripts/regenerate.py check` verified all 664 generated files.
+
+## Previous generation (October 29 Spaces alpha, regenerated 2026-10-30)
 
 The lexicon corpus is Petrel `generator/lexicons` at `92b05b81966c07a2a7d3d96a68f9230dd7787c5d` (bookmark `claude/spaces-oct29-20261030`, merged as Petrel main `e5b6039b`, PR #36; lexicons identical). Its `com/atproto/{space,memberspace,managedspace,personalspace}` lexicons are JSON-equal to atproto `5d88b414` (npm `0.0.0-spaces-alpha-20261029171913`), and `com/atproto/simplespace` is gone. PetrelCatbird `lexicons` is unchanged from the previous generation (its tree at `3208d02e38e9b7b176d8c2cf46d1e92feb555974` has the same aggregate as `8672c80f`).
 
