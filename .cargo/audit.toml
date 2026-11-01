@@ -1,0 +1,8 @@
+# Clean-Slate Qualification Risk-Accepted Upstream Advisories (`docs/DECISIONS.md` · 2026-11-01)
+# All semver-compatible advisories (`rustls 0.23.46`, `rustls-webpki 0.103.16`) have been upgraded in `Cargo.lock`.
+[advisories]
+ignore = [
+    # crypto-bigint 0.5.5 via elliptic-curve 0.13.8 / p256 0.13.2 / k256 0.13.4 / jacquard-common 0.13.0.
+    # Upgrading to crypto-bigint >= 0.7.6 requires RustCrypto elliptic-curve/p256 0.14 (not yet released for jacquard).
+    "RUSTSEC-2026-0387",
+]
