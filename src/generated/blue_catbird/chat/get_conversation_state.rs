@@ -25,6 +25,8 @@ pub struct GetConversationState<S: jacquard_common::BosStr = jacquard_common::De
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetConversationStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Every accountDeletedEntry of this conversation in ascending seq, each exactly as sequenced with its sequencerAuthority. The sequencer, a group mirror and a C33 transport home serve it to any authenticated device of a current member DID, including a device that is not yet an MLS member and holds no entry entitlement, and to no one else. It survives ciphertext pruning. Clients verify each sequencerAuthority with the sequencer's #mls-receipt-1 key before hiding deletedDid's restored history.
+    pub account_deletions: Vec<crate::generated::blue_catbird::chat::AccountDeletedEntry<S>>,
     /// Open unexpired leaf recoveries bound to the current coordinate, visible only to an active concrete device leaf that may fulfill them. Excludes the requesting exact device, but includes other devices of the same DID. Ordered oldest first; successful fulfillment changes the coordinate and stale requests must be renewed. Absent on older servers; empty for logical participants without a current concrete leaf. This is separate from the exact-target-device getLeafRecoveryInbox and grants no additional application history.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pending_leaf_recovery_requests:

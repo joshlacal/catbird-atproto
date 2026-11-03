@@ -77,7 +77,7 @@ pub struct AccessEndedEvent<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
-/// [I13] Sequencer-recorded control entry indicating that deletedDid deleted their account and removed their writer repo from the conversation Space.
+/// [I13] Sequencer-recorded control entry indicating that deletedDid deleted their account and removed their writer repo from the conversation Space. sequencerAuthority is the sequencer's signed evidence of exactly this entry; every home stores and returns it verbatim.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -92,6 +92,7 @@ pub struct AccountDeletedEntry<S: jacquard_common::BosStr = jacquard_common::Def
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    pub sequencer_authority: crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>,
     pub sequencer_did: crate::generated::blue_catbird::chat::BareDid<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
@@ -100,6 +101,34 @@ pub struct AccountDeletedEntry<S: jacquard_common::BosStr = jacquard_common::Def
         flatten,
         default,
         deserialize_with = "deserialize_account_deleted_entry_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// [I13] The sequencer's attestation that it sequenced one exact accountDeletedEntry, signed with its dedicated receipt key and never its service-auth key. sequencerDid equals the entry's sequencerDid and keyId is exactly sequencerDid#mls-receipt-1, resolved from the sequencer's DID document. signature is low-S ES256 r||s over UTF8(catbird-mls-account-deletion-v1\0) followed by, for each of the entry's sequencerDid, conversationId, deletedDid, seq as decimal text, entryId and receivedAt (the deletion instant), its u32 big-endian UTF-8 byte length and its UTF-8 bytes. Clients verify it before hiding deletedDid's restored history.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AccountDeletionAuthority<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub key_id: S,
+    pub sequencer_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_account_deletion_authority_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1625,6 +1654,9 @@ pub struct DirectRequestAcceptanceProof<S: jacquard_common::BosStr = jacquard_co
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DirectRequestApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// I13 archive commitment bound to the encrypted initial application frame; the blinding frame nonce remains encrypted.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub archive_commitment: jacquard_common::deps::bytes::Bytes,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub context_hash: jacquard_common::deps::bytes::Bytes,
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
@@ -1864,9 +1896,18 @@ pub struct DirectRequestCreator<S: jacquard_common::BosStr = jacquard_common::De
 pub struct DirectRequestEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    /// True iff signedRequest is omitted because the opening ciphertext was pruned: every frozen-audience recipient device acknowledged it, its sender's account was deleted, the request expired, or it reached the 30-day retention ceiling; all other fields remain verbatim.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub payload_pruned: core::option::Option<bool>,
+    /// Authoritative signed published outcome, including its mandatory I13 proof, available before recipient Welcome import.
+    pub publication_receipt: crate::generated::blue_catbird::chat::SignedDirectRequestReceipt<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
-    pub signed_request: crate::generated::blue_catbird::chat::SignedDirectRequestPublication<S>,
+    pub sequencer_receipt: crate::generated::blue_catbird::chat::SequencerReceipt<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub signed_request: core::option::Option<
+        crate::generated::blue_catbird::chat::SignedDirectRequestPublication<S>,
+    >,
     #[serde(
         flatten,
         default,
@@ -2432,6 +2473,9 @@ pub type DirectRequestProfile<S = jacquard_common::DefaultStr> = S;
 pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    /// Required I13 commitment, repeated in the initial private MLS application AAD.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub archive_commitment: jacquard_common::deps::bytes::Bytes,
     pub artifacts: crate::generated::blue_catbird::chat::DirectRequestBootstrapArtifacts<S>,
     pub auth_generation: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -2490,6 +2534,7 @@ pub struct DirectRequestPublishedReceipt<S: jacquard_common::BosStr = jacquard_c
     pub request_digest: jacquard_common::deps::bytes::Bytes,
     pub request_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub request_kind: S,
+    pub sequencer_receipt: crate::generated::blue_catbird::chat::SequencerReceipt<S>,
     #[serde(
         flatten,
         default,
@@ -7883,6 +7928,56 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     path: jacquard_lexicon::validation::ValidationPath::from_field("seq"),
                     min: 1i64,
                     actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.sequencer_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("sequencer_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.sequencer_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("sequencer_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for AccountDeletionAuthority<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "accountDeletionAuthority"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 320usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 320usize,
+                    actual: <str>::len(value.as_ref()),
                 });
             }
         }
@@ -25013,7 +25108,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "[I13] Sequencer-recorded control entry indicating that deletedDid deleted their account and removed their writer repo from the conversation Space.",
+                            "[I13] Sequencer-recorded control entry indicating that deletedDid deleted their account and removed their writer repo from the conversation Space. sequencerAuthority is the sequencer's signed evidence of exactly this entry; every home stores and returns it verbatim.",
                         ),
                     ),
                     required: Some(
@@ -25023,6 +25118,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("deletedDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerAuthority"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("receivedAt")
                         ],
                     ),
@@ -25078,6 +25174,70 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                 minimum: Some(1i64),
                                 maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerAuthority",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#accountDeletionAuthority",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signature",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "accountDeletionAuthority",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "[I13] The sequencer's attestation that it sequenced one exact accountDeletedEntry, signed with its dedicated receipt key and never its service-auth key. sequencerDid equals the entry's sequencerDid and keyId is exactly sequencerDid#mls-receipt-1, resolved from the sequencer's DID document. signature is low-S ES256 r||s over UTF8(catbird-mls-account-deletion-v1\\0) followed by, for each of the entry's sequencerDid, conversationId, deletedDid, seq as decimal text, entryId and receivedAt (the deletion instant), its u32 big-endian UTF-8 byte length and its UTF-8 bytes. Clients verify it before hiding deletedDid's restored history.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("keyId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "keyId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                max_length: Some(320usize),
                                 ..Default::default()
                             }),
                         );
@@ -29517,10 +29677,25 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("contextHash"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("coordinates"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "archiveCommitment",
+                            ),
                         ]),
                         properties: {
                             #[allow(unused_mut)]
                             let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "archiveCommitment",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contextHash",
@@ -30265,86 +30440,117 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("directRequestEntry"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "directRequestEntry",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("entryId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("conversationId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("receivedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerReceipt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("publicationReceipt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signedRequest"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("receivedAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "conversationId",
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#operationId",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#operationId",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "entryId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#operationId",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("entryId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#operationId",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "payloadPruned",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "publicationReceipt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Authoritative signed published outcome, including its mandatory I13 proof, available before recipient Welcome import.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "receivedAt",
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#signedDirectRequestReceipt")
+                                ],
+                                closed: Some(true),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "receivedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#canonicalDatetime",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerReceipt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#sequencerReceipt",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        minimum: Some(1i64),
-                                        maximum: Some(9007199254740991i64),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signedRequest",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#signedDirectRequestPublication",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "signedRequest",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#signedDirectRequestPublication",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("directRequestErrorCode"),
@@ -31957,6 +32163,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "preparationRequestDigest",
                             ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "archiveCommitment",
+                            ),
                         ]),
                         properties: {
                             #[allow(unused_mut)]
@@ -31977,6 +32186,18 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
                                         r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "archiveCommitment",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -32220,6 +32441,9 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 "authGeneration",
                             ),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("requestKind"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerReceipt",
+                            ),
                         ]),
                         properties: {
                             #[allow(unused_mut)]
@@ -32360,6 +32584,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -43633,6 +43870,7 @@ pub mod account_deleted_entry_state {
         type EntryId;
         type ReceivedAt;
         type Seq;
+        type SequencerAuthority;
         type SequencerDid;
     }
     /// Empty state - all required fields are unset
@@ -43644,6 +43882,7 @@ pub mod account_deleted_entry_state {
         type EntryId = Unset;
         type ReceivedAt = Unset;
         type Seq = Unset;
+        type SequencerAuthority = Unset;
         type SequencerDid = Unset;
     }
     ///State transition - sets the `conversation_id` field to Set
@@ -43655,6 +43894,7 @@ pub mod account_deleted_entry_state {
         type EntryId = St::EntryId;
         type ReceivedAt = St::ReceivedAt;
         type Seq = St::Seq;
+        type SequencerAuthority = St::SequencerAuthority;
         type SequencerDid = St::SequencerDid;
     }
     ///State transition - sets the `deleted_did` field to Set
@@ -43666,6 +43906,7 @@ pub mod account_deleted_entry_state {
         type EntryId = St::EntryId;
         type ReceivedAt = St::ReceivedAt;
         type Seq = St::Seq;
+        type SequencerAuthority = St::SequencerAuthority;
         type SequencerDid = St::SequencerDid;
     }
     ///State transition - sets the `entry_id` field to Set
@@ -43677,6 +43918,7 @@ pub mod account_deleted_entry_state {
         type EntryId = Set<members::entry_id>;
         type ReceivedAt = St::ReceivedAt;
         type Seq = St::Seq;
+        type SequencerAuthority = St::SequencerAuthority;
         type SequencerDid = St::SequencerDid;
     }
     ///State transition - sets the `received_at` field to Set
@@ -43688,6 +43930,7 @@ pub mod account_deleted_entry_state {
         type EntryId = St::EntryId;
         type ReceivedAt = Set<members::received_at>;
         type Seq = St::Seq;
+        type SequencerAuthority = St::SequencerAuthority;
         type SequencerDid = St::SequencerDid;
     }
     ///State transition - sets the `seq` field to Set
@@ -43699,6 +43942,19 @@ pub mod account_deleted_entry_state {
         type EntryId = St::EntryId;
         type ReceivedAt = St::ReceivedAt;
         type Seq = Set<members::seq>;
+        type SequencerAuthority = St::SequencerAuthority;
+        type SequencerDid = St::SequencerDid;
+    }
+    ///State transition - sets the `sequencer_authority` field to Set
+    pub struct SetSequencerAuthority<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSequencerAuthority<St> {}
+    impl<St: State> State for SetSequencerAuthority<St> {
+        type ConversationId = St::ConversationId;
+        type DeletedDid = St::DeletedDid;
+        type EntryId = St::EntryId;
+        type ReceivedAt = St::ReceivedAt;
+        type Seq = St::Seq;
+        type SequencerAuthority = Set<members::sequencer_authority>;
         type SequencerDid = St::SequencerDid;
     }
     ///State transition - sets the `sequencer_did` field to Set
@@ -43710,6 +43966,7 @@ pub mod account_deleted_entry_state {
         type EntryId = St::EntryId;
         type ReceivedAt = St::ReceivedAt;
         type Seq = St::Seq;
+        type SequencerAuthority = St::SequencerAuthority;
         type SequencerDid = Set<members::sequencer_did>;
     }
     /// Marker types for field names
@@ -43725,6 +43982,8 @@ pub mod account_deleted_entry_state {
         pub struct received_at(());
         ///Marker type for the `seq` field
         pub struct seq(());
+        ///Marker type for the `sequencer_authority` field
+        pub struct sequencer_authority(());
         ///Marker type for the `sequencer_did` field
         pub struct sequencer_did(());
     }
@@ -43742,6 +44001,7 @@ pub struct AccountDeletedEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
@@ -43769,7 +44029,7 @@ impl AccountDeletedEntryBuilder<account_deleted_entry_state::Empty, jacquard_com
     pub fn new() -> Self {
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -43780,7 +44040,7 @@ impl<S: jacquard_common::BosStr> AccountDeletedEntryBuilder<account_deleted_entr
     pub fn builder() -> Self {
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -43884,6 +44144,25 @@ where
 impl<St, S: jacquard_common::BosStr> AccountDeletedEntryBuilder<St, S>
 where
     St: account_deleted_entry_state::State,
+    St::SequencerAuthority: account_deleted_entry_state::IsUnset,
+{
+    /// Set the `sequencerAuthority` field (required)
+    pub fn sequencer_authority(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>>,
+    ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSequencerAuthority<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        AccountDeletedEntryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletedEntryBuilder<St, S>
+where
+    St: account_deleted_entry_state::State,
     St::SequencerDid: account_deleted_entry_state::IsUnset,
 {
     /// Set the `sequencerDid` field (required)
@@ -43891,7 +44170,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSequencerDid<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -43908,12 +44187,12 @@ impl<St: account_deleted_entry_state::State, S: jacquard_common::BosStr>
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.6 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `signature` field to an Option value (optional)
     pub fn maybe_signature(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.6 = value;
+        self._fields.7 = value;
         self
     }
 }
@@ -43926,6 +44205,7 @@ where
     St::EntryId: account_deleted_entry_state::IsSet,
     St::ReceivedAt: account_deleted_entry_state::IsSet,
     St::Seq: account_deleted_entry_state::IsSet,
+    St::SequencerAuthority: account_deleted_entry_state::IsSet,
     St::SequencerDid: account_deleted_entry_state::IsSet,
 {
     /// Build the final struct.
@@ -43936,8 +44216,9 @@ where
             entry_id: self._fields.2.unwrap(),
             received_at: self._fields.3.unwrap(),
             seq: self._fields.4.unwrap(),
-            sequencer_did: self._fields.5.unwrap(),
-            signature: self._fields.6,
+            sequencer_authority: self._fields.5.unwrap(),
+            sequencer_did: self._fields.6.unwrap(),
+            signature: self._fields.7,
             extra_data: Default::default(),
         }
     }
@@ -43955,8 +44236,244 @@ where
             entry_id: self._fields.2.unwrap(),
             received_at: self._fields.3.unwrap(),
             seq: self._fields.4.unwrap(),
-            sequencer_did: self._fields.5.unwrap(),
-            signature: self._fields.6,
+            sequencer_authority: self._fields.5.unwrap(),
+            sequencer_did: self._fields.6.unwrap(),
+            signature: self._fields.7,
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_account_deletion_authority_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod account_deletion_authority_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type KeyId;
+        type SequencerDid;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type KeyId = Unset;
+        type SequencerDid = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `key_id` field to Set
+    pub struct SetKeyId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyId<St> {}
+    impl<St: State> State for SetKeyId<St> {
+        type KeyId = Set<members::key_id>;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sequencer_did` field to Set
+    pub struct SetSequencerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSequencerDid<St> {}
+    impl<St: State> State for SetSequencerDid<St> {
+        type KeyId = St::KeyId;
+        type SequencerDid = Set<members::sequencer_did>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type KeyId = St::KeyId;
+        type SequencerDid = St::SequencerDid;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `key_id` field
+        pub struct key_id(());
+        ///Marker type for the `sequencer_did` field
+        pub struct sequencer_did(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct AccountDeletionAuthorityBuilder<
+    St: account_deletion_authority_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl AccountDeletionAuthority<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> AccountDeletionAuthorityBuilder<
+        account_deletion_authority_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        AccountDeletionAuthorityBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> AccountDeletionAuthority<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> AccountDeletionAuthorityBuilder<account_deletion_authority_state::Empty, S>
+    {
+        AccountDeletionAuthorityBuilder::builder()
+    }
+}
+
+impl
+    AccountDeletionAuthorityBuilder<
+        account_deletion_authority_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        AccountDeletionAuthorityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    AccountDeletionAuthorityBuilder<account_deletion_authority_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        AccountDeletionAuthorityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletionAuthorityBuilder<St, S>
+where
+    St: account_deletion_authority_state::State,
+    St::KeyId: account_deletion_authority_state::IsUnset,
+{
+    /// Set the `keyId` field (required)
+    pub fn key_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> AccountDeletionAuthorityBuilder<account_deletion_authority_state::SetKeyId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        AccountDeletionAuthorityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletionAuthorityBuilder<St, S>
+where
+    St: account_deletion_authority_state::State,
+    St::SequencerDid: account_deletion_authority_state::IsUnset,
+{
+    /// Set the `sequencerDid` field (required)
+    pub fn sequencer_did(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> AccountDeletionAuthorityBuilder<account_deletion_authority_state::SetSequencerDid<St>, S>
+    {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        AccountDeletionAuthorityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletionAuthorityBuilder<St, S>
+where
+    St: account_deletion_authority_state::State,
+    St::Signature: account_deletion_authority_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> AccountDeletionAuthorityBuilder<account_deletion_authority_state::SetSignature<St>, S>
+    {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        AccountDeletionAuthorityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletionAuthorityBuilder<St, S>
+where
+    St: account_deletion_authority_state::State,
+    St::KeyId: account_deletion_authority_state::IsSet,
+    St::SequencerDid: account_deletion_authority_state::IsSet,
+    St::Signature: account_deletion_authority_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> AccountDeletionAuthority<S> {
+        AccountDeletionAuthority {
+            key_id: self._fields.0.unwrap(),
+            sequencer_did: self._fields.1.unwrap(),
+            signature: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> AccountDeletionAuthority<S> {
+        AccountDeletionAuthority {
+            key_id: self._fields.0.unwrap(),
+            sequencer_did: self._fields.1.unwrap(),
+            signature: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -61145,6 +61662,7 @@ pub mod direct_request_application_aad_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ArchiveCommitment;
         type ContextHash;
         type Coordinates;
         type MessageId;
@@ -61154,15 +61672,27 @@ pub mod direct_request_application_aad_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ArchiveCommitment = Unset;
         type ContextHash = Unset;
         type Coordinates = Unset;
         type MessageId = Unset;
         type ProtocolVersion = Unset;
     }
+    ///State transition - sets the `archive_commitment` field to Set
+    pub struct SetArchiveCommitment<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetArchiveCommitment<St> {}
+    impl<St: State> State for SetArchiveCommitment<St> {
+        type ArchiveCommitment = Set<members::archive_commitment>;
+        type ContextHash = St::ContextHash;
+        type Coordinates = St::Coordinates;
+        type MessageId = St::MessageId;
+        type ProtocolVersion = St::ProtocolVersion;
+    }
     ///State transition - sets the `context_hash` field to Set
     pub struct SetContextHash<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetContextHash<St> {}
     impl<St: State> State for SetContextHash<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
         type ContextHash = Set<members::context_hash>;
         type Coordinates = St::Coordinates;
         type MessageId = St::MessageId;
@@ -61172,6 +61702,7 @@ pub mod direct_request_application_aad_state {
     pub struct SetCoordinates<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetCoordinates<St> {}
     impl<St: State> State for SetCoordinates<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
         type ContextHash = St::ContextHash;
         type Coordinates = Set<members::coordinates>;
         type MessageId = St::MessageId;
@@ -61181,6 +61712,7 @@ pub mod direct_request_application_aad_state {
     pub struct SetMessageId<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetMessageId<St> {}
     impl<St: State> State for SetMessageId<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
         type ContextHash = St::ContextHash;
         type Coordinates = St::Coordinates;
         type MessageId = Set<members::message_id>;
@@ -61190,6 +61722,7 @@ pub mod direct_request_application_aad_state {
     pub struct SetProtocolVersion<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetProtocolVersion<St> {}
     impl<St: State> State for SetProtocolVersion<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
         type ContextHash = St::ContextHash;
         type Coordinates = St::Coordinates;
         type MessageId = St::MessageId;
@@ -61198,6 +61731,8 @@ pub mod direct_request_application_aad_state {
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `archive_commitment` field
+        pub struct archive_commitment(());
         ///Marker type for the `context_hash` field
         pub struct context_hash(());
         ///Marker type for the `coordinates` field
@@ -61216,6 +61751,7 @@ pub struct DirectRequestApplicationAadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
@@ -61252,7 +61788,7 @@ impl
     pub fn new() -> Self {
         DirectRequestApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -61265,7 +61801,29 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         DirectRequestApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestApplicationAadBuilder<St, S>
+where
+    St: direct_request_application_aad_state::State,
+    St::ArchiveCommitment: direct_request_application_aad_state::IsUnset,
+{
+    /// Set the `archiveCommitment` field (required)
+    pub fn archive_commitment(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DirectRequestApplicationAadBuilder<
+        direct_request_application_aad_state::SetArchiveCommitment<St>,
+        S,
+    > {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DirectRequestApplicationAadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
     }
@@ -61284,7 +61842,7 @@ where
         direct_request_application_aad_state::SetContextHash<St>,
         S,
     > {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         DirectRequestApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -61306,7 +61864,7 @@ where
         direct_request_application_aad_state::SetCoordinates<St>,
         S,
     > {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         DirectRequestApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -61326,7 +61884,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
     ) -> DirectRequestApplicationAadBuilder<direct_request_application_aad_state::SetMessageId<St>, S>
     {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         DirectRequestApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -61348,7 +61906,7 @@ where
         direct_request_application_aad_state::SetProtocolVersion<St>,
         S,
     > {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         DirectRequestApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -61360,6 +61918,7 @@ where
 impl<St, S: jacquard_common::BosStr> DirectRequestApplicationAadBuilder<St, S>
 where
     St: direct_request_application_aad_state::State,
+    St::ArchiveCommitment: direct_request_application_aad_state::IsSet,
     St::ContextHash: direct_request_application_aad_state::IsSet,
     St::Coordinates: direct_request_application_aad_state::IsSet,
     St::MessageId: direct_request_application_aad_state::IsSet,
@@ -61368,10 +61927,11 @@ where
     /// Build the final struct.
     pub fn build(self) -> DirectRequestApplicationAad<S> {
         DirectRequestApplicationAad {
-            context_hash: self._fields.0.unwrap(),
-            coordinates: self._fields.1.unwrap(),
-            message_id: self._fields.2.unwrap(),
-            protocol_version: self._fields.3.unwrap(),
+            archive_commitment: self._fields.0.unwrap(),
+            context_hash: self._fields.1.unwrap(),
+            coordinates: self._fields.2.unwrap(),
+            message_id: self._fields.3.unwrap(),
+            protocol_version: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -61384,10 +61944,11 @@ where
         >,
     ) -> DirectRequestApplicationAad<S> {
         DirectRequestApplicationAad {
-            context_hash: self._fields.0.unwrap(),
-            coordinates: self._fields.1.unwrap(),
-            message_id: self._fields.2.unwrap(),
-            protocol_version: self._fields.3.unwrap(),
+            archive_commitment: self._fields.0.unwrap(),
+            context_hash: self._fields.1.unwrap(),
+            coordinates: self._fields.2.unwrap(),
+            message_id: self._fields.3.unwrap(),
+            protocol_version: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -64200,9 +64761,10 @@ pub mod direct_request_entry_state {
     pub trait State: sealed::Sealed {
         type ConversationId;
         type EntryId;
+        type PublicationReceipt;
         type ReceivedAt;
         type Seq;
-        type SignedRequest;
+        type SequencerReceipt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
@@ -64210,9 +64772,10 @@ pub mod direct_request_entry_state {
     impl State for Empty {
         type ConversationId = Unset;
         type EntryId = Unset;
+        type PublicationReceipt = Unset;
         type ReceivedAt = Unset;
         type Seq = Unset;
-        type SignedRequest = Unset;
+        type SequencerReceipt = Unset;
     }
     ///State transition - sets the `conversation_id` field to Set
     pub struct SetConversationId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -64220,9 +64783,10 @@ pub mod direct_request_entry_state {
     impl<St: State> State for SetConversationId<St> {
         type ConversationId = Set<members::conversation_id>;
         type EntryId = St::EntryId;
+        type PublicationReceipt = St::PublicationReceipt;
         type ReceivedAt = St::ReceivedAt;
         type Seq = St::Seq;
-        type SignedRequest = St::SignedRequest;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `entry_id` field to Set
     pub struct SetEntryId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -64230,9 +64794,21 @@ pub mod direct_request_entry_state {
     impl<St: State> State for SetEntryId<St> {
         type ConversationId = St::ConversationId;
         type EntryId = Set<members::entry_id>;
+        type PublicationReceipt = St::PublicationReceipt;
         type ReceivedAt = St::ReceivedAt;
         type Seq = St::Seq;
-        type SignedRequest = St::SignedRequest;
+        type SequencerReceipt = St::SequencerReceipt;
+    }
+    ///State transition - sets the `publication_receipt` field to Set
+    pub struct SetPublicationReceipt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPublicationReceipt<St> {}
+    impl<St: State> State for SetPublicationReceipt<St> {
+        type ConversationId = St::ConversationId;
+        type EntryId = St::EntryId;
+        type PublicationReceipt = Set<members::publication_receipt>;
+        type ReceivedAt = St::ReceivedAt;
+        type Seq = St::Seq;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `received_at` field to Set
     pub struct SetReceivedAt<St: State = Empty>(PhantomData<fn() -> St>);
@@ -64240,9 +64816,10 @@ pub mod direct_request_entry_state {
     impl<St: State> State for SetReceivedAt<St> {
         type ConversationId = St::ConversationId;
         type EntryId = St::EntryId;
+        type PublicationReceipt = St::PublicationReceipt;
         type ReceivedAt = Set<members::received_at>;
         type Seq = St::Seq;
-        type SignedRequest = St::SignedRequest;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `seq` field to Set
     pub struct SetSeq<St: State = Empty>(PhantomData<fn() -> St>);
@@ -64250,19 +64827,21 @@ pub mod direct_request_entry_state {
     impl<St: State> State for SetSeq<St> {
         type ConversationId = St::ConversationId;
         type EntryId = St::EntryId;
+        type PublicationReceipt = St::PublicationReceipt;
         type ReceivedAt = St::ReceivedAt;
         type Seq = Set<members::seq>;
-        type SignedRequest = St::SignedRequest;
+        type SequencerReceipt = St::SequencerReceipt;
     }
-    ///State transition - sets the `signed_request` field to Set
-    pub struct SetSignedRequest<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetSignedRequest<St> {}
-    impl<St: State> State for SetSignedRequest<St> {
+    ///State transition - sets the `sequencer_receipt` field to Set
+    pub struct SetSequencerReceipt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSequencerReceipt<St> {}
+    impl<St: State> State for SetSequencerReceipt<St> {
         type ConversationId = St::ConversationId;
         type EntryId = St::EntryId;
+        type PublicationReceipt = St::PublicationReceipt;
         type ReceivedAt = St::ReceivedAt;
         type Seq = St::Seq;
-        type SignedRequest = Set<members::signed_request>;
+        type SequencerReceipt = Set<members::sequencer_receipt>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
@@ -64271,12 +64850,14 @@ pub mod direct_request_entry_state {
         pub struct conversation_id(());
         ///Marker type for the `entry_id` field
         pub struct entry_id(());
+        ///Marker type for the `publication_receipt` field
+        pub struct publication_receipt(());
         ///Marker type for the `received_at` field
         pub struct received_at(());
         ///Marker type for the `seq` field
         pub struct seq(());
-        ///Marker type for the `signed_request` field
-        pub struct signed_request(());
+        ///Marker type for the `sequencer_receipt` field
+        pub struct sequencer_receipt(());
     }
 }
 
@@ -64289,8 +64870,11 @@ pub struct DirectRequestEntryBuilder<
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
+        core::option::Option<bool>,
+        core::option::Option<crate::generated::blue_catbird::chat::SignedDirectRequestReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<
             crate::generated::blue_catbird::chat::SignedDirectRequestPublication<S>,
         >,
@@ -64319,7 +64903,7 @@ impl DirectRequestEntryBuilder<direct_request_entry_state::Empty, jacquard_commo
     pub fn new() -> Self {
         DirectRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -64330,7 +64914,7 @@ impl<S: jacquard_common::BosStr> DirectRequestEntryBuilder<direct_request_entry_
     pub fn builder() -> Self {
         DirectRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -64374,6 +64958,40 @@ where
     }
 }
 
+impl<St: direct_request_entry_state::State, S: jacquard_common::BosStr>
+    DirectRequestEntryBuilder<St, S>
+{
+    /// Set the `payloadPruned` field (optional)
+    pub fn payload_pruned(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `payloadPruned` field to an Option value (optional)
+    pub fn maybe_payload_pruned(mut self, value: Option<bool>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestEntryBuilder<St, S>
+where
+    St: direct_request_entry_state::State,
+    St::PublicationReceipt: direct_request_entry_state::IsUnset,
+{
+    /// Set the `publicationReceipt` field (required)
+    pub fn publication_receipt(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::SignedDirectRequestReceipt<S>>,
+    ) -> DirectRequestEntryBuilder<direct_request_entry_state::SetPublicationReceipt<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        DirectRequestEntryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> DirectRequestEntryBuilder<St, S>
 where
     St: direct_request_entry_state::State,
@@ -64384,7 +65002,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     ) -> DirectRequestEntryBuilder<direct_request_entry_state::SetReceivedAt<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         DirectRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -64403,7 +65021,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> DirectRequestEntryBuilder<direct_request_entry_state::SetSeq<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         DirectRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -64415,19 +65033,42 @@ where
 impl<St, S: jacquard_common::BosStr> DirectRequestEntryBuilder<St, S>
 where
     St: direct_request_entry_state::State,
-    St::SignedRequest: direct_request_entry_state::IsUnset,
+    St::SequencerReceipt: direct_request_entry_state::IsUnset,
 {
-    /// Set the `signedRequest` field (required)
-    pub fn signed_request(
+    /// Set the `sequencerReceipt` field (required)
+    pub fn sequencer_receipt(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::SignedDirectRequestPublication<S>>,
-    ) -> DirectRequestEntryBuilder<direct_request_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> DirectRequestEntryBuilder<direct_request_entry_state::SetSequencerReceipt<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         DirectRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: direct_request_entry_state::State, S: jacquard_common::BosStr>
+    DirectRequestEntryBuilder<St, S>
+{
+    /// Set the `signedRequest` field (optional)
+    pub fn signed_request(
+        mut self,
+        value: impl Into<
+            Option<crate::generated::blue_catbird::chat::SignedDirectRequestPublication<S>>,
+        >,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `signedRequest` field to an Option value (optional)
+    pub fn maybe_signed_request(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SignedDirectRequestPublication<S>>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
     }
 }
 
@@ -64436,18 +65077,22 @@ where
     St: direct_request_entry_state::State,
     St::ConversationId: direct_request_entry_state::IsSet,
     St::EntryId: direct_request_entry_state::IsSet,
+    St::PublicationReceipt: direct_request_entry_state::IsSet,
     St::ReceivedAt: direct_request_entry_state::IsSet,
     St::Seq: direct_request_entry_state::IsSet,
-    St::SignedRequest: direct_request_entry_state::IsSet,
+    St::SequencerReceipt: direct_request_entry_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> DirectRequestEntry<S> {
         DirectRequestEntry {
             conversation_id: self._fields.0.unwrap(),
             entry_id: self._fields.1.unwrap(),
-            received_at: self._fields.2.unwrap(),
-            seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            payload_pruned: self._fields.2,
+            publication_receipt: self._fields.3.unwrap(),
+            received_at: self._fields.4.unwrap(),
+            seq: self._fields.5.unwrap(),
+            sequencer_receipt: self._fields.6.unwrap(),
+            signed_request: self._fields.7,
             extra_data: Default::default(),
         }
     }
@@ -64462,9 +65107,12 @@ where
         DirectRequestEntry {
             conversation_id: self._fields.0.unwrap(),
             entry_id: self._fields.1.unwrap(),
-            received_at: self._fields.2.unwrap(),
-            seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            payload_pruned: self._fields.2,
+            publication_receipt: self._fields.3.unwrap(),
+            received_at: self._fields.4.unwrap(),
+            seq: self._fields.5.unwrap(),
+            sequencer_receipt: self._fields.6.unwrap(),
+            signed_request: self._fields.7,
             extra_data: Some(extra_data),
         }
     }
@@ -70806,6 +71454,7 @@ pub mod direct_request_publication_body_state {
     pub trait State: sealed::Sealed {
         type ActorDeviceId;
         type ActorDid;
+        type ArchiveCommitment;
         type Artifacts;
         type AuthGeneration;
         type ContextHash;
@@ -70831,6 +71480,7 @@ pub mod direct_request_publication_body_state {
     impl State for Empty {
         type ActorDeviceId = Unset;
         type ActorDid = Unset;
+        type ArchiveCommitment = Unset;
         type Artifacts = Unset;
         type AuthGeneration = Unset;
         type ContextHash = Unset;
@@ -70856,6 +71506,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetActorDeviceId<St> {
         type ActorDeviceId = Set<members::actor_device_id>;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -70881,6 +71532,33 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetActorDid<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = Set<members::actor_did>;
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type Artifacts = St::Artifacts;
+        type AuthGeneration = St::AuthGeneration;
+        type ContextHash = St::ContextHash;
+        type ConversationId = St::ConversationId;
+        type FirstMessageId = St::FirstMessageId;
+        type IdempotencyKey = St::IdempotencyKey;
+        type ImportUntil = St::ImportUntil;
+        type KeyId = St::KeyId;
+        type Next = St::Next;
+        type Origin = St::Origin;
+        type PreparationDigest = St::PreparationDigest;
+        type PreparationRequestDigest = St::PreparationRequestDigest;
+        type Profile = St::Profile;
+        type ProtocolVersion = St::ProtocolVersion;
+        type RecipientDid = St::RecipientDid;
+        type RequestId = St::RequestId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `archive_commitment` field to Set
+    pub struct SetArchiveCommitment<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetArchiveCommitment<St> {}
+    impl<St: State> State for SetArchiveCommitment<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type ArchiveCommitment = Set<members::archive_commitment>;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -70906,6 +71584,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetArtifacts<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = Set<members::artifacts>;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -70931,6 +71610,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetAuthGeneration<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = Set<members::auth_generation>;
         type ContextHash = St::ContextHash;
@@ -70956,6 +71636,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetContextHash<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = Set<members::context_hash>;
@@ -70981,6 +71662,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetConversationId<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71006,6 +71688,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetFirstMessageId<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71031,6 +71714,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetIdempotencyKey<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71056,6 +71740,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetImportUntil<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71081,6 +71766,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetKeyId<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71106,6 +71792,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetNext<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71131,6 +71818,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetOrigin<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71156,6 +71844,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetPreparationDigest<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71181,6 +71870,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetPreparationRequestDigest<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71206,6 +71896,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetProfile<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71231,6 +71922,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetProtocolVersion<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71256,6 +71948,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetRecipientDid<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71281,6 +71974,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetRequestId<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71306,6 +72000,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetSignatureDomain<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71331,6 +72026,7 @@ pub mod direct_request_publication_body_state {
     impl<St: State> State for SetSignedAt<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
         type Artifacts = St::Artifacts;
         type AuthGeneration = St::AuthGeneration;
         type ContextHash = St::ContextHash;
@@ -71357,6 +72053,8 @@ pub mod direct_request_publication_body_state {
         pub struct actor_device_id(());
         ///Marker type for the `actor_did` field
         pub struct actor_did(());
+        ///Marker type for the `archive_commitment` field
+        pub struct archive_commitment(());
         ///Marker type for the `artifacts` field
         pub struct artifacts(());
         ///Marker type for the `auth_generation` field
@@ -71405,6 +72103,7 @@ pub struct DirectRequestPublicationBodyBuilder<
     _fields: (
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<
             crate::generated::blue_catbird::chat::DirectRequestBootstrapArtifacts<S>,
         >,
@@ -71459,7 +72158,7 @@ impl
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None,
+                None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -71475,7 +72174,7 @@ impl<S: jacquard_common::BosStr>
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None,
+                None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -71529,6 +72228,28 @@ where
 impl<St, S: jacquard_common::BosStr> DirectRequestPublicationBodyBuilder<St, S>
 where
     St: direct_request_publication_body_state::State,
+    St::ArchiveCommitment: direct_request_publication_body_state::IsUnset,
+{
+    /// Set the `archiveCommitment` field (required)
+    pub fn archive_commitment(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DirectRequestPublicationBodyBuilder<
+        direct_request_publication_body_state::SetArchiveCommitment<St>,
+        S,
+    > {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        DirectRequestPublicationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestPublicationBodyBuilder<St, S>
+where
+    St: direct_request_publication_body_state::State,
     St::Artifacts: direct_request_publication_body_state::IsUnset,
 {
     /// Set the `artifacts` field (required)
@@ -71539,7 +72260,7 @@ where
         direct_request_publication_body_state::SetArtifacts<St>,
         S,
     > {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71561,7 +72282,7 @@ where
         direct_request_publication_body_state::SetAuthGeneration<St>,
         S,
     > {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71583,7 +72304,7 @@ where
         direct_request_publication_body_state::SetContextHash<St>,
         S,
     > {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71605,7 +72326,7 @@ where
         direct_request_publication_body_state::SetConversationId<St>,
         S,
     > {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71627,7 +72348,7 @@ where
         direct_request_publication_body_state::SetFirstMessageId<St>,
         S,
     > {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71649,7 +72370,7 @@ where
         direct_request_publication_body_state::SetIdempotencyKey<St>,
         S,
     > {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71671,7 +72392,7 @@ where
         direct_request_publication_body_state::SetImportUntil<St>,
         S,
     > {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71691,7 +72412,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::KeyId<S>>,
     ) -> DirectRequestPublicationBodyBuilder<direct_request_publication_body_state::SetKeyId<St>, S>
     {
-        self._fields.9 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71711,7 +72432,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
     ) -> DirectRequestPublicationBodyBuilder<direct_request_publication_body_state::SetNext<St>, S>
     {
-        self._fields.10 = ::core::option::Option::Some(value.into());
+        self._fields.11 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71731,7 +72452,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::DirectRequestOrigin<S>>,
     ) -> DirectRequestPublicationBodyBuilder<direct_request_publication_body_state::SetOrigin<St>, S>
     {
-        self._fields.11 = ::core::option::Option::Some(value.into());
+        self._fields.12 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71753,7 +72474,7 @@ where
         direct_request_publication_body_state::SetPreparationDigest<St>,
         S,
     > {
-        self._fields.12 = ::core::option::Option::Some(value.into());
+        self._fields.13 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71775,7 +72496,7 @@ where
         direct_request_publication_body_state::SetPreparationRequestDigest<St>,
         S,
     > {
-        self._fields.13 = ::core::option::Option::Some(value.into());
+        self._fields.14 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71795,7 +72516,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::DirectRequestProfile<S>>,
     ) -> DirectRequestPublicationBodyBuilder<direct_request_publication_body_state::SetProfile<St>, S>
     {
-        self._fields.14 = ::core::option::Option::Some(value.into());
+        self._fields.15 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71817,7 +72538,7 @@ where
         direct_request_publication_body_state::SetProtocolVersion<St>,
         S,
     > {
-        self._fields.15 = ::core::option::Option::Some(value.into());
+        self._fields.16 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71839,7 +72560,7 @@ where
         direct_request_publication_body_state::SetRecipientDid<St>,
         S,
     > {
-        self._fields.16 = ::core::option::Option::Some(value.into());
+        self._fields.17 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71861,7 +72582,7 @@ where
         direct_request_publication_body_state::SetRequestId<St>,
         S,
     > {
-        self._fields.17 = ::core::option::Option::Some(value.into());
+        self._fields.18 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71883,7 +72604,7 @@ where
         direct_request_publication_body_state::SetSignatureDomain<St>,
         S,
     > {
-        self._fields.18 = ::core::option::Option::Some(value.into());
+        self._fields.19 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71905,7 +72626,7 @@ where
         direct_request_publication_body_state::SetSignedAt<St>,
         S,
     > {
-        self._fields.19 = ::core::option::Option::Some(value.into());
+        self._fields.20 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -71919,6 +72640,7 @@ where
     St: direct_request_publication_body_state::State,
     St::ActorDeviceId: direct_request_publication_body_state::IsSet,
     St::ActorDid: direct_request_publication_body_state::IsSet,
+    St::ArchiveCommitment: direct_request_publication_body_state::IsSet,
     St::Artifacts: direct_request_publication_body_state::IsSet,
     St::AuthGeneration: direct_request_publication_body_state::IsSet,
     St::ContextHash: direct_request_publication_body_state::IsSet,
@@ -71943,24 +72665,25 @@ where
         DirectRequestPublicationBody {
             actor_device_id: self._fields.0.unwrap(),
             actor_did: self._fields.1.unwrap(),
-            artifacts: self._fields.2.unwrap(),
-            auth_generation: self._fields.3.unwrap(),
-            context_hash: self._fields.4.unwrap(),
-            conversation_id: self._fields.5.unwrap(),
-            first_message_id: self._fields.6.unwrap(),
-            idempotency_key: self._fields.7.unwrap(),
-            import_until: self._fields.8.unwrap(),
-            key_id: self._fields.9.unwrap(),
-            next: self._fields.10.unwrap(),
-            origin: self._fields.11.unwrap(),
-            preparation_digest: self._fields.12.unwrap(),
-            preparation_request_digest: self._fields.13.unwrap(),
-            profile: self._fields.14.unwrap(),
-            protocol_version: self._fields.15.unwrap(),
-            recipient_did: self._fields.16.unwrap(),
-            request_id: self._fields.17.unwrap(),
-            signature_domain: self._fields.18.unwrap(),
-            signed_at: self._fields.19.unwrap(),
+            archive_commitment: self._fields.2.unwrap(),
+            artifacts: self._fields.3.unwrap(),
+            auth_generation: self._fields.4.unwrap(),
+            context_hash: self._fields.5.unwrap(),
+            conversation_id: self._fields.6.unwrap(),
+            first_message_id: self._fields.7.unwrap(),
+            idempotency_key: self._fields.8.unwrap(),
+            import_until: self._fields.9.unwrap(),
+            key_id: self._fields.10.unwrap(),
+            next: self._fields.11.unwrap(),
+            origin: self._fields.12.unwrap(),
+            preparation_digest: self._fields.13.unwrap(),
+            preparation_request_digest: self._fields.14.unwrap(),
+            profile: self._fields.15.unwrap(),
+            protocol_version: self._fields.16.unwrap(),
+            recipient_did: self._fields.17.unwrap(),
+            request_id: self._fields.18.unwrap(),
+            signature_domain: self._fields.19.unwrap(),
+            signed_at: self._fields.20.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -71975,24 +72698,25 @@ where
         DirectRequestPublicationBody {
             actor_device_id: self._fields.0.unwrap(),
             actor_did: self._fields.1.unwrap(),
-            artifacts: self._fields.2.unwrap(),
-            auth_generation: self._fields.3.unwrap(),
-            context_hash: self._fields.4.unwrap(),
-            conversation_id: self._fields.5.unwrap(),
-            first_message_id: self._fields.6.unwrap(),
-            idempotency_key: self._fields.7.unwrap(),
-            import_until: self._fields.8.unwrap(),
-            key_id: self._fields.9.unwrap(),
-            next: self._fields.10.unwrap(),
-            origin: self._fields.11.unwrap(),
-            preparation_digest: self._fields.12.unwrap(),
-            preparation_request_digest: self._fields.13.unwrap(),
-            profile: self._fields.14.unwrap(),
-            protocol_version: self._fields.15.unwrap(),
-            recipient_did: self._fields.16.unwrap(),
-            request_id: self._fields.17.unwrap(),
-            signature_domain: self._fields.18.unwrap(),
-            signed_at: self._fields.19.unwrap(),
+            archive_commitment: self._fields.2.unwrap(),
+            artifacts: self._fields.3.unwrap(),
+            auth_generation: self._fields.4.unwrap(),
+            context_hash: self._fields.5.unwrap(),
+            conversation_id: self._fields.6.unwrap(),
+            first_message_id: self._fields.7.unwrap(),
+            idempotency_key: self._fields.8.unwrap(),
+            import_until: self._fields.9.unwrap(),
+            key_id: self._fields.10.unwrap(),
+            next: self._fields.11.unwrap(),
+            origin: self._fields.12.unwrap(),
+            preparation_digest: self._fields.13.unwrap(),
+            preparation_request_digest: self._fields.14.unwrap(),
+            profile: self._fields.15.unwrap(),
+            protocol_version: self._fields.16.unwrap(),
+            recipient_did: self._fields.17.unwrap(),
+            request_id: self._fields.18.unwrap(),
+            signature_domain: self._fields.19.unwrap(),
+            signed_at: self._fields.20.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -72044,6 +72768,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest;
         type RequestId;
         type RequestKind;
+        type SequencerReceipt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
@@ -72061,6 +72786,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = Unset;
         type RequestId = Unset;
         type RequestKind = Unset;
+        type SequencerReceipt = Unset;
     }
     ///State transition - sets the `actor_device_id` field to Set
     pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72078,6 +72804,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72095,6 +72822,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `actor_key_id` field to Set
     pub struct SetActorKeyId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72112,6 +72840,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `auth_generation` field to Set
     pub struct SetAuthGeneration<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72129,6 +72858,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `conversation_id` field to Set
     pub struct SetConversationId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72146,6 +72876,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `coordinates` field to Set
     pub struct SetCoordinates<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72163,6 +72894,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `first_message_id` field to Set
     pub struct SetFirstMessageId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72180,6 +72912,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `preparation_request_digest` field to Set
     pub struct SetPreparationRequestDigest<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72197,6 +72930,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `recorded_at` field to Set
     pub struct SetRecordedAt<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72214,6 +72948,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `request_digest` field to Set
     pub struct SetRequestDigest<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72231,6 +72966,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = Set<members::request_digest>;
         type RequestId = St::RequestId;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `request_id` field to Set
     pub struct SetRequestId<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72248,6 +72984,7 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = Set<members::request_id>;
         type RequestKind = St::RequestKind;
+        type SequencerReceipt = St::SequencerReceipt;
     }
     ///State transition - sets the `request_kind` field to Set
     pub struct SetRequestKind<St: State = Empty>(PhantomData<fn() -> St>);
@@ -72265,6 +73002,25 @@ pub mod direct_request_published_receipt_state {
         type RequestDigest = St::RequestDigest;
         type RequestId = St::RequestId;
         type RequestKind = Set<members::request_kind>;
+        type SequencerReceipt = St::SequencerReceipt;
+    }
+    ///State transition - sets the `sequencer_receipt` field to Set
+    pub struct SetSequencerReceipt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSequencerReceipt<St> {}
+    impl<St: State> State for SetSequencerReceipt<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type ActorKeyId = St::ActorKeyId;
+        type AuthGeneration = St::AuthGeneration;
+        type ConversationId = St::ConversationId;
+        type Coordinates = St::Coordinates;
+        type FirstMessageId = St::FirstMessageId;
+        type PreparationRequestDigest = St::PreparationRequestDigest;
+        type RecordedAt = St::RecordedAt;
+        type RequestDigest = St::RequestDigest;
+        type RequestId = St::RequestId;
+        type RequestKind = St::RequestKind;
+        type SequencerReceipt = Set<members::sequencer_receipt>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
@@ -72293,6 +73049,8 @@ pub mod direct_request_published_receipt_state {
         pub struct request_id(());
         ///Marker type for the `request_kind` field
         pub struct request_kind(());
+        ///Marker type for the `sequencer_receipt` field
+        pub struct sequencer_receipt(());
     }
 }
 
@@ -72315,6 +73073,7 @@ pub struct DirectRequestPublishedReceiptBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -72349,7 +73108,7 @@ impl
         DirectRequestPublishedReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -72364,7 +73123,7 @@ impl<S: jacquard_common::BosStr>
         DirectRequestPublishedReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -72638,6 +73397,28 @@ where
 impl<St, S: jacquard_common::BosStr> DirectRequestPublishedReceiptBuilder<St, S>
 where
     St: direct_request_published_receipt_state::State,
+    St::SequencerReceipt: direct_request_published_receipt_state::IsUnset,
+{
+    /// Set the `sequencerReceipt` field (required)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> DirectRequestPublishedReceiptBuilder<
+        direct_request_published_receipt_state::SetSequencerReceipt<St>,
+        S,
+    > {
+        self._fields.12 = ::core::option::Option::Some(value.into());
+        DirectRequestPublishedReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestPublishedReceiptBuilder<St, S>
+where
+    St: direct_request_published_receipt_state::State,
     St::ActorDeviceId: direct_request_published_receipt_state::IsSet,
     St::ActorDid: direct_request_published_receipt_state::IsSet,
     St::ActorKeyId: direct_request_published_receipt_state::IsSet,
@@ -72650,6 +73431,7 @@ where
     St::RequestDigest: direct_request_published_receipt_state::IsSet,
     St::RequestId: direct_request_published_receipt_state::IsSet,
     St::RequestKind: direct_request_published_receipt_state::IsSet,
+    St::SequencerReceipt: direct_request_published_receipt_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> DirectRequestPublishedReceipt<S> {
@@ -72666,6 +73448,7 @@ where
             request_digest: self._fields.9.unwrap(),
             request_id: self._fields.10.unwrap(),
             request_kind: self._fields.11.unwrap(),
+            sequencer_receipt: self._fields.12.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -72690,6 +73473,7 @@ where
             request_digest: self._fields.9.unwrap(),
             request_id: self._fields.10.unwrap(),
             request_kind: self._fields.11.unwrap(),
+            sequencer_receipt: self._fields.12.unwrap(),
             extra_data: Some(extra_data),
         }
     }
