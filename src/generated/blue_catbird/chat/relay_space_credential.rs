@@ -14,14 +14,13 @@
 )]
 pub struct RelaySpaceCredential<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
-    /// DID of the Space authority / host serving com.atproto.space.getSpaceCredential.
+    /// DID of the Space authority serving com.atproto.space.getSpaceCredential; it must be the authority named in space.
     pub authority_did: jacquard_common::types::string::Did<S>,
-    /// Client ephemeral P-256 did:key for RFC 9421 proof-of-possession.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub cnf_key: core::option::Option<S>,
-    /// Single-use PDS delegation JWT bound to the client's ephemeral cnf.jkt / did:key.
+    /// Client ephemeral P-256 did:key for RFC 9421 proof-of-possession. The authority binds the credential's cnf.kid to it, and the home rejects a credential bound to any other key.
+    pub cnf_key: S,
+    /// Single-use delegation JWT minted by the user's PDS (com.atproto.space.getDelegationToken): sub is exactly space, aud is {authorityDid}#atproto_pds, it carries no cnf claim, and it lives at most 60 seconds. The home forwards it to the authority in a POST body without reading it.
     pub delegation_token: S,
-    /// Canonical at-space:// or at://.../space/... URI.
+    /// Exactly at://{authorityDid}/space/{spaceType}/{skey}. Other schemes, including at-space://, and Space record URIs are rejected. The returned credential's sub equals this string.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
@@ -256,6 +255,7 @@ pub mod relay_space_credential_state {
     pub trait State: sealed::Sealed {
         type ActorDeviceId;
         type AuthorityDid;
+        type CnfKey;
         type DelegationToken;
         type Space;
     }
@@ -265,6 +265,7 @@ pub mod relay_space_credential_state {
     impl State for Empty {
         type ActorDeviceId = Unset;
         type AuthorityDid = Unset;
+        type CnfKey = Unset;
         type DelegationToken = Unset;
         type Space = Unset;
     }
@@ -274,6 +275,7 @@ pub mod relay_space_credential_state {
     impl<St: State> State for SetActorDeviceId<St> {
         type ActorDeviceId = Set<members::actor_device_id>;
         type AuthorityDid = St::AuthorityDid;
+        type CnfKey = St::CnfKey;
         type DelegationToken = St::DelegationToken;
         type Space = St::Space;
     }
@@ -283,6 +285,17 @@ pub mod relay_space_credential_state {
     impl<St: State> State for SetAuthorityDid<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type AuthorityDid = Set<members::authority_did>;
+        type CnfKey = St::CnfKey;
+        type DelegationToken = St::DelegationToken;
+        type Space = St::Space;
+    }
+    ///State transition - sets the `cnf_key` field to Set
+    pub struct SetCnfKey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCnfKey<St> {}
+    impl<St: State> State for SetCnfKey<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type AuthorityDid = St::AuthorityDid;
+        type CnfKey = Set<members::cnf_key>;
         type DelegationToken = St::DelegationToken;
         type Space = St::Space;
     }
@@ -292,6 +305,7 @@ pub mod relay_space_credential_state {
     impl<St: State> State for SetDelegationToken<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type AuthorityDid = St::AuthorityDid;
+        type CnfKey = St::CnfKey;
         type DelegationToken = Set<members::delegation_token>;
         type Space = St::Space;
     }
@@ -301,6 +315,7 @@ pub mod relay_space_credential_state {
     impl<St: State> State for SetSpace<St> {
         type ActorDeviceId = St::ActorDeviceId;
         type AuthorityDid = St::AuthorityDid;
+        type CnfKey = St::CnfKey;
         type DelegationToken = St::DelegationToken;
         type Space = Set<members::space>;
     }
@@ -311,6 +326,8 @@ pub mod relay_space_credential_state {
         pub struct actor_device_id(());
         ///Marker type for the `authority_did` field
         pub struct authority_did(());
+        ///Marker type for the `cnf_key` field
+        pub struct cnf_key(());
         ///Marker type for the `delegation_token` field
         pub struct delegation_token(());
         ///Marker type for the `space` field
@@ -412,18 +429,22 @@ where
     }
 }
 
-impl<St: relay_space_credential_state::State, S: jacquard_common::BosStr>
-    RelaySpaceCredentialBuilder<St, S>
+impl<St, S: jacquard_common::BosStr> RelaySpaceCredentialBuilder<St, S>
+where
+    St: relay_space_credential_state::State,
+    St::CnfKey: relay_space_credential_state::IsUnset,
 {
-    /// Set the `cnfKey` field (optional)
-    pub fn cnf_key(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.2 = value.into();
-        self
-    }
-    /// Set the `cnfKey` field to an Option value (optional)
-    pub fn maybe_cnf_key(mut self, value: Option<S>) -> Self {
-        self._fields.2 = value;
-        self
+    /// Set the `cnfKey` field (required)
+    pub fn cnf_key(
+        mut self,
+        value: impl Into<S>,
+    ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetCnfKey<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        RelaySpaceCredentialBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
     }
 }
 
@@ -470,6 +491,7 @@ where
     St: relay_space_credential_state::State,
     St::ActorDeviceId: relay_space_credential_state::IsSet,
     St::AuthorityDid: relay_space_credential_state::IsSet,
+    St::CnfKey: relay_space_credential_state::IsSet,
     St::DelegationToken: relay_space_credential_state::IsSet,
     St::Space: relay_space_credential_state::IsSet,
 {
@@ -478,7 +500,7 @@ where
         RelaySpaceCredential {
             actor_device_id: self._fields.0.unwrap(),
             authority_did: self._fields.1.unwrap(),
-            cnf_key: self._fields.2,
+            cnf_key: self._fields.2.unwrap(),
             delegation_token: self._fields.3.unwrap(),
             space: self._fields.4.unwrap(),
             extra_data: Default::default(),
@@ -495,7 +517,7 @@ where
         RelaySpaceCredential {
             actor_device_id: self._fields.0.unwrap(),
             authority_did: self._fields.1.unwrap(),
-            cnf_key: self._fields.2,
+            cnf_key: self._fields.2.unwrap(),
             delegation_token: self._fields.3.unwrap(),
             space: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
