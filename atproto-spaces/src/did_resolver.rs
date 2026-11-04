@@ -371,16 +371,16 @@ fn parse_verification_key(vm: &WireVerificationMethod) -> Result<SpaceVerifyingK
             .and_then(|v| v.as_str())
             .unwrap_or_default();
         return match crv {
+            // `FromStr` on these key types parses PEM, never JWK.
             "P-256" => {
-                let pk: p256::PublicKey = jwk_str
-                    .parse()
+                let pk = p256::PublicKey::from_jwk_str(&jwk_str)
                     .map_err(|e| SpacesError::DidResolution(format!("invalid P-256 JWK: {e}")))?;
                 Ok(SpaceVerifyingKey::P256(p256::ecdsa::VerifyingKey::from(
                     &pk,
                 )))
             }
             "secp256k1" => {
-                let pk: k256::PublicKey = jwk_str.parse().map_err(|e| {
+                let pk = k256::PublicKey::from_jwk_str(&jwk_str).map_err(|e| {
                     SpacesError::DidResolution(format!("invalid secp256k1 JWK: {e}"))
                 })?;
                 Ok(SpaceVerifyingKey::K256(k256::ecdsa::VerifyingKey::from(
@@ -406,8 +406,7 @@ fn parse_kem_did_key(vm: &WireVerificationMethod) -> Result<String> {
     if let Some(jwk_val) = &vm.public_key_jwk {
         let jwk_str = serde_json::to_string(jwk_val)
             .map_err(|e| SpacesError::DidResolution(format!("KEM JWK serialize: {e}")))?;
-        let pk: p256::PublicKey = jwk_str
-            .parse()
+        let pk = p256::PublicKey::from_jwk_str(&jwk_str)
             .map_err(|e| SpacesError::DidResolution(format!("invalid P-256 KEM JWK: {e}")))?;
         return Ok(encode_p256_did_key(&pk));
     }
@@ -446,4 +445,56 @@ fn is_loopback_or_private_host(host_with_optional_port: &str) -> bool {
         };
     }
     false
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// `JsonWebKey2020` keys are read as JWK. A key's PEM-only `FromStr`
+    /// rejects every JWK as "crypto error" (e2e federation_spaces_full_cutover
+    /// `native_space_did_document`).
+    #[test]
+    fn json_web_key_2020_atproto_and_kem_keys_parse() {
+        let did = "did:plc:alicesdkfederated24chars";
+        let signing = p256::SecretKey::from_slice(&[7; 32]).unwrap().public_key();
+        let kem = p256::SecretKey::from_slice(&[9; 32]).unwrap().public_key();
+        let k256 = k256::SecretKey::from_slice(&[5; 32]).unwrap().public_key();
+        let jwk = |text: String| serde_json::from_str::<serde_json::Value>(&text).unwrap();
+        let method = |fragment: &str, key: serde_json::Value| {
+            serde_json::json!({
+                "id": format!("{did}{fragment}"),
+                "type": "JsonWebKey2020",
+                "controller": did,
+                "publicKeyJwk": key,
+            })
+        };
+        let document = |atproto: serde_json::Value| {
+            serde_json::to_vec(&serde_json::json!({
+                "id": did,
+                "verificationMethod": [
+                    method("#atproto", atproto),
+                    method("#atproto_kem", jwk(kem.to_jwk_string())),
+                ],
+                "service": [],
+            }))
+            .unwrap()
+        };
+
+        let parsed = DidDocument::parse_json(did, &document(jwk(signing.to_jwk_string()))).unwrap();
+        assert_eq!(
+            parsed.atproto_key,
+            Some(SpaceVerifyingKey::P256(p256::ecdsa::VerifyingKey::from(
+                &signing
+            )))
+        );
+        assert_eq!(parsed.atproto_kem_did_key, Some(encode_p256_did_key(&kem)));
+        let parsed = DidDocument::parse_json(did, &document(jwk(k256.to_jwk_string()))).unwrap();
+        assert_eq!(
+            parsed.atproto_key,
+            Some(SpaceVerifyingKey::K256(k256::ecdsa::VerifyingKey::from(
+                &k256
+            )))
+        );
+    }
 }
