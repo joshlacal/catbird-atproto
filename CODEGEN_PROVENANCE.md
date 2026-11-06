@@ -32,7 +32,7 @@ cargo clippy --locked --all-targets --all-features
 
 ## Current generation (direct-request sender attestation, regenerated 2026-11-06)
 
-This generation carries the original sender's signed archive attestation in `applicationAad` and makes that attestation mandatory in `directRequestPublicationBody`. Rust was regenerated from PetrelCatbird provisional commit `e11f2ac3d7d8273eea50e0f0c739bff3d7777478` (tree `f9de8681aeb811853a93425d9ce4edefb9d73b01`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `3764fc1be74a50e72ca9201eb2793357aaec3b27a7024a3e97e1d9e33ef7aab6`), with no generated declaration edited by hand. Petrel `generator/lexicons` (441 files) and the Rust generator are unchanged from the previous generation.
+This generation carries the original sender's signed archive attestation in `applicationAad` and makes that attestation mandatory in `directRequestPublicationBody`. The final round-trip check used PetrelCatbird `1193ac5fdcff9a4c283704d649cdc3a6663fb8bf` (tree `805b46db728734f92942029d03044d337533ccda`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `3764fc1be74a50e72ca9201eb2793357aaec3b27a7024a3e97e1d9e33ef7aab6`) and Petrel `f381cb844d33d76ad7ca948698480d381712304b` (tree `6768ba98ed5076fe23141983a1f9b8011dbc7e85`; 441-file core lexicon corpus), with no generated declaration edited by hand. Their lexicon bytes are unchanged from the original generation, and `Scripts/regenerate.py check` reproduced all 671 files byte for byte.
 
 | Generator file | SHA-256 |
 | --- | --- |
