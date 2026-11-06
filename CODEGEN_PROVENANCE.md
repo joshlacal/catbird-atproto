@@ -30,7 +30,25 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (Stress Fix R3 recovery format, regenerated 2026-11-06)
+## Current generation (direct-request sender attestation, regenerated 2026-11-06)
+
+This generation carries the original sender's signed archive attestation in `applicationAad` and makes that attestation mandatory in `directRequestPublicationBody`. Rust was regenerated from PetrelCatbird provisional commit `b740c2cc466d91c4cd01f125dc7b1344429d3a84` (tree `3b5c91beb168b29383d2b3917d6d87f1e1e748ac`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `3764fc1be74a50e72ca9201eb2793357aaec3b27a7024a3e97e1d9e33ef7aab6`), with no generated declaration edited by hand. Petrel `generator/lexicons` (441 files) and the Rust generator are unchanged from the previous generation.
+
+| Generator file | SHA-256 |
+| --- | --- |
+| mls-ds `codegen/src/main.rs` | `d6f5ac1b5ceb09d10910c0d85ebb287aaf94766b0a4311c07bba54697ddc579f` |
+| mls-ds `codegen/Cargo.toml` | `5d8756af56b27bfe9039c576e416f4652936fd1af4e84a996b278dfa251506b6` |
+| mls-ds `Cargo.lock` | `5e5a2cfe6135717238e57634e24a451b0efd0b1b777945ea27e9995a0befec7b` |
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 441 | `a5c5fbc0a9c38ceb74192fa0aea31d93f73e381b3ddb02e55d73fef7f94e975d` |
+| PetrelCatbird `lexicons` | 203 | `0ee8827e7e119760cca7e34ad8b788ad572f2b02b8346da2ca1041c89c73e064` |
+| Rust `src/generated` | 671 | `c2329a7c00600a04dc95f050ee44bbb2f960c8e9492d232516ab49cfaff38b1b` |
+
+`Scripts/regenerate.py check` verified all 671 generated files against that corpus.
+
+## Previous generation (Stress Fix R3 recovery format, regenerated 2026-11-06)
 
 This generation takes the clean-slate `blue.catbird.labyrinth.virtualDevice` format to version 2: `formatVersion` is required and `encryptedMailboxRootSalt` is removed. Swift, Kotlin and Rust were regenerated from PetrelCatbird provisional commit `81fe7e2af79695c5525332bf80893f1e176c3302` (tree `a0b06255ddd939ce2c32cc5c0ce6b814dab1595c`; 203-file overlay), with no generated declaration edited by hand. Petrel `generator/lexicons` (441 files) and the Rust generator are unchanged from the previous generation.
 

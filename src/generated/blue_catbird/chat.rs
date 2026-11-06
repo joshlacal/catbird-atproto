@@ -242,12 +242,45 @@ pub struct ApplicationAad<S: jacquard_common::BosStr = jacquard_common::DefaultS
     /// Exact 16 UUID bytes corresponding to the canonical outer UUIDv4 text.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub message_id: jacquard_common::deps::bytes::Bytes,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub original_sender_attestation:
+        core::option::Option<ApplicationAadOriginalSenderAttestation<S>>,
     pub prior: crate::generated::blue_catbird::chat::MlsAadPriorContext<S>,
     pub protocol_version: crate::generated::blue_catbird::chat::ProtocolVersion<S>,
     #[serde(
         flatten,
         default,
         deserialize_with = "deserialize_application_aad_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ApplicationAadOriginalSenderAttestation<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub sender_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    pub sender_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sender_transport_pubkey: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_application_aad_original_sender_attestation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -2488,6 +2521,7 @@ pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_co
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub next: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub origin: crate::generated::blue_catbird::chat::DirectRequestOrigin<S>,
+    pub original_sender_attestation: DirectRequestPublicationBodyOriginalSenderAttestation<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub preparation_digest: jacquard_common::deps::bytes::Bytes,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -2502,6 +2536,36 @@ pub struct DirectRequestPublicationBody<S: jacquard_common::BosStr = jacquard_co
         flatten,
         default,
         deserialize_with = "deserialize_direct_request_publication_body_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DirectRequestPublicationBodyOriginalSenderAttestation<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub sender_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    pub sender_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sender_transport_pubkey: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_direct_request_publication_body_original_sender_attestation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -25525,6 +25589,65 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "originalSenderAttestation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Object(::jacquard_lexicon::lexicon::LexObject {
+                                required: Some(
+                                    vec![
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDid"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDeviceId"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("senderTransportPubkey"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
+                                    ],
+                                ),
+                                properties: {
+                                    #[allow(unused_mut)]
+                                    let mut map = ::alloc::collections::BTreeMap::new();
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "senderDeviceId",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            r#ref: ::jacquard_common::CowStr::new_static("#deviceId"),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "senderDid",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "senderTransportPubkey",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            max_length: Some(32usize),
+                                            min_length: Some(32usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "signature",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            max_length: Some(64usize),
+                                            min_length: Some(64usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map
+                                },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "prior",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
@@ -32124,295 +32247,311 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "directRequestPublicationBody",
                 ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "signatureDomain",
-                            ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "protocolVersion",
-                            ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signatureDomain"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("protocolVersion"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDeviceId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("keyId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "authGeneration",
-                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("authGeneration"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("requestId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "firstMessageId",
-                            ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "conversationId",
-                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("firstMessageId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("conversationId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("recipientDid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("origin"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("profile"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "preparationDigest",
-                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("preparationDigest"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("contextHash"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("next"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("importUntil"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("artifacts"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "idempotencyKey",
-                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("idempotencyKey"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("signedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("preparationRequestDigest"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("archiveCommitment"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("originalSenderAttestation")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "preparationRequestDigest",
+                                "actorDeviceId",
                             ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#deviceId"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "archiveCommitment",
                             ),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "actorDeviceId",
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "artifacts",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#directRequestBootstrapArtifacts",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#deviceId"),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "authGeneration",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "contextHash",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "conversationId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#operationId",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "firstMessageId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#operationId",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "archiveCommitment",
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "idempotencyKey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#operationId",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                    ::jacquard_lexicon::lexicon::LexBytes {
-                                        max_length: Some(32usize),
-                                        min_length: Some(32usize),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "importUntil",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("artifacts"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#directRequestBootstrapArtifacts",
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "keyId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#keyId"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "next",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#conversationCoordinates",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "origin",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#directRequestOrigin",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "originalSenderAttestation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Object(::jacquard_lexicon::lexicon::LexObject {
+                                required: Some(
+                                    vec![
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDid"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDeviceId"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("senderTransportPubkey"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
+                                    ],
+                                ),
+                                properties: {
+                                    #[allow(unused_mut)]
+                                    let mut map = ::alloc::collections::BTreeMap::new();
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "senderDeviceId",
                                         ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "authGeneration",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        minimum: Some(1i64),
-                                        maximum: Some(9007199254740991i64),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "contextHash",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                    ::jacquard_lexicon::lexicon::LexBytes {
-                                        max_length: Some(32usize),
-                                        min_length: Some(32usize),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "conversationId",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#operationId",
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            r#ref: ::jacquard_common::CowStr::new_static("#deviceId"),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "senderDid",
                                         ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "firstMessageId",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#operationId",
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "senderTransportPubkey",
                                         ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "idempotencyKey",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#operationId",
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            max_length: Some(32usize),
+                                            min_length: Some(32usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "signature",
                                         ),
-                                        ..Default::default()
-                                    },
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            max_length: Some(64usize),
+                                            min_length: Some(64usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map
+                                },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "preparationDigest",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "preparationRequestDigest",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "profile",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#directRequestProfile",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "importUntil",
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "protocolVersion",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "recipientDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "requestId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#operationId",
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#canonicalDatetime",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signatureDomain",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("keyId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#keyId"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("next"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#conversationCoordinates",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("origin"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#directRequestOrigin",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "preparationDigest",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                    ::jacquard_lexicon::lexicon::LexBytes {
-                                        max_length: Some(32usize),
-                                        min_length: Some(32usize),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "preparationRequestDigest",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                    ::jacquard_lexicon::lexicon::LexBytes {
-                                        max_length: Some(32usize),
-                                        min_length: Some(32usize),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("profile"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#directRequestProfile",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "protocolVersion",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "recipientDid",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("requestId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#operationId",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "signatureDomain",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("signedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#canonicalDatetime",
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
@@ -45332,6 +45471,312 @@ where
     Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for ApplicationAadOriginalSenderAttestation<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "ApplicationAadOriginalSenderAttestation"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+fn deserialize_application_aad_original_sender_attestation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod application_aad_original_sender_attestation_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type SenderDeviceId;
+        type SenderDid;
+        type SenderTransportPubkey;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type SenderDeviceId = Unset;
+        type SenderDid = Unset;
+        type SenderTransportPubkey = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `sender_device_id` field to Set
+    pub struct SetSenderDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDeviceId<St> {}
+    impl<St: State> State for SetSenderDeviceId<St> {
+        type SenderDeviceId = Set<members::sender_device_id>;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_did` field to Set
+    pub struct SetSenderDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDid<St> {}
+    impl<St: State> State for SetSenderDid<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = Set<members::sender_did>;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_transport_pubkey` field to Set
+    pub struct SetSenderTransportPubkey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderTransportPubkey<St> {}
+    impl<St: State> State for SetSenderTransportPubkey<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = Set<members::sender_transport_pubkey>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `sender_device_id` field
+        pub struct sender_device_id(());
+        ///Marker type for the `sender_did` field
+        pub struct sender_did(());
+        ///Marker type for the `sender_transport_pubkey` field
+        pub struct sender_transport_pubkey(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ApplicationAadOriginalSenderAttestationBuilder<
+    St: application_aad_original_sender_attestation_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ApplicationAadOriginalSenderAttestation<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        ApplicationAadOriginalSenderAttestationBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ApplicationAadOriginalSenderAttestation<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::Empty,
+        S,
+    > {
+        ApplicationAadOriginalSenderAttestationBuilder::builder()
+    }
+}
+
+impl
+    ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ApplicationAadOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::Empty,
+        S,
+    >
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ApplicationAadOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ApplicationAadOriginalSenderAttestationBuilder<St, S>
+where
+    St: application_aad_original_sender_attestation_state::State,
+    St::SenderDeviceId: application_aad_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `senderDeviceId` field (required)
+    pub fn sender_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::SetSenderDeviceId<St>,
+        S,
+    > {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        ApplicationAadOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ApplicationAadOriginalSenderAttestationBuilder<St, S>
+where
+    St: application_aad_original_sender_attestation_state::State,
+    St::SenderDid: application_aad_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `senderDid` field (required)
+    pub fn sender_did(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::SetSenderDid<St>,
+        S,
+    > {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        ApplicationAadOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ApplicationAadOriginalSenderAttestationBuilder<St, S>
+where
+    St: application_aad_original_sender_attestation_state::State,
+    St::SenderTransportPubkey: application_aad_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `senderTransportPubkey` field (required)
+    pub fn sender_transport_pubkey(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::SetSenderTransportPubkey<St>,
+        S,
+    > {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        ApplicationAadOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ApplicationAadOriginalSenderAttestationBuilder<St, S>
+where
+    St: application_aad_original_sender_attestation_state::State,
+    St::Signature: application_aad_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> ApplicationAadOriginalSenderAttestationBuilder<
+        application_aad_original_sender_attestation_state::SetSignature<St>,
+        S,
+    > {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        ApplicationAadOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ApplicationAadOriginalSenderAttestationBuilder<St, S>
+where
+    St: application_aad_original_sender_attestation_state::State,
+    St::SenderDeviceId: application_aad_original_sender_attestation_state::IsSet,
+    St::SenderDid: application_aad_original_sender_attestation_state::IsSet,
+    St::SenderTransportPubkey: application_aad_original_sender_attestation_state::IsSet,
+    St::Signature: application_aad_original_sender_attestation_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ApplicationAadOriginalSenderAttestation<S> {
+        ApplicationAadOriginalSenderAttestation {
+            sender_device_id: self._fields.0.unwrap(),
+            sender_did: self._fields.1.unwrap(),
+            sender_transport_pubkey: self._fields.2.unwrap(),
+            signature: self._fields.3.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> ApplicationAadOriginalSenderAttestation<S> {
+        ApplicationAadOriginalSenderAttestation {
+            sender_device_id: self._fields.0.unwrap(),
+            sender_did: self._fields.1.unwrap(),
+            sender_transport_pubkey: self._fields.2.unwrap(),
+            signature: self._fields.3.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 pub mod application_aad_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
@@ -45435,6 +45880,7 @@ pub struct ApplicationAadBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<ApplicationAadOriginalSenderAttestation<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::MlsAadPriorContext<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ProtocolVersion<S>>,
     ),
@@ -45461,7 +45907,7 @@ impl ApplicationAadBuilder<application_aad_state::Empty, jacquard_common::Defaul
     pub fn new() -> Self {
         ApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -45472,7 +45918,7 @@ impl<S: jacquard_common::BosStr> ApplicationAadBuilder<application_aad_state::Em
     pub fn builder() -> Self {
         ApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -45554,6 +46000,25 @@ where
     }
 }
 
+impl<St: application_aad_state::State, S: jacquard_common::BosStr> ApplicationAadBuilder<St, S> {
+    /// Set the `originalSenderAttestation` field (optional)
+    pub fn original_sender_attestation(
+        mut self,
+        value: impl Into<Option<ApplicationAadOriginalSenderAttestation<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `originalSenderAttestation` field to an Option value (optional)
+    pub fn maybe_original_sender_attestation(
+        mut self,
+        value: Option<ApplicationAadOriginalSenderAttestation<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ApplicationAadBuilder<St, S>
 where
     St: application_aad_state::State,
@@ -45564,7 +46029,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::MlsAadPriorContext<S>>,
     ) -> ApplicationAadBuilder<application_aad_state::SetPrior<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45583,7 +46048,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::ProtocolVersion<S>>,
     ) -> ApplicationAadBuilder<application_aad_state::SetProtocolVersion<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         ApplicationAadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45608,8 +46073,9 @@ where
             conversation_id: self._fields.1.unwrap(),
             generation: self._fields.2.unwrap(),
             message_id: self._fields.3.unwrap(),
-            prior: self._fields.4.unwrap(),
-            protocol_version: self._fields.5.unwrap(),
+            original_sender_attestation: self._fields.4,
+            prior: self._fields.5.unwrap(),
+            protocol_version: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -45626,8 +46092,9 @@ where
             conversation_id: self._fields.1.unwrap(),
             generation: self._fields.2.unwrap(),
             message_id: self._fields.3.unwrap(),
-            prior: self._fields.4.unwrap(),
-            protocol_version: self._fields.5.unwrap(),
+            original_sender_attestation: self._fields.4,
+            prior: self._fields.5.unwrap(),
+            protocol_version: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -71442,6 +71909,321 @@ where
     Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for DirectRequestPublicationBodyOriginalSenderAttestation<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "DirectRequestPublicationBodyOriginalSenderAttestation"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+fn deserialize_direct_request_publication_body_original_sender_attestation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod direct_request_publication_body_original_sender_attestation_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type SenderDeviceId;
+        type SenderDid;
+        type SenderTransportPubkey;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type SenderDeviceId = Unset;
+        type SenderDid = Unset;
+        type SenderTransportPubkey = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `sender_device_id` field to Set
+    pub struct SetSenderDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDeviceId<St> {}
+    impl<St: State> State for SetSenderDeviceId<St> {
+        type SenderDeviceId = Set<members::sender_device_id>;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_did` field to Set
+    pub struct SetSenderDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDid<St> {}
+    impl<St: State> State for SetSenderDid<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = Set<members::sender_did>;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_transport_pubkey` field to Set
+    pub struct SetSenderTransportPubkey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderTransportPubkey<St> {}
+    impl<St: State> State for SetSenderTransportPubkey<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = Set<members::sender_transport_pubkey>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `sender_device_id` field
+        pub struct sender_device_id(());
+        ///Marker type for the `sender_did` field
+        pub struct sender_did(());
+        ///Marker type for the `sender_transport_pubkey` field
+        pub struct sender_transport_pubkey(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+    St: direct_request_publication_body_original_sender_attestation_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DirectRequestPublicationBodyOriginalSenderAttestation<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DirectRequestPublicationBodyOriginalSenderAttestation<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::Empty,
+        S,
+    > {
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder::builder()
+    }
+}
+
+impl
+    DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::Empty,
+        S,
+    >
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr>
+    DirectRequestPublicationBodyOriginalSenderAttestationBuilder<St, S>
+where
+    St: direct_request_publication_body_original_sender_attestation_state::State,
+    St::SenderDeviceId: direct_request_publication_body_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `senderDeviceId` field (required)
+    pub fn sender_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::SetSenderDeviceId<St>,
+        S,
+    > {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr>
+    DirectRequestPublicationBodyOriginalSenderAttestationBuilder<St, S>
+where
+    St: direct_request_publication_body_original_sender_attestation_state::State,
+    St::SenderDid: direct_request_publication_body_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `senderDid` field (required)
+    pub fn sender_did(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::SetSenderDid<St>,
+        S,
+    > {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr>
+    DirectRequestPublicationBodyOriginalSenderAttestationBuilder<St, S>
+where
+    St: direct_request_publication_body_original_sender_attestation_state::State,
+    St::SenderTransportPubkey:
+        direct_request_publication_body_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `senderTransportPubkey` field (required)
+    pub fn sender_transport_pubkey(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::SetSenderTransportPubkey<
+            St,
+        >,
+        S,
+    > {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr>
+    DirectRequestPublicationBodyOriginalSenderAttestationBuilder<St, S>
+where
+    St: direct_request_publication_body_original_sender_attestation_state::State,
+    St::Signature: direct_request_publication_body_original_sender_attestation_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DirectRequestPublicationBodyOriginalSenderAttestationBuilder<
+        direct_request_publication_body_original_sender_attestation_state::SetSignature<St>,
+        S,
+    > {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        DirectRequestPublicationBodyOriginalSenderAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr>
+    DirectRequestPublicationBodyOriginalSenderAttestationBuilder<St, S>
+where
+    St: direct_request_publication_body_original_sender_attestation_state::State,
+    St::SenderDeviceId: direct_request_publication_body_original_sender_attestation_state::IsSet,
+    St::SenderDid: direct_request_publication_body_original_sender_attestation_state::IsSet,
+    St::SenderTransportPubkey:
+        direct_request_publication_body_original_sender_attestation_state::IsSet,
+    St::Signature: direct_request_publication_body_original_sender_attestation_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DirectRequestPublicationBodyOriginalSenderAttestation<S> {
+        DirectRequestPublicationBodyOriginalSenderAttestation {
+            sender_device_id: self._fields.0.unwrap(),
+            sender_did: self._fields.1.unwrap(),
+            sender_transport_pubkey: self._fields.2.unwrap(),
+            signature: self._fields.3.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DirectRequestPublicationBodyOriginalSenderAttestation<S> {
+        DirectRequestPublicationBodyOriginalSenderAttestation {
+            sender_device_id: self._fields.0.unwrap(),
+            sender_did: self._fields.1.unwrap(),
+            sender_transport_pubkey: self._fields.2.unwrap(),
+            signature: self._fields.3.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 pub mod direct_request_publication_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
@@ -71465,6 +72247,7 @@ pub mod direct_request_publication_body_state {
         type KeyId;
         type Next;
         type Origin;
+        type OriginalSenderAttestation;
         type PreparationDigest;
         type PreparationRequestDigest;
         type Profile;
@@ -71491,6 +72274,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = Unset;
         type Next = Unset;
         type Origin = Unset;
+        type OriginalSenderAttestation = Unset;
         type PreparationDigest = Unset;
         type PreparationRequestDigest = Unset;
         type Profile = Unset;
@@ -71517,6 +72301,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71543,6 +72328,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71569,6 +72355,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71595,6 +72382,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71621,6 +72409,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71647,6 +72436,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71673,6 +72463,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71699,6 +72490,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71725,6 +72517,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71751,6 +72544,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71777,6 +72571,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = Set<members::key_id>;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71803,6 +72598,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = Set<members::next>;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71829,6 +72625,34 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = Set<members::origin>;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
+        type PreparationDigest = St::PreparationDigest;
+        type PreparationRequestDigest = St::PreparationRequestDigest;
+        type Profile = St::Profile;
+        type ProtocolVersion = St::ProtocolVersion;
+        type RecipientDid = St::RecipientDid;
+        type RequestId = St::RequestId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `original_sender_attestation` field to Set
+    pub struct SetOriginalSenderAttestation<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOriginalSenderAttestation<St> {}
+    impl<St: State> State for SetOriginalSenderAttestation<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type Artifacts = St::Artifacts;
+        type AuthGeneration = St::AuthGeneration;
+        type ContextHash = St::ContextHash;
+        type ConversationId = St::ConversationId;
+        type FirstMessageId = St::FirstMessageId;
+        type IdempotencyKey = St::IdempotencyKey;
+        type ImportUntil = St::ImportUntil;
+        type KeyId = St::KeyId;
+        type Next = St::Next;
+        type Origin = St::Origin;
+        type OriginalSenderAttestation = Set<members::original_sender_attestation>;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71855,6 +72679,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = Set<members::preparation_digest>;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71881,6 +72706,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = Set<members::preparation_request_digest>;
         type Profile = St::Profile;
@@ -71907,6 +72733,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = Set<members::profile>;
@@ -71933,6 +72760,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71959,6 +72787,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -71985,6 +72814,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -72011,6 +72841,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -72037,6 +72868,7 @@ pub mod direct_request_publication_body_state {
         type KeyId = St::KeyId;
         type Next = St::Next;
         type Origin = St::Origin;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type PreparationDigest = St::PreparationDigest;
         type PreparationRequestDigest = St::PreparationRequestDigest;
         type Profile = St::Profile;
@@ -72075,6 +72907,8 @@ pub mod direct_request_publication_body_state {
         pub struct next(());
         ///Marker type for the `origin` field
         pub struct origin(());
+        ///Marker type for the `original_sender_attestation` field
+        pub struct original_sender_attestation(());
         ///Marker type for the `preparation_digest` field
         pub struct preparation_digest(());
         ///Marker type for the `preparation_request_digest` field
@@ -72116,6 +72950,7 @@ pub struct DirectRequestPublicationBodyBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestOrigin<S>>,
+        core::option::Option<DirectRequestPublicationBodyOriginalSenderAttestation<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::DirectRequestProfile<S>>,
@@ -72158,7 +72993,7 @@ impl
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -72174,7 +73009,7 @@ impl<S: jacquard_common::BosStr>
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -72464,6 +73299,28 @@ where
 impl<St, S: jacquard_common::BosStr> DirectRequestPublicationBodyBuilder<St, S>
 where
     St: direct_request_publication_body_state::State,
+    St::OriginalSenderAttestation: direct_request_publication_body_state::IsUnset,
+{
+    /// Set the `originalSenderAttestation` field (required)
+    pub fn original_sender_attestation(
+        mut self,
+        value: impl Into<DirectRequestPublicationBodyOriginalSenderAttestation<S>>,
+    ) -> DirectRequestPublicationBodyBuilder<
+        direct_request_publication_body_state::SetOriginalSenderAttestation<St>,
+        S,
+    > {
+        self._fields.13 = ::core::option::Option::Some(value.into());
+        DirectRequestPublicationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DirectRequestPublicationBodyBuilder<St, S>
+where
+    St: direct_request_publication_body_state::State,
     St::PreparationDigest: direct_request_publication_body_state::IsUnset,
 {
     /// Set the `preparationDigest` field (required)
@@ -72474,7 +73331,7 @@ where
         direct_request_publication_body_state::SetPreparationDigest<St>,
         S,
     > {
-        self._fields.13 = ::core::option::Option::Some(value.into());
+        self._fields.14 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72496,7 +73353,7 @@ where
         direct_request_publication_body_state::SetPreparationRequestDigest<St>,
         S,
     > {
-        self._fields.14 = ::core::option::Option::Some(value.into());
+        self._fields.15 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72516,7 +73373,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::DirectRequestProfile<S>>,
     ) -> DirectRequestPublicationBodyBuilder<direct_request_publication_body_state::SetProfile<St>, S>
     {
-        self._fields.15 = ::core::option::Option::Some(value.into());
+        self._fields.16 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72538,7 +73395,7 @@ where
         direct_request_publication_body_state::SetProtocolVersion<St>,
         S,
     > {
-        self._fields.16 = ::core::option::Option::Some(value.into());
+        self._fields.17 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72560,7 +73417,7 @@ where
         direct_request_publication_body_state::SetRecipientDid<St>,
         S,
     > {
-        self._fields.17 = ::core::option::Option::Some(value.into());
+        self._fields.18 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72582,7 +73439,7 @@ where
         direct_request_publication_body_state::SetRequestId<St>,
         S,
     > {
-        self._fields.18 = ::core::option::Option::Some(value.into());
+        self._fields.19 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72604,7 +73461,7 @@ where
         direct_request_publication_body_state::SetSignatureDomain<St>,
         S,
     > {
-        self._fields.19 = ::core::option::Option::Some(value.into());
+        self._fields.20 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72626,7 +73483,7 @@ where
         direct_request_publication_body_state::SetSignedAt<St>,
         S,
     > {
-        self._fields.20 = ::core::option::Option::Some(value.into());
+        self._fields.21 = ::core::option::Option::Some(value.into());
         DirectRequestPublicationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -72651,6 +73508,7 @@ where
     St::KeyId: direct_request_publication_body_state::IsSet,
     St::Next: direct_request_publication_body_state::IsSet,
     St::Origin: direct_request_publication_body_state::IsSet,
+    St::OriginalSenderAttestation: direct_request_publication_body_state::IsSet,
     St::PreparationDigest: direct_request_publication_body_state::IsSet,
     St::PreparationRequestDigest: direct_request_publication_body_state::IsSet,
     St::Profile: direct_request_publication_body_state::IsSet,
@@ -72676,14 +73534,15 @@ where
             key_id: self._fields.10.unwrap(),
             next: self._fields.11.unwrap(),
             origin: self._fields.12.unwrap(),
-            preparation_digest: self._fields.13.unwrap(),
-            preparation_request_digest: self._fields.14.unwrap(),
-            profile: self._fields.15.unwrap(),
-            protocol_version: self._fields.16.unwrap(),
-            recipient_did: self._fields.17.unwrap(),
-            request_id: self._fields.18.unwrap(),
-            signature_domain: self._fields.19.unwrap(),
-            signed_at: self._fields.20.unwrap(),
+            original_sender_attestation: self._fields.13.unwrap(),
+            preparation_digest: self._fields.14.unwrap(),
+            preparation_request_digest: self._fields.15.unwrap(),
+            profile: self._fields.16.unwrap(),
+            protocol_version: self._fields.17.unwrap(),
+            recipient_did: self._fields.18.unwrap(),
+            request_id: self._fields.19.unwrap(),
+            signature_domain: self._fields.20.unwrap(),
+            signed_at: self._fields.21.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -72709,14 +73568,15 @@ where
             key_id: self._fields.10.unwrap(),
             next: self._fields.11.unwrap(),
             origin: self._fields.12.unwrap(),
-            preparation_digest: self._fields.13.unwrap(),
-            preparation_request_digest: self._fields.14.unwrap(),
-            profile: self._fields.15.unwrap(),
-            protocol_version: self._fields.16.unwrap(),
-            recipient_did: self._fields.17.unwrap(),
-            request_id: self._fields.18.unwrap(),
-            signature_domain: self._fields.19.unwrap(),
-            signed_at: self._fields.20.unwrap(),
+            original_sender_attestation: self._fields.13.unwrap(),
+            preparation_digest: self._fields.14.unwrap(),
+            preparation_request_digest: self._fields.15.unwrap(),
+            profile: self._fields.16.unwrap(),
+            protocol_version: self._fields.17.unwrap(),
+            recipient_did: self._fields.18.unwrap(),
+            request_id: self._fields.19.unwrap(),
+            signature_domain: self._fields.20.unwrap(),
+            signed_at: self._fields.21.unwrap(),
             extra_data: Some(extra_data),
         }
     }
