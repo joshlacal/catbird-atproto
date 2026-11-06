@@ -32,7 +32,7 @@ cargo clippy --locked --all-targets --all-features
 
 ## Current generation (direct-request sender attestation, regenerated 2026-11-06)
 
-This generation carries the original sender's signed archive attestation in `applicationAad` and makes that attestation mandatory in `directRequestPublicationBody`. Rust was regenerated from PetrelCatbird provisional commit `b740c2cc466d91c4cd01f125dc7b1344429d3a84` (tree `3b5c91beb168b29383d2b3917d6d87f1e1e748ac`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `3764fc1be74a50e72ca9201eb2793357aaec3b27a7024a3e97e1d9e33ef7aab6`), with no generated declaration edited by hand. Petrel `generator/lexicons` (441 files) and the Rust generator are unchanged from the previous generation.
+This generation carries the original sender's signed archive attestation in `applicationAad` and makes that attestation mandatory in `directRequestPublicationBody`. Rust was regenerated from PetrelCatbird provisional commit `e11f2ac3d7d8273eea50e0f0c739bff3d7777478` (tree `f9de8681aeb811853a93425d9ce4edefb9d73b01`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `3764fc1be74a50e72ca9201eb2793357aaec3b27a7024a3e97e1d9e33ef7aab6`), with no generated declaration edited by hand. Petrel `generator/lexicons` (441 files) and the Rust generator are unchanged from the previous generation.
 
 | Generator file | SHA-256 |
 | --- | --- |
