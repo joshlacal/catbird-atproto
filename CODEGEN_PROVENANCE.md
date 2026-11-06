@@ -30,7 +30,25 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (PetrelCatbird `relaySpaceCredential` `86add83c`, regenerated 2026-11-04)
+## Current generation (PetrelCatbird `getMailboxKeysRecord`, regenerated 2026-11-04)
+
+This generation adds the canonical fixed `blue.catbird.labyrinth.getMailboxKeysRecord` query used by an authenticated home service to resolve and read one peer public `blue.catbird.labyrinth.mailboxKeys` record by DID and rkey. The schema declares the typed URI/CID/value response and `RecordNotFound`, `UpstreamError` and `RelayUnavailable`; it accepts no caller-selected URL, collection, headers or token. Swift, Kotlin and Rust were regenerated from PetrelCatbird provisional commit `464eef2d5a6d4c95305372e49fb7620d180cf257` (tree `28c8e2681ddf35402f1f8d4638a4e161172cbcec`; 203-file overlay), with no generated declaration edited by hand. `Petrel` `generator/lexicons` (441 files) is unchanged from the previous generation. The Rust generator and locked graph come from mls-ds commit `942acb2800a37f9582dbf01af9f4c8aaff4f137c`; their exact file hashes are recorded below. Rust 1.97.1, rustfmt 1.9.0.
+
+| Generator file | SHA-256 |
+| --- | --- |
+| mls-ds `codegen/src/main.rs` | `d6f5ac1b5ceb09d10910c0d85ebb287aaf94766b0a4311c07bba54697ddc579f` |
+| mls-ds `codegen/Cargo.toml` | `5d8756af56b27bfe9039c576e416f4652936fd1af4e84a996b278dfa251506b6` |
+| mls-ds `Cargo.lock` | `5e5a2cfe6135717238e57634e24a451b0efd0b1b777945ea27e9995a0befec7b` |
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 441 | `a5c5fbc0a9c38ceb74192fa0aea31d93f73e381b3ddb02e55d73fef7f94e975d` |
+| PetrelCatbird `lexicons` | 203 | `0c2279e2df29fd8094608308ac4a4cca3637f9ebb0d20a223c81aeb697b6c978` |
+| Rust `src/generated` | 671 | `dca5fbfa96e47d3e858e9154372e650a40cc34bf61cc088f39375e1f223853b7` |
+
+`python3 Scripts/regenerate.py generate` emitted all 671 Rust files from that corpus.
+
+## Previous generation (PetrelCatbird `relaySpaceCredential` `86add83c`, regenerated 2026-11-04)
 
 This generation picks up one PetrelCatbird schema change, provisional commit `86add83cb0eea76a0e940e8729caccb9b0eca25e` (tree `7ef1b2f462578e3d660a9cb9dd82ff1c522f0438`, on top of `0f4f58a2`): in `blue.catbird.chat.relaySpaceCredential.json` (SHA-256 `00d3d262c541984effb951fc8087b93eec2e8e89ab87538e75ec43b5a505135d`, byte-identical to the mls-ds `lexicon/` mirror), `cnfKey` is now required and the `authorityDid`, `space`, `delegationToken` and `cnfKey` descriptions are rewritten. Only `blue_catbird/chat/relay_space_credential.rs` changes: `cnf_key` becomes a required `S` (no `skip_serializing_if`), its builder gains a `CnfKey` state, and the four doc comments follow the schema. `Petrel` `generator/lexicons` (`08508fb9`, 441 files) and the generator are unchanged from the previous generation: mls-ds `codegen/` is the bookmark's `d5f6993c` plus one clippy-only rewrite, carried in mls-ds's Task 4 R1 provisional commit (file hashes below). Rust 1.97.1, rustfmt 1.9.0.
 

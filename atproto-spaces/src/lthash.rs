@@ -80,6 +80,20 @@ impl LtHash {
         self.add(&elem);
     }
 
+    /// Add one canonical Space writer-inventory entry.
+    pub fn add_inventory_entry(
+        &mut self,
+        did: &str,
+        repo_rev: &str,
+        space_rev: &str,
+        data_32: &[u8; LTHASH_COMMITMENT_BYTES],
+    ) -> Result<()> {
+        self.add(&compute_inventory_element_hash(
+            did, repo_rev, space_rev, data_32,
+        )?);
+        Ok(())
+    }
+
     /// Remove a record directly by `(collection, rkey, cid)`.
     pub fn remove_record(&mut self, collection: &str, rkey: &str, cid: &Cid) {
         let elem = compute_record_element_hash(collection, rkey, cid);
@@ -117,10 +131,70 @@ pub fn compute_record_element_hash(collection: &str, rkey: &str, cid: &Cid) -> [
     out
 }
 
+/// Domain-separated canonical element hash for one writer-inventory row.
+///
+/// Each text field is UTF-8 prefixed by its big-endian `u16` byte length,
+/// followed by the exact 32-byte repository LtHash commitment. The enclosing
+/// [`LtHash`] makes the full inventory a set commitment, while callers still
+/// enforce canonical DID order and uniqueness on the paged wire.
+pub fn compute_inventory_element_hash(
+    did: &str,
+    repo_rev: &str,
+    space_rev: &str,
+    data_32: &[u8; LTHASH_COMMITMENT_BYTES],
+) -> Result<[u8; LTHASH_BYTES]> {
+    const DOMAIN: &[u8] = b"atproto-space-writer-inventory-v1";
+    let mut hasher = blake3::Hasher::new();
+    hasher.update(DOMAIN);
+    for (name, value) in [
+        ("did", did.as_bytes()),
+        ("repoRev", repo_rev.as_bytes()),
+        ("spaceRev", space_rev.as_bytes()),
+    ] {
+        let len = u16::try_from(value.len()).map_err(|_| {
+            SpacesError::SetHashMismatch(format!("inventory {name} exceeds 65535 bytes"))
+        })?;
+        hasher.update(&len.to_be_bytes());
+        hasher.update(value);
+    }
+    hasher.update(data_32);
+    let mut out = [0u8; LTHASH_BYTES];
+    hasher.finalize_xof().fill(&mut out);
+    Ok(out)
+}
+
 /// Compute CIDv1 (`dag-cbor` `0x71`, `sha2-256` `0x12`) over canonical DAG-CBOR bytes.
 pub fn compute_dagcbor_cid(dagcbor_bytes: &[u8]) -> Cid {
     let digest = Sha256::digest(dagcbor_bytes);
     let mh = Multihash::<64>::wrap(SHA2_256_MULTIHASH, &digest)
         .expect("32-byte SHA-256 digest always fits 64-byte Multihash");
     Cid::new_v1(DAG_CBOR_CODEC, mh)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn inventory_commitment_is_order_independent_and_binds_every_field() {
+        let rows = [
+            ("did:plc:alice", "3m2aaaaaaaaa2", "3m2aaaaaaaab2", [1; 32]),
+            ("did:plc:bob", "3m2aaaaaaaac2", "3m2aaaaaaaad2", [2; 32]),
+        ];
+        let commitment = |rows: &[(&str, &str, &str, [u8; 32])]| {
+            let mut hash = LtHash::empty();
+            for (did, repo_rev, space_rev, data) in rows {
+                hash.add_inventory_entry(did, repo_rev, space_rev, data)
+                    .unwrap();
+            }
+            hash.commitment()
+        };
+        let mut reversed = rows;
+        reversed.reverse();
+        assert_eq!(commitment(&rows), commitment(&reversed));
+
+        let mut changed = rows;
+        changed[1].3[0] ^= 1;
+        assert_ne!(commitment(&rows), commitment(&changed));
+    }
 }

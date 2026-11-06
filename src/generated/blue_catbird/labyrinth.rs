@@ -33,6 +33,7 @@ pub mod get_chat_device_keys;
 pub mod get_device;
 pub mod get_epoch;
 pub mod get_epoch_head;
+pub mod get_mailbox_keys_record;
 pub mod get_member_devices;
 pub mod get_messages;
 pub mod get_space_membership;
