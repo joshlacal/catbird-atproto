@@ -469,7 +469,7 @@ pub struct ApplicationFrameContext<S: jacquard_common::BosStr = jacquard_common:
     >,
 }
 
-/// messageId is the sole idempotency identity, unique within conversationId. Its canonical request digest is raw SHA-256 of the exact domain-prefixed canonical Ed25519 transcript and its 64-byte signature is stored separately. Exact completed replay requires both digest and signature byte-equal; either mismatch conflicts. Raw JSON or generated DTO bytes are never hashed. blobBindings contains zero or one exact applicationAttachmentBinding with purpose attachment; metadataAvatarBinding and generic uploadedBlobBinding are forbidden. A stale-coordinate attempt retires that messageId under the same digest/signature rule, so retry requires a newly encrypted frame and new messageId.
+/// messageId is the sole idempotency identity, unique within conversationId. Its canonical request digest is raw SHA-256 of the exact domain-prefixed canonical Ed25519 transcript and its 64-byte signature is stored separately. Exact completed replay requires both digest and signature byte-equal; either mismatch conflicts. Raw JSON or generated DTO bytes are never hashed. blobBindings contains zero or one exact applicationAttachmentBinding with purpose attachment; metadataAvatarBinding and generic uploadedBlobBinding are forbidden. A stale-coordinate attempt retires that messageId under the same digest/signature rule, so retry requires a newly encrypted frame and new messageId. sendCounter orders one device's sends: a StaleSend refusal retires neither the messageId nor that order, and the sender re-sends the same message as a newly encrypted frame with a new sendCounter under the same messageId; it never resubmits the refused bytes.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -488,6 +488,8 @@ pub struct ApplicationSendBody<S: jacquard_common::BosStr = jacquard_common::Def
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
     pub message_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub prior: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
+    /// Per-device send order within conversationId: strictly greater than every sendCounter this device has signed for the conversation, assigned in the same durable step that encrypts the frame and never reused. A sequencer resolving a messageId for the first time accepts it only if (prior.generation, prior.epoch, sendCounter) is lexicographically greater than this device's last accepted send in the conversation, so one device's sequenced order is its MLS generation order; otherwise it refuses StaleSend. An exact replay of an accepted send returns its stored outcome, never StaleSend.
+    pub send_counter: i64,
     pub signature_domain: S,
     pub signed_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     #[serde(
@@ -8719,6 +8721,26 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                     path: jacquard_lexicon::validation::ValidationPath::from_field("message_id"),
                     min: 36usize,
                     actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.send_counter;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("send_counter"),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.send_counter;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("send_counter"),
+                    min: 1i64,
+                    actual: *value,
                 });
             }
         }
@@ -26067,7 +26089,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "messageId is the sole idempotency identity, unique within conversationId. Its canonical request digest is raw SHA-256 of the exact domain-prefixed canonical Ed25519 transcript and its 64-byte signature is stored separately. Exact completed replay requires both digest and signature byte-equal; either mismatch conflicts. Raw JSON or generated DTO bytes are never hashed. blobBindings contains zero or one exact applicationAttachmentBinding with purpose attachment; metadataAvatarBinding and generic uploadedBlobBinding are forbidden. A stale-coordinate attempt retires that messageId under the same digest/signature rule, so retry requires a newly encrypted frame and new messageId.",
+                            "messageId is the sole idempotency identity, unique within conversationId. Its canonical request digest is raw SHA-256 of the exact domain-prefixed canonical Ed25519 transcript and its 64-byte signature is stored separately. Exact completed replay requires both digest and signature byte-equal; either mismatch conflicts. Raw JSON or generated DTO bytes are never hashed. blobBindings contains zero or one exact applicationAttachmentBinding with purpose attachment; metadataAvatarBinding and generic uploadedBlobBinding are forbidden. A stale-coordinate attempt retires that messageId under the same digest/signature rule, so retry requires a newly encrypted frame and new messageId. sendCounter orders one device's sends: a StaleSend refusal retires neither the messageId nor that order, and the sender re-sends the same message as a newly encrypted frame with a new sendCounter under the same messageId; it never resubmits the refused bytes.",
                         ),
                     ),
                     required: Some(
@@ -26078,6 +26100,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDeviceId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("keyId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("authGeneration"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sendCounter"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("prior"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("aad"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("applicationMessage"),
@@ -26182,6 +26205,16 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "#conversationCoordinates",
                                 ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sendCounter",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
                                 ..Default::default()
                             }),
                         );
@@ -47505,6 +47538,7 @@ pub mod application_send_body_state {
         type KeyId;
         type MessageId;
         type Prior;
+        type SendCounter;
         type SignatureDomain;
         type SignedAt;
     }
@@ -47521,6 +47555,7 @@ pub mod application_send_body_state {
         type KeyId = Unset;
         type MessageId = Unset;
         type Prior = Unset;
+        type SendCounter = Unset;
         type SignatureDomain = Unset;
         type SignedAt = Unset;
     }
@@ -47537,6 +47572,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47553,6 +47589,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47569,6 +47606,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47585,6 +47623,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47601,6 +47640,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47617,6 +47657,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47633,6 +47674,7 @@ pub mod application_send_body_state {
         type KeyId = Set<members::key_id>;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47649,6 +47691,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = Set<members::message_id>;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47665,6 +47708,24 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = Set<members::prior>;
+        type SendCounter = St::SendCounter;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `send_counter` field to Set
+    pub struct SetSendCounter<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSendCounter<St> {}
+    impl<St: State> State for SetSendCounter<St> {
+        type Aad = St::Aad;
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type ApplicationMessage = St::ApplicationMessage;
+        type AuthGeneration = St::AuthGeneration;
+        type BlobBindings = St::BlobBindings;
+        type KeyId = St::KeyId;
+        type MessageId = St::MessageId;
+        type Prior = St::Prior;
+        type SendCounter = Set<members::send_counter>;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = St::SignedAt;
     }
@@ -47681,6 +47742,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = Set<members::signature_domain>;
         type SignedAt = St::SignedAt;
     }
@@ -47697,6 +47759,7 @@ pub mod application_send_body_state {
         type KeyId = St::KeyId;
         type MessageId = St::MessageId;
         type Prior = St::Prior;
+        type SendCounter = St::SendCounter;
         type SignatureDomain = St::SignatureDomain;
         type SignedAt = Set<members::signed_at>;
     }
@@ -47721,6 +47784,8 @@ pub mod application_send_body_state {
         pub struct message_id(());
         ///Marker type for the `prior` field
         pub struct prior(());
+        ///Marker type for the `send_counter` field
+        pub struct send_counter(());
         ///Marker type for the `signature_domain` field
         pub struct signature_domain(());
         ///Marker type for the `signed_at` field
@@ -47746,6 +47811,7 @@ pub struct ApplicationSendBodyBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
+        core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     ),
@@ -47774,7 +47840,7 @@ impl ApplicationSendBodyBuilder<application_send_body_state::Empty, jacquard_com
         ApplicationSendBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -47787,7 +47853,7 @@ impl<S: jacquard_common::BosStr> ApplicationSendBodyBuilder<application_send_bod
         ApplicationSendBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -47968,6 +48034,25 @@ where
 impl<St, S: jacquard_common::BosStr> ApplicationSendBodyBuilder<St, S>
 where
     St: application_send_body_state::State,
+    St::SendCounter: application_send_body_state::IsUnset,
+{
+    /// Set the `sendCounter` field (required)
+    pub fn send_counter(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ApplicationSendBodyBuilder<application_send_body_state::SetSendCounter<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
+        ApplicationSendBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ApplicationSendBodyBuilder<St, S>
+where
+    St: application_send_body_state::State,
     St::SignatureDomain: application_send_body_state::IsUnset,
 {
     /// Set the `signatureDomain` field (required)
@@ -47975,7 +48060,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> ApplicationSendBodyBuilder<application_send_body_state::SetSignatureDomain<St>, S> {
-        self._fields.9 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         ApplicationSendBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -47994,7 +48079,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     ) -> ApplicationSendBodyBuilder<application_send_body_state::SetSignedAt<St>, S> {
-        self._fields.10 = ::core::option::Option::Some(value.into());
+        self._fields.11 = ::core::option::Option::Some(value.into());
         ApplicationSendBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -48015,6 +48100,7 @@ where
     St::KeyId: application_send_body_state::IsSet,
     St::MessageId: application_send_body_state::IsSet,
     St::Prior: application_send_body_state::IsSet,
+    St::SendCounter: application_send_body_state::IsSet,
     St::SignatureDomain: application_send_body_state::IsSet,
     St::SignedAt: application_send_body_state::IsSet,
 {
@@ -48030,8 +48116,9 @@ where
             key_id: self._fields.6.unwrap(),
             message_id: self._fields.7.unwrap(),
             prior: self._fields.8.unwrap(),
-            signature_domain: self._fields.9.unwrap(),
-            signed_at: self._fields.10.unwrap(),
+            send_counter: self._fields.9.unwrap(),
+            signature_domain: self._fields.10.unwrap(),
+            signed_at: self._fields.11.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -48053,8 +48140,9 @@ where
             key_id: self._fields.6.unwrap(),
             message_id: self._fields.7.unwrap(),
             prior: self._fields.8.unwrap(),
-            signature_domain: self._fields.9.unwrap(),
-            signed_at: self._fields.10.unwrap(),
+            send_counter: self._fields.9.unwrap(),
+            signature_domain: self._fields.10.unwrap(),
+            signed_at: self._fields.11.unwrap(),
             extra_data: Some(extra_data),
         }
     }

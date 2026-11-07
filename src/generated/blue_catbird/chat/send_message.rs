@@ -149,6 +149,11 @@ pub enum SendMessageError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "StaleSend")]
+    StaleSend(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnsupportedMlsProfile")]
     UnsupportedMlsProfile(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -305,6 +310,13 @@ impl core::fmt::Display for SendMessageError {
             }
             Self::StaleCoordinates(msg) => {
                 write!(f, "StaleCoordinates")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::StaleSend(msg) => {
+                write!(f, "StaleSend")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
