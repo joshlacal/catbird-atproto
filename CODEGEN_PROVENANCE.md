@@ -30,7 +30,25 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (seed 2323 signed send counter, regenerated 2026-11-07)
+## Current generation (R4 signed leaf-recovery request, regenerated 2026-11-07)
+
+This generation adds the optional `signedRequest` (a `#signedLeafRecoveryRequest`, the requester device's exact signed `requestLeafRecovery`) to `blue.catbird.chat.defs#leafRecoveryView`. Only `blue_catbird/chat.rs` changes: the `LeafRecoveryView::signed_request` field with its doc comment, the builder slot and setters, and the embedded lexicon document. It used PetrelCatbird commit `e782e46ca8489c881517186fe0bf1a9c35c99634` (tree `d9a3c6cfc19c439435332b7d85c8ff80e5edb3af`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `cf931d0fda7b68082f7f0ac9105dd62122692ee35afbf0ddf7eb2d134340f848`) and Petrel `f381cb844d33d76ad7ca948698480d381712304b` (tree `6768ba98ed5076fe23141983a1f9b8011dbc7e85`; 441-file core lexicon corpus), with no generated declaration edited by hand. The generator files are unchanged.
+
+| Generator file | SHA-256 |
+| --- | --- |
+| mls-ds `codegen/src/main.rs` | `d6f5ac1b5ceb09d10910c0d85ebb287aaf94766b0a4311c07bba54697ddc579f` |
+| mls-ds `codegen/Cargo.toml` | `5d8756af56b27bfe9039c576e416f4652936fd1af4e84a996b278dfa251506b6` |
+| mls-ds `Cargo.lock` | `5e5a2cfe6135717238e57634e24a451b0efd0b1b777945ea27e9995a0befec7b` |
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 441 | `a5c5fbc0a9c38ceb74192fa0aea31d93f73e381b3ddb02e55d73fef7f94e975d` |
+| PetrelCatbird `lexicons` | 203 | `838a01b33cc249e42a19ecc028fe5a5d34abab56789d497bf95df7a4c73905bd` |
+| Rust `src/generated` | 671 | `57f2de7eb24cbf678c963722ef31329daf55608106e3ebcfada8fefdef7d3789` |
+
+`Scripts/regenerate.py check` verified all 671 generated files against that corpus.
+
+## Previous generation (seed 2323 signed send counter, regenerated 2026-11-07)
 
 This generation adds the required signed `sendCounter` to `blue.catbird.chat.defs#applicationSendBody` and the `StaleSend` error to `blue.catbird.chat.sendMessage`. Only `blue_catbird/chat.rs` (`ApplicationSendBody` field, builder state and doc comment) and `blue_catbird/chat/send_message.rs` (`StaleSend` error variant) change. It used PetrelCatbird provisional commit `e4227af68226a61a4cae7478496d1a7b930f28f6` (tree `2ce27d72e2a84fd363cba629d2847a3f32921743`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `1c21d1b04555c800a0491e997b74e3185520b0634362e68a2a27e6b8babdb075`) and Petrel `f381cb844d33d76ad7ca948698480d381712304b` (tree `6768ba98ed5076fe23141983a1f9b8011dbc7e85`; 441-file core lexicon corpus), with no generated declaration edited by hand. The generator files are unchanged, and `Scripts/regenerate.py check` reproduced all 671 files byte for byte.
 

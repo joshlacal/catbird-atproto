@@ -4071,6 +4071,10 @@ pub struct LeafRecoveryView<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub requester_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     pub requester_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub reservation: crate::generated::blue_catbird::chat::LeafRecoveryReservation<S>,
+    /// The requester device's exact signed requestLeafRecovery, present exactly when that request created this recovery. An acceptance-created recovery carries none; its participantAcceptanceEntry carries the signed acceptance. A fulfiller verifies it under the PDS-authorized key of exactly requesterDid#requesterDeviceId and binds every view and reservation field to it before any Commit.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub signed_request:
+        core::option::Option<crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>>,
     pub status: crate::generated::blue_catbird::chat::LeafRecoveryStatus<S>,
     #[serde(
         flatten,
@@ -35831,6 +35835,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexRef {
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#leafRecoveryReservation",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "signedRequest",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#signedLeafRecoveryRequest",
                                         ),
                                         ..Default::default()
                                     },
@@ -86161,6 +86178,7 @@ pub struct LeafRecoveryViewBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::LeafRecoveryReservation<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::LeafRecoveryStatus<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -86186,7 +86204,9 @@ impl LeafRecoveryViewBuilder<leaf_recovery_view_state::Empty, jacquard_common::D
     pub fn new() -> Self {
         LeafRecoveryViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -86197,7 +86217,9 @@ impl<S: jacquard_common::BosStr> LeafRecoveryViewBuilder<leaf_recovery_view_stat
     pub fn builder() -> Self {
         LeafRecoveryViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -86374,6 +86396,27 @@ where
     }
 }
 
+impl<St: leaf_recovery_view_state::State, S: jacquard_common::BosStr>
+    LeafRecoveryViewBuilder<St, S>
+{
+    /// Set the `signedRequest` field (optional)
+    pub fn signed_request(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>>>,
+    ) -> Self {
+        self._fields.9 = value.into();
+        self
+    }
+    /// Set the `signedRequest` field to an Option value (optional)
+    pub fn maybe_signed_request(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SignedLeafRecoveryRequest<S>>,
+    ) -> Self {
+        self._fields.9 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> LeafRecoveryViewBuilder<St, S>
 where
     St: leaf_recovery_view_state::State,
@@ -86384,7 +86427,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::LeafRecoveryStatus<S>>,
     ) -> LeafRecoveryViewBuilder<leaf_recovery_view_state::SetStatus<St>, S> {
-        self._fields.9 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         LeafRecoveryViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -86419,7 +86462,8 @@ where
             requester_device_id: self._fields.6.unwrap(),
             requester_did: self._fields.7.unwrap(),
             reservation: self._fields.8.unwrap(),
-            status: self._fields.9.unwrap(),
+            signed_request: self._fields.9,
+            status: self._fields.10.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -86441,7 +86485,8 @@ where
             requester_device_id: self._fields.6.unwrap(),
             requester_did: self._fields.7.unwrap(),
             reservation: self._fields.8.unwrap(),
-            status: self._fields.9.unwrap(),
+            signed_request: self._fields.9,
+            status: self._fields.10.unwrap(),
             extra_data: Some(extra_data),
         }
     }
