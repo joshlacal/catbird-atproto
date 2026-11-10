@@ -30,7 +30,29 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (R4 signed leaf-recovery request, regenerated 2026-11-07)
+## Current generation (Task 5 receipt projection, regenerated 2026-11-11)
+
+This generation removes the unsupported optional `sequencerReceipt` from
+`blue.catbird.chat.defs#accountDeletedEntry`, whose independently verified
+`sequencerAuthority` remains required, and adds the separately stored receipt
+bytes to `blue.catbird.mlsDS.getConvoEvents#convoEventEntry`.
+It used mls-ds `3079aca5b751c3757db3475d82a552a4ec9789b5`, whose `mls-codegen`
+sources are unchanged by this projection, Petrel core
+`f381cb844d33d76ad7ca948698480d381712304b` plus Kotlin-only generator patch
+`887b522a18949dda322ef9c3f0119ab52b95c2eb`, and the canonical
+PetrelCatbird Task 5 working-copy lexicon. `Scripts/regenerate.py generate`
+followed by `check` reproduced all 671 generated files byte for byte.
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 441 | `a5c5fbc0a9c38ceb74192fa0aea31d93f73e381b3ddb02e55d73fef7f94e975d` |
+| PetrelCatbird `lexicons` | 203 | `57a924bfa5384e5a6d1440b87a8d61d5ebf501de5f01d7f195db5f1b6bd68e58` |
+| Rust `src/generated` | 671 | `7951c1e02876f4f0ddb4e5309ef1262812d1fc2547be411e416299b0e08b5fca` |
+
+The canonical `blue.catbird.chat.defs.json` input is SHA-256
+`b0fe4af17f657647a8e1ceedb7a34765a0c72d514420ce3b153d6ecd11d240ff`.
+
+## Previous generation (R4 signed leaf-recovery request, regenerated 2026-11-07)
 
 This generation adds the optional `signedRequest` (a `#signedLeafRecoveryRequest`, the requester device's exact signed `requestLeafRecovery`) to `blue.catbird.chat.defs#leafRecoveryView`. Only `blue_catbird/chat.rs` changes: the `LeafRecoveryView::signed_request` field with its doc comment, the builder slot and setters, and the embedded lexicon document. It used PetrelCatbird commit `e782e46ca8489c881517186fe0bf1a9c35c99634` (tree `d9a3c6cfc19c439435332b7d85c8ff80e5edb3af`; 203-file overlay; `blue.catbird.chat.defs.json` SHA-256 `cf931d0fda7b68082f7f0ac9105dd62122692ee35afbf0ddf7eb2d134340f848`) and Petrel `f381cb844d33d76ad7ca948698480d381712304b` (tree `6768ba98ed5076fe23141983a1f9b8011dbc7e85`; 441-file core lexicon corpus), with no generated declaration edited by hand. The generator files are unchanged.
 

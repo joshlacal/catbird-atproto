@@ -794,6 +794,9 @@ pub struct CommitEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedCommitTransition<S>,
     #[serde(
         flatten,
@@ -917,6 +920,9 @@ pub struct ConversationCloseEntry<S: jacquard_common::BosStr = jacquard_common::
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedConversationClose<S>,
     pub tombstone: crate::generated::blue_catbird::chat::ConversationCloseTombstone<S>,
     #[serde(
@@ -1310,6 +1316,9 @@ pub struct CreationEntry<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedCreation<S>,
     #[serde(
         flatten,
@@ -1641,6 +1650,9 @@ pub struct DirectRequestAcceptanceEntry<S: jacquard_common::BosStr = jacquard_co
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedDirectRequestAcceptance<S>,
     #[serde(
         flatten,
@@ -3936,6 +3948,9 @@ pub struct LeafRecoveryFulfillmentEntry<S: jacquard_common::BosStr = jacquard_co
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedLeafRecoveryFulfillment<S>,
     #[serde(
         flatten,
@@ -4135,6 +4150,9 @@ pub struct LeaveCancellationEntry<S: jacquard_common::BosStr = jacquard_common::
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>,
     #[serde(
         flatten,
@@ -4201,6 +4219,9 @@ pub struct LeaveCommitFulfillmentEntry<S: jacquard_common::BosStr = jacquard_com
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedLeaveCommitFulfillment<S>,
     #[serde(
         flatten,
@@ -4277,6 +4298,9 @@ pub struct LeaveRequestEntry<S: jacquard_common::BosStr = jacquard_common::Defau
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedLeaveRequest<S>,
     #[serde(
         flatten,
@@ -4878,6 +4902,9 @@ pub struct MetadataEntry<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedMetadataTransition<S>,
     #[serde(
         flatten,
@@ -5176,6 +5203,9 @@ pub struct ParticipantAcceptanceEntry<S: jacquard_common::BosStr = jacquard_comm
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub recovery: crate::generated::blue_catbird::chat::LeafRecoveryView<S>,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedParticipantAcceptance<S>,
     #[serde(
         flatten,
@@ -5254,6 +5284,9 @@ pub struct PolicyEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedPolicyTransition<S>,
     #[serde(
         flatten,
@@ -6101,6 +6134,9 @@ pub struct ResetActivationEntry<S: jacquard_common::BosStr = jacquard_common::De
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedResetActivation<S>,
     #[serde(
         flatten,
@@ -6188,6 +6224,9 @@ pub struct ResetRequestEntry<S: jacquard_common::BosStr = jacquard_common::Defau
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedResetRequest<S>,
     #[serde(
         flatten,
@@ -7728,6 +7767,9 @@ pub struct ZeroLeafLeaveEntry<S: jacquard_common::BosStr = jacquard_common::Defa
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sequencer_receipt:
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
     pub signed_request: crate::generated::blue_catbird::chat::SignedZeroLeafLeave<S>,
     #[serde(
         flatten,
@@ -27162,6 +27204,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "signedRequest",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
@@ -27592,6 +27647,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         minimum: Some(1i64),
                                         maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -28575,6 +28643,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         minimum: Some(1i64),
                                         maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -29760,6 +29841,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         minimum: Some(1i64),
                                         maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -35348,6 +35442,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "signedRequest",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
@@ -36055,6 +36162,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "signedRequest",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
@@ -36329,6 +36449,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "signedRequest",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
@@ -36538,6 +36671,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         minimum: Some(1i64),
                                         maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -37910,6 +38056,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "signedRequest",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
@@ -38800,6 +38959,17 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerReceipt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#sequencerReceipt",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "signedRequest",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
@@ -38982,6 +39152,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         minimum: Some(1i64),
                                         maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -40646,6 +40829,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "signedRequest",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
@@ -40922,6 +41118,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         minimum: Some(1i64),
                                         maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -43950,6 +44159,19 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         minimum: Some(1i64),
                                         maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#sequencerReceipt",
+                                        ),
                                         ..Default::default()
                                     },
                                 ),
@@ -51521,6 +51743,7 @@ pub struct CommitEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedCommitTransition<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -51545,7 +51768,7 @@ impl CommitEntryBuilder<commit_entry_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         CommitEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -51556,7 +51779,7 @@ impl<S: jacquard_common::BosStr> CommitEntryBuilder<commit_entry_state::Empty, S
     pub fn builder() -> Self {
         CommitEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -51638,6 +51861,25 @@ where
     }
 }
 
+impl<St: commit_entry_state::State, S: jacquard_common::BosStr> CommitEntryBuilder<St, S> {
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> CommitEntryBuilder<St, S>
 where
     St: commit_entry_state::State,
@@ -51648,7 +51890,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedCommitTransition<S>>,
     ) -> CommitEntryBuilder<commit_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         CommitEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -51673,7 +51915,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -51690,7 +51933,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -53375,6 +53619,7 @@ pub struct ConversationCloseEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedConversationClose<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCloseTombstone<S>>,
     ),
@@ -53408,7 +53653,7 @@ impl
     pub fn new() -> Self {
         ConversationCloseEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -53421,7 +53666,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         ConversationCloseEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -53504,6 +53749,27 @@ where
     }
 }
 
+impl<St: conversation_close_entry_state::State, S: jacquard_common::BosStr>
+    ConversationCloseEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ConversationCloseEntryBuilder<St, S>
 where
     St: conversation_close_entry_state::State,
@@ -53515,7 +53781,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::SignedConversationClose<S>>,
     ) -> ConversationCloseEntryBuilder<conversation_close_entry_state::SetSignedRequest<St>, S>
     {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ConversationCloseEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -53534,7 +53800,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::ConversationCloseTombstone<S>>,
     ) -> ConversationCloseEntryBuilder<conversation_close_entry_state::SetTombstone<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         ConversationCloseEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -53560,8 +53826,9 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
-            tombstone: self._fields.5.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
+            tombstone: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -53578,8 +53845,9 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
-            tombstone: self._fields.5.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
+            tombstone: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -57046,6 +57314,7 @@ pub struct CreationEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedCreation<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -57070,7 +57339,7 @@ impl CreationEntryBuilder<creation_entry_state::Empty, jacquard_common::DefaultS
     pub fn new() -> Self {
         CreationEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -57081,7 +57350,7 @@ impl<S: jacquard_common::BosStr> CreationEntryBuilder<creation_entry_state::Empt
     pub fn builder() -> Self {
         CreationEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -57163,6 +57432,25 @@ where
     }
 }
 
+impl<St: creation_entry_state::State, S: jacquard_common::BosStr> CreationEntryBuilder<St, S> {
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> CreationEntryBuilder<St, S>
 where
     St: creation_entry_state::State,
@@ -57173,7 +57461,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedCreation<S>>,
     ) -> CreationEntryBuilder<creation_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         CreationEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -57198,7 +57486,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -57215,7 +57504,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -61799,6 +62089,7 @@ pub struct DirectRequestAcceptanceEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<
             crate::generated::blue_catbird::chat::SignedDirectRequestAcceptance<S>,
         >,
@@ -61834,7 +62125,7 @@ impl
     pub fn new() -> Self {
         DirectRequestAcceptanceEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -61847,7 +62138,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         DirectRequestAcceptanceEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -61937,6 +62228,27 @@ where
     }
 }
 
+impl<St: direct_request_acceptance_entry_state::State, S: jacquard_common::BosStr>
+    DirectRequestAcceptanceEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> DirectRequestAcceptanceEntryBuilder<St, S>
 where
     St: direct_request_acceptance_entry_state::State,
@@ -61950,7 +62262,7 @@ where
         direct_request_acceptance_entry_state::SetSignedRequest<St>,
         S,
     > {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         DirectRequestAcceptanceEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -61975,7 +62287,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -61992,7 +62305,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -84447,6 +84761,7 @@ pub struct LeafRecoveryFulfillmentEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<
             crate::generated::blue_catbird::chat::SignedLeafRecoveryFulfillment<S>,
         >,
@@ -84482,7 +84797,7 @@ impl
     pub fn new() -> Self {
         LeafRecoveryFulfillmentEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -84495,7 +84810,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         LeafRecoveryFulfillmentEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -84585,6 +84900,27 @@ where
     }
 }
 
+impl<St: leaf_recovery_fulfillment_entry_state::State, S: jacquard_common::BosStr>
+    LeafRecoveryFulfillmentEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> LeafRecoveryFulfillmentEntryBuilder<St, S>
 where
     St: leaf_recovery_fulfillment_entry_state::State,
@@ -84598,7 +84934,7 @@ where
         leaf_recovery_fulfillment_entry_state::SetSignedRequest<St>,
         S,
     > {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         LeafRecoveryFulfillmentEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -84623,7 +84959,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -84640,7 +84977,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -87113,6 +87451,7 @@ pub struct LeaveCancellationEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -87145,7 +87484,7 @@ impl
     pub fn new() -> Self {
         LeaveCancellationEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -87158,7 +87497,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         LeaveCancellationEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -87241,6 +87580,27 @@ where
     }
 }
 
+impl<St: leave_cancellation_entry_state::State, S: jacquard_common::BosStr>
+    LeaveCancellationEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> LeaveCancellationEntryBuilder<St, S>
 where
     St: leave_cancellation_entry_state::State,
@@ -87252,7 +87612,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::SignedLeaveCancellation<S>>,
     ) -> LeaveCancellationEntryBuilder<leave_cancellation_entry_state::SetSignedRequest<St>, S>
     {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         LeaveCancellationEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -87277,7 +87637,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -87294,7 +87655,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -88294,6 +88656,7 @@ pub struct LeaveCommitFulfillmentEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedLeaveCommitFulfillment<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -88327,7 +88690,7 @@ impl
     pub fn new() -> Self {
         LeaveCommitFulfillmentEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -88340,7 +88703,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         LeaveCommitFulfillmentEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -88430,6 +88793,27 @@ where
     }
 }
 
+impl<St: leave_commit_fulfillment_entry_state::State, S: jacquard_common::BosStr>
+    LeaveCommitFulfillmentEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> LeaveCommitFulfillmentEntryBuilder<St, S>
 where
     St: leave_commit_fulfillment_entry_state::State,
@@ -88443,7 +88827,7 @@ where
         leave_commit_fulfillment_entry_state::SetSignedRequest<St>,
         S,
     > {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         LeaveCommitFulfillmentEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -88468,7 +88852,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -88485,7 +88870,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -89105,6 +89491,7 @@ pub struct LeaveRequestEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedLeaveRequest<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -89131,7 +89518,7 @@ impl LeaveRequestEntryBuilder<leave_request_entry_state::Empty, jacquard_common:
     pub fn new() -> Self {
         LeaveRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -89142,7 +89529,7 @@ impl<S: jacquard_common::BosStr> LeaveRequestEntryBuilder<leave_request_entry_st
     pub fn builder() -> Self {
         LeaveRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -89224,6 +89611,27 @@ where
     }
 }
 
+impl<St: leave_request_entry_state::State, S: jacquard_common::BosStr>
+    LeaveRequestEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> LeaveRequestEntryBuilder<St, S>
 where
     St: leave_request_entry_state::State,
@@ -89234,7 +89642,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedLeaveRequest<S>>,
     ) -> LeaveRequestEntryBuilder<leave_request_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         LeaveRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -89259,7 +89667,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -89276,7 +89685,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -94317,6 +94727,7 @@ pub struct MetadataEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedMetadataTransition<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -94341,7 +94752,7 @@ impl MetadataEntryBuilder<metadata_entry_state::Empty, jacquard_common::DefaultS
     pub fn new() -> Self {
         MetadataEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -94352,7 +94763,7 @@ impl<S: jacquard_common::BosStr> MetadataEntryBuilder<metadata_entry_state::Empt
     pub fn builder() -> Self {
         MetadataEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -94434,6 +94845,25 @@ where
     }
 }
 
+impl<St: metadata_entry_state::State, S: jacquard_common::BosStr> MetadataEntryBuilder<St, S> {
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> MetadataEntryBuilder<St, S>
 where
     St: metadata_entry_state::State,
@@ -94444,7 +94874,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedMetadataTransition<S>>,
     ) -> MetadataEntryBuilder<metadata_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         MetadataEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -94469,7 +94899,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -94486,7 +94917,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -97832,6 +98264,7 @@ pub struct ParticipantAcceptanceEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::LeafRecoveryView<S>>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedParticipantAcceptance<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -97865,7 +98298,7 @@ impl
     pub fn new() -> Self {
         ParticipantAcceptanceEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -97878,7 +98311,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         ParticipantAcceptanceEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -97985,6 +98418,27 @@ where
     }
 }
 
+impl<St: participant_acceptance_entry_state::State, S: jacquard_common::BosStr>
+    ParticipantAcceptanceEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ParticipantAcceptanceEntryBuilder<St, S>
 where
     St: participant_acceptance_entry_state::State,
@@ -97998,7 +98452,7 @@ where
         participant_acceptance_entry_state::SetSignedRequest<St>,
         S,
     > {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         ParticipantAcceptanceEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -98025,7 +98479,8 @@ where
             received_at: self._fields.2.unwrap(),
             recovery: self._fields.3.unwrap(),
             seq: self._fields.4.unwrap(),
-            signed_request: self._fields.5.unwrap(),
+            sequencer_receipt: self._fields.5,
+            signed_request: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -98043,7 +98498,8 @@ where
             received_at: self._fields.2.unwrap(),
             recovery: self._fields.3.unwrap(),
             seq: self._fields.4.unwrap(),
-            signed_request: self._fields.5.unwrap(),
+            sequencer_receipt: self._fields.5,
+            signed_request: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -98482,6 +98938,7 @@ pub struct PolicyEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedPolicyTransition<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -98506,7 +98963,7 @@ impl PolicyEntryBuilder<policy_entry_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         PolicyEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -98517,7 +98974,7 @@ impl<S: jacquard_common::BosStr> PolicyEntryBuilder<policy_entry_state::Empty, S
     pub fn builder() -> Self {
         PolicyEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -98599,6 +99056,25 @@ where
     }
 }
 
+impl<St: policy_entry_state::State, S: jacquard_common::BosStr> PolicyEntryBuilder<St, S> {
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> PolicyEntryBuilder<St, S>
 where
     St: policy_entry_state::State,
@@ -98609,7 +99085,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedPolicyTransition<S>>,
     ) -> PolicyEntryBuilder<policy_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         PolicyEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -98634,7 +99110,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -98651,7 +99128,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -105460,6 +105938,7 @@ pub struct ResetActivationEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedResetActivation<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -105486,7 +105965,7 @@ impl ResetActivationEntryBuilder<reset_activation_entry_state::Empty, jacquard_c
     pub fn new() -> Self {
         ResetActivationEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -105499,7 +105978,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         ResetActivationEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -105581,6 +106060,27 @@ where
     }
 }
 
+impl<St: reset_activation_entry_state::State, S: jacquard_common::BosStr>
+    ResetActivationEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ResetActivationEntryBuilder<St, S>
 where
     St: reset_activation_entry_state::State,
@@ -105591,7 +106091,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedResetActivation<S>>,
     ) -> ResetActivationEntryBuilder<reset_activation_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ResetActivationEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -105616,7 +106116,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -105633,7 +106134,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -106500,6 +107002,7 @@ pub struct ResetRequestEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedResetRequest<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -106526,7 +107029,7 @@ impl ResetRequestEntryBuilder<reset_request_entry_state::Empty, jacquard_common:
     pub fn new() -> Self {
         ResetRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -106537,7 +107040,7 @@ impl<S: jacquard_common::BosStr> ResetRequestEntryBuilder<reset_request_entry_st
     pub fn builder() -> Self {
         ResetRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -106619,6 +107122,27 @@ where
     }
 }
 
+impl<St: reset_request_entry_state::State, S: jacquard_common::BosStr>
+    ResetRequestEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ResetRequestEntryBuilder<St, S>
 where
     St: reset_request_entry_state::State,
@@ -106629,7 +107153,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedResetRequest<S>>,
     ) -> ResetRequestEntryBuilder<reset_request_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ResetRequestEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -106654,7 +107178,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -106671,7 +107196,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -119709,6 +120235,7 @@ pub struct ZeroLeafLeaveEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::SignedZeroLeafLeave<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -119735,7 +120262,7 @@ impl ZeroLeafLeaveEntryBuilder<zero_leaf_leave_entry_state::Empty, jacquard_comm
     pub fn new() -> Self {
         ZeroLeafLeaveEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -119746,7 +120273,7 @@ impl<S: jacquard_common::BosStr> ZeroLeafLeaveEntryBuilder<zero_leaf_leave_entry
     pub fn builder() -> Self {
         ZeroLeafLeaveEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -119828,6 +120355,27 @@ where
     }
 }
 
+impl<St: zero_leaf_leave_entry_state::State, S: jacquard_common::BosStr>
+    ZeroLeafLeaveEntryBuilder<St, S>
+{
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::SequencerReceipt<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ZeroLeafLeaveEntryBuilder<St, S>
 where
     St: zero_leaf_leave_entry_state::State,
@@ -119838,7 +120386,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::SignedZeroLeafLeave<S>>,
     ) -> ZeroLeafLeaveEntryBuilder<zero_leaf_leave_entry_state::SetSignedRequest<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ZeroLeafLeaveEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -119863,7 +120411,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -119880,7 +120429,8 @@ where
             entry_id: self._fields.1.unwrap(),
             received_at: self._fields.2.unwrap(),
             seq: self._fields.3.unwrap(),
-            signed_request: self._fields.4.unwrap(),
+            sequencer_receipt: self._fields.4,
+            signed_request: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }

@@ -42,6 +42,9 @@ pub struct ConvoEventEntry<S: jacquard_common::BosStr = jacquard_common::Default
     pub seq: i64,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub sequencer_receipt: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
     pub signed_request: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     #[serde(
         flatten,
@@ -537,6 +540,7 @@ pub struct ConvoEventEntryBuilder<
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -562,7 +566,7 @@ impl ConvoEventEntryBuilder<convo_event_entry_state::Empty, jacquard_common::Def
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -575,7 +579,7 @@ impl<S: jacquard_common::BosStr> ConvoEventEntryBuilder<convo_event_entry_state:
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -780,12 +784,31 @@ where
 }
 
 impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `sequencerReceipt` field (optional)
+    pub fn sequencer_receipt(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.11 = value.into();
+        self
+    }
+    /// Set the `sequencerReceipt` field to an Option value (optional)
+    pub fn maybe_sequencer_receipt(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.11 = value;
+        self
+    }
+}
+
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
     /// Set the `signedRequest` field (optional)
     pub fn signed_request(
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.11 = value.into();
+        self._fields.12 = value.into();
         self
     }
     /// Set the `signedRequest` field to an Option value (optional)
@@ -793,7 +816,7 @@ impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventE
         mut self,
         value: Option<jacquard_common::deps::bytes::Bytes>,
     ) -> Self {
-        self._fields.11 = value;
+        self._fields.12 = value;
         self
     }
 }
@@ -823,7 +846,8 @@ where
             outer_fingerprint: self._fields.8,
             padded_size: self._fields.9.unwrap(),
             seq: self._fields.10.unwrap(),
-            signed_request: self._fields.11,
+            sequencer_receipt: self._fields.11,
+            signed_request: self._fields.12,
             extra_data: Default::default(),
         }
     }
@@ -847,7 +871,8 @@ where
             outer_fingerprint: self._fields.8,
             padded_size: self._fields.9.unwrap(),
             seq: self._fields.10.unwrap(),
-            signed_request: self._fields.11,
+            sequencer_receipt: self._fields.11,
+            signed_request: self._fields.12,
             extra_data: Some(extra_data),
         }
     }
@@ -989,6 +1014,18 @@ fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon:
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "sequencerReceipt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(1048576usize),
+                                        min_length: Some(1usize),
                                         ..Default::default()
                                     },
                                 ),
