@@ -32,7 +32,7 @@ pub struct ListMembers<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 pub struct ListMembersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    pub members: Vec<crate::generated::com_atproto::memberspace::list_members::Member<S>>,
+    pub members: Vec<crate::generated::com_atproto::memberspace::Member<S>>,
     #[serde(
         flatten,
         default,
@@ -63,9 +63,19 @@ pub enum ListMembersError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// The space is not governed by the memberspace policy.
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// The space does not have a memberspace policy.
     #[serde(rename = "PolicyMismatch")]
     PolicyMismatch(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "InvalidCursor")]
+    InvalidCursor(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -88,8 +98,22 @@ impl core::fmt::Display for ListMembersError {
                 }
                 Ok(())
             }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::PolicyMismatch(msg) => {
                 write!(f, "PolicyMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidCursor(msg) => {
+                write!(f, "InvalidCursor")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -104,31 +128,6 @@ impl core::fmt::Display for ListMembersError {
             }
         }
     }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(
-    rename_all = "camelCase",
-    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
-)]
-pub struct Member<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub did: jacquard_common::types::string::Did<S>,
-    pub read: bool,
-    pub write: bool,
-    #[serde(
-        flatten,
-        default,
-        deserialize_with = "deserialize_member_extra_data",
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
-    pub extra_data: core::option::Option<
-        alloc::collections::BTreeMap<
-            jacquard_common::deps::smol_str::SmolStr,
-            jacquard_common::types::value::Data<S>,
-        >,
-    >,
 }
 
 /** Response marker for the `com.atproto.memberspace.listMembers` query.
@@ -157,21 +156,6 @@ impl jacquard_common::xrpc::XrpcEndpoint for ListMembersRequest {
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Request<S: jacquard_common::BosStr> = ListMembers<S>;
     type Response = ListMembersResponse;
-}
-
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Member<S> {
-    fn nsid() -> &'static str {
-        "com.atproto.memberspace.listMembers"
-    }
-    fn def_name() -> &'static str {
-        "member"
-    }
-    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_memberspace_listMembers()
-    }
-    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
 }
 
 fn _default_limit() -> core::option::Option<i64> {
@@ -317,332 +301,5 @@ where
             limit: self._fields.1,
             space: self._fields.2.unwrap(),
         }
-    }
-}
-
-fn deserialize_member_extra_data<'de, S, D>(
-    deserializer: D,
-) -> Result<
-    core::option::Option<
-        alloc::collections::BTreeMap<
-            jacquard_common::deps::smol_str::SmolStr,
-            jacquard_common::types::value::Data<S>,
-        >,
-    >,
-    D::Error,
->
-where
-    S: jacquard_common::BosStr + serde::Deserialize<'de>,
-    D: serde::Deserializer<'de>,
-{
-    let data = <core::option::Option<
-        alloc::collections::BTreeMap<
-            jacquard_common::deps::smol_str::SmolStr,
-            jacquard_common::types::value::Data<S>,
-        >,
-    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
-    Ok(data.filter(|extra_data| !extra_data.is_empty()))
-}
-
-pub mod member_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use ::core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Did;
-        type Read;
-        type Write;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Did = Unset;
-        type Read = Unset;
-        type Write = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetDid<St> {}
-    impl<St: State> State for SetDid<St> {
-        type Did = Set<members::did>;
-        type Read = St::Read;
-        type Write = St::Write;
-    }
-    ///State transition - sets the `read` field to Set
-    pub struct SetRead<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetRead<St> {}
-    impl<St: State> State for SetRead<St> {
-        type Did = St::Did;
-        type Read = Set<members::read>;
-        type Write = St::Write;
-    }
-    ///State transition - sets the `write` field to Set
-    pub struct SetWrite<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetWrite<St> {}
-    impl<St: State> State for SetWrite<St> {
-        type Did = St::Did;
-        type Read = St::Read;
-        type Write = Set<members::write>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
-        ///Marker type for the `read` field
-        pub struct read(());
-        ///Marker type for the `write` field
-        pub struct write(());
-    }
-}
-
-/// Builder for constructing an instance of this type.
-pub struct MemberBuilder<
-    St: member_state::State,
-    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
-> {
-    _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (
-        core::option::Option<jacquard_common::types::string::Did<S>>,
-        core::option::Option<bool>,
-        core::option::Option<bool>,
-    ),
-    _type: ::core::marker::PhantomData<fn() -> S>,
-}
-
-impl Member<jacquard_common::DefaultStr> {
-    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> MemberBuilder<member_state::Empty, jacquard_common::DefaultStr> {
-        MemberBuilder::new()
-    }
-}
-
-impl<S: jacquard_common::BosStr> Member<S> {
-    /// Create a new builder for this type
-    pub fn builder() -> MemberBuilder<member_state::Empty, S> {
-        MemberBuilder::builder()
-    }
-}
-
-impl MemberBuilder<member_state::Empty, jacquard_common::DefaultStr> {
-    /// Create a new builder with all fields unset, using the default string type, if needed
-    pub fn new() -> Self {
-        MemberBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<S: jacquard_common::BosStr> MemberBuilder<member_state::Empty, S> {
-    /// Create a new builder with all fields unset
-    pub fn builder() -> Self {
-        MemberBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
-where
-    St: member_state::State,
-    St::Did: member_state::IsUnset,
-{
-    /// Set the `did` field (required)
-    pub fn did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> MemberBuilder<member_state::SetDid<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
-        MemberBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
-where
-    St: member_state::State,
-    St::Read: member_state::IsUnset,
-{
-    /// Set the `read` field (required)
-    pub fn read(mut self, value: impl Into<bool>) -> MemberBuilder<member_state::SetRead<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
-        MemberBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
-where
-    St: member_state::State,
-    St::Write: member_state::IsUnset,
-{
-    /// Set the `write` field (required)
-    pub fn write(mut self, value: impl Into<bool>) -> MemberBuilder<member_state::SetWrite<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
-        MemberBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
-where
-    St: member_state::State,
-    St::Did: member_state::IsSet,
-    St::Read: member_state::IsSet,
-    St::Write: member_state::IsSet,
-{
-    /// Build the final struct.
-    pub fn build(self) -> Member<S> {
-        Member {
-            did: self._fields.0.unwrap(),
-            read: self._fields.1.unwrap(),
-            write: self._fields.2.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data.
-    pub fn build_with_data(
-        self,
-        extra_data: alloc::collections::BTreeMap<
-            jacquard_common::deps::smol_str::SmolStr,
-            jacquard_common::types::value::Data<S>,
-        >,
-    ) -> Member<S> {
-        Member {
-            did: self._fields.0.unwrap(),
-            read: self._fields.1.unwrap(),
-            write: self._fields.2.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
-}
-
-fn lexicon_doc_com_atproto_memberspace_listMembers(
-) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("com.atproto.memberspace.listMembers"),
-        defs: {
-            let mut map = ::alloc::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    parameters: Some(
-                        ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            required: Some(
-                                vec![
-                                    ::jacquard_common::deps::smol_str::SmolStr::new_static("space")
-                                ],
-                            ),
-                            properties: {
-                                #[allow(unused_mut)]
-                                let mut map = ::alloc::collections::BTreeMap::new();
-                                map.insert(
-                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                        "cursor",
-                                    ),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        ..Default::default()
-                                    }),
-                                );
-                                map.insert(
-                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                        "limit",
-                                    ),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    }),
-                                );
-                                map.insert(
-                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                        "space",
-                                    ),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "Reference to the space.",
-                                            ),
-                                        ),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
-                                        ),
-                                        ..Default::default()
-                                    }),
-                                );
-                                map
-                            },
-                            ..Default::default()
-                        }),
-                    ),
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("read"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("write"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("read"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("write"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
-                ),
-            );
-            map
-        },
-        ..Default::default()
     }
 }

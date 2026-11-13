@@ -25,14 +25,19 @@ pub struct ImportSpaceMeta {
 )]
 #[serde(tag = "error", content = "message")]
 pub enum ImportSpaceMetaError {
-    #[serde(rename = "NotSpaceOwner")]
-    NotSpaceOwner(
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// The archive's policy, or a value within it, is not one the host implements. A host will not store a policy it cannot enforce.
     #[serde(rename = "UnsupportedPolicy")]
     UnsupportedPolicy(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// The STAR file is malformed or fails verification.
+    #[serde(rename = "InvalidSpaceMeta")]
+    InvalidSpaceMeta(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -48,8 +53,8 @@ pub enum ImportSpaceMetaError {
 impl core::fmt::Display for ImportSpaceMetaError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::NotSpaceOwner(msg) => {
-                write!(f, "NotSpaceOwner")?;
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -57,6 +62,13 @@ impl core::fmt::Display for ImportSpaceMetaError {
             }
             Self::UnsupportedPolicy(msg) => {
                 write!(f, "UnsupportedPolicy")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidSpaceMeta(msg) => {
+                write!(f, "InvalidSpaceMeta")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -99,7 +111,7 @@ impl jacquard_common::xrpc::XrpcResp for ImportSpaceMetaResponse {
 impl jacquard_common::xrpc::XrpcRequest for ImportSpaceMeta {
     const NSID: &'static str = "com.atproto.space.importSpaceMeta";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/vnd.dasl.star");
     type Response = ImportSpaceMetaResponse;
     fn encode_body(&self, buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError>
     where
@@ -124,7 +136,7 @@ pub struct ImportSpaceMetaRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ImportSpaceMetaRequest {
     const PATH: &'static str = "/xrpc/com.atproto.space.importSpaceMeta";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/vnd.dasl.star");
     type Request<S: jacquard_common::BosStr> = ImportSpaceMeta;
     type Response = ImportSpaceMetaResponse;
 }

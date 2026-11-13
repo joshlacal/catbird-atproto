@@ -5,6 +5,8 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+/// Sort order of the returned followers.
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GetFollowersSort<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Latest,

@@ -5,7 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// An entry in the member list of a space governed by the memberspace policy, published to readers when the policy's publishMembers is set. Keyed by the member's DID. Written by the space authority's PDS to the authority's own repo in the space, and kept in sync with the member list. Only authoritative in the authority's repo.
+/// A published entry in a space's member list, keyed by the member's DID. Only authoritative in the space authority's repo.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -17,9 +17,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Member<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Whether the member may read when the policy's publicRead is not set.
     pub read: bool,
-    /// Whether the member's writes are tracked when the policy's publicWrite is not set.
     pub write: bool,
     #[serde(
         flatten,
@@ -296,7 +294,7 @@ fn lexicon_doc_com_atproto_memberspace_member() -> jacquard_lexicon::lexicon::Le
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "An entry in the member list of a space governed by the memberspace policy, published to readers when the policy's publishMembers is set. Keyed by the member's DID. Written by the space authority's PDS to the authority's own repo in the space, and kept in sync with the member list. Only authoritative in the authority's repo.",
+                            "A published entry in a space's member list, keyed by the member's DID. Only authoritative in the space authority's repo.",
                         ),
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("any")),

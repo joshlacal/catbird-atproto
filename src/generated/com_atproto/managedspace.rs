@@ -4,5 +4,5 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 //! Generated bindings for the `com.atproto.managedspace` Lexicon namespace/module.
-pub mod check_user_access;
+pub mod check_access;
 pub mod policy;

@@ -13,7 +13,10 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetEmbedExternalView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub uris: Vec<jacquard_common::types::string::AtUri<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub canonical_uri: core::option::Option<jacquard_common::types::string::AtUri<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub uris: core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
     pub url: jacquard_common::types::string::UriValue<S>,
 }
 
@@ -34,11 +37,21 @@ pub struct GetEmbedExternalView<S: jacquard_common::BosStr = jacquard_common::De
 pub struct GetEmbedExternalViewOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub associated_records: core::option::Option<Vec<jacquard_common::types::value::Data<S>>>,
-    /// StrongRefs (URI+CID) of the Atmosphere records that backed this view, suitable for embedding into a post's external.associatedRefs.
+    /// StrongRefs (URI+CID) of the Atmosphere records selected for persistence in a post, suitable for embedding into its external.associatedRefs: the canonical record, plus only the additional records the service chooses to persist for its collection. This can be a subset of the records used to render `data`, which may also draw on other hydrated records such as recommendations, subscriptions, or favorites. Present only when validation passed. Index-aligned with `associatedRecords`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub associated_refs:
         core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
-    /// Hydrated view of the embed. Present only when the resolved records back the requested URL and supply enough information to populate the required `viewExternal` fields. Omitted alongside the rest of the response when no records resolved or validation failed.
+    /// Preferred to #view. Hydrated data of the embed. Present only when validation passed and the records supply enough information to populate the required fields.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub data: core::option::Option<GetEmbedExternalViewOutputData<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub unverified_associated_records:
+        core::option::Option<Vec<jacquard_common::types::value::Data<S>>>,
+    /// StrongRefs (URI+CID) of the same persistence-selected Atmosphere records (the canonical record plus chosen additional records) when validation of the requested `url` failed. These must not be written to a post. Index-aligned with `unverifiedAssociatedRecords`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub unverified_associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    /// Legacy hydrated view of the embed, returned for Standard.site records only. Present only when validation passed and the records supply enough information to populate the required `viewExternal` fields.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub view: core::option::Option<crate::generated::app_bsky::embed::external::View<S>>,
     #[serde(
@@ -52,6 +65,27 @@ pub struct GetEmbedExternalViewOutput<S: jacquard_common::BosStr = jacquard_comm
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum GetEmbedExternalViewOutputData<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.embed.external#viewArticle")]
+    ExternalViewArticle(Box<crate::generated::app_bsky::embed::external::ViewArticle<S>>),
+    #[serde(rename = "app.bsky.embed.external#viewArticlePublication")]
+    ExternalViewArticlePublication(
+        Box<crate::generated::app_bsky::embed::external::ViewArticlePublication<S>>,
+    ),
+    #[serde(rename = "app.bsky.embed.external#viewGallery")]
+    ExternalViewGallery(Box<crate::generated::app_bsky::embed::external::ViewGallery<S>>),
+    #[serde(rename = "app.bsky.embed.external#viewLivestream")]
+    ExternalViewLivestream(Box<crate::generated::app_bsky::embed::external::ViewLivestream<S>>),
 }
 
 /** Response marker for the `app.bsky.embed.getEmbedExternalView` query.
@@ -92,35 +126,23 @@ pub mod get_embed_external_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uris;
         type Url;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uris = Unset;
         type Url = Unset;
-    }
-    ///State transition - sets the `uris` field to Set
-    pub struct SetUris<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetUris<St> {}
-    impl<St: State> State for SetUris<St> {
-        type Uris = Set<members::uris>;
-        type Url = St::Url;
     }
     ///State transition - sets the `url` field to Set
     pub struct SetUrl<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetUrl<St> {}
     impl<St: State> State for SetUrl<St> {
-        type Uris = St::Uris;
         type Url = Set<members::url>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uris` field
-        pub struct uris(());
         ///Marker type for the `url` field
         pub struct url(());
     }
@@ -133,6 +155,7 @@ pub struct GetEmbedExternalViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
         core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
@@ -163,7 +186,7 @@ impl
     pub fn new() -> Self {
         GetEmbedExternalViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -176,28 +199,51 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         GetEmbedExternalViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St, S: jacquard_common::BosStr> GetEmbedExternalViewBuilder<St, S>
-where
-    St: get_embed_external_view_state::State,
-    St::Uris: get_embed_external_view_state::IsUnset,
+impl<St: get_embed_external_view_state::State, S: jacquard_common::BosStr>
+    GetEmbedExternalViewBuilder<St, S>
 {
-    /// Set the `uris` field (required)
+    /// Set the `canonicalUri` field (optional)
+    pub fn canonical_uri(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::AtUri<S>>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `canonicalUri` field to an Option value (optional)
+    pub fn maybe_canonical_uri(
+        mut self,
+        value: Option<jacquard_common::types::string::AtUri<S>>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: get_embed_external_view_state::State, S: jacquard_common::BosStr>
+    GetEmbedExternalViewBuilder<St, S>
+{
+    /// Set the `uris` field (optional)
     pub fn uris(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::AtUri<S>>>,
-    ) -> GetEmbedExternalViewBuilder<get_embed_external_view_state::SetUris<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
-        GetEmbedExternalViewBuilder {
-            _state: ::core::marker::PhantomData,
-            _fields: self._fields,
-            _type: ::core::marker::PhantomData,
-        }
+        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<S>>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `uris` field to an Option value (optional)
+    pub fn maybe_uris(
+        mut self,
+        value: Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
     }
 }
 
@@ -211,7 +257,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::UriValue<S>>,
     ) -> GetEmbedExternalViewBuilder<get_embed_external_view_state::SetUrl<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         GetEmbedExternalViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -223,14 +269,14 @@ where
 impl<St, S: jacquard_common::BosStr> GetEmbedExternalViewBuilder<St, S>
 where
     St: get_embed_external_view_state::State,
-    St::Uris: get_embed_external_view_state::IsSet,
     St::Url: get_embed_external_view_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> GetEmbedExternalView<S> {
         GetEmbedExternalView {
-            uris: self._fields.0.unwrap(),
-            url: self._fields.1.unwrap(),
+            canonical_uri: self._fields.0,
+            uris: self._fields.1,
+            url: self._fields.2.unwrap(),
         }
     }
 }

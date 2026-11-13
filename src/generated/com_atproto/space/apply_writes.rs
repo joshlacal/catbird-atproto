@@ -205,9 +205,7 @@ pub struct DeleteResult<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ApplyWrites<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The DID of the repo to write to (the authenticated member).
     pub repo: jacquard_common::types::string::Did<S>,
-    /// Reference to the space.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     /// Can be set to 'false' to skip Lexicon schema validation of record data across all operations, 'true' to require it, or leave unset to validate only for known Lexicons.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -305,13 +303,11 @@ pub enum ApplyWritesError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// An update or delete targeted a record that does not exist.
     #[serde(rename = "RecordNotFound")]
     RecordNotFound(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// A create targeted a collection and rkey that already holds a record.
     #[serde(rename = "RecordAlreadyExists")]
     RecordAlreadyExists(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -506,16 +502,6 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Cre
         lexicon_doc_com_atproto_space_applyWrites()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.rkey {
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 512usize {
-                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("rkey"),
-                    max: 512usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
         Ok(())
     }
 }
@@ -880,7 +866,6 @@ fn lexicon_doc_com_atproto_space_applyWrites() -> jacquard_lexicon::lexicon::Lex
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::RecordKey,
                                         ),
-                                        max_length: Some(512usize),
                                         ..Default::default()
                                     },
                                 ),
@@ -1030,11 +1015,6 @@ fn lexicon_doc_com_atproto_space_applyWrites() -> jacquard_lexicon::lexicon::Lex
                                             "repo",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "The DID of the repo to write to (the authenticated member).",
-                                                ),
-                                            ),
                                             format: Some(
                                                 ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                             ),
@@ -1046,11 +1026,6 @@ fn lexicon_doc_com_atproto_space_applyWrites() -> jacquard_lexicon::lexicon::Lex
                                             "space",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Reference to the space.",
-                                                ),
-                                            ),
                                             format: Some(
                                                 ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                             ),

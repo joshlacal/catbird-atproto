@@ -13,9 +13,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RemoveWriter<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The DID of the writer to remove.
-    pub did: jacquard_common::types::string::Did<S>,
-    /// Reference to the space.
+    pub repo: jacquard_common::types::string::Did<S>,
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
@@ -47,8 +45,8 @@ pub enum RemoveWriterError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    #[serde(rename = "NotSpaceOwner")]
-    NotSpaceOwner(
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -71,8 +69,8 @@ impl core::fmt::Display for RemoveWriterError {
                 }
                 Ok(())
             }
-            Self::NotSpaceOwner(msg) => {
-                write!(f, "NotSpaceOwner")?;
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -141,35 +139,35 @@ pub mod remove_writer_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Did;
+        type Repo;
         type Space;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Did = Unset;
+        type Repo = Unset;
         type Space = Unset;
     }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetDid<St> {}
-    impl<St: State> State for SetDid<St> {
-        type Did = Set<members::did>;
+    ///State transition - sets the `repo` field to Set
+    pub struct SetRepo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepo<St> {}
+    impl<St: State> State for SetRepo<St> {
+        type Repo = Set<members::repo>;
         type Space = St::Space;
     }
     ///State transition - sets the `space` field to Set
     pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetSpace<St> {}
     impl<St: State> State for SetSpace<St> {
-        type Did = St::Did;
+        type Repo = St::Repo;
         type Space = Set<members::space>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
+        ///Marker type for the `repo` field
+        pub struct repo(());
         ///Marker type for the `space` field
         pub struct space(());
     }
@@ -227,13 +225,13 @@ impl<S: jacquard_common::BosStr> RemoveWriterBuilder<remove_writer_state::Empty,
 impl<St, S: jacquard_common::BosStr> RemoveWriterBuilder<St, S>
 where
     St: remove_writer_state::State,
-    St::Did: remove_writer_state::IsUnset,
+    St::Repo: remove_writer_state::IsUnset,
 {
-    /// Set the `did` field (required)
-    pub fn did(
+    /// Set the `repo` field (required)
+    pub fn repo(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> RemoveWriterBuilder<remove_writer_state::SetDid<St>, S> {
+    ) -> RemoveWriterBuilder<remove_writer_state::SetRepo<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         RemoveWriterBuilder {
             _state: ::core::marker::PhantomData,
@@ -265,13 +263,13 @@ where
 impl<St, S: jacquard_common::BosStr> RemoveWriterBuilder<St, S>
 where
     St: remove_writer_state::State,
-    St::Did: remove_writer_state::IsSet,
+    St::Repo: remove_writer_state::IsSet,
     St::Space: remove_writer_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> RemoveWriter<S> {
         RemoveWriter {
-            did: self._fields.0.unwrap(),
+            repo: self._fields.0.unwrap(),
             space: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
@@ -285,7 +283,7 @@ where
         >,
     ) -> RemoveWriter<S> {
         RemoveWriter {
-            did: self._fields.0.unwrap(),
+            repo: self._fields.0.unwrap(),
             space: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }

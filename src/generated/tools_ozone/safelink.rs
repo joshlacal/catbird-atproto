@@ -10,6 +10,7 @@ pub mod add_rule;
 pub mod query_events;
 pub mod query_rules;
 pub mod remove_rule;
+pub mod sync_source;
 pub mod update_rule;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -111,6 +112,10 @@ pub struct Event<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub id: i64,
     pub pattern: crate::generated::tools_ozone::safelink::PatternType<S>,
     pub reason: crate::generated::tools_ozone::safelink::ReasonType<S>,
+    /// Source of the decision  Defaults to `"ozone/default"`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_event_source")]
+    pub source: core::option::Option<S>,
     /// The URL that this rule applies to
     pub url: S,
     #[serde(
@@ -358,7 +363,7 @@ where
     }
 }
 
-/// Input for creating a URL safety rule
+/// An active URL safety rule
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -378,6 +383,10 @@ pub struct UrlRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_by: jacquard_common::types::string::Did<S>,
     pub pattern: crate::generated::tools_ozone::safelink::PatternType<S>,
     pub reason: crate::generated::tools_ozone::safelink::ReasonType<S>,
+    /// Source of the rule  Defaults to `"ozone/default"`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_url_rule_source")]
+    pub source: core::option::Option<S>,
     /// Timestamp when the rule was last updated
     pub updated_at: jacquard_common::types::string::Datetime,
     /// The URL or domain to apply the rule to
@@ -448,6 +457,10 @@ where
         >,
     > as serde::Deserialize<'de>>::deserialize(deserializer)?;
     Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn _default_event_source<S: jacquard_common::FromStaticStr>() -> ::core::option::Option<S> {
+    Some(S::from_static("ozone/default"))
 }
 
 pub mod event_state {
@@ -624,6 +637,7 @@ pub struct EventBuilder<
         core::option::Option<crate::generated::tools_ozone::safelink::PatternType<S>>,
         core::option::Option<crate::generated::tools_ozone::safelink::ReasonType<S>>,
         core::option::Option<S>,
+        core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -647,7 +661,7 @@ impl EventBuilder<event_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         EventBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -658,7 +672,7 @@ impl<S: jacquard_common::BosStr> EventBuilder<event_state::Empty, S> {
     pub fn builder() -> Self {
         EventBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -807,6 +821,19 @@ where
     }
 }
 
+impl<St: event_state::State, S: jacquard_common::BosStr> EventBuilder<St, S> {
+    /// Set the `source` field (optional)
+    pub fn source(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `source` field to an Option value (optional)
+    pub fn maybe_source(mut self, value: Option<S>) -> Self {
+        self._fields.8 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> EventBuilder<St, S>
 where
     St: event_state::State,
@@ -814,7 +841,7 @@ where
 {
     /// Set the `url` field (required)
     pub fn url(mut self, value: impl Into<S>) -> EventBuilder<event_state::SetUrl<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         EventBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -846,7 +873,11 @@ where
             id: self._fields.5.unwrap(),
             pattern: self._fields.6.unwrap(),
             reason: self._fields.7.unwrap(),
-            url: self._fields.8.unwrap(),
+            source: self
+                ._fields
+                .8
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            url: self._fields.9.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -867,7 +898,11 @@ where
             id: self._fields.5.unwrap(),
             pattern: self._fields.6.unwrap(),
             reason: self._fields.7.unwrap(),
-            url: self._fields.8.unwrap(),
+            source: self
+                ._fields
+                .8
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            url: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -990,6 +1025,17 @@ fn lexicon_doc_tools_ozone_safelink_defs() -> jacquard_lexicon::lexicon::Lexicon
                                 ),
                             );
                             map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Source of the decision",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("url"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
@@ -1035,7 +1081,7 @@ fn lexicon_doc_tools_ozone_safelink_defs() -> jacquard_lexicon::lexicon::Lexicon
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
-                            "Input for creating a URL safety rule",
+                            "An active URL safety rule",
                         )),
                         required: Some(vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("url"),
@@ -1118,6 +1164,17 @@ fn lexicon_doc_tools_ozone_safelink_defs() -> jacquard_lexicon::lexicon::Lexicon
                                 ),
                             );
                             map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Source of the rule",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
@@ -1176,6 +1233,10 @@ where
         >,
     > as serde::Deserialize<'de>>::deserialize(deserializer)?;
     Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn _default_url_rule_source<S: jacquard_common::FromStaticStr>() -> ::core::option::Option<S> {
+    Some(S::from_static("ozone/default"))
 }
 
 pub mod url_rule_state {
@@ -1325,6 +1386,7 @@ pub struct UrlRuleBuilder<
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<crate::generated::tools_ozone::safelink::PatternType<S>>,
         core::option::Option<crate::generated::tools_ozone::safelink::ReasonType<S>>,
+        core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<S>,
     ),
@@ -1350,7 +1412,7 @@ impl UrlRuleBuilder<url_rule_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         UrlRuleBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1361,7 +1423,7 @@ impl<S: jacquard_common::BosStr> UrlRuleBuilder<url_rule_state::Empty, S> {
     pub fn builder() -> Self {
         UrlRuleBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1475,6 +1537,19 @@ where
     }
 }
 
+impl<St: url_rule_state::State, S: jacquard_common::BosStr> UrlRuleBuilder<St, S> {
+    /// Set the `source` field (optional)
+    pub fn source(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `source` field to an Option value (optional)
+    pub fn maybe_source(mut self, value: Option<S>) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> UrlRuleBuilder<St, S>
 where
     St: url_rule_state::State,
@@ -1485,7 +1560,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> UrlRuleBuilder<url_rule_state::SetUpdatedAt<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         UrlRuleBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1501,7 +1576,7 @@ where
 {
     /// Set the `url` field (required)
     pub fn url(mut self, value: impl Into<S>) -> UrlRuleBuilder<url_rule_state::SetUrl<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         UrlRuleBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1530,8 +1605,12 @@ where
             created_by: self._fields.3.unwrap(),
             pattern: self._fields.4.unwrap(),
             reason: self._fields.5.unwrap(),
-            updated_at: self._fields.6.unwrap(),
-            url: self._fields.7.unwrap(),
+            source: self
+                ._fields
+                .6
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            updated_at: self._fields.7.unwrap(),
+            url: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -1550,8 +1629,12 @@ where
             created_by: self._fields.3.unwrap(),
             pattern: self._fields.4.unwrap(),
             reason: self._fields.5.unwrap(),
-            updated_at: self._fields.6.unwrap(),
-            url: self._fields.7.unwrap(),
+            source: self
+                ._fields
+                .6
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            updated_at: self._fields.7.unwrap(),
+            url: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }

@@ -5,7 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// Space policy for data that only its owner should see, such as bookmarks, mutes, or drafts. Only the space authority's own account is authorized to read, and the authority tracks no other writers. Has no configuration fields.
+/// Space policy for personal data that only the space authority and authorized apps can read, such as bookmarks or drafts.
 
 #[derive(
     serde::Serialize,
@@ -87,7 +87,7 @@ fn lexicon_doc_com_atproto_personalspace_policy() -> jacquard_lexicon::lexicon::
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Space policy for data that only its owner should see, such as bookmarks, mutes, or drafts. Only the space authority's own account is authorized to read, and the authority tracks no other writers. Has no configuration fields.",
+                            "Space policy for personal data that only the space authority and authorized apps can read, such as bookmarks or drafts.",
                         ),
                     ),
                     properties: {

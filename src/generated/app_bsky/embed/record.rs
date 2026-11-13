@@ -168,6 +168,12 @@ pub struct ViewRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub like_count: core::option::Option<i64>,
+    /// The total number of posts in the contiguous OP thread that this post belongs to. Only present when this post is part of the OP thread.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub op_thread_post_count: core::option::Option<i64>,
+    /// The 1-indexed position of this post within the contiguous OP thread. Only present when this post is part of the OP thread.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub op_thread_post_index: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub quote_count: core::option::Option<i64>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -745,6 +751,26 @@ fn lexicon_doc_app_bsky_embed_record() -> jacquard_lexicon::lexicon::LexiconDoc<
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("likeCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "opThreadPostCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "opThreadPostIndex",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
                                         ..Default::default()
@@ -1684,6 +1710,8 @@ pub struct ViewRecordBuilder<
         core::option::Option<i64>,
         core::option::Option<i64>,
         core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
         core::option::Option<jacquard_common::types::value::Data<S>>,
     ),
@@ -1710,7 +1738,7 @@ impl ViewRecordBuilder<view_record_state::Empty, jacquard_common::DefaultStr> {
         ViewRecordBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -1723,7 +1751,7 @@ impl<S: jacquard_common::BosStr> ViewRecordBuilder<view_record_state::Empty, S> 
         ViewRecordBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -1833,14 +1861,40 @@ impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder
 }
 
 impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder<St, S> {
+    /// Set the `opThreadPostCount` field (optional)
+    pub fn op_thread_post_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `opThreadPostCount` field to an Option value (optional)
+    pub fn maybe_op_thread_post_count(mut self, value: Option<i64>) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder<St, S> {
+    /// Set the `opThreadPostIndex` field (optional)
+    pub fn op_thread_post_index(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `opThreadPostIndex` field to an Option value (optional)
+    pub fn maybe_op_thread_post_index(mut self, value: Option<i64>) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
+impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder<St, S> {
     /// Set the `quoteCount` field (optional)
     pub fn quote_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.6 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `quoteCount` field to an Option value (optional)
     pub fn maybe_quote_count(mut self, value: Option<i64>) -> Self {
-        self._fields.6 = value;
+        self._fields.8 = value;
         self
     }
 }
@@ -1848,12 +1902,12 @@ impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder
 impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder<St, S> {
     /// Set the `replyCount` field (optional)
     pub fn reply_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.7 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `replyCount` field to an Option value (optional)
     pub fn maybe_reply_count(mut self, value: Option<i64>) -> Self {
-        self._fields.7 = value;
+        self._fields.9 = value;
         self
     }
 }
@@ -1861,12 +1915,12 @@ impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder
 impl<St: view_record_state::State, S: jacquard_common::BosStr> ViewRecordBuilder<St, S> {
     /// Set the `repostCount` field (optional)
     pub fn repost_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.8 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `repostCount` field to an Option value (optional)
     pub fn maybe_repost_count(mut self, value: Option<i64>) -> Self {
-        self._fields.8 = value;
+        self._fields.10 = value;
         self
     }
 }
@@ -1881,7 +1935,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::AtUri<S>>,
     ) -> ViewRecordBuilder<view_record_state::SetUri<St>, S> {
-        self._fields.9 = ::core::option::Option::Some(value.into());
+        self._fields.11 = ::core::option::Option::Some(value.into());
         ViewRecordBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1900,7 +1954,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::value::Data<S>>,
     ) -> ViewRecordBuilder<view_record_state::SetValue<St>, S> {
-        self._fields.10 = ::core::option::Option::Some(value.into());
+        self._fields.12 = ::core::option::Option::Some(value.into());
         ViewRecordBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1927,11 +1981,13 @@ where
             indexed_at: self._fields.3.unwrap(),
             labels: self._fields.4,
             like_count: self._fields.5,
-            quote_count: self._fields.6,
-            reply_count: self._fields.7,
-            repost_count: self._fields.8,
-            uri: self._fields.9.unwrap(),
-            value: self._fields.10.unwrap(),
+            op_thread_post_count: self._fields.6,
+            op_thread_post_index: self._fields.7,
+            quote_count: self._fields.8,
+            reply_count: self._fields.9,
+            repost_count: self._fields.10,
+            uri: self._fields.11.unwrap(),
+            value: self._fields.12.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -1950,11 +2006,13 @@ where
             indexed_at: self._fields.3.unwrap(),
             labels: self._fields.4,
             like_count: self._fields.5,
-            quote_count: self._fields.6,
-            reply_count: self._fields.7,
-            repost_count: self._fields.8,
-            uri: self._fields.9.unwrap(),
-            value: self._fields.10.unwrap(),
+            op_thread_post_count: self._fields.6,
+            op_thread_post_index: self._fields.7,
+            quote_count: self._fields.8,
+            reply_count: self._fields.9,
+            repost_count: self._fields.10,
+            uri: self._fields.11.unwrap(),
+            value: self._fields.12.unwrap(),
             extra_data: Some(extra_data),
         }
     }

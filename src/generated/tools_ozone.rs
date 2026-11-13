@@ -6,6 +6,7 @@
 //! Generated bindings for the `tools.ozone` Lexicon namespace/module.
 pub mod communication;
 pub mod hosting;
+pub mod inbox;
 pub mod moderation;
 pub mod queue;
 pub mod report;

@@ -13,6 +13,16 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CloseReports<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Optional existing moderation event that closes reports. It must target the exact subject or its owning account; account-wide closure requires an account event. The event is linked to each closed report and may predate the report. The link does not imply the action is still in effect.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub action_event_id: core::option::Option<i64>,
+    /// Reports of these types (fully qualified reason NSIDs) are excluded from closure and left unchanged. When omitted or empty, no report types are excluded.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub excluded_report_types: core::option::Option<Vec<S>>,
+    /// If true, also close reports on all subjects owned by the account, including records, messages, and conversations. Only valid when subject is an account DID.  Defaults to `false`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_close_reports_include_all_owned")]
+    pub include_all_owned: core::option::Option<bool>,
     /// Optional moderator-only note recorded on each close activity. Not visible to reporters.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub internal_note: core::option::Option<S>,
@@ -20,7 +30,10 @@ pub struct CloseReports<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_close_reports_is_automated")]
     pub is_automated: core::option::Option<bool>,
-    /// If specified, only reports of the given report types (fully qualified reason NSIDs) are closed. When omitted, all non-closed reports on the subject are targeted.
+    /// Optional metadata for the report activities. Lifecycle and resolution fields are controlled by the service.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub meta: core::option::Option<jacquard_common::types::value::Data<S>>,
+    /// If nonempty, only reports of the given report types (fully qualified reason NSIDs) are closed. When omitted or empty, all eligible reports in the requested subject scope are targeted, except excludedReportTypes. Assigned and escalated reports are always excluded.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub report_types: core::option::Option<Vec<S>>,
     /// Subject DID (account-level reports) or AT-URI (record-level reports) whose reports should be closed.
@@ -93,6 +106,10 @@ impl jacquard_common::xrpc::XrpcEndpoint for CloseReportsRequest {
     type Response = CloseReportsResponse;
 }
 
+fn _default_close_reports_include_all_owned() -> core::option::Option<bool> {
+    Some(false)
+}
+
 fn _default_close_reports_is_automated() -> core::option::Option<bool> {
     Some(false)
 }
@@ -136,8 +153,12 @@ pub struct CloseReportsBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<i64>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<bool>,
         core::option::Option<S>,
         core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
         core::option::Option<Vec<S>>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
@@ -163,7 +184,7 @@ impl CloseReportsBuilder<close_reports_state::Empty, jacquard_common::DefaultStr
     pub fn new() -> Self {
         CloseReportsBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -174,21 +195,60 @@ impl<S: jacquard_common::BosStr> CloseReportsBuilder<close_reports_state::Empty,
     pub fn builder() -> Self {
         CloseReportsBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
 impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBuilder<St, S> {
+    /// Set the `actionEventId` field (optional)
+    pub fn action_event_id(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `actionEventId` field to an Option value (optional)
+    pub fn maybe_action_event_id(mut self, value: Option<i64>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBuilder<St, S> {
+    /// Set the `excludedReportTypes` field (optional)
+    pub fn excluded_report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `excludedReportTypes` field to an Option value (optional)
+    pub fn maybe_excluded_report_types(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBuilder<St, S> {
+    /// Set the `includeAllOwned` field (optional)
+    pub fn include_all_owned(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `includeAllOwned` field to an Option value (optional)
+    pub fn maybe_include_all_owned(mut self, value: Option<bool>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBuilder<St, S> {
     /// Set the `internalNote` field (optional)
     pub fn internal_note(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.0 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `internalNote` field to an Option value (optional)
     pub fn maybe_internal_note(mut self, value: Option<S>) -> Self {
-        self._fields.0 = value;
+        self._fields.3 = value;
         self
     }
 }
@@ -196,12 +256,28 @@ impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBui
 impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBuilder<St, S> {
     /// Set the `isAutomated` field (optional)
     pub fn is_automated(mut self, value: impl Into<Option<bool>>) -> Self {
-        self._fields.1 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `isAutomated` field to an Option value (optional)
     pub fn maybe_is_automated(mut self, value: Option<bool>) -> Self {
-        self._fields.1 = value;
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBuilder<St, S> {
+    /// Set the `meta` field (optional)
+    pub fn meta(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::value::Data<S>>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `meta` field to an Option value (optional)
+    pub fn maybe_meta(mut self, value: Option<jacquard_common::types::value::Data<S>>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
@@ -209,12 +285,12 @@ impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBui
 impl<St: close_reports_state::State, S: jacquard_common::BosStr> CloseReportsBuilder<St, S> {
     /// Set the `reportTypes` field (optional)
     pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
-        self._fields.2 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `reportTypes` field to an Option value (optional)
     pub fn maybe_report_types(mut self, value: Option<Vec<S>>) -> Self {
-        self._fields.2 = value;
+        self._fields.6 = value;
         self
     }
 }
@@ -229,7 +305,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::UriValue<S>>,
     ) -> CloseReportsBuilder<close_reports_state::SetSubject<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         CloseReportsBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -246,10 +322,14 @@ where
     /// Build the final struct.
     pub fn build(self) -> CloseReports<S> {
         CloseReports {
-            internal_note: self._fields.0,
-            is_automated: self._fields.1.or_else(|| Some(false)),
-            report_types: self._fields.2,
-            subject: self._fields.3.unwrap(),
+            action_event_id: self._fields.0,
+            excluded_report_types: self._fields.1,
+            include_all_owned: self._fields.2.or_else(|| Some(false)),
+            internal_note: self._fields.3,
+            is_automated: self._fields.4.or_else(|| Some(false)),
+            meta: self._fields.5,
+            report_types: self._fields.6,
+            subject: self._fields.7.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -262,10 +342,14 @@ where
         >,
     ) -> CloseReports<S> {
         CloseReports {
-            internal_note: self._fields.0,
-            is_automated: self._fields.1.or_else(|| Some(false)),
-            report_types: self._fields.2,
-            subject: self._fields.3.unwrap(),
+            action_event_id: self._fields.0,
+            excluded_report_types: self._fields.1,
+            include_all_owned: self._fields.2.or_else(|| Some(false)),
+            internal_note: self._fields.3,
+            is_automated: self._fields.4.or_else(|| Some(false)),
+            meta: self._fields.5,
+            report_types: self._fields.6,
+            subject: self._fields.7.unwrap(),
             extra_data: Some(extra_data),
         }
     }

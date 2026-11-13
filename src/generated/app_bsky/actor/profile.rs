@@ -36,12 +36,17 @@ pub struct Profile<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// Self-label values, specific to the Bluesky application, on the overall account.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    /// Links shown on the profile, in display order. Each ref points to an app.bsky.actor.link record in this repo.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub links:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pinned_post:
         core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     /// Free-form pronouns text.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pronouns: core::option::Option<S>,
+    /// Deprecated: use links instead.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub website: core::option::Option<jacquard_common::types::string::UriValue<S>>,
     #[serde(
@@ -268,6 +273,16 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pro
                 }
             }
         }
+        if let Some(ref value) = self.links {
+            #[allow(unused_comparisons)]
+            if value.len() > 10usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("links"),
+                    max: 10usize,
+                    actual: value.len(),
+                });
+            }
+        }
         if let Some(ref value) = self.pronouns {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 200usize {
@@ -365,6 +380,7 @@ pub struct ProfileBuilder<
         core::option::Option<S>,
         core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
         core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
         core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::UriValue<S>>,
@@ -391,7 +407,9 @@ impl ProfileBuilder<profile_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         ProfileBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -402,7 +420,9 @@ impl<S: jacquard_common::BosStr> ProfileBuilder<profile_state::Empty, S> {
     pub fn builder() -> Self {
         ProfileBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -524,18 +544,18 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
 }
 
 impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S> {
-    /// Set the `pinnedPost` field (optional)
-    pub fn pinned_post(
+    /// Set the `links` field (optional)
+    pub fn links(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
     ) -> Self {
         self._fields.7 = value.into();
         self
     }
-    /// Set the `pinnedPost` field to an Option value (optional)
-    pub fn maybe_pinned_post(
+    /// Set the `links` field to an Option value (optional)
+    pub fn maybe_links(
         mut self,
-        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
         self._fields.7 = value;
         self
@@ -543,14 +563,33 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
 }
 
 impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S> {
+    /// Set the `pinnedPost` field (optional)
+    pub fn pinned_post(
+        mut self,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    ) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `pinnedPost` field to an Option value (optional)
+    pub fn maybe_pinned_post(
+        mut self,
+        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    ) -> Self {
+        self._fields.8 = value;
+        self
+    }
+}
+
+impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S> {
     /// Set the `pronouns` field (optional)
     pub fn pronouns(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.8 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `pronouns` field to an Option value (optional)
     pub fn maybe_pronouns(mut self, value: Option<S>) -> Self {
-        self._fields.8 = value;
+        self._fields.9 = value;
         self
     }
 }
@@ -561,7 +600,7 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
         mut self,
         value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self._fields.9 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `website` field to an Option value (optional)
@@ -569,7 +608,7 @@ impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S>
         mut self,
         value: Option<jacquard_common::types::string::UriValue<S>>,
     ) -> Self {
-        self._fields.9 = value;
+        self._fields.10 = value;
         self
     }
 }
@@ -588,9 +627,10 @@ where
             display_name: self._fields.4,
             joined_via_starter_pack: self._fields.5,
             labels: self._fields.6,
-            pinned_post: self._fields.7,
-            pronouns: self._fields.8,
-            website: self._fields.9,
+            links: self._fields.7,
+            pinned_post: self._fields.8,
+            pronouns: self._fields.9,
+            website: self._fields.10,
             extra_data: Default::default(),
         }
     }
@@ -610,9 +650,10 @@ where
             display_name: self._fields.4,
             joined_via_starter_pack: self._fields.5,
             labels: self._fields.6,
-            pinned_post: self._fields.7,
-            pronouns: self._fields.8,
-            website: self._fields.9,
+            links: self._fields.7,
+            pinned_post: self._fields.8,
+            pronouns: self._fields.9,
+            website: self._fields.10,
             extra_data: Some(extra_data),
         }
     }
@@ -718,6 +759,26 @@ fn lexicon_doc_app_bsky_actor_profile() -> jacquard_lexicon::lexicon::LexiconDoc
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "links",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "Links shown on the profile, in display order. Each ref points to an app.bsky.actor.link record in this repo.",
+                                        ),
+                                    ),
+                                    items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "com.atproto.repo.strongRef",
+                                        ),
+                                        ..Default::default()
+                                    }),
+                                    max_length: Some(10usize),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "pinnedPost",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
@@ -747,6 +808,11 @@ fn lexicon_doc_app_bsky_actor_profile() -> jacquard_lexicon::lexicon::LexiconDoc
                                     "website",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "Deprecated: use links instead.",
+                                        ),
+                                    ),
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                     ),

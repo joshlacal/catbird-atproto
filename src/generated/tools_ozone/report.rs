@@ -468,15 +468,42 @@ where
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct HistoricalStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Percentage of reports actioned (actionedCount / inboundCount * 100), rounded to nearest integer.
+    /// Number of closures whose last report action is not label, tag, or takedown during this day.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub acknowledged_count: core::option::Option<i64>,
+    /// Percentage of closures actioned (actionedCount / closedCount * 100), rounded to nearest integer.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub action_rate: core::option::Option<i64>,
-    /// Number of reports closed during this day.
+    /// Number of closures whose last report action is label, tag, or takedown during this day.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub actioned_count: core::option::Option<i64>,
-    /// Average time in seconds from report creation (or moderator assignment) to close.
+    /// Sum of report assignment-to-close seconds for this day's samples.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aht_duration_sec: core::option::Option<i64>,
+    /// Number of assigned closed-report samples in ahtDurationSec.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aht_sample_count: core::option::Option<i64>,
+    /// Average handling time in seconds from report assignment to close.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub avg_handling_time_sec: core::option::Option<i64>,
+    /// Average resolution time in seconds from report creation to close.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub avg_resolution_time_sec: core::option::Option<i64>,
+    /// Number of close transitions during this day.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closed_count: core::option::Option<i64>,
+    /// Reports whose closure meets their closure target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_met_count: core::option::Option<i64>,
+    /// Percent of reports meeting their closure target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_met_rate: core::option::Option<i64>,
+    /// Reports whose closure exceeds their closure target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_missed_count: core::option::Option<i64>,
+    /// Unmuted pending reports past their closure target at the snapshot time.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_overdue_count: core::option::Option<i64>,
     /// When this snapshot was last computed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub computed_at: core::option::Option<jacquard_common::types::string::Datetime>,
@@ -488,9 +515,24 @@ pub struct HistoricalStats<S: jacquard_common::BosStr = jacquard_common::Default
     /// Reports received during this day.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub inbound_count: core::option::Option<i64>,
-    /// Number of reports not closed at time of computation.
+    /// Closures whose last report action is a label event during this day.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub label_action_count: core::option::Option<i64>,
+    /// Number of unmuted reports not closed at the end of this UTC day, or at computation time for the current day.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pending_count: core::option::Option<i64>,
+    /// Sum of report creation-to-close seconds for this day's samples.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub resolution_duration_sec: core::option::Option<i64>,
+    /// Number of closed-report samples in resolutionDurationSec.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub resolution_sample_count: core::option::Option<i64>,
+    /// Closures whose last report action is a tag event during this day.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub tag_action_count: core::option::Option<i64>,
+    /// Closures whose last report action is a takedown event during this day.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub takedown_action_count: core::option::Option<i64>,
     #[serde(
         flatten,
         default,
@@ -522,27 +564,69 @@ pub struct HistoricalStats<S: jacquard_common::BosStr = jacquard_common::Default
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct LiveStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Percentage of reports actioned (actionedCount / inboundCount * 100), rounded to nearest integer.
+    /// Number of closures whose last report action is not label, tag, or takedown.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub acknowledged_count: core::option::Option<i64>,
+    /// Percentage of closures actioned (actionedCount / closedCount * 100), rounded to nearest integer.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub action_rate: core::option::Option<i64>,
-    /// Number of reports closed today.
+    /// Number of closures whose last report action is label, tag, or takedown.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub actioned_count: core::option::Option<i64>,
-    /// Average time in seconds from report creation (or moderator assignment) to close.
+    /// Sum of report assignment-to-close seconds.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aht_duration_sec: core::option::Option<i64>,
+    /// Number of assigned closed-report samples in ahtDurationSec.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aht_sample_count: core::option::Option<i64>,
+    /// Average handling time in seconds from report assignment to close.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub avg_handling_time_sec: core::option::Option<i64>,
-    /// Number of reports escalated today.
+    /// Average resolution time in seconds from report creation to close.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub avg_resolution_time_sec: core::option::Option<i64>,
+    /// Number of close transitions.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closed_count: core::option::Option<i64>,
+    /// Reports whose closure meets their closure target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_met_count: core::option::Option<i64>,
+    /// Percent of reports meeting their closure target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_met_rate: core::option::Option<i64>,
+    /// Reports whose closure exceeds their closure target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_missed_count: core::option::Option<i64>,
+    /// Unmuted pending reports past their closure target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub closure_target_overdue_count: core::option::Option<i64>,
+    /// Number of reports escalated.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub escalated_count: core::option::Option<i64>,
-    /// Reports received today.
+    /// Reports received.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub inbound_count: core::option::Option<i64>,
+    /// Closures whose last report action is a label event.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub label_action_count: core::option::Option<i64>,
     /// When these statistics were last computed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub last_updated: core::option::Option<jacquard_common::types::string::Datetime>,
-    /// Number of reports currently not closed.
+    /// Number of unmuted reports currently not closed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pending_count: core::option::Option<i64>,
+    /// Sum of report creation-to-close seconds.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub resolution_duration_sec: core::option::Option<i64>,
+    /// Number of closed-report samples in resolutionDurationSec.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub resolution_sample_count: core::option::Option<i64>,
+    /// Closures whose last report action is a tag event.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub tag_action_count: core::option::Option<i64>,
+    /// Closures whose last report action is a takedown event.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub takedown_action_count: core::option::Option<i64>,
     #[serde(
         flatten,
         default,
@@ -2123,6 +2207,8 @@ pub enum ReportActivityViewActivity<S: jacquard_common::BosStr = jacquard_common
     QueueActivity(Box<crate::generated::tools_ozone::report::QueueActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#assignmentActivity")]
     AssignmentActivity(Box<crate::generated::tools_ozone::report::AssignmentActivity<S>>),
+    #[serde(rename = "tools.ozone.report.defs#unassignmentActivity")]
+    UnassignmentActivity(Box<crate::generated::tools_ozone::report::UnassignmentActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#escalationActivity")]
     EscalationActivity(Box<crate::generated::tools_ozone::report::EscalationActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#closeActivity")]
@@ -2172,7 +2258,7 @@ pub struct ReportAssignment<S: jacquard_common::BosStr = jacquard_common::Defaul
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReportView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Array of moderation event IDs representing actions taken on this report (sorted DESC, most recent first)
+    /// Array of moderation event IDs representing actions taken on this report, in append order (most recently linked event last)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub action_event_ids: core::option::Option<Vec<i64>>,
     /// Note sent to reporter when report was actioned
@@ -2202,6 +2288,18 @@ pub struct ReportView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     /// Whether this report is muted. A report is muted if the reporter was muted or the subject was muted at the time the report was created.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub is_muted: core::option::Option<bool>,
+    /// Priority level assigned to the report.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub priority_level: core::option::Option<S>,
+    /// Report priority score. Higher scores have higher priority.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub priority_score: core::option::Option<i64>,
+    /// Whether the current closure occurred within the report's snapshotted target.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub priority_target_met: core::option::Option<bool>,
+    /// Target resolution duration in minutes.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub priority_target_minutes: core::option::Option<i64>,
     /// The queue this report is assigned to (if any)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub queue: core::option::Option<crate::generated::tools_ozone::queue::QueueView<S>>,
@@ -2217,6 +2315,9 @@ pub struct ReportView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub reported_by: jacquard_common::types::string::Did<S>,
     /// Full subject view of the reporter account
     pub reporter: crate::generated::tools_ozone::moderation::SubjectView<S>,
+    /// Time from report creation to its last closure.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub resolution_time_sec: core::option::Option<i64>,
     /// Current status of the report
     pub status: ReportViewStatus<S>,
     /// The subject that was reported with full details
@@ -2335,6 +2436,244 @@ where
     }
 }
 
+/// Activity recording a moderator being unassigned from a report.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UnassignmentActivity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The report's status immediately after the moderator was unassigned. May equal previousStatus if unassignment did not change the report's status, or be absent on older activities.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub next_status: core::option::Option<UnassignmentActivityNextStatus<S>>,
+    /// The report's status immediately before the moderator was unassigned. May be absent on older activities.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub previous_status: core::option::Option<UnassignmentActivityPreviousStatus<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_unassignment_activity_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// The report's status immediately after the moderator was unassigned. May equal previousStatus if unassignment did not change the report's status, or be absent on older activities.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum UnassignmentActivityNextStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Open,
+    Closed,
+    Escalated,
+    Queued,
+    Assigned,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> UnassignmentActivityNextStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Open => "open",
+            Self::Closed => "closed",
+            Self::Escalated => "escalated",
+            Self::Queued => "queued",
+            Self::Assigned => "assigned",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "open" => Self::Open,
+            "closed" => Self::Closed,
+            "escalated" => Self::Escalated,
+            "queued" => Self::Queued,
+            "assigned" => Self::Assigned,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for UnassignmentActivityNextStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for UnassignmentActivityNextStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for UnassignmentActivityNextStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for UnassignmentActivityNextStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for UnassignmentActivityNextStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for UnassignmentActivityNextStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = UnassignmentActivityNextStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            UnassignmentActivityNextStatus::Open => UnassignmentActivityNextStatus::Open,
+            UnassignmentActivityNextStatus::Closed => UnassignmentActivityNextStatus::Closed,
+            UnassignmentActivityNextStatus::Escalated => UnassignmentActivityNextStatus::Escalated,
+            UnassignmentActivityNextStatus::Queued => UnassignmentActivityNextStatus::Queued,
+            UnassignmentActivityNextStatus::Assigned => UnassignmentActivityNextStatus::Assigned,
+            UnassignmentActivityNextStatus::Other(v) => {
+                UnassignmentActivityNextStatus::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// The report's status immediately before the moderator was unassigned. May be absent on older activities.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum UnassignmentActivityPreviousStatus<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    Open,
+    Closed,
+    Escalated,
+    Queued,
+    Assigned,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> UnassignmentActivityPreviousStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Open => "open",
+            Self::Closed => "closed",
+            Self::Escalated => "escalated",
+            Self::Queued => "queued",
+            Self::Assigned => "assigned",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "open" => Self::Open,
+            "closed" => Self::Closed,
+            "escalated" => Self::Escalated,
+            "queued" => Self::Queued,
+            "assigned" => Self::Assigned,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for UnassignmentActivityPreviousStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for UnassignmentActivityPreviousStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for UnassignmentActivityPreviousStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for UnassignmentActivityPreviousStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for UnassignmentActivityPreviousStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for UnassignmentActivityPreviousStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = UnassignmentActivityPreviousStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            UnassignmentActivityPreviousStatus::Open => UnassignmentActivityPreviousStatus::Open,
+            UnassignmentActivityPreviousStatus::Closed => {
+                UnassignmentActivityPreviousStatus::Closed
+            }
+            UnassignmentActivityPreviousStatus::Escalated => {
+                UnassignmentActivityPreviousStatus::Escalated
+            }
+            UnassignmentActivityPreviousStatus::Queued => {
+                UnassignmentActivityPreviousStatus::Queued
+            }
+            UnassignmentActivityPreviousStatus::Assigned => {
+                UnassignmentActivityPreviousStatus::Assigned
+            }
+            UnassignmentActivityPreviousStatus::Other(v) => {
+                UnassignmentActivityPreviousStatus::Other(v.into_static())
+            }
+        }
+    }
+}
+
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AssignmentActivity<S> {
     fn nsid() -> &'static str {
         "tools.ozone.report.defs"
@@ -2406,6 +2745,61 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for His
         lexicon_doc_tools_ozone_report_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.closure_target_met_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_met_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_met_rate {
+            if *value > 100i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_met_rate",
+                    ),
+                    max: 100i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_met_rate {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_met_rate",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_missed_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_missed_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_overdue_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_overdue_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -2421,6 +2815,61 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Liv
         lexicon_doc_tools_ozone_report_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.closure_target_met_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_met_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_met_rate {
+            if *value > 100i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_met_rate",
+                    ),
+                    max: 100i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_met_rate {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_met_rate",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_missed_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_missed_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.closure_target_overdue_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "closure_target_overdue_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -2506,6 +2955,78 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rep
     }
     fn def_name() -> &'static str {
         "reportView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.priority_score {
+            if *value > 100i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "priority_score",
+                    ),
+                    max: 100i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.priority_score {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "priority_score",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.priority_target_minutes {
+            if *value > 2147483647i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "priority_target_minutes",
+                    ),
+                    max: 2147483647i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.priority_target_minutes {
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "priority_target_minutes",
+                    ),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.resolution_time_sec {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "resolution_time_sec",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for UnassignmentActivity<S>
+{
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "unassignmentActivity"
     }
     fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_tools_ozone_report_defs()
@@ -2741,6 +3262,16 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                             let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "acknowledgedCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "actionRate",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
@@ -2761,10 +3292,95 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "ahtDurationSec",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "ahtSampleCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "avgHandlingTimeSec",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "avgResolutionTimeSec",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "closedCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "closureTargetMetCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "closureTargetMetRate",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        maximum: Some(100i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "closureTargetMissedCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "closureTargetOverdueCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
                                         ..Default::default()
                                     },
                                 ),
@@ -2818,7 +3434,57 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "labelActionCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "pendingCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "resolutionDurationSec",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "resolutionSampleCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "tagActionCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "takedownActionCount",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
@@ -2845,6 +3511,14 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                         let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "acknowledgedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "actionRate",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
@@ -2861,9 +3535,78 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ahtDurationSec",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ahtSampleCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "avgHandlingTimeSec",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "avgResolutionTimeSec",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "closedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "closureTargetMetCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "closureTargetMetRate",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(100i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "closureTargetMissedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "closureTargetOverdueCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
                                 ..Default::default()
                             }),
                         );
@@ -2878,6 +3621,14 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "inboundCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labelActionCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                 ..Default::default()
@@ -2902,6 +3653,38 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "pendingCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "resolutionDurationSec",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "resolutionSampleCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "tagActionCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "takedownActionCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                 ..Default::default()
@@ -3362,6 +4145,7 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                                 refs: vec![
                                     ::jacquard_common::CowStr::new_static("#queueActivity"),
                                     ::jacquard_common::CowStr::new_static("#assignmentActivity"),
+                                    ::jacquard_common::CowStr::new_static("#unassignmentActivity"),
                                     ::jacquard_common::CowStr::new_static("#escalationActivity"),
                                     ::jacquard_common::CowStr::new_static("#closeActivity"),
                                     ::jacquard_common::CowStr::new_static("#reopenActivity"),
@@ -3569,7 +4353,7 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "Array of moderation event IDs representing actions taken on this report (sorted DESC, most recent first)",
+                                        "Array of moderation event IDs representing actions taken on this report, in append order (most recently linked event last)",
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Integer(::jacquard_lexicon::lexicon::LexInteger {
@@ -3682,6 +4466,47 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "priorityLevel",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Priority level assigned to the report.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "priorityScore",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(100i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "priorityTargetMet",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "priorityTargetMinutes",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(2147483647i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "queue",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
@@ -3755,6 +4580,15 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "resolutionTimeSec",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "status",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -3800,6 +4634,50 @@ fn lexicon_doc_tools_ozone_report_defs() -> jacquard_lexicon::lexicon::LexiconDo
                                 ),
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "unassignmentActivity",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Activity recording a moderator being unassigned from a report.",
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "nextStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The report's status immediately after the moderator was unassigned. May equal previousStatus if unassignment did not change the report's status, or be absent on older activities.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "previousStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The report's status immediately before the moderator was unassigned. May be absent on older activities.",
+                                    ),
                                 ),
                                 ..Default::default()
                             }),
@@ -5177,12 +6055,17 @@ pub struct ReportViewBuilder<
         core::option::Option<i64>,
         core::option::Option<bool>,
         core::option::Option<bool>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<bool>,
+        core::option::Option<i64>,
         core::option::Option<crate::generated::tools_ozone::queue::QueueView<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::com_atproto::moderation::ReasonType<S>>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<crate::generated::tools_ozone::moderation::SubjectView<S>>,
+        core::option::Option<i64>,
         core::option::Option<ReportViewStatus<S>>,
         core::option::Option<crate::generated::tools_ozone::moderation::SubjectView<S>>,
         core::option::Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
@@ -5212,7 +6095,7 @@ impl ReportViewBuilder<report_view_state::Empty, jacquard_common::DefaultStr> {
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -5226,7 +6109,7 @@ impl<S: jacquard_common::BosStr> ReportViewBuilder<report_view_state::Empty, S> 
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -5394,12 +6277,64 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
 }
 
 impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder<St, S> {
+    /// Set the `priorityLevel` field (optional)
+    pub fn priority_level(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.10 = value.into();
+        self
+    }
+    /// Set the `priorityLevel` field to an Option value (optional)
+    pub fn maybe_priority_level(mut self, value: Option<S>) -> Self {
+        self._fields.10 = value;
+        self
+    }
+}
+
+impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder<St, S> {
+    /// Set the `priorityScore` field (optional)
+    pub fn priority_score(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.11 = value.into();
+        self
+    }
+    /// Set the `priorityScore` field to an Option value (optional)
+    pub fn maybe_priority_score(mut self, value: Option<i64>) -> Self {
+        self._fields.11 = value;
+        self
+    }
+}
+
+impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder<St, S> {
+    /// Set the `priorityTargetMet` field (optional)
+    pub fn priority_target_met(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.12 = value.into();
+        self
+    }
+    /// Set the `priorityTargetMet` field to an Option value (optional)
+    pub fn maybe_priority_target_met(mut self, value: Option<bool>) -> Self {
+        self._fields.12 = value;
+        self
+    }
+}
+
+impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder<St, S> {
+    /// Set the `priorityTargetMinutes` field (optional)
+    pub fn priority_target_minutes(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.13 = value.into();
+        self
+    }
+    /// Set the `priorityTargetMinutes` field to an Option value (optional)
+    pub fn maybe_priority_target_minutes(mut self, value: Option<i64>) -> Self {
+        self._fields.13 = value;
+        self
+    }
+}
+
+impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder<St, S> {
     /// Set the `queue` field (optional)
     pub fn queue(
         mut self,
         value: impl Into<Option<crate::generated::tools_ozone::queue::QueueView<S>>>,
     ) -> Self {
-        self._fields.10 = value.into();
+        self._fields.14 = value.into();
         self
     }
     /// Set the `queue` field to an Option value (optional)
@@ -5407,7 +6342,7 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
         mut self,
         value: Option<crate::generated::tools_ozone::queue::QueueView<S>>,
     ) -> Self {
-        self._fields.10 = value;
+        self._fields.14 = value;
         self
     }
 }
@@ -5418,7 +6353,7 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self._fields.11 = value.into();
+        self._fields.15 = value.into();
         self
     }
     /// Set the `queuedAt` field to an Option value (optional)
@@ -5426,7 +6361,7 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self._fields.11 = value;
+        self._fields.15 = value;
         self
     }
 }
@@ -5434,12 +6369,12 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
 impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder<St, S> {
     /// Set the `relatedReportCount` field (optional)
     pub fn related_report_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.12 = value.into();
+        self._fields.16 = value.into();
         self
     }
     /// Set the `relatedReportCount` field to an Option value (optional)
     pub fn maybe_related_report_count(mut self, value: Option<i64>) -> Self {
-        self._fields.12 = value;
+        self._fields.16 = value;
         self
     }
 }
@@ -5454,7 +6389,7 @@ where
         mut self,
         value: impl Into<crate::generated::com_atproto::moderation::ReasonType<S>>,
     ) -> ReportViewBuilder<report_view_state::SetReportType<St>, S> {
-        self._fields.13 = ::core::option::Option::Some(value.into());
+        self._fields.17 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -5473,7 +6408,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> ReportViewBuilder<report_view_state::SetReportedBy<St>, S> {
-        self._fields.14 = ::core::option::Option::Some(value.into());
+        self._fields.18 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -5492,12 +6427,25 @@ where
         mut self,
         value: impl Into<crate::generated::tools_ozone::moderation::SubjectView<S>>,
     ) -> ReportViewBuilder<report_view_state::SetReporter<St>, S> {
-        self._fields.15 = ::core::option::Option::Some(value.into());
+        self._fields.19 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder<St, S> {
+    /// Set the `resolutionTimeSec` field (optional)
+    pub fn resolution_time_sec(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.20 = value.into();
+        self
+    }
+    /// Set the `resolutionTimeSec` field to an Option value (optional)
+    pub fn maybe_resolution_time_sec(mut self, value: Option<i64>) -> Self {
+        self._fields.20 = value;
+        self
     }
 }
 
@@ -5511,7 +6459,7 @@ where
         mut self,
         value: impl Into<ReportViewStatus<S>>,
     ) -> ReportViewBuilder<report_view_state::SetStatus<St>, S> {
-        self._fields.16 = ::core::option::Option::Some(value.into());
+        self._fields.21 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -5530,7 +6478,7 @@ where
         mut self,
         value: impl Into<crate::generated::tools_ozone::moderation::SubjectView<S>>,
     ) -> ReportViewBuilder<report_view_state::SetSubject<St>, S> {
-        self._fields.17 = ::core::option::Option::Some(value.into());
+        self._fields.22 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -5545,7 +6493,7 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
         mut self,
         value: impl Into<Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>>,
     ) -> Self {
-        self._fields.18 = value.into();
+        self._fields.23 = value.into();
         self
     }
     /// Set the `subjectStatus` field to an Option value (optional)
@@ -5553,7 +6501,7 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
         mut self,
         value: Option<crate::generated::tools_ozone::moderation::SubjectStatusView<S>>,
     ) -> Self {
-        self._fields.18 = value;
+        self._fields.23 = value;
         self
     }
 }
@@ -5564,7 +6512,7 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self._fields.19 = value.into();
+        self._fields.24 = value.into();
         self
     }
     /// Set the `updatedAt` field to an Option value (optional)
@@ -5572,7 +6520,7 @@ impl<St: report_view_state::State, S: jacquard_common::BosStr> ReportViewBuilder
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self._fields.19 = value;
+        self._fields.24 = value;
         self
     }
 }
@@ -5602,16 +6550,21 @@ where
             id: self._fields.7.unwrap(),
             is_automated: self._fields.8.or_else(|| Some(false)),
             is_muted: self._fields.9,
-            queue: self._fields.10,
-            queued_at: self._fields.11,
-            related_report_count: self._fields.12,
-            report_type: self._fields.13.unwrap(),
-            reported_by: self._fields.14.unwrap(),
-            reporter: self._fields.15.unwrap(),
-            status: self._fields.16.unwrap(),
-            subject: self._fields.17.unwrap(),
-            subject_status: self._fields.18,
-            updated_at: self._fields.19,
+            priority_level: self._fields.10,
+            priority_score: self._fields.11,
+            priority_target_met: self._fields.12,
+            priority_target_minutes: self._fields.13,
+            queue: self._fields.14,
+            queued_at: self._fields.15,
+            related_report_count: self._fields.16,
+            report_type: self._fields.17.unwrap(),
+            reported_by: self._fields.18.unwrap(),
+            reporter: self._fields.19.unwrap(),
+            resolution_time_sec: self._fields.20,
+            status: self._fields.21.unwrap(),
+            subject: self._fields.22.unwrap(),
+            subject_status: self._fields.23,
+            updated_at: self._fields.24,
             extra_data: Default::default(),
         }
     }
@@ -5634,17 +6587,46 @@ where
             id: self._fields.7.unwrap(),
             is_automated: self._fields.8.or_else(|| Some(false)),
             is_muted: self._fields.9,
-            queue: self._fields.10,
-            queued_at: self._fields.11,
-            related_report_count: self._fields.12,
-            report_type: self._fields.13.unwrap(),
-            reported_by: self._fields.14.unwrap(),
-            reporter: self._fields.15.unwrap(),
-            status: self._fields.16.unwrap(),
-            subject: self._fields.17.unwrap(),
-            subject_status: self._fields.18,
-            updated_at: self._fields.19,
+            priority_level: self._fields.10,
+            priority_score: self._fields.11,
+            priority_target_met: self._fields.12,
+            priority_target_minutes: self._fields.13,
+            queue: self._fields.14,
+            queued_at: self._fields.15,
+            related_report_count: self._fields.16,
+            report_type: self._fields.17.unwrap(),
+            reported_by: self._fields.18.unwrap(),
+            reporter: self._fields.19.unwrap(),
+            resolution_time_sec: self._fields.20,
+            status: self._fields.21.unwrap(),
+            subject: self._fields.22.unwrap(),
+            subject_status: self._fields.23,
+            updated_at: self._fields.24,
             extra_data: Some(extra_data),
         }
     }
+}
+
+fn deserialize_unassignment_activity_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }

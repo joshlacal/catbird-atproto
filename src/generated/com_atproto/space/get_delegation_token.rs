@@ -31,7 +31,6 @@ pub struct GetDelegationToken<S: jacquard_common::BosStr = jacquard_common::Defa
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetDelegationTokenOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// A signed JWT delegation token.
     pub token: S,
     #[serde(
         flatten,

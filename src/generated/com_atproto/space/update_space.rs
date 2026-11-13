@@ -13,9 +13,8 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct UpdateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The policy governing the space, including its configuration. Replaces the current policy.
+    /// PDSes must support all of the listed policies. Other space hosts may support only some of them, and any host may support policies beyond those listed.
     pub policy: UpdateSpacePolicy<S>,
-    /// Reference to the space to update.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
@@ -64,12 +63,11 @@ pub enum UpdateSpaceError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    #[serde(rename = "NotSpaceOwner")]
-    NotSpaceOwner(
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// The requested policy is not one the host implements.
     #[serde(rename = "UnsupportedPolicy")]
     UnsupportedPolicy(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -94,8 +92,8 @@ impl core::fmt::Display for UpdateSpaceError {
                 }
                 Ok(())
             }
-            Self::NotSpaceOwner(msg) => {
-                write!(f, "NotSpaceOwner")?;
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

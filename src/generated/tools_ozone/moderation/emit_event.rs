@@ -229,16 +229,22 @@ impl core::fmt::Display for EmitEventError {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ReportAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Target ALL reports on the subject
+    /// Target ALL reports on the subject. Excludes assigned and escalated reports.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub all: core::option::Option<bool>,
+    /// Target all eligible reports on the account and its owned subjects, including records, messages, and conversations. Only valid for account subjects and events that close reports. Excludes assigned, escalated, and actively assigned reports unless explicitly targeted by ID.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub all_owned: core::option::Option<bool>,
     /// Target specific report IDs
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub ids: core::option::Option<Vec<i64>>,
+    /// Set true when the report activities are created by an automated process.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub is_automated: core::option::Option<bool>,
     /// Note to send to reporter(s) when actioning their report
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub note: core::option::Option<S>,
-    /// Target reports matching these report types on the subject (fully qualified NSIDs)
+    /// Target reports matching these report types on the subject (fully qualified NSIDs). Excludes assigned and escalated reports.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub types: core::option::Option<Vec<S>>,
     #[serde(
@@ -770,6 +776,14 @@ fn lexicon_doc_tools_ozone_moderation_emitEvent() -> jacquard_lexicon::lexicon::
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "allOwned",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ids",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -781,6 +795,14 @@ fn lexicon_doc_tools_ozone_moderation_emitEvent() -> jacquard_lexicon::lexicon::
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                     ..Default::default()
                                 }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "isAutomated",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
                                 ..Default::default()
                             }),
                         );
@@ -804,7 +826,7 @@ fn lexicon_doc_tools_ozone_moderation_emitEvent() -> jacquard_lexicon::lexicon::
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "Target reports matching these report types on the subject (fully qualified NSIDs)",
+                                        "Target reports matching these report types on the subject (fully qualified NSIDs). Excludes assigned and escalated reports.",
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {

@@ -13,14 +13,13 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The policy governing the space, including its configuration.
+    /// PDSes must support all of the listed policies. Other space hosts may support only some of them, and any host may support policies beyond those listed.
     pub policy: CreateSpacePolicy<S>,
-    /// The space key. Used to differentiate multiple spaces of the same type under the same owner. Same syntax requirements as a record key. If not provided, one will be auto-generated (TID).
+    /// Space key. Generated as a TID if not provided.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub skey: core::option::Option<
         jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
     >,
-    /// The NSID of the space type, describing the modality of the space (e.g. app.bsky.group, app.bsky.personal).
     pub space_type: jacquard_common::types::string::Nsid<S>,
     #[serde(
         flatten,
@@ -60,8 +59,7 @@ pub enum CreateSpacePolicy<S: jacquard_common::BosStr = jacquard_common::Default
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateSpaceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// URI of the created space.
-    pub uri: jacquard_common::types::aturi::AtSpaceUri<S>,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -87,13 +85,11 @@ pub struct CreateSpaceOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 #[serde(tag = "error", content = "message")]
 pub enum CreateSpaceError {
-    /// A space with this owner, type, and skey already exists. A space that was previously deleted may be created again.
     #[serde(rename = "SpaceAlreadyExists")]
     SpaceAlreadyExists(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    /// The requested policy is not one the host implements.
     #[serde(rename = "UnsupportedPolicy")]
     UnsupportedPolicy(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]

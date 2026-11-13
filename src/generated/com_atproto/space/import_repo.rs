@@ -25,9 +25,21 @@ pub struct ImportRepo {
 )]
 #[serde(tag = "error", content = "message")]
 pub enum ImportRepoError {
-    /// The account is the space's authority, and the space has not been imported.
+    /// The account is the space's authority, and the space has not been imported yet.
     #[serde(rename = "SpaceNotFound")]
     SpaceNotFound(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// The STAR file is malformed or fails verification.
+    #[serde(rename = "InvalidRepoFile")]
+    InvalidRepoFile(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// The repo in the STAR file does not belong to the authenticated account.
+    #[serde(rename = "RepoMismatch")]
+    RepoMismatch(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -45,6 +57,20 @@ impl core::fmt::Display for ImportRepoError {
         match self {
             Self::SpaceNotFound(msg) => {
                 write!(f, "SpaceNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidRepoFile(msg) => {
+                write!(f, "InvalidRepoFile")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RepoMismatch(msg) => {
+                write!(f, "RepoMismatch")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -87,7 +113,7 @@ impl jacquard_common::xrpc::XrpcResp for ImportRepoResponse {
 impl jacquard_common::xrpc::XrpcRequest for ImportRepo {
     const NSID: &'static str = "com.atproto.space.importRepo";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/vnd.dasl.star");
     type Response = ImportRepoResponse;
     fn encode_body(&self, buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError>
     where
@@ -112,7 +138,7 @@ pub struct ImportRepoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ImportRepoRequest {
     const PATH: &'static str = "/xrpc/com.atproto.space.importRepo";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/octet-stream");
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/vnd.dasl.star");
     type Request<S: jacquard_common::BosStr> = ImportRepo;
     type Response = ImportRepoResponse;
 }

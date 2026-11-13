@@ -13,7 +13,6 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Reference to the space to delete.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
@@ -45,8 +44,8 @@ pub enum DeleteSpaceError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    #[serde(rename = "NotSpaceOwner")]
-    NotSpaceOwner(
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -69,8 +68,8 @@ impl core::fmt::Display for DeleteSpaceError {
                 }
                 Ok(())
             }
-            Self::NotSpaceOwner(msg) => {
-                write!(f, "NotSpaceOwner")?;
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

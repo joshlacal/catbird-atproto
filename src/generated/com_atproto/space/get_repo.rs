@@ -37,9 +37,9 @@ pub struct GetRepoOutput {
 )]
 #[serde(tag = "error", content = "message")]
 pub enum GetRepoError {
-    /// The Atproto-Space-Want-Mac header is missing or malformed, names an unsupported type or version, or carries an invalid key share.
-    #[serde(rename = "BadSpaceMac")]
-    BadSpaceMac(
+    /// The MAC requested in the Accept-Signature header is missing or invalid.
+    #[serde(rename = "InvalidSpaceMac")]
+    InvalidSpaceMac(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -80,8 +80,8 @@ pub enum GetRepoError {
 impl core::fmt::Display for GetRepoError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::BadSpaceMac(msg) => {
-                write!(f, "BadSpaceMac")?;
+            Self::InvalidSpaceMac(msg) => {
+                write!(f, "InvalidSpaceMac")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -139,7 +139,7 @@ Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self:
 pub struct GetRepoResponse;
 impl jacquard_common::xrpc::XrpcResp for GetRepoResponse {
     const NSID: &'static str = "com.atproto.space.getRepo";
-    const ENCODING: &'static str = "application/octet-stream";
+    const ENCODING: &'static str = "application/vnd.dasl.star";
     type Output<S: jacquard_common::BosStr> = GetRepoOutput;
     type Err = GetRepoError;
     fn encode_output<S: jacquard_common::BosStr>(
