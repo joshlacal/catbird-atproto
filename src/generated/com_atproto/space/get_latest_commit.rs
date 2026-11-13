@@ -25,7 +25,6 @@ pub struct GetLatestCommit<S: jacquard_common::BosStr = jacquard_common::Default
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetLatestCommitOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The account's current commit.
     pub commit: crate::generated::com_atproto::space::Commit<S>,
     #[serde(
         flatten,
@@ -52,9 +51,9 @@ pub struct GetLatestCommitOutput<S: jacquard_common::BosStr = jacquard_common::D
 )]
 #[serde(tag = "error", content = "message")]
 pub enum GetLatestCommitError {
-    /// The Atproto-Space-Want-Mac header is missing or malformed, names an unsupported type or version, or carries an invalid key share.
-    #[serde(rename = "BadSpaceMac")]
-    BadSpaceMac(
+    /// The MAC requested in the Accept-Signature header is missing or invalid.
+    #[serde(rename = "InvalidSpaceMac")]
+    InvalidSpaceMac(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -95,8 +94,8 @@ pub enum GetLatestCommitError {
 impl core::fmt::Display for GetLatestCommitError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::BadSpaceMac(msg) => {
-                write!(f, "BadSpaceMac")?;
+            Self::InvalidSpaceMac(msg) => {
+                write!(f, "InvalidSpaceMac")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

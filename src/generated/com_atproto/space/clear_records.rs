@@ -13,9 +13,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ClearRecords<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The DID of the repo to clear (the authenticated member).
     pub repo: jacquard_common::types::string::Did<S>,
-    /// Reference to the space.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,

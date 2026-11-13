@@ -7,7 +7,9 @@
 
 //! Generated bindings for the `com.atproto.space` Lexicon namespace/module.
 pub mod apply_writes;
+pub mod authorize_space_sync;
 pub mod clear_records;
+pub mod confirm_registration;
 pub mod create_record;
 pub mod create_space;
 pub mod delete_record;
@@ -19,25 +21,22 @@ pub mod get_latest_commit;
 pub mod get_record;
 pub mod get_repo;
 pub mod get_space;
-pub mod get_space_credential;
 pub mod import_repo;
 pub mod import_space_meta;
 pub mod list_blobs;
 pub mod list_records;
 pub mod list_repo_ops;
-pub mod list_repos;
 pub mod list_spaces;
-pub mod notify_credential_revoked;
-pub mod notify_space_deleted;
-pub mod notify_write;
+pub mod list_writers;
+pub mod notify_credentials_revoked;
+pub mod notify_repo_update;
+pub mod notify_space_update;
 pub mod policy;
 pub mod put_record;
-pub mod register_notify;
 pub mod remove_writer;
-pub mod unregister_notify;
 pub mod update_space;
 
-/// A commit over the current state of a permissioned repo. Carries no signature: the repo host authenticates it to a syncer with a MAC in the Atproto-Space-Mac response header.
+/// Commit to the current state of a space repo. Not signed; authenticated by the repo host with a MAC instead.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -47,14 +46,11 @@ pub mod update_space;
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Commit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// sha256 digest of the LtHash state (32 bytes).
+    /// SHA-256 digest of the repo's LtHash state.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub data: jacquard_common::deps::bytes::Bytes,
-    /// The author DID of the repo.
     pub repo: jacquard_common::types::string::Did<S>,
-    /// Commit revision (TID).
     pub rev: jacquard_common::types::string::Tid,
-    /// Reference to the space.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     /// Commit format version, currently 1.
     pub ver: i64,
@@ -72,12 +68,105 @@ pub struct Commit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
+/// A repo was removed from the writer set.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RepoRemoved<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// The space revision before this update, if any. Set in notifySpaceUpdate, where a gap indicates missed notifications, which can be recovered with listWriters.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub prev_space_rev: core::option::Option<jacquard_common::types::string::Tid>,
+    pub repo: jacquard_common::types::string::Did<S>,
+    /// The space revision at which this update was sequenced.
+    pub space_rev: jacquard_common::types::string::Tid,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_repo_removed_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A repo in the space advanced to a new revision.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RepoWrite<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub data: jacquard_common::deps::bytes::Bytes,
+    /// The space revision before this update, if any. Set in notifySpaceUpdate, where a gap indicates missed notifications, which can be recovered with listWriters.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub prev_space_rev: core::option::Option<jacquard_common::types::string::Tid>,
+    pub repo: jacquard_common::types::string::Did<S>,
+    pub repo_rev: jacquard_common::types::string::Tid,
+    /// The space revision at which this update was sequenced.
+    pub space_rev: jacquard_common::types::string::Tid,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_repo_write_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Commit<S> {
     fn nsid() -> &'static str {
         "com.atproto.space.defs"
     }
     fn def_name() -> &'static str {
         "commit"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_space_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RepoRemoved<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.space.defs"
+    }
+    fn def_name() -> &'static str {
+        "repoRemoved"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_space_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RepoWrite<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.space.defs"
+    }
+    fn def_name() -> &'static str {
+        "repoWrite"
     }
     fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_com_atproto_space_defs()
@@ -397,7 +486,7 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "A commit over the current state of a permissioned repo. Carries no signature: the repo host authenticates it to a syncer with a MAC in the Atproto-Space-Mac response header.",
+                            "Commit to the current state of a space repo. Not signed; authenticated by the repo host with a MAC instead.",
                         ),
                     ),
                     required: Some(
@@ -425,11 +514,6 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 "repo",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The author DID of the repo.",
-                                    ),
-                                ),
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
@@ -441,11 +525,6 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 "rev",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Commit revision (TID).",
-                                    ),
-                                ),
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
                                 ),
@@ -457,11 +536,6 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 "space",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Reference to the space.",
-                                    ),
-                                ),
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                 ),
@@ -481,8 +555,649 @@ fn lexicon_doc_com_atproto_space_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                     ..Default::default()
                 }),
             );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("repoRemoved"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "A repo was removed from the writer set.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repo"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("spaceRev")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "prevSpaceRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The space revision before this update, if any. Set in notifySpaceUpdate, where a gap indicates missed notifications, which can be recovered with listWriters.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "repo",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "spaceRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The space revision at which this update was sequenced.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("repoWrite"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "A repo in the space advanced to a new revision.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repo"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("repoRev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("data"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("spaceRev")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "data",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "prevSpaceRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The space revision before this update, if any. Set in notifySpaceUpdate, where a gap indicates missed notifications, which can be recovered with listWriters.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "repo",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "repoRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "spaceRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The space revision at which this update was sequenced.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
             map
         },
         ..Default::default()
+    }
+}
+
+fn deserialize_repo_removed_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod repo_removed_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Repo;
+        type SpaceRev;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Repo = Unset;
+        type SpaceRev = Unset;
+    }
+    ///State transition - sets the `repo` field to Set
+    pub struct SetRepo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepo<St> {}
+    impl<St: State> State for SetRepo<St> {
+        type Repo = Set<members::repo>;
+        type SpaceRev = St::SpaceRev;
+    }
+    ///State transition - sets the `space_rev` field to Set
+    pub struct SetSpaceRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpaceRev<St> {}
+    impl<St: State> State for SetSpaceRev<St> {
+        type Repo = St::Repo;
+        type SpaceRev = Set<members::space_rev>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `repo` field
+        pub struct repo(());
+        ///Marker type for the `space_rev` field
+        pub struct space_rev(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct RepoRemovedBuilder<
+    St: repo_removed_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Tid>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl RepoRemoved<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RepoRemovedBuilder<repo_removed_state::Empty, jacquard_common::DefaultStr> {
+        RepoRemovedBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> RepoRemoved<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RepoRemovedBuilder<repo_removed_state::Empty, S> {
+        RepoRemovedBuilder::builder()
+    }
+}
+
+impl RepoRemovedBuilder<repo_removed_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        RepoRemovedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> RepoRemovedBuilder<repo_removed_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RepoRemovedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: repo_removed_state::State, S: jacquard_common::BosStr> RepoRemovedBuilder<St, S> {
+    /// Set the `prevSpaceRev` field (optional)
+    pub fn prev_space_rev(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Tid>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `prevSpaceRev` field to an Option value (optional)
+    pub fn maybe_prev_space_rev(
+        mut self,
+        value: Option<jacquard_common::types::string::Tid>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoRemovedBuilder<St, S>
+where
+    St: repo_removed_state::State,
+    St::Repo: repo_removed_state::IsUnset,
+{
+    /// Set the `repo` field (required)
+    pub fn repo(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> RepoRemovedBuilder<repo_removed_state::SetRepo<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        RepoRemovedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoRemovedBuilder<St, S>
+where
+    St: repo_removed_state::State,
+    St::SpaceRev: repo_removed_state::IsUnset,
+{
+    /// Set the `spaceRev` field (required)
+    pub fn space_rev(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Tid>,
+    ) -> RepoRemovedBuilder<repo_removed_state::SetSpaceRev<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        RepoRemovedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoRemovedBuilder<St, S>
+where
+    St: repo_removed_state::State,
+    St::Repo: repo_removed_state::IsSet,
+    St::SpaceRev: repo_removed_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> RepoRemoved<S> {
+        RepoRemoved {
+            prev_space_rev: self._fields.0,
+            repo: self._fields.1.unwrap(),
+            space_rev: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> RepoRemoved<S> {
+        RepoRemoved {
+            prev_space_rev: self._fields.0,
+            repo: self._fields.1.unwrap(),
+            space_rev: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_repo_write_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod repo_write_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Data;
+        type Repo;
+        type RepoRev;
+        type SpaceRev;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Data = Unset;
+        type Repo = Unset;
+        type RepoRev = Unset;
+        type SpaceRev = Unset;
+    }
+    ///State transition - sets the `data` field to Set
+    pub struct SetData<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetData<St> {}
+    impl<St: State> State for SetData<St> {
+        type Data = Set<members::data>;
+        type Repo = St::Repo;
+        type RepoRev = St::RepoRev;
+        type SpaceRev = St::SpaceRev;
+    }
+    ///State transition - sets the `repo` field to Set
+    pub struct SetRepo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepo<St> {}
+    impl<St: State> State for SetRepo<St> {
+        type Data = St::Data;
+        type Repo = Set<members::repo>;
+        type RepoRev = St::RepoRev;
+        type SpaceRev = St::SpaceRev;
+    }
+    ///State transition - sets the `repo_rev` field to Set
+    pub struct SetRepoRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepoRev<St> {}
+    impl<St: State> State for SetRepoRev<St> {
+        type Data = St::Data;
+        type Repo = St::Repo;
+        type RepoRev = Set<members::repo_rev>;
+        type SpaceRev = St::SpaceRev;
+    }
+    ///State transition - sets the `space_rev` field to Set
+    pub struct SetSpaceRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpaceRev<St> {}
+    impl<St: State> State for SetSpaceRev<St> {
+        type Data = St::Data;
+        type Repo = St::Repo;
+        type RepoRev = St::RepoRev;
+        type SpaceRev = Set<members::space_rev>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `data` field
+        pub struct data(());
+        ///Marker type for the `repo` field
+        pub struct repo(());
+        ///Marker type for the `repo_rev` field
+        pub struct repo_rev(());
+        ///Marker type for the `space_rev` field
+        pub struct space_rev(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct RepoWriteBuilder<
+    St: repo_write_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl RepoWrite<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RepoWriteBuilder<repo_write_state::Empty, jacquard_common::DefaultStr> {
+        RepoWriteBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> RepoWrite<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RepoWriteBuilder<repo_write_state::Empty, S> {
+        RepoWriteBuilder::builder()
+    }
+}
+
+impl RepoWriteBuilder<repo_write_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        RepoWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> RepoWriteBuilder<repo_write_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RepoWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoWriteBuilder<St, S>
+where
+    St: repo_write_state::State,
+    St::Data: repo_write_state::IsUnset,
+{
+    /// Set the `data` field (required)
+    pub fn data(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> RepoWriteBuilder<repo_write_state::SetData<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        RepoWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: repo_write_state::State, S: jacquard_common::BosStr> RepoWriteBuilder<St, S> {
+    /// Set the `prevSpaceRev` field (optional)
+    pub fn prev_space_rev(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Tid>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `prevSpaceRev` field to an Option value (optional)
+    pub fn maybe_prev_space_rev(
+        mut self,
+        value: Option<jacquard_common::types::string::Tid>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoWriteBuilder<St, S>
+where
+    St: repo_write_state::State,
+    St::Repo: repo_write_state::IsUnset,
+{
+    /// Set the `repo` field (required)
+    pub fn repo(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> RepoWriteBuilder<repo_write_state::SetRepo<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        RepoWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoWriteBuilder<St, S>
+where
+    St: repo_write_state::State,
+    St::RepoRev: repo_write_state::IsUnset,
+{
+    /// Set the `repoRev` field (required)
+    pub fn repo_rev(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Tid>,
+    ) -> RepoWriteBuilder<repo_write_state::SetRepoRev<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        RepoWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoWriteBuilder<St, S>
+where
+    St: repo_write_state::State,
+    St::SpaceRev: repo_write_state::IsUnset,
+{
+    /// Set the `spaceRev` field (required)
+    pub fn space_rev(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Tid>,
+    ) -> RepoWriteBuilder<repo_write_state::SetSpaceRev<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        RepoWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepoWriteBuilder<St, S>
+where
+    St: repo_write_state::State,
+    St::Data: repo_write_state::IsSet,
+    St::Repo: repo_write_state::IsSet,
+    St::RepoRev: repo_write_state::IsSet,
+    St::SpaceRev: repo_write_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> RepoWrite<S> {
+        RepoWrite {
+            data: self._fields.0.unwrap(),
+            prev_space_rev: self._fields.1,
+            repo: self._fields.2.unwrap(),
+            repo_rev: self._fields.3.unwrap(),
+            space_rev: self._fields.4.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> RepoWrite<S> {
+        RepoWrite {
+            data: self._fields.0.unwrap(),
+            prev_space_rev: self._fields.1,
+            repo: self._fields.2.unwrap(),
+            repo_rev: self._fields.3.unwrap(),
+            space_rev: self._fields.4.unwrap(),
+            extra_data: Some(extra_data),
+        }
     }
 }

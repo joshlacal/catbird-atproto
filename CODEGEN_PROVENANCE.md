@@ -30,7 +30,190 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (October 29 Spaces alpha, regenerated 2026-10-30)
+## Current generation (November 12 Spaces alpha, regenerated 2026-11-12)
+
+The core corpus is Petrel `generator/lexicons` at
+`bd3224debbc3a92d0be9bc88012e5502abbbb625` (local bookmark
+`claude/spaces-nov12-lexicons-20261112`). Its Spaces pin is atproto
+`d4def6e9f521896ed8222f576d54923d00b5fbeb` (npm
+`0.0.0-spaces-alpha-20261112204144`). Before generation,
+`bd3224de..@` had no committed `generator/` delta and
+`git status --short generator/` was clean. The overlay is PetrelCatbird
+`957c6c48dfa25eb9e1befb90288453888de5748e` (local bookmark with the
+same name); its `blue.catbird.circle` space declaration uses `title`
+instead of `name`. Space declarations are generator metadata rather than Rust
+data types, so that overlay edit produces no Rust declaration by itself.
+
+The generator is the unchanged mls-ds main tree at
+`2df124d6227180d37bc2bcc19143391fccc7b8c4`; its `codegen/` is
+byte-identical to `4f980cb51c8a9826c03eba4341db97d68091d567`.
+The existing union-variant pass renamed the same 12 policy variants as the
+October generation. The new `repoWrite` / `repoRemoved` unions already
+generate distinct `RepoWrite` and `RepoRemoved` variants, including
+`notifySpaceUpdate.update`, so no generator change or mls-ds commit was
+needed.
+
+| Generator file | SHA-256 |
+| --- | --- |
+| mls-ds `codegen/src/main.rs` | `25f91cc12a6e1e42e77078fb171f6a3521a108cc82b9b95411c2e8ee853e56d8` |
+| mls-ds `codegen/Cargo.toml` | `5d8756af56b27bfe9039c576e416f4652936fd1af4e84a996b278dfa251506b6` |
+| mls-ds `Cargo.lock` | `d47a7f3031a614e13e7a576f94203e4fa39aebaba2a94af628879514e16c4050` |
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 471 | `8bf4f0e4ada9249cfbdcd2175d334af8da3b0f047b90d5f3073c7e2b086246d7` |
+| PetrelCatbird `lexicons` | 189 | `25e72b4a21d40716938496bf8b349bf83f44a772baca732f827b4b2d146758ef` |
+| Rust `src/generated` | 687 | `30e2b6bcb5174d636856a8f2b06d94fdf2319d0ecaebda854f9009b813489617` |
+
+The aggregate method is unchanged from the historical description below.
+This run used Rust 1.97.1, rustfmt 1.9.0 (edition 2021), and Python 3.15.0.
+
+### November Spaces changes
+
+Forty-nine generated path identities in the four feature-gated Spaces
+namespaces changed: 30 existing files changed, 9 were added, and 10 were
+removed.
+
+- Removed:
+  `space::{get_space_credential,list_repos,notify_credential_revoked,notify_space_deleted,notify_write,register_notify,unregister_notify}`,
+  `memberspace::{put_member,remove_member}`, and
+  `managedspace::check_user_access`.
+- Added:
+  `space::{authorize_space_sync,confirm_registration,list_writers,notify_credentials_revoked,notify_repo_update,notify_space_update}`,
+  `memberspace::{put_members,remove_members}`, and
+  `managedspace::check_access`.
+- The new Lexicon `com.atproto.space.defs` objects are generated at
+  `com_atproto::space::{RepoWrite,RepoRemoved}`. The new
+  `com.atproto.memberspace.defs#member` object is generated at
+  `com_atproto::memberspace::Member`.
+- `getSpace` now returns `space` rather than `uri`; `getRepo` and
+  `exportSpaceMeta` now declare `application/vnd.dasl.star`; and the changed
+  methods carry the November error names and RFC 9421 MAC descriptions from
+  the source Lexicons.
+
+The hand-written Space contract suite was cut over to the new modules and now
+covers authorization with optional registration, registration confirmation,
+batched member writes/removals, `listWriters` write/removal unions,
+`notifyRepoUpdate`, `notifySpaceUpdate`, `checkAccess`, STAR content type, and
+the renamed `getSpace.space` field.
+
+### Required standard-lexicon refresh outside Spaces
+
+The required Petrel revision also contains the earlier standard-corpus sync
+`b9e15f32813e` ("Petrel: sync the standard lexicons from their current
+upstream repositories"). Consequently 67 generated path identities outside
+the four Spaces namespaces differ from the October tree (35 changed, 32
+added). This is source-corpus change, not generator drift; every other
+generated file outside Spaces is byte-identical.
+
+Per namespace:
+
+- `app_bsky` (20): changed
+  `actor.rs`, `actor/profile.rs`, `embed/external.rs`,
+  `embed/get_embed_external_view.rs`, `embed/record.rs`, `feed.rs`,
+  `feed/get_list_feed.rs`, `feed/get_quotes.rs`, `feed/get_timeline.rs`,
+  `graph.rs`, `graph/get_followers.rs`, `graph/get_follows.rs`,
+  `notification.rs`, `notification/list_notifications.rs`, and
+  `unspecced.rs`; added `actor/link.rs`,
+  `graph/referencelistoptout.rs`,
+  `notification/get_grouped_notifications.rs`,
+  `unspecced/get_atmosphere_explore_article_recommendations.rs`, and
+  `unspecced/get_atmosphere_explore_tab.rs`.
+- `chat_bsky` (1): changed `convo/leave_convo.rs`.
+- `com_atproto` (2): changed `label.rs`; added `label/record.rs`.
+- `network_bsky` (10): added its root module, `jetstream.rs`, and
+  `jetstream/{get_block,get_import_status,get_segment,get_zstd_dictionary,import_timestamps,list_segments,plan_snapshot,subscribe_events}.rs`.
+  The generated top-level `lib.rs` changes only to expose this namespace.
+- `tools_ozone` (33): changed its root module,
+  `moderation.rs`, `moderation/{emit_event,query_statuses}.rs`, `queue.rs`,
+  `queue/{create_queue,update_queue}.rs`, `report.rs`,
+  `report/{close_reports,create_activity}.rs`, `safelink.rs`,
+  `safelink/{add_rule,query_rules,remove_rule,update_rule}.rs`, `server.rs`,
+  and `team.rs`; added the `inbox` module and its 11 endpoint files,
+  `moderation/get_account_preferences.rs`, `safelink/sync_source.rs`,
+  `server/get_capabilities.rs`, and `team/list_online_members.rs`.
+
+The public-shape changes in the 35 changed files are:
+
+- `app_bsky::actor`: `InterestsPref.updated_at`,
+  `ProfileViewDetailed.links`, and `actor::profile::Profile.links` are new
+  optional fields. New `ProfileLinkView` requires `cid`, `uri`, and `url`.
+  Existing struct literals must add the optional fields.
+- `app_bsky::embed`: new external view types are `ViewArticle` (required
+  `description`, `title`, `uri`), `ViewArticlePublication` (same required
+  fields), `ViewGallery` (also required `items`), `ViewGalleryImage`
+  (required `fullsize`, `thumbnail`), and `ViewLivestream` (required
+  `active`, `description`, `title`, `uri`).
+  `get_embed_external_view::GetEmbedExternalView.uris` changes from required
+  `Vec<AtUri>` to `Option<Vec<AtUri>>` and gains optional `canonical_uri`;
+  its output gains optional typed `data`, `unverified_associated_records`,
+  and `unverified_associated_refs`.
+  `record::ViewRecord` gains optional `op_thread_post_count` and
+  `op_thread_post_index`.
+- `app_bsky::feed`: `FeedViewPost` gains those same two optional thread
+  fields. `GetListFeed` and `GetTimeline` gain optional `since`; both outputs
+  gain optional `start_cursor`. `GetQuotes` gains optional `sort` typed as
+  the new `GetQuotesSort::{Top,Latest,Other}` enum. Existing struct literals
+  and exhaustive matches must be updated.
+- `app_bsky::graph`: `ListItemView.subject_opted_out` and
+  `ListViewerState.reference_list_opt_out` are new optional fields.
+  `get_followers.rs` and `get_follows.rs` only add field documentation; they
+  have no public Rust shape change.
+- `app_bsky::notification::list_notifications` only adds deprecation
+  descriptions; it has no public Rust shape change. The changed namespace
+  roots in `notification`, `unspecced`, `com_atproto::label`,
+  `tools_ozone::{server,team}`, and generated `lib.rs` only expose newly
+  added modules.
+- `chat_bsky::convo::leave_convo::LeaveConvoError` gains
+  `AlreadyLeftConvo`; exhaustive matches must add an arm.
+- `tools_ozone::moderation`: `AccountStats` and `RecordsStats` are removed,
+  as are `SubjectStatusView.account_stats` and `records_stats`.
+  `ModEventReport` gains optional appeal action/id/label/submitter fields,
+  `ModEventReverseTakedown` gains optional `strike_expires_at`,
+  `emit_event::ReportAction` gains optional `all_owned` and `is_automated`,
+  and `QueryStatuses` removes the optional
+  `min_account_suspend_count`, `min_reported_records_count`, and
+  `min_takendown_records_count` filters.
+- `tools_ozone::queue`: `QueueStats` gains 14 optional count/duration/SLA
+  fields; `QueueView` and `CreateQueue` gain optional account/reporter tags,
+  recommended labels, and strict access; `UpdateQueue` gains optional
+  recommended labels and strict access, and its error enum gains
+  `ConflictingQueue`.
+- `tools_ozone::report`: `HistoricalStats` and `LiveStats` gain the same 14
+  optional metrics; `ReportView` gains five optional priority/resolution
+  fields; `ReportActivityViewActivity` gains `UnassignmentActivity` plus its
+  new status enums. `CloseReports` gains optional action event, excluded
+  report types, include-all-owned, and metadata fields; `CreateActivity`
+  gains optional metadata.
+- `tools_ozone::safelink`: `source` is a new optional field (default
+  `ozone/default`) on `Event`, `UrlRule`, and the add/query/remove/update
+  requests. Add/update error enums gain `RuleSourceConflict`.
+
+No existing non-Space struct gains a newly required field. The optional
+additions still break Rust struct literals because Rust requires every field
+to be named.
+
+### Verification
+
+`generate` wrote 687 files and `check` printed
+`Roundtrip verified: 687 generated files`. `cargo fmt --check` passed.
+`cargo build --locked` passed with default features,
+`--no-default-features`, `--features namespace-site-standard`, and
+`--all-features`. `cargo test --locked --features
+streaming,namespace-atproto-space` passed 48 tests with 0 failures, including
+20 `com_atproto_space_surface` contracts. `cargo clippy --locked
+--all-targets --all-features` exited 0 with 25 generated-code warnings:
+23 `len_zero` (7 new in `get_grouped_notifications`) and the same 2
+`result_large_err` warnings as before.
+
+The known pre-existing mls-codegen default test failure
+`test_jacquard_corpus_with_space_type` was not rerun. It remains
+base-identical: mls-ds `codegen/` and `Cargo.lock` have no diff from
+`2df124d6`, and the generator file hashes above equal the October generation.
+The mls-ds server's only Space membership link remains the custom
+`blue.catbird.labyrinth.getSpaceMembership`; no server code changed.
+
+## October 29 Spaces alpha generation (regenerated 2026-10-30)
 
 The lexicon corpus is Petrel `generator/lexicons` at `92b05b81966c07a2a7d3d96a68f9230dd7787c5d` (bookmark `claude/spaces-oct29-20261030`, merged as Petrel main `e5b6039b`, PR #36; lexicons identical). Its `com/atproto/{space,memberspace,managedspace,personalspace}` lexicons are JSON-equal to atproto `5d88b414` (npm `0.0.0-spaces-alpha-20261029171913`), and `com/atproto/simplespace` is gone. PetrelCatbird `lexicons` is unchanged from the previous generation (its tree at `3208d02e38e9b7b176d8c2cf46d1e92feb555974` has the same aggregate as `8672c80f`).
 

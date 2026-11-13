@@ -37,10 +37,8 @@ pub struct ListRepoOps<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ListRepoOpsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The account's current commit. Included when the response reaches the head of the oplog; omitted on backfill responses.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub commit: core::option::Option<crate::generated::com_atproto::space::Commit<S>>,
-    /// Pass as `cursor` to fetch the next page. Absent once the response reaches the head of the oplog.
+    /// The repo's current commit. A syncer compares it against its own set hash once it has applied the last page, which has no cursor.
+    pub commit: crate::generated::com_atproto::space::Commit<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub ops: Vec<crate::generated::com_atproto::space::list_repo_ops::OpEntry<S>>,
@@ -69,9 +67,9 @@ pub struct ListRepoOpsOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 #[serde(tag = "error", content = "message")]
 pub enum ListRepoOpsError {
-    /// The Atproto-Space-Want-Mac header is missing or malformed, names an unsupported type or version, or carries an invalid key share.
-    #[serde(rename = "BadSpaceMac")]
-    BadSpaceMac(
+    /// The MAC requested in the Accept-Signature header is missing or invalid.
+    #[serde(rename = "InvalidSpaceMac")]
+    InvalidSpaceMac(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -100,6 +98,11 @@ pub enum ListRepoOpsError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "InvalidCursor")]
+    InvalidCursor(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -112,8 +115,8 @@ pub enum ListRepoOpsError {
 impl core::fmt::Display for ListRepoOpsError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::BadSpaceMac(msg) => {
-                write!(f, "BadSpaceMac")?;
+            Self::InvalidSpaceMac(msg) => {
+                write!(f, "InvalidSpaceMac")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -154,6 +157,13 @@ impl core::fmt::Display for ListRepoOpsError {
                 }
                 Ok(())
             }
+            Self::InvalidCursor(msg) => {
+                write!(f, "InvalidCursor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -165,7 +175,7 @@ impl core::fmt::Display for ListRepoOpsError {
     }
 }
 
-/// A single operation in a permissioned repo's oplog. cid is null for deletes; prev is null for creates. Operations sharing the same rev belong to the same batch. value carries the record's current value for creates and updates, unless excludeValues was set or the value is stale (superseded by a later operation).
+/// Operations that share a rev were applied in the same commit.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -175,14 +185,16 @@ impl core::fmt::Display for ListRepoOpsError {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct OpEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// CID of the record after the operation. Null for deletes.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub collection: jacquard_common::types::string::Nsid<S>,
+    /// CID of the record before the operation. Null for creates.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub prev: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub rev: jacquard_common::types::string::Tid,
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    /// The record's current value, inlined for create and update operations. Omitted when excludeValues is set, for deletes, or when the value has been superseded by a later operation.
+    /// Omitted for deletes, if excludeValues is set, or if the record has since changed.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub value: core::option::Option<jacquard_common::types::value::Data<S>>,
     #[serde(
@@ -761,11 +773,6 @@ fn lexicon_doc_com_atproto_space_listRepoOps() -> jacquard_lexicon::lexicon::Lex
                                         "cursor",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "Opaque pagination cursor from a previous response. Takes precedence over `since` when both are supplied.",
-                                            ),
-                                        ),
                                         ..Default::default()
                                     }),
                                 );
@@ -790,11 +797,6 @@ fn lexicon_doc_com_atproto_space_listRepoOps() -> jacquard_lexicon::lexicon::Lex
                                         "repo",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "The DID of the account whose oplog to retrieve.",
-                                            ),
-                                        ),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
@@ -806,11 +808,6 @@ fn lexicon_doc_com_atproto_space_listRepoOps() -> jacquard_lexicon::lexicon::Lex
                                         "since",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "Return operations after this revision. The caller's own sync position; use `cursor` to continue a paginated response.",
-                                            ),
-                                        ),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
                                         ),
@@ -822,11 +819,6 @@ fn lexicon_doc_com_atproto_space_listRepoOps() -> jacquard_lexicon::lexicon::Lex
                                         "space",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "Reference to the space.",
-                                            ),
-                                        ),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                         ),
@@ -846,7 +838,7 @@ fn lexicon_doc_com_atproto_space_listRepoOps() -> jacquard_lexicon::lexicon::Lex
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "A single operation in a permissioned repo's oplog. cid is null for deletes; prev is null for creates. Operations sharing the same rev belong to the same batch. value carries the record's current value for creates and updates, unless excludeValues was set or the value is stale (superseded by a later operation).",
+                            "Operations that share a rev were applied in the same commit.",
                         ),
                     ),
                     required: Some(
@@ -866,6 +858,11 @@ fn lexicon_doc_com_atproto_space_listRepoOps() -> jacquard_lexicon::lexicon::Lex
                                 "cid",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "CID of the record after the operation. Null for deletes.",
+                                    ),
+                                ),
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
@@ -888,6 +885,11 @@ fn lexicon_doc_com_atproto_space_listRepoOps() -> jacquard_lexicon::lexicon::Lex
                                 "prev",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "CID of the record before the operation. Null for creates.",
+                                    ),
+                                ),
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),

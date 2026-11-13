@@ -13,13 +13,9 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The NSID of the record collection.
     pub collection: jacquard_common::types::string::Nsid<S>,
-    /// The DID of the repo to delete from (the authenticated member).
     pub repo: jacquard_common::types::string::Did<S>,
-    /// The Record Key.
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    /// Reference to the space.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,

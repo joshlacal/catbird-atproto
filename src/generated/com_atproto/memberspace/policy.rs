@@ -5,7 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// Space policy that governs access via a member list maintained by the space host, managed with putMember and removeMember.
+/// Space policy that grants access based on a member list.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -15,22 +15,22 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Policy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// If set, the authority mints a credential only for these apps, evaluated against the attested client_id. When omitted, any app may read the space and no client attestation is required. Does not apply to writes.
+    /// If set, only these apps (by OAuth client ID) may read the space.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub allowed_apps: core::option::Option<Vec<S>>,
-    /// If true, the authority issues a space credential to anyone, with or without a delegation token. Otherwise, only to members whose entry has read set.  Defaults to `false`.
+    pub allowed_apps: core::option::Option<Vec<jacquard_common::types::string::UriValue<S>>>,
+    /// If true, anyone may read the space. Otherwise, only members with read access.  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_policy_public_read")]
     pub public_read: core::option::Option<bool>,
-    /// If true, the authority tracks and forwards notifications for any user's writes. Otherwise, only for members whose entry has write set.  Defaults to `false`.
+    /// If true, any account's writes are tracked in the writer set, except members without write access. Otherwise, only members with write access.  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_policy_public_write")]
     pub public_write: core::option::Option<bool>,
-    /// Publish the member list to readers as com.atproto.memberspace.member records in the authority's repo in the space.  Defaults to `false`.
+    /// Publish the member list as com.atproto.memberspace.member records in the space.  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_policy_publish_members")]
     pub publish_members: core::option::Option<bool>,
-    /// Publish the policy to readers as a com.atproto.space.policy record in the authority's repo in the space.  Defaults to `false`.
+    /// Publish the policy as a com.atproto.space.policy record in the space.  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_policy_publish_policy")]
     pub publish_policy: core::option::Option<bool>,
@@ -127,7 +127,7 @@ fn lexicon_doc_com_atproto_memberspace_policy() -> jacquard_lexicon::lexicon::Le
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Space policy that governs access via a member list maintained by the space host, managed with putMember and removeMember.",
+                            "Space policy that grants access based on a member list.",
                         ),
                     ),
                     properties: {
@@ -140,12 +140,12 @@ fn lexicon_doc_com_atproto_memberspace_policy() -> jacquard_lexicon::lexicon::Le
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "If set, the authority mints a credential only for these apps, evaluated against the attested client_id. When omitted, any app may read the space and no client attestation is required. Does not apply to writes.",
+                                        "If set, only these apps (by OAuth client ID) may read the space.",
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: Some(
-                                        ::jacquard_common::CowStr::new_static("An OAuth client ID."),
+                                    format: Some(
+                                        ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                     ),
                                     ..Default::default()
                                 }),

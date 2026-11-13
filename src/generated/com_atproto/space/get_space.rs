@@ -24,10 +24,9 @@ pub struct GetSpace<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSpaceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The policy governing the space, including its configuration.
+    /// PDSes must support all of the listed policies. Other space hosts may support only some of them, and any host may support policies beyond those listed.
     pub policy: GetSpaceOutputPolicy<S>,
-    /// URI of the space.
-    pub uri: jacquard_common::types::aturi::AtSpaceUri<S>,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     #[serde(
         flatten,
         default,
@@ -75,6 +74,11 @@ pub enum GetSpaceError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -89,6 +93,13 @@ impl core::fmt::Display for GetSpaceError {
         match self {
             Self::SpaceNotFound(msg) => {
                 write!(f, "SpaceNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
