@@ -33,16 +33,20 @@ cargo clippy --locked --all-targets --all-features
 ## Current generation (November 12 Spaces alpha, regenerated 2026-11-12)
 
 The core corpus is Petrel `generator/lexicons` at
-`bd3224debbc3a92d0be9bc88012e5502abbbb625` (local bookmark
-`claude/spaces-nov12-lexicons-20261112`). Its Spaces pin is atproto
-`d4def6e9f521896ed8222f576d54923d00b5fbeb` (npm
-`0.0.0-spaces-alpha-20261112204144`). Before generation,
-`bd3224de..@` had no committed `generator/` delta and
-`git status --short generator/` was clean. The overlay is PetrelCatbird
-`957c6c48dfa25eb9e1befb90288453888de5748e` (local bookmark with the
-same name); its `blue.catbird.circle` space declaration uses `title`
-instead of `name`. Space declarations are generator metadata rather than Rust
-data types, so that overlay edit produces no Rust declaration by itself.
+`26551f022e5f53da3f1ac1f2686bc0c92f1c76c3`, the lexicon commit of
+[Petrel#73](https://github.com/joshlacal/Petrel/pull/73). Its Spaces pin
+is atproto `d4def6e9f521896ed8222f576d54923d00b5fbeb` (npm
+`0.0.0-spaces-alpha-20261112204144`). Generation ran against the
+unpublished commit `bd3224debbc3a92d0be9bc88012e5502abbbb625`, which was
+later rebased onto Petrel `main` as `26551f02`; `generator/lexicons` is
+byte-identical between the two (`jj diff --from bd3224de --to 26551f02 --
+generator/lexicons` is empty), so the aggregate hash below holds for the
+published revision. The overlay is PetrelCatbird
+`957c6c48dfa25eb9e1befb90288453888de5748e` (first commit of its
+`claude/spaces-nov12-20261112` branch); its `blue.catbird.circle` space
+declaration uses `title` instead of `name`. Space declarations are generator
+metadata rather than Rust data types, so that overlay edit produces no Rust
+declaration by itself.
 
 The generator is the unchanged mls-ds main tree at
 `2df124d6227180d37bc2bcc19143391fccc7b8c4`; its `codegen/` is
