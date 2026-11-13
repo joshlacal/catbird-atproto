@@ -25,6 +25,9 @@ pub struct CreateActivity<S: jacquard_common::BosStr = jacquard_common::DefaultS
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_create_activity_is_automated")]
     pub is_automated: core::option::Option<bool>,
+    /// Optional metadata for the report activities. Lifecycle and resolution fields are controlled by the service.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub meta: core::option::Option<jacquard_common::types::value::Data<S>>,
     /// Optional public-facing note, potentially visible to the reporter.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub public_note: core::option::Option<S>,
@@ -240,6 +243,7 @@ pub struct CreateActivityBuilder<
         core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
     ),
@@ -266,7 +270,7 @@ impl CreateActivityBuilder<create_activity_state::Empty, jacquard_common::Defaul
     pub fn new() -> Self {
         CreateActivityBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -277,7 +281,7 @@ impl<S: jacquard_common::BosStr> CreateActivityBuilder<create_activity_state::Em
     pub fn builder() -> Self {
         CreateActivityBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -342,14 +346,30 @@ impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivit
 }
 
 impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
+    /// Set the `meta` field (optional)
+    pub fn meta(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::value::Data<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `meta` field to an Option value (optional)
+    pub fn maybe_meta(mut self, value: Option<jacquard_common::types::value::Data<S>>) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
     /// Set the `publicNote` field (optional)
     pub fn public_note(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.4 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `publicNote` field to an Option value (optional)
     pub fn maybe_public_note(mut self, value: Option<S>) -> Self {
-        self._fields.4 = value;
+        self._fields.5 = value;
         self
     }
 }
@@ -357,12 +377,12 @@ impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivit
 impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
     /// Set the `reportId` field (optional)
     pub fn report_id(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.5 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `reportId` field to an Option value (optional)
     pub fn maybe_report_id(mut self, value: Option<i64>) -> Self {
-        self._fields.5 = value;
+        self._fields.6 = value;
         self
     }
 }
@@ -379,8 +399,9 @@ where
             event_id: self._fields.1,
             internal_note: self._fields.2,
             is_automated: self._fields.3.or_else(|| Some(false)),
-            public_note: self._fields.4,
-            report_id: self._fields.5,
+            meta: self._fields.4,
+            public_note: self._fields.5,
+            report_id: self._fields.6,
             extra_data: Default::default(),
         }
     }
@@ -397,8 +418,9 @@ where
             event_id: self._fields.1,
             internal_note: self._fields.2,
             is_automated: self._fields.3.or_else(|| Some(false)),
-            public_note: self._fields.4,
-            report_id: self._fields.5,
+            meta: self._fields.4,
+            public_note: self._fields.5,
+            report_id: self._fields.6,
             extra_data: Some(extra_data),
         }
     }

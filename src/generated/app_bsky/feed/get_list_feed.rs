@@ -20,6 +20,8 @@ pub struct GetListFeed<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
     pub list: jacquard_common::types::string::AtUri<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub since: core::option::Option<S>,
 }
 
 #[derive(
@@ -33,6 +35,9 @@ pub struct GetListFeedOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
     pub feed: Vec<crate::generated::app_bsky::feed::FeedViewPost<S>>,
+    /// Cursor identifying the newest item in this page. Pass it as since on a later request to fetch only newer content.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub start_cursor: core::option::Option<S>,
     #[serde(
         flatten,
         default,
@@ -167,6 +172,7 @@ pub struct GetListFeedBuilder<
         core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -190,7 +196,7 @@ impl GetListFeedBuilder<get_list_feed_state::Empty, jacquard_common::DefaultStr>
     pub fn new() -> Self {
         GetListFeedBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -201,7 +207,7 @@ impl<S: jacquard_common::BosStr> GetListFeedBuilder<get_list_feed_state::Empty, 
     pub fn builder() -> Self {
         GetListFeedBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -252,6 +258,19 @@ where
     }
 }
 
+impl<St: get_list_feed_state::State, S: jacquard_common::BosStr> GetListFeedBuilder<St, S> {
+    /// Set the `since` field (optional)
+    pub fn since(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `since` field to an Option value (optional)
+    pub fn maybe_since(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> GetListFeedBuilder<St, S>
 where
     St: get_list_feed_state::State,
@@ -263,6 +282,7 @@ where
             cursor: self._fields.0,
             limit: self._fields.1,
             list: self._fields.2.unwrap(),
+            since: self._fields.3,
         }
     }
 }

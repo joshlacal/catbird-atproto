@@ -118,6 +118,148 @@ pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
+pub struct ViewArticle<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_profiles:
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub description: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub image: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub like_count: core::option::Option<i64>,
+    /// Available profile previews. Selected deterministically by DID; not a ranking.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub likers: core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub publisher: core::option::Option<
+        crate::generated::app_bsky::embed::external::ViewArticlePublication<S>,
+    >,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reading_time: core::option::Option<i64>,
+    pub title: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_article_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewArticlePublication<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_profiles:
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub description: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub image: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub logo: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    /// Available profile previews. Selected deterministically by DID; not a ranking.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subscribers:
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subscription_count: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub theme: core::option::Option<
+        crate::generated::app_bsky::embed::external::ViewArticlePublicationTheme<S>,
+    >,
+    pub title: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_article_publication_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewArticlePublicationTheme<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Hex color string, if available. Example: '#ffffff'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub accent: core::option::Option<S>,
+    /// Hex color string, if available. Example: '#ffffff'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub accent_foreground: core::option::Option<S>,
+    /// Hex color string, if available. Example: '#ffffff'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub background: core::option::Option<S>,
+    /// Hex color string, if available. Example: '#ffffff'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub foreground: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_article_publication_theme_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
 pub struct ViewExternal<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// Profiles of the owners of the Atmosphere records that backed this view.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -228,6 +370,126 @@ pub struct ViewExternalSourceTheme<S: jacquard_common::BosStr = jacquard_common:
         flatten,
         default,
         deserialize_with = "deserialize_view_external_source_theme_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewGallery<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_profiles:
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub description: S,
+    /// The media items in the gallery. Each item may be of a different type, but all types must be supported by the client.
+    pub items: Vec<crate::generated::app_bsky::embed::external::ViewGalleryImage<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub like_count: core::option::Option<i64>,
+    /// Available profile previews. Selected deterministically by DID; not a ranking.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub likers: core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    pub title: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_gallery_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewGalleryImage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Alt text description of the image, for accessibility.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub alt: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aspect_ratio: core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+    /// Fully-qualified URL where a large version of the image can be fetched. May or may not be the exact original blob. For example, CDN location provided by the App View.
+    pub fullsize: jacquard_common::types::string::UriValue<S>,
+    /// Fully-qualified URL where a thumbnail of the image can be fetched. For example, CDN location provided by the App View.
+    pub thumbnail: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_gallery_image_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewLivestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// True if the livestream is currently active at the time this view is served, false if it has ended.
+    pub active: bool,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_profiles:
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub description: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ended_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub image: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub started_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub title: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_view_livestream_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -397,6 +659,104 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Vie
     }
 }
 
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewArticle<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewArticle"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.like_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("like_count"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.likers {
+            #[allow(unused_comparisons)]
+            if value.len() > 3usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("likers"),
+                    max: 3usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        if let Some(ref value) = self.reading_time {
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("reading_time"),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for ViewArticlePublication<S>
+{
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewArticlePublication"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.subscribers {
+            #[allow(unused_comparisons)]
+            if value.len() > 3usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("subscribers"),
+                    max: 3usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        if let Some(ref value) = self.subscription_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "subscription_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for ViewArticlePublicationTheme<S>
+{
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewArticlePublicationTheme"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewExternal<S> {
     fn nsid() -> &'static str {
         "app.bsky.embed.external"
@@ -435,6 +795,70 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
     fn def_name() -> &'static str {
         "viewExternalSourceTheme"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewGallery<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewGallery"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.like_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("like_count"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.likers {
+            #[allow(unused_comparisons)]
+            if value.len() > 3usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("likers"),
+                    max: 3usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewGalleryImage<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewGalleryImage"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewLivestream<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewLivestream"
     }
     fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_app_bsky_embed_external()
@@ -844,6 +1268,413 @@ fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDo
                 ),
             );
             map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewArticle"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("description")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "associatedProfiles",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "associatedRefs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.repo.strongRef",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "image",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.label.defs#label",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "likeCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "likers",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Available profile previews. Selected deterministically by DID; not a ranking.",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                max_length: Some(3usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "publisher",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#viewArticlePublication",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "readingTime",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "title",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "updatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "viewArticlePublication",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("description")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "associatedProfiles",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "associatedRefs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.repo.strongRef",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "image",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.label.defs#label",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "logo",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subscribers",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Available profile previews. Selected deterministically by DID; not a ranking.",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                max_length: Some(3usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subscriptionCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "theme",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#viewArticlePublicationTheme",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "title",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "updatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "viewArticlePublicationTheme",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("accent"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Hex color string, if available. Example: '#ffffff'.",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "accentForeground",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Hex color string, if available. Example: '#ffffff'.",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "background",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Hex color string, if available. Example: '#ffffff'.",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "foreground",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Hex color string, if available. Example: '#ffffff'.",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("viewExternal"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     required: Some(
@@ -1138,6 +1969,402 @@ fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDo
                     },
                     ..Default::default()
                 }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewGallery"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("description"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("items")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "associatedProfiles",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "associatedRefs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.repo.strongRef",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "items",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The media items in the gallery. Each item may be of a different type, but all types must be supported by the client.",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                    refs: vec![
+                                        ::jacquard_common::CowStr::new_static("#viewGalleryImage")
+                                    ],
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.label.defs#label",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "likeCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "likers",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Available profile previews. Selected deterministically by DID; not a ranking.",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                max_length: Some(3usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "title",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "updatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "viewGalleryImage",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("thumbnail"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("fullsize")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "alt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Alt text description of the image, for accessibility.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "aspectRatio",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.embed.defs#aspectRatio",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "fullsize",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Fully-qualified URL where a large version of the image can be fetched. May or may not be the exact original blob. For example, CDN location provided by the App View.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "thumbnail",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Fully-qualified URL where a thumbnail of the image can be fetched. For example, CDN location provided by the App View.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewLivestream"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("description"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("active"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("active"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "associatedProfiles",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
+                                            ::jacquard_lexicon::lexicon::LexRef {
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "app.bsky.actor.defs#profileViewBasic",
+                                                ),
+                                                ..Default::default()
+                                            },
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "associatedRefs",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
+                                            ::jacquard_lexicon::lexicon::LexRef {
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "com.atproto.repo.strongRef",
+                                                ),
+                                                ..Default::default()
+                                            },
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "description",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("endedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("image"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("labels"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
+                                            ::jacquard_lexicon::lexicon::LexRef {
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "com.atproto.label.defs#label",
+                                                ),
+                                                ..Default::default()
+                                            },
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("startedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
             );
             map
         },
@@ -1703,6 +2930,940 @@ where
             extra_data: Some(extra_data),
         }
     }
+}
+
+fn deserialize_view_article_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod view_article_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Description;
+        type Title;
+        type Uri;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Description = Unset;
+        type Title = Unset;
+        type Uri = Unset;
+    }
+    ///State transition - sets the `description` field to Set
+    pub struct SetDescription<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDescription<St> {}
+    impl<St: State> State for SetDescription<St> {
+        type Description = Set<members::description>;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
+        type Description = St::Description;
+        type Title = Set<members::title>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Description = St::Description;
+        type Title = St::Title;
+        type Uri = Set<members::uri>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `description` field
+        pub struct description(());
+        ///Marker type for the `title` field
+        pub struct title(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ViewArticleBuilder<
+    St: view_article_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<
+            crate::generated::app_bsky::embed::external::ViewArticlePublication<S>,
+        >,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ViewArticle<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewArticleBuilder<view_article_state::Empty, jacquard_common::DefaultStr> {
+        ViewArticleBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewArticle<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewArticleBuilder<view_article_state::Empty, S> {
+        ViewArticleBuilder::builder()
+    }
+}
+
+impl ViewArticleBuilder<view_article_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ViewArticleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewArticleBuilder<view_article_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewArticleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `associatedProfiles` field (optional)
+    pub fn associated_profiles(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `associatedProfiles` field to an Option value (optional)
+    pub fn maybe_associated_profiles(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `associatedRefs` field (optional)
+    pub fn associated_refs(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `associatedRefs` field to an Option value (optional)
+    pub fn maybe_associated_refs(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `createdAt` field (optional)
+    pub fn created_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `createdAt` field to an Option value (optional)
+    pub fn maybe_created_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticleBuilder<St, S>
+where
+    St: view_article_state::State,
+    St::Description: view_article_state::IsUnset,
+{
+    /// Set the `description` field (required)
+    pub fn description(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewArticleBuilder<view_article_state::SetDescription<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        ViewArticleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `image` field (optional)
+    pub fn image(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `image` field to an Option value (optional)
+    pub fn maybe_image(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `labels` field (optional)
+    pub fn labels(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `labels` field to an Option value (optional)
+    pub fn maybe_labels(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `likeCount` field (optional)
+    pub fn like_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `likeCount` field to an Option value (optional)
+    pub fn maybe_like_count(mut self, value: Option<i64>) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `likers` field (optional)
+    pub fn likers(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `likers` field to an Option value (optional)
+    pub fn maybe_likers(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `publisher` field (optional)
+    pub fn publisher(
+        mut self,
+        value: impl Into<Option<crate::generated::app_bsky::embed::external::ViewArticlePublication<S>>>,
+    ) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `publisher` field to an Option value (optional)
+    pub fn maybe_publisher(
+        mut self,
+        value: Option<crate::generated::app_bsky::embed::external::ViewArticlePublication<S>>,
+    ) -> Self {
+        self._fields.8 = value;
+        self
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `readingTime` field (optional)
+    pub fn reading_time(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.9 = value.into();
+        self
+    }
+    /// Set the `readingTime` field to an Option value (optional)
+    pub fn maybe_reading_time(mut self, value: Option<i64>) -> Self {
+        self._fields.9 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticleBuilder<St, S>
+where
+    St: view_article_state::State,
+    St::Title: view_article_state::IsUnset,
+{
+    /// Set the `title` field (required)
+    pub fn title(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewArticleBuilder<view_article_state::SetTitle<St>, S> {
+        self._fields.10 = ::core::option::Option::Some(value.into());
+        ViewArticleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_article_state::State, S: jacquard_common::BosStr> ViewArticleBuilder<St, S> {
+    /// Set the `updatedAt` field (optional)
+    pub fn updated_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.11 = value.into();
+        self
+    }
+    /// Set the `updatedAt` field to an Option value (optional)
+    pub fn maybe_updated_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.11 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticleBuilder<St, S>
+where
+    St: view_article_state::State,
+    St::Uri: view_article_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewArticleBuilder<view_article_state::SetUri<St>, S> {
+        self._fields.12 = ::core::option::Option::Some(value.into());
+        ViewArticleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticleBuilder<St, S>
+where
+    St: view_article_state::State,
+    St::Description: view_article_state::IsSet,
+    St::Title: view_article_state::IsSet,
+    St::Uri: view_article_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ViewArticle<S> {
+        ViewArticle {
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            image: self._fields.4,
+            labels: self._fields.5,
+            like_count: self._fields.6,
+            likers: self._fields.7,
+            publisher: self._fields.8,
+            reading_time: self._fields.9,
+            title: self._fields.10.unwrap(),
+            updated_at: self._fields.11,
+            uri: self._fields.12.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> ViewArticle<S> {
+        ViewArticle {
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            image: self._fields.4,
+            labels: self._fields.5,
+            like_count: self._fields.6,
+            likers: self._fields.7,
+            publisher: self._fields.8,
+            reading_time: self._fields.9,
+            title: self._fields.10.unwrap(),
+            updated_at: self._fields.11,
+            uri: self._fields.12.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_view_article_publication_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod view_article_publication_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Description;
+        type Title;
+        type Uri;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Description = Unset;
+        type Title = Unset;
+        type Uri = Unset;
+    }
+    ///State transition - sets the `description` field to Set
+    pub struct SetDescription<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDescription<St> {}
+    impl<St: State> State for SetDescription<St> {
+        type Description = Set<members::description>;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
+        type Description = St::Description;
+        type Title = Set<members::title>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Description = St::Description;
+        type Title = St::Title;
+        type Uri = Set<members::uri>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `description` field
+        pub struct description(());
+        ///Marker type for the `title` field
+        pub struct title(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ViewArticlePublicationBuilder<
+    St: view_article_publication_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<i64>,
+        core::option::Option<
+            crate::generated::app_bsky::embed::external::ViewArticlePublicationTheme<S>,
+        >,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ViewArticlePublication<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewArticlePublicationBuilder<
+        view_article_publication_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        ViewArticlePublicationBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewArticlePublication<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewArticlePublicationBuilder<view_article_publication_state::Empty, S> {
+        ViewArticlePublicationBuilder::builder()
+    }
+}
+
+impl
+    ViewArticlePublicationBuilder<
+        view_article_publication_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ViewArticlePublicationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<view_article_publication_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewArticlePublicationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `associatedProfiles` field (optional)
+    pub fn associated_profiles(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `associatedProfiles` field to an Option value (optional)
+    pub fn maybe_associated_profiles(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `associatedRefs` field (optional)
+    pub fn associated_refs(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `associatedRefs` field to an Option value (optional)
+    pub fn maybe_associated_refs(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `createdAt` field (optional)
+    pub fn created_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `createdAt` field to an Option value (optional)
+    pub fn maybe_created_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticlePublicationBuilder<St, S>
+where
+    St: view_article_publication_state::State,
+    St::Description: view_article_publication_state::IsUnset,
+{
+    /// Set the `description` field (required)
+    pub fn description(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewArticlePublicationBuilder<view_article_publication_state::SetDescription<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        ViewArticlePublicationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `image` field (optional)
+    pub fn image(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `image` field to an Option value (optional)
+    pub fn maybe_image(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `labels` field (optional)
+    pub fn labels(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `labels` field to an Option value (optional)
+    pub fn maybe_labels(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `logo` field (optional)
+    pub fn logo(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `logo` field to an Option value (optional)
+    pub fn maybe_logo(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `subscribers` field (optional)
+    pub fn subscribers(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `subscribers` field to an Option value (optional)
+    pub fn maybe_subscribers(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `subscriptionCount` field (optional)
+    pub fn subscription_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `subscriptionCount` field to an Option value (optional)
+    pub fn maybe_subscription_count(mut self, value: Option<i64>) -> Self {
+        self._fields.8 = value;
+        self
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `theme` field (optional)
+    pub fn theme(
+        mut self,
+        value: impl Into<
+            Option<crate::generated::app_bsky::embed::external::ViewArticlePublicationTheme<S>>,
+        >,
+    ) -> Self {
+        self._fields.9 = value.into();
+        self
+    }
+    /// Set the `theme` field to an Option value (optional)
+    pub fn maybe_theme(
+        mut self,
+        value: Option<crate::generated::app_bsky::embed::external::ViewArticlePublicationTheme<S>>,
+    ) -> Self {
+        self._fields.9 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticlePublicationBuilder<St, S>
+where
+    St: view_article_publication_state::State,
+    St::Title: view_article_publication_state::IsUnset,
+{
+    /// Set the `title` field (required)
+    pub fn title(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewArticlePublicationBuilder<view_article_publication_state::SetTitle<St>, S> {
+        self._fields.10 = ::core::option::Option::Some(value.into());
+        ViewArticlePublicationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_article_publication_state::State, S: jacquard_common::BosStr>
+    ViewArticlePublicationBuilder<St, S>
+{
+    /// Set the `updatedAt` field (optional)
+    pub fn updated_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.11 = value.into();
+        self
+    }
+    /// Set the `updatedAt` field to an Option value (optional)
+    pub fn maybe_updated_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.11 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticlePublicationBuilder<St, S>
+where
+    St: view_article_publication_state::State,
+    St::Uri: view_article_publication_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewArticlePublicationBuilder<view_article_publication_state::SetUri<St>, S> {
+        self._fields.12 = ::core::option::Option::Some(value.into());
+        ViewArticlePublicationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewArticlePublicationBuilder<St, S>
+where
+    St: view_article_publication_state::State,
+    St::Description: view_article_publication_state::IsSet,
+    St::Title: view_article_publication_state::IsSet,
+    St::Uri: view_article_publication_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ViewArticlePublication<S> {
+        ViewArticlePublication {
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            image: self._fields.4,
+            labels: self._fields.5,
+            logo: self._fields.6,
+            subscribers: self._fields.7,
+            subscription_count: self._fields.8,
+            theme: self._fields.9,
+            title: self._fields.10.unwrap(),
+            updated_at: self._fields.11,
+            uri: self._fields.12.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> ViewArticlePublication<S> {
+        ViewArticlePublication {
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            image: self._fields.4,
+            labels: self._fields.5,
+            logo: self._fields.6,
+            subscribers: self._fields.7,
+            subscription_count: self._fields.8,
+            theme: self._fields.9,
+            title: self._fields.10.unwrap(),
+            updated_at: self._fields.11,
+            uri: self._fields.12.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_view_article_publication_theme_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
 }
 
 fn deserialize_view_external_extra_data<'de, S, D>(
@@ -2380,4 +4541,1087 @@ where
         >,
     > as serde::Deserialize<'de>>::deserialize(deserializer)?;
     Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn deserialize_view_gallery_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod view_gallery_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Description;
+        type Items;
+        type Title;
+        type Uri;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Description = Unset;
+        type Items = Unset;
+        type Title = Unset;
+        type Uri = Unset;
+    }
+    ///State transition - sets the `description` field to Set
+    pub struct SetDescription<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDescription<St> {}
+    impl<St: State> State for SetDescription<St> {
+        type Description = Set<members::description>;
+        type Items = St::Items;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `items` field to Set
+    pub struct SetItems<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetItems<St> {}
+    impl<St: State> State for SetItems<St> {
+        type Description = St::Description;
+        type Items = Set<members::items>;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
+        type Description = St::Description;
+        type Items = St::Items;
+        type Title = Set<members::title>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Description = St::Description;
+        type Items = St::Items;
+        type Title = St::Title;
+        type Uri = Set<members::uri>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `description` field
+        pub struct description(());
+        ///Marker type for the `items` field
+        pub struct items(());
+        ///Marker type for the `title` field
+        pub struct title(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ViewGalleryBuilder<
+    St: view_gallery_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<Vec<crate::generated::app_bsky::embed::external::ViewGalleryImage<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ViewGallery<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewGalleryBuilder<view_gallery_state::Empty, jacquard_common::DefaultStr> {
+        ViewGalleryBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewGallery<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewGalleryBuilder<view_gallery_state::Empty, S> {
+        ViewGalleryBuilder::builder()
+    }
+}
+
+impl ViewGalleryBuilder<view_gallery_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ViewGalleryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewGalleryBuilder<view_gallery_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewGalleryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_gallery_state::State, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S> {
+    /// Set the `associatedProfiles` field (optional)
+    pub fn associated_profiles(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `associatedProfiles` field to an Option value (optional)
+    pub fn maybe_associated_profiles(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: view_gallery_state::State, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S> {
+    /// Set the `associatedRefs` field (optional)
+    pub fn associated_refs(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `associatedRefs` field to an Option value (optional)
+    pub fn maybe_associated_refs(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: view_gallery_state::State, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S> {
+    /// Set the `createdAt` field (optional)
+    pub fn created_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `createdAt` field to an Option value (optional)
+    pub fn maybe_created_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S>
+where
+    St: view_gallery_state::State,
+    St::Description: view_gallery_state::IsUnset,
+{
+    /// Set the `description` field (required)
+    pub fn description(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewGalleryBuilder<view_gallery_state::SetDescription<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        ViewGalleryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S>
+where
+    St: view_gallery_state::State,
+    St::Items: view_gallery_state::IsUnset,
+{
+    /// Set the `items` field (required)
+    pub fn items(
+        mut self,
+        value: impl Into<Vec<crate::generated::app_bsky::embed::external::ViewGalleryImage<S>>>,
+    ) -> ViewGalleryBuilder<view_gallery_state::SetItems<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        ViewGalleryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_gallery_state::State, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S> {
+    /// Set the `labels` field (optional)
+    pub fn labels(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `labels` field to an Option value (optional)
+    pub fn maybe_labels(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: view_gallery_state::State, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S> {
+    /// Set the `likeCount` field (optional)
+    pub fn like_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `likeCount` field to an Option value (optional)
+    pub fn maybe_like_count(mut self, value: Option<i64>) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St: view_gallery_state::State, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S> {
+    /// Set the `likers` field (optional)
+    pub fn likers(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `likers` field to an Option value (optional)
+    pub fn maybe_likers(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S>
+where
+    St: view_gallery_state::State,
+    St::Title: view_gallery_state::IsUnset,
+{
+    /// Set the `title` field (required)
+    pub fn title(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewGalleryBuilder<view_gallery_state::SetTitle<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
+        ViewGalleryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_gallery_state::State, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S> {
+    /// Set the `updatedAt` field (optional)
+    pub fn updated_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.9 = value.into();
+        self
+    }
+    /// Set the `updatedAt` field to an Option value (optional)
+    pub fn maybe_updated_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.9 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S>
+where
+    St: view_gallery_state::State,
+    St::Uri: view_gallery_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewGalleryBuilder<view_gallery_state::SetUri<St>, S> {
+        self._fields.10 = ::core::option::Option::Some(value.into());
+        ViewGalleryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryBuilder<St, S>
+where
+    St: view_gallery_state::State,
+    St::Description: view_gallery_state::IsSet,
+    St::Items: view_gallery_state::IsSet,
+    St::Title: view_gallery_state::IsSet,
+    St::Uri: view_gallery_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ViewGallery<S> {
+        ViewGallery {
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            items: self._fields.4.unwrap(),
+            labels: self._fields.5,
+            like_count: self._fields.6,
+            likers: self._fields.7,
+            title: self._fields.8.unwrap(),
+            updated_at: self._fields.9,
+            uri: self._fields.10.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> ViewGallery<S> {
+        ViewGallery {
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            items: self._fields.4.unwrap(),
+            labels: self._fields.5,
+            like_count: self._fields.6,
+            likers: self._fields.7,
+            title: self._fields.8.unwrap(),
+            updated_at: self._fields.9,
+            uri: self._fields.10.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_view_gallery_image_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod view_gallery_image_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Fullsize;
+        type Thumbnail;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Fullsize = Unset;
+        type Thumbnail = Unset;
+    }
+    ///State transition - sets the `fullsize` field to Set
+    pub struct SetFullsize<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFullsize<St> {}
+    impl<St: State> State for SetFullsize<St> {
+        type Fullsize = Set<members::fullsize>;
+        type Thumbnail = St::Thumbnail;
+    }
+    ///State transition - sets the `thumbnail` field to Set
+    pub struct SetThumbnail<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetThumbnail<St> {}
+    impl<St: State> State for SetThumbnail<St> {
+        type Fullsize = St::Fullsize;
+        type Thumbnail = Set<members::thumbnail>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `fullsize` field
+        pub struct fullsize(());
+        ///Marker type for the `thumbnail` field
+        pub struct thumbnail(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ViewGalleryImageBuilder<
+    St: view_gallery_image_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ViewGalleryImage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ViewGalleryImageBuilder<view_gallery_image_state::Empty, jacquard_common::DefaultStr> {
+        ViewGalleryImageBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewGalleryImage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewGalleryImageBuilder<view_gallery_image_state::Empty, S> {
+        ViewGalleryImageBuilder::builder()
+    }
+}
+
+impl ViewGalleryImageBuilder<view_gallery_image_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ViewGalleryImageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewGalleryImageBuilder<view_gallery_image_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewGalleryImageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_gallery_image_state::State, S: jacquard_common::BosStr>
+    ViewGalleryImageBuilder<St, S>
+{
+    /// Set the `alt` field (optional)
+    pub fn alt(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `alt` field to an Option value (optional)
+    pub fn maybe_alt(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: view_gallery_image_state::State, S: jacquard_common::BosStr>
+    ViewGalleryImageBuilder<St, S>
+{
+    /// Set the `aspectRatio` field (optional)
+    pub fn aspect_ratio(
+        mut self,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<S>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `aspectRatio` field to an Option value (optional)
+    pub fn maybe_aspect_ratio(
+        mut self,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryImageBuilder<St, S>
+where
+    St: view_gallery_image_state::State,
+    St::Fullsize: view_gallery_image_state::IsUnset,
+{
+    /// Set the `fullsize` field (required)
+    pub fn fullsize(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewGalleryImageBuilder<view_gallery_image_state::SetFullsize<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        ViewGalleryImageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryImageBuilder<St, S>
+where
+    St: view_gallery_image_state::State,
+    St::Thumbnail: view_gallery_image_state::IsUnset,
+{
+    /// Set the `thumbnail` field (required)
+    pub fn thumbnail(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewGalleryImageBuilder<view_gallery_image_state::SetThumbnail<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        ViewGalleryImageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewGalleryImageBuilder<St, S>
+where
+    St: view_gallery_image_state::State,
+    St::Fullsize: view_gallery_image_state::IsSet,
+    St::Thumbnail: view_gallery_image_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ViewGalleryImage<S> {
+        ViewGalleryImage {
+            alt: self._fields.0,
+            aspect_ratio: self._fields.1,
+            fullsize: self._fields.2.unwrap(),
+            thumbnail: self._fields.3.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> ViewGalleryImage<S> {
+        ViewGalleryImage {
+            alt: self._fields.0,
+            aspect_ratio: self._fields.1,
+            fullsize: self._fields.2.unwrap(),
+            thumbnail: self._fields.3.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_view_livestream_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod view_livestream_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Active;
+        type Description;
+        type Title;
+        type Uri;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Active = Unset;
+        type Description = Unset;
+        type Title = Unset;
+        type Uri = Unset;
+    }
+    ///State transition - sets the `active` field to Set
+    pub struct SetActive<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActive<St> {}
+    impl<St: State> State for SetActive<St> {
+        type Active = Set<members::active>;
+        type Description = St::Description;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `description` field to Set
+    pub struct SetDescription<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDescription<St> {}
+    impl<St: State> State for SetDescription<St> {
+        type Active = St::Active;
+        type Description = Set<members::description>;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
+        type Active = St::Active;
+        type Description = St::Description;
+        type Title = Set<members::title>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Active = St::Active;
+        type Description = St::Description;
+        type Title = St::Title;
+        type Uri = Set<members::uri>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `active` field
+        pub struct active(());
+        ///Marker type for the `description` field
+        pub struct description(());
+        ///Marker type for the `title` field
+        pub struct title(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ViewLivestreamBuilder<
+    St: view_livestream_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<bool>,
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ViewLivestream<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewLivestreamBuilder<view_livestream_state::Empty, jacquard_common::DefaultStr>
+    {
+        ViewLivestreamBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewLivestream<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewLivestreamBuilder<view_livestream_state::Empty, S> {
+        ViewLivestreamBuilder::builder()
+    }
+}
+
+impl ViewLivestreamBuilder<view_livestream_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ViewLivestreamBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ViewLivestreamBuilder<view_livestream_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewLivestreamBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S>
+where
+    St: view_livestream_state::State,
+    St::Active: view_livestream_state::IsUnset,
+{
+    /// Set the `active` field (required)
+    pub fn active(
+        mut self,
+        value: impl Into<bool>,
+    ) -> ViewLivestreamBuilder<view_livestream_state::SetActive<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        ViewLivestreamBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `associatedProfiles` field (optional)
+    pub fn associated_profiles(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `associatedProfiles` field to an Option value (optional)
+    pub fn maybe_associated_profiles(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `associatedRefs` field (optional)
+    pub fn associated_refs(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `associatedRefs` field to an Option value (optional)
+    pub fn maybe_associated_refs(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    ) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `createdAt` field (optional)
+    pub fn created_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `createdAt` field to an Option value (optional)
+    pub fn maybe_created_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S>
+where
+    St: view_livestream_state::State,
+    St::Description: view_livestream_state::IsUnset,
+{
+    /// Set the `description` field (required)
+    pub fn description(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewLivestreamBuilder<view_livestream_state::SetDescription<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        ViewLivestreamBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `endedAt` field (optional)
+    pub fn ended_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `endedAt` field to an Option value (optional)
+    pub fn maybe_ended_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `image` field (optional)
+    pub fn image(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `image` field to an Option value (optional)
+    pub fn maybe_image(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `labels` field (optional)
+    pub fn labels(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `labels` field to an Option value (optional)
+    pub fn maybe_labels(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `startedAt` field (optional)
+    pub fn started_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `startedAt` field to an Option value (optional)
+    pub fn maybe_started_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.8 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S>
+where
+    St: view_livestream_state::State,
+    St::Title: view_livestream_state::IsUnset,
+{
+    /// Set the `title` field (required)
+    pub fn title(
+        mut self,
+        value: impl Into<S>,
+    ) -> ViewLivestreamBuilder<view_livestream_state::SetTitle<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
+        ViewLivestreamBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_livestream_state::State, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S> {
+    /// Set the `updatedAt` field (optional)
+    pub fn updated_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.10 = value.into();
+        self
+    }
+    /// Set the `updatedAt` field to an Option value (optional)
+    pub fn maybe_updated_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.10 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S>
+where
+    St: view_livestream_state::State,
+    St::Uri: view_livestream_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewLivestreamBuilder<view_livestream_state::SetUri<St>, S> {
+        self._fields.11 = ::core::option::Option::Some(value.into());
+        ViewLivestreamBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewLivestreamBuilder<St, S>
+where
+    St: view_livestream_state::State,
+    St::Active: view_livestream_state::IsSet,
+    St::Description: view_livestream_state::IsSet,
+    St::Title: view_livestream_state::IsSet,
+    St::Uri: view_livestream_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ViewLivestream<S> {
+        ViewLivestream {
+            active: self._fields.0.unwrap(),
+            associated_profiles: self._fields.1,
+            associated_refs: self._fields.2,
+            created_at: self._fields.3,
+            description: self._fields.4.unwrap(),
+            ended_at: self._fields.5,
+            image: self._fields.6,
+            labels: self._fields.7,
+            started_at: self._fields.8,
+            title: self._fields.9.unwrap(),
+            updated_at: self._fields.10,
+            uri: self._fields.11.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> ViewLivestream<S> {
+        ViewLivestream {
+            active: self._fields.0.unwrap(),
+            associated_profiles: self._fields.1,
+            associated_refs: self._fields.2,
+            created_at: self._fields.3,
+            description: self._fields.4.unwrap(),
+            ended_at: self._fields.5,
+            image: self._fields.6,
+            labels: self._fields.7,
+            started_at: self._fields.8,
+            title: self._fields.9.unwrap(),
+            updated_at: self._fields.10,
+            uri: self._fields.11.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

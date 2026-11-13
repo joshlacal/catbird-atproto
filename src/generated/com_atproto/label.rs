@@ -7,6 +7,7 @@
 
 //! Generated bindings for the `com.atproto.label` Lexicon namespace/module.
 pub mod query_labels;
+pub mod record;
 
 #[cfg(feature = "streaming")]
 pub mod subscribe_labels;

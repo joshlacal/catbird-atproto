@@ -24,9 +24,15 @@ pub struct UpdateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub name: core::option::Option<S>,
     /// ID of the queue to update
     pub queue_id: i64,
+    /// Labels to recommend for this queue and use as fallback appeal routing mappings
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub recommended_labels: core::option::Option<Vec<S>>,
     /// Policy keys to recommend when actioning reports in this queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub recommended_policies: core::option::Option<Vec<S>>,
+    /// Admins can always list this queue and browse its reports. Other roles require an active queue assignment. Individual report and moderation event access is unchanged.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub strict_access: core::option::Option<bool>,
     #[serde(
         flatten,
         default,
@@ -80,6 +86,12 @@ pub enum UpdateQueueError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// The queue configuration conflicts with an existing queue
+    #[serde(rename = "ConflictingQueue")]
+    ConflictingQueue(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -94,6 +106,13 @@ impl core::fmt::Display for UpdateQueueError {
         match self {
             Self::InvalidRecommendedPolicies(msg) => {
                 write!(f, "InvalidRecommendedPolicies")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ConflictingQueue(msg) => {
+                write!(f, "ConflictingQueue")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -184,6 +203,8 @@ pub struct UpdateQueueBuilder<
         core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<Vec<S>>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<bool>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -207,7 +228,7 @@ impl UpdateQueueBuilder<update_queue_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         UpdateQueueBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -218,7 +239,7 @@ impl<S: jacquard_common::BosStr> UpdateQueueBuilder<update_queue_state::Empty, S
     pub fn builder() -> Self {
         UpdateQueueBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -283,14 +304,40 @@ where
 }
 
 impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
+    /// Set the `recommendedLabels` field (optional)
+    pub fn recommended_labels(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `recommendedLabels` field to an Option value (optional)
+    pub fn maybe_recommended_labels(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `recommendedPolicies` field (optional)
     pub fn recommended_policies(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
-        self._fields.4 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `recommendedPolicies` field to an Option value (optional)
     pub fn maybe_recommended_policies(mut self, value: Option<Vec<S>>) -> Self {
-        self._fields.4 = value;
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
+    /// Set the `strictAccess` field (optional)
+    pub fn strict_access(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `strictAccess` field to an Option value (optional)
+    pub fn maybe_strict_access(mut self, value: Option<bool>) -> Self {
+        self._fields.6 = value;
         self
     }
 }
@@ -307,7 +354,9 @@ where
             enabled: self._fields.1,
             name: self._fields.2,
             queue_id: self._fields.3.unwrap(),
-            recommended_policies: self._fields.4,
+            recommended_labels: self._fields.4,
+            recommended_policies: self._fields.5,
+            strict_access: self._fields.6,
             extra_data: Default::default(),
         }
     }
@@ -324,7 +373,9 @@ where
             enabled: self._fields.1,
             name: self._fields.2,
             queue_id: self._fields.3.unwrap(),
-            recommended_policies: self._fields.4,
+            recommended_labels: self._fields.4,
+            recommended_policies: self._fields.5,
+            strict_access: self._fields.6,
             extra_data: Some(extra_data),
         }
     }
