@@ -7,6 +7,8 @@
 
 //! Generated bindings for the `app.bsky.unspecced` Lexicon namespace/module.
 pub mod get_age_assurance_state;
+pub mod get_atmosphere_explore_article_recommendations;
+pub mod get_atmosphere_explore_tab;
 pub mod get_config;
 pub mod get_onboarding_suggested_starter_packs;
 pub mod get_onboarding_suggested_starter_packs_skeleton;

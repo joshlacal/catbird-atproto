@@ -5,6 +5,87 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+/// Ordering of results. 'latest' (default when unset) is newest first; 'top' orders quotes by their like count.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetQuotesSort<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Latest,
+    Top,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetQuotesSort<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Latest => "latest",
+            Self::Top => "top",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "latest" => Self::Latest,
+            "top" => Self::Top,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetQuotesSort<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetQuotesSort<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetQuotesSort<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetQuotesSort<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetQuotesSort<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetQuotesSort<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetQuotesSort<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetQuotesSort::Latest => GetQuotesSort::Latest,
+            GetQuotesSort::Top => GetQuotesSort::Top,
+            GetQuotesSort::Other(v) => GetQuotesSort::Other(v.into_static()),
+        }
+    }
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
@@ -21,6 +102,8 @@ pub struct GetQuotes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sort: core::option::Option<GetQuotesSort<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
 }
 
@@ -125,6 +208,7 @@ pub struct GetQuotesBuilder<
         core::option::Option<jacquard_common::types::string::Cid<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
+        core::option::Option<GetQuotesSort<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -149,7 +233,7 @@ impl GetQuotesBuilder<get_quotes_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         GetQuotesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -160,7 +244,7 @@ impl<S: jacquard_common::BosStr> GetQuotesBuilder<get_quotes_state::Empty, S> {
     pub fn builder() -> Self {
         GetQuotesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -205,6 +289,19 @@ impl<St: get_quotes_state::State, S: jacquard_common::BosStr> GetQuotesBuilder<S
     }
 }
 
+impl<St: get_quotes_state::State, S: jacquard_common::BosStr> GetQuotesBuilder<St, S> {
+    /// Set the `sort` field (optional)
+    pub fn sort(mut self, value: impl Into<Option<GetQuotesSort<S>>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `sort` field to an Option value (optional)
+    pub fn maybe_sort(mut self, value: Option<GetQuotesSort<S>>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> GetQuotesBuilder<St, S>
 where
     St: get_quotes_state::State,
@@ -215,7 +312,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::AtUri<S>>,
     ) -> GetQuotesBuilder<get_quotes_state::SetUri<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         GetQuotesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -235,7 +332,8 @@ where
             cid: self._fields.0,
             cursor: self._fields.1,
             limit: self._fields.2,
-            uri: self._fields.3.unwrap(),
+            sort: self._fields.3,
+            uri: self._fields.4.unwrap(),
         }
     }
 }

@@ -14,14 +14,24 @@
 )]
 pub struct RelaySpaceCredential<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
-    /// DID of the Space authority serving com.atproto.space.getSpaceCredential; it must be the authority named in space.
+    /// DID of the Space authority serving com.atproto.space.authorizeSpaceSync; it must be the authority named in space.
     pub authority_did: jacquard_common::types::string::Did<S>,
+    /// Optional OAuth client attestation JWT forwarded to com.atproto.space.authorizeSpaceSync.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub client_attestation: core::option::Option<S>,
     /// Client ephemeral P-256 did:key for RFC 9421 proof-of-possession. The authority binds the credential's cnf.kid to it, and the home rejects a credential bound to any other key.
     pub cnf_key: S,
     /// Single-use delegation JWT minted by the user's PDS (com.atproto.space.getDelegationToken): sub is exactly space, aud is {authorityDid}#atproto_pds, it carries no cnf claim, and it lives at most 60 seconds. The home forwards it to the authority in a POST body without reading it.
     pub delegation_token: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub notify: core::option::Option<
+        crate::generated::blue_catbird::chat::relay_space_credential::NotifyTarget<S>,
+    >,
     /// Exactly at://{authorityDid}/space/{spaceType}/{skey}. Other schemes, including at-space://, and Space record URIs are rejected. The returned credential's sub equals this string.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// Optional known Space revision forwarded to com.atproto.space.authorizeSpaceSync.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_rev: core::option::Option<jacquard_common::types::string::Tid>,
     #[serde(
         flatten,
         default,
@@ -45,6 +55,8 @@ pub struct RelaySpaceCredential<S: jacquard_common::BosStr = jacquard_common::De
 pub struct RelaySpaceCredentialOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub credential: S,
     pub expires_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_rev: core::option::Option<jacquard_common::types::string::Tid>,
     #[serde(
         flatten,
         default,
@@ -213,6 +225,30 @@ impl core::fmt::Display for RelaySpaceCredentialError {
     }
 }
 
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct NotifyTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub endpoint: jacquard_common::types::string::UriValue<S>,
+    pub token: S,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_notify_target_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 /** Response marker for the `blue.catbird.chat.relaySpaceCredential` procedure.
 
 Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RelaySpaceCredentialOutput<S>` for this endpoint.*/
@@ -241,6 +277,54 @@ impl jacquard_common::xrpc::XrpcEndpoint for RelaySpaceCredentialRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = RelaySpaceCredential<S>;
     type Response = RelaySpaceCredentialResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for NotifyTarget<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.relaySpaceCredential"
+    }
+    fn def_name() -> &'static str {
+        "notifyTarget"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_relaySpaceCredential()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.endpoint;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 512usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("endpoint"),
+                    max: 512usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.token;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 512usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("token"),
+                    max: 512usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.token;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 16usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("token"),
+                    min: 16usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod relay_space_credential_state {
@@ -346,7 +430,12 @@ pub struct RelaySpaceCredentialBuilder<
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<
+            crate::generated::blue_catbird::chat::relay_space_credential::NotifyTarget<S>,
+        >,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+        core::option::Option<jacquard_common::types::string::Tid>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -372,7 +461,7 @@ impl RelaySpaceCredentialBuilder<relay_space_credential_state::Empty, jacquard_c
     pub fn new() -> Self {
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -385,7 +474,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -429,6 +518,21 @@ where
     }
 }
 
+impl<St: relay_space_credential_state::State, S: jacquard_common::BosStr>
+    RelaySpaceCredentialBuilder<St, S>
+{
+    /// Set the `clientAttestation` field (optional)
+    pub fn client_attestation(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `clientAttestation` field to an Option value (optional)
+    pub fn maybe_client_attestation(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> RelaySpaceCredentialBuilder<St, S>
 where
     St: relay_space_credential_state::State,
@@ -439,7 +543,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetCnfKey<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -458,12 +562,37 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetDelegationToken<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: relay_space_credential_state::State, S: jacquard_common::BosStr>
+    RelaySpaceCredentialBuilder<St, S>
+{
+    /// Set the `notify` field (optional)
+    pub fn notify(
+        mut self,
+        value: impl Into<
+            Option<crate::generated::blue_catbird::chat::relay_space_credential::NotifyTarget<S>>,
+        >,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `notify` field to an Option value (optional)
+    pub fn maybe_notify(
+        mut self,
+        value: Option<
+            crate::generated::blue_catbird::chat::relay_space_credential::NotifyTarget<S>,
+        >,
+    ) -> Self {
+        self._fields.5 = value;
+        self
     }
 }
 
@@ -477,12 +606,30 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> RelaySpaceCredentialBuilder<relay_space_credential_state::SetSpace<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         RelaySpaceCredentialBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: relay_space_credential_state::State, S: jacquard_common::BosStr>
+    RelaySpaceCredentialBuilder<St, S>
+{
+    /// Set the `spaceRev` field (optional)
+    pub fn space_rev(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Tid>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `spaceRev` field to an Option value (optional)
+    pub fn maybe_space_rev(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
+        self._fields.7 = value;
+        self
     }
 }
 
@@ -500,9 +647,12 @@ where
         RelaySpaceCredential {
             actor_device_id: self._fields.0.unwrap(),
             authority_did: self._fields.1.unwrap(),
-            cnf_key: self._fields.2.unwrap(),
-            delegation_token: self._fields.3.unwrap(),
-            space: self._fields.4.unwrap(),
+            client_attestation: self._fields.2,
+            cnf_key: self._fields.3.unwrap(),
+            delegation_token: self._fields.4.unwrap(),
+            notify: self._fields.5,
+            space: self._fields.6.unwrap(),
+            space_rev: self._fields.7,
             extra_data: Default::default(),
         }
     }
@@ -517,10 +667,397 @@ where
         RelaySpaceCredential {
             actor_device_id: self._fields.0.unwrap(),
             authority_did: self._fields.1.unwrap(),
-            cnf_key: self._fields.2.unwrap(),
-            delegation_token: self._fields.3.unwrap(),
-            space: self._fields.4.unwrap(),
+            client_attestation: self._fields.2,
+            cnf_key: self._fields.3.unwrap(),
+            delegation_token: self._fields.4.unwrap(),
+            notify: self._fields.5,
+            space: self._fields.6.unwrap(),
+            space_rev: self._fields.7,
             extra_data: Some(extra_data),
         }
+    }
+}
+
+fn deserialize_notify_target_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod notify_target_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Endpoint;
+        type Token;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Endpoint = Unset;
+        type Token = Unset;
+    }
+    ///State transition - sets the `endpoint` field to Set
+    pub struct SetEndpoint<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEndpoint<St> {}
+    impl<St: State> State for SetEndpoint<St> {
+        type Endpoint = Set<members::endpoint>;
+        type Token = St::Token;
+    }
+    ///State transition - sets the `token` field to Set
+    pub struct SetToken<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetToken<St> {}
+    impl<St: State> State for SetToken<St> {
+        type Endpoint = St::Endpoint;
+        type Token = Set<members::token>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `endpoint` field
+        pub struct endpoint(());
+        ///Marker type for the `token` field
+        pub struct token(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct NotifyTargetBuilder<
+    St: notify_target_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<S>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl NotifyTarget<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> NotifyTargetBuilder<notify_target_state::Empty, jacquard_common::DefaultStr> {
+        NotifyTargetBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> NotifyTarget<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> NotifyTargetBuilder<notify_target_state::Empty, S> {
+        NotifyTargetBuilder::builder()
+    }
+}
+
+impl NotifyTargetBuilder<notify_target_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        NotifyTargetBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> NotifyTargetBuilder<notify_target_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        NotifyTargetBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NotifyTargetBuilder<St, S>
+where
+    St: notify_target_state::State,
+    St::Endpoint: notify_target_state::IsUnset,
+{
+    /// Set the `endpoint` field (required)
+    pub fn endpoint(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> NotifyTargetBuilder<notify_target_state::SetEndpoint<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        NotifyTargetBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NotifyTargetBuilder<St, S>
+where
+    St: notify_target_state::State,
+    St::Token: notify_target_state::IsUnset,
+{
+    /// Set the `token` field (required)
+    pub fn token(
+        mut self,
+        value: impl Into<S>,
+    ) -> NotifyTargetBuilder<notify_target_state::SetToken<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        NotifyTargetBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NotifyTargetBuilder<St, S>
+where
+    St: notify_target_state::State,
+    St::Endpoint: notify_target_state::IsSet,
+    St::Token: notify_target_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> NotifyTarget<S> {
+        NotifyTarget {
+            endpoint: self._fields.0.unwrap(),
+            token: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> NotifyTarget<S> {
+        NotifyTarget {
+            endpoint: self._fields.0.unwrap(),
+            token: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_blue_catbird_chat_relaySpaceCredential(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.chat.relaySpaceCredential"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
+                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
+                        encoding: ::jacquard_common::CowStr::new_static(
+                            "application/json",
+                        ),
+                        schema: Some(
+                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
+                                required: Some(
+                                    vec![
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDeviceId"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("authorityDid"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("space"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("delegationToken"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("cnfKey")
+                                    ],
+                                ),
+                                properties: {
+                                    #[allow(unused_mut)]
+                                    let mut map = ::alloc::collections::BTreeMap::new();
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "actorDeviceId",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            r#ref: ::jacquard_common::CowStr::new_static(
+                                                "blue.catbird.chat.defs#deviceId",
+                                            ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "authorityDid",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "DID of the Space authority serving com.atproto.space.authorizeSpaceSync; it must be the authority named in space.",
+                                                ),
+                                            ),
+                                            format: Some(
+                                                ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                            ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "clientAttestation",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Optional OAuth client attestation JWT forwarded to com.atproto.space.authorizeSpaceSync.",
+                                                ),
+                                            ),
+                                            min_length: Some(16usize),
+                                            max_length: Some(16384usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "cnfKey",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Client ephemeral P-256 did:key for RFC 9421 proof-of-possession. The authority binds the credential's cnf.kid to it, and the home rejects a credential bound to any other key.",
+                                                ),
+                                            ),
+                                            max_length: Some(512usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "delegationToken",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Single-use delegation JWT minted by the user's PDS (com.atproto.space.getDelegationToken): sub is exactly space, aud is {authorityDid}#atproto_pds, it carries no cnf claim, and it lives at most 60 seconds. The home forwards it to the authority in a POST body without reading it.",
+                                                ),
+                                            ),
+                                            min_length: Some(16usize),
+                                            max_length: Some(8192usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "notify",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            r#ref: ::jacquard_common::CowStr::new_static(
+                                                "#notifyTarget",
+                                            ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "space",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Exactly at://{authorityDid}/space/{spaceType}/{skey}. Other schemes, including at-space://, and Space record URIs are rejected. The returned credential's sub equals this string.",
+                                                ),
+                                            ),
+                                            format: Some(
+                                                ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                            ),
+                                            max_length: Some(512usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "spaceRev",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Optional known Space revision forwarded to com.atproto.space.authorizeSpaceSync.",
+                                                ),
+                                            ),
+                                            format: Some(
+                                                ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                            ),
+                                            max_length: Some(64usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map
+                                },
+                                ..Default::default()
+                            }),
+                        ),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("notifyTarget"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("token"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                        ),
+                                        max_length: Some(512usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("token"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        min_length: Some(16usize),
+                                        max_length: Some(512usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map
+        },
+        ..Default::default()
     }
 }

@@ -1,13 +1,13 @@
-//! Server-side Space Authority & Space Host (`SpaceHost<B: SpaceHostBackend>`) for Option A.
+//! Server-side Space Authority & Space Host (`SpaceHost<B: SpaceHostBackend>`) for the November 12 Spaces alpha.
 //!
-//! Implements `atproto#5187` Space-host endpoints:
-//! - `getSpaceCredential` (60s single-use delegation `jti` replay cache + policy check + active `jti` tracking)
-//! - `listRepos` (RFC 9421 + Space credential verification, ascending `spaceRev` pagination)
-//! - `notifyWrite` (monotonic `repoRev` + clock-skew `FutureRev` check, monotonic `spaceRev` assignment)
-//! - `removeWriter` (`NotSpaceOwner` check)
-//! - `registerNotify` / `unregisterNotify`
-//! - `getSpace`
-//! - `revoke_user_credentials_and_build_notice` (`notifyCredentialRevoked`) & `build_notify_space_deleted`
+//! Implements `atproto#5187` November 12 Space-host endpoints:
+//! - `authorizeSpaceSync` (60s single-use delegation `jti` replay cache + policy check + inline `notify` registration + `spaceRev` return)
+//! - `confirmRegistration` request/response challenge helper
+//! - `listWriters` (RFC 9421 + Space credential verification, `#repoWrite` and `#repoRemoved` ordered by ascending `spaceRev`)
+//! - `notifyRepoUpdate` -> `notifySpaceUpdate` (`#repoWrite` and `#registrationExpired` fanout)
+//! - `removeWriter` (`req.repo`, `#repoRemoved` sequencing + fanout)
+//! - `getSpace` (`space` + open-union `policy`)
+//! - `revoke_user_credentials_and_build_notice` (`notifyCredentialsRevoked`) & `build_notify_space_deleted` (`notifySpaceUpdate#spaceDeleted`)
 
 use crate::http_signature::verify_credential_request;
 use crate::kem::decode_p256_did_key;
@@ -16,31 +16,38 @@ use crate::tokens::{
     SpaceSigningKey, SpaceTokenClaims, SpaceTokenKind, CREDENTIAL_DEFAULT_LIFETIME_SECS,
     DELEGATION_MAX_LIFETIME_SECS, EXPIRY_CLOCK_SKEW_SECS,
 };
-use crate::{is_valid_did, Result, SpaceUri, SpacesError};
+use crate::{Result, SpaceUri, SpacesError};
+use catbird_atproto::com_atproto::space::authorize_space_sync::{
+    AuthorizeSpaceSync, AuthorizeSpaceSyncOutput,
+};
+use catbird_atproto::com_atproto::space::confirm_registration::{
+    ConfirmRegistration, ConfirmRegistrationOutput,
+};
 use catbird_atproto::com_atproto::space::get_space::{
     GetSpace, GetSpaceOutput, GetSpaceOutputPolicy,
 };
-use catbird_atproto::com_atproto::space::get_space_credential::{
-    GetSpaceCredential, GetSpaceCredentialOutput,
+use catbird_atproto::com_atproto::space::list_writers::{
+    ListWriters, ListWritersOutput, ListWritersOutputReposItem,
 };
-use catbird_atproto::com_atproto::space::list_repos::{ListRepos, ListReposOutput, Repo};
-use catbird_atproto::com_atproto::space::notify_credential_revoked::NotifyCredentialRevoked;
-use catbird_atproto::com_atproto::space::notify_space_deleted::NotifySpaceDeleted;
-use catbird_atproto::com_atproto::space::notify_write::NotifyWrite;
-use catbird_atproto::com_atproto::space::register_notify::{RegisterNotify, RegisterNotifyOutput};
+use catbird_atproto::com_atproto::space::notify_credentials_revoked::NotifyCredentialsRevoked;
+use catbird_atproto::com_atproto::space::notify_repo_update::NotifyRepoUpdate;
+use catbird_atproto::com_atproto::space::notify_space_update::{
+    NotifySpaceUpdate, NotifySpaceUpdateUpdate, RegistrationExpired, SpaceDeleted,
+};
 use catbird_atproto::com_atproto::space::remove_writer::RemoveWriter;
-use catbird_atproto::com_atproto::space::unregister_notify::UnregisterNotify;
+use catbird_atproto::com_atproto::space::{RepoRemoved, RepoWrite};
 use http::HeaderMap;
 use jacquard_common::deps::bytes::Bytes;
+use jacquard_common::deps::smol_str::SmolStr;
 use jacquard_common::types::aturi::AtSpaceUri;
-use jacquard_common::types::string::{Datetime, Did, Tid};
+use jacquard_common::types::string::{Did, Tid};
 use jacquard_common::types::value::Data;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
+use subtle::ConstantTimeEq;
 use uuid::Uuid;
 
-pub const NOTIFY_SUBSCRIPTION_TTL_SECS: u64 = 24 * 60 * 60;
 pub const MAX_TID_FUTURE_SKEW_MICROS: u64 = 300 * 1_000_000;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -56,6 +63,36 @@ pub struct SpaceWriterEntry {
     pub data: [u8; 32],
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SpaceWriterEvent {
+    Write(SpaceWriterEntry),
+    Removed { did: String, space_rev: String },
+}
+
+impl SpaceWriterEvent {
+    pub fn space_rev(&self) -> &str {
+        match self {
+            Self::Write(w) => &w.space_rev,
+            Self::Removed { space_rev, .. } => space_rev,
+        }
+    }
+
+    pub fn did(&self) -> &str {
+        match self {
+            Self::Write(w) => &w.did,
+            Self::Removed { did, .. } => did,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SpaceSubscriberEntry {
+    pub endpoint: String,
+    pub token: String,
+    pub expires_at_sec: u64,
+    pub notified_expired: bool,
+}
+
 pub trait SpaceHostBackend {
     fn authorize_credential(
         &self,
@@ -66,12 +103,14 @@ pub trait SpaceHostBackend {
 
     fn get_space_policy_json(&self, space_uri: &str) -> Result<serde_json::Value>;
 
+    fn current_space_rev(&self, space_uri: &str) -> Result<Option<String>>;
+
     fn list_writers(
         &self,
         space_uri: &str,
         after_space_rev: Option<&str>,
         limit: usize,
-    ) -> Result<Vec<SpaceWriterEntry>>;
+    ) -> Result<Vec<SpaceWriterEvent>>;
 
     fn all_writer_dids(&self, space_uri: &str) -> Result<Vec<String>>;
 
@@ -84,19 +123,36 @@ pub trait SpaceHostBackend {
         now_sec: u64,
     ) -> Result<(Option<String>, String)>; // (prev_space_rev, new_space_rev)
 
-    fn remove_writer(&self, space_uri: &str, writer_did: &str) -> Result<()>;
+    fn remove_writer(
+        &self,
+        space_uri: &str,
+        writer_did: &str,
+        now_sec: u64,
+    ) -> Result<(Option<String>, String)>; // (prev_space_rev, new_space_rev)
 
     fn register_subscriber(
         &self,
         space_uri: &str,
-        service: &str,
+        endpoint: &str,
+        token: &str,
         expires_at_sec: u64,
     ) -> Result<()>;
 
-    fn unregister_subscriber(&self, space_uri: &str, service: &str) -> Result<()>;
+    fn collect_subscribers_for_update(
+        &self,
+        space_uri: &str,
+        now_sec: u64,
+    ) -> Result<SubscriberUpdateTargets>;
 
-    fn list_active_subscribers(&self, space_uri: &str, now_sec: u64) -> Result<Vec<String>>;
+    fn list_all_subscribers(&self, space_uri: &str) -> Result<Vec<SubscriberTarget>>;
 }
+
+/// `(endpoint, token)` target for Space update delivery.
+pub type SubscriberTarget = (String, String);
+/// `(active_subscribers, newly_expired_subscribers)` returned by `collect_subscribers_for_update`.
+pub type SubscriberUpdateTargets = (Vec<SubscriberTarget>, Vec<SubscriberTarget>);
+/// `(writer_dids, subscriber_notices)` returned by `build_notify_space_deleted`.
+pub type SpaceDeletedFanout = (Vec<String>, Vec<(String, NotifySpaceUpdate)>);
 
 #[derive(Default)]
 pub struct InMemorySpaceHostBackend {
@@ -108,8 +164,8 @@ struct InMemorySpaceState {
     authority_did: String,
     deleted: bool,
     members: BTreeSet<String>,
-    writers: BTreeMap<String, SpaceWriterEntry>, // keyed by writer DID
-    subscribers: BTreeMap<String, u64>,          // service -> expires_at_sec
+    writers: BTreeMap<String, SpaceWriterEvent>, // keyed by writer DID
+    subscribers: BTreeMap<(String, String), SpaceSubscriberEntry>, // keyed by (endpoint, token)
     latest_space_rev: Option<String>,
 }
 
@@ -201,18 +257,11 @@ impl SpaceHostBackend for InMemorySpaceHostBackend {
             return Err(SpacesError::SpaceDeleted(space_uri.to_string()));
         }
         Ok(serde_json::json!({
-            "$type": "blue.catbird.labyrinth.conversationPolicy",
-            "authority": sp.authority_did,
-            "members": sp.members.iter().cloned().collect::<Vec<_>>(),
+            "$type": "com.atproto.memberspace.policy",
         }))
     }
 
-    fn list_writers(
-        &self,
-        space_uri: &str,
-        after_space_rev: Option<&str>,
-        limit: usize,
-    ) -> Result<Vec<SpaceWriterEntry>> {
+    fn current_space_rev(&self, space_uri: &str) -> Result<Option<String>> {
         let guard = self.spaces.read().unwrap_or_else(|e| e.into_inner());
         let Some(sp) = guard.get(space_uri) else {
             return Err(SpacesError::SpaceNotFound(space_uri.to_string()));
@@ -220,24 +269,46 @@ impl SpaceHostBackend for InMemorySpaceHostBackend {
         if sp.deleted {
             return Err(SpacesError::SpaceDeleted(space_uri.to_string()));
         }
-        let mut entries: Vec<SpaceWriterEntry> = sp
+        Ok(sp.latest_space_rev.clone())
+    }
+
+    fn list_writers(
+        &self,
+        space_uri: &str,
+        after_space_rev: Option<&str>,
+        limit: usize,
+    ) -> Result<Vec<SpaceWriterEvent>> {
+        let guard = self.spaces.read().unwrap_or_else(|e| e.into_inner());
+        let Some(sp) = guard.get(space_uri) else {
+            return Err(SpacesError::SpaceNotFound(space_uri.to_string()));
+        };
+        if sp.deleted {
+            return Err(SpacesError::SpaceDeleted(space_uri.to_string()));
+        }
+        let mut entries: Vec<SpaceWriterEvent> = sp
             .writers
             .values()
             .filter(|w| {
                 after_space_rev
-                    .map(|cursor| w.space_rev.as_str() > cursor)
+                    .map(|cursor| w.space_rev() > cursor)
                     .unwrap_or(true)
             })
             .cloned()
             .collect();
-        entries.sort_by(|a, b| a.space_rev.cmp(&b.space_rev));
+        entries.sort_by(|a, b| a.space_rev().cmp(b.space_rev()));
         entries.truncate(limit);
         Ok(entries)
     }
 
     fn all_writer_dids(&self, space_uri: &str) -> Result<Vec<String>> {
         let writers = self.list_writers(space_uri, None, usize::MAX)?;
-        Ok(writers.into_iter().map(|w| w.did).collect())
+        Ok(writers
+            .into_iter()
+            .filter_map(|w| match w {
+                SpaceWriterEvent::Write(entry) => Some(entry.did),
+                SpaceWriterEvent::Removed { .. } => None,
+            })
+            .collect())
     }
 
     fn record_writer_commit(
@@ -260,7 +331,7 @@ impl SpaceHostBackend for InMemorySpaceHostBackend {
                 "{writer_did} is not authorized to write in {space_uri}"
             )));
         }
-        if let Some(existing) = sp.writers.get(writer_did) {
+        if let Some(SpaceWriterEvent::Write(existing)) = sp.writers.get(writer_did) {
             if repo_rev <= existing.repo_rev.as_str() {
                 return Err(SpacesError::FutureRev(format!(
                     "non-monotonic repoRev {repo_rev} <= {}",
@@ -273,58 +344,93 @@ impl SpaceHostBackend for InMemorySpaceHostBackend {
         sp.latest_space_rev = Some(new_space_rev.clone());
         sp.writers.insert(
             writer_did.to_string(),
-            SpaceWriterEntry {
+            SpaceWriterEvent::Write(SpaceWriterEntry {
                 did: writer_did.to_string(),
                 repo_rev: repo_rev.to_string(),
                 space_rev: new_space_rev.clone(),
                 data,
+            }),
+        );
+        Ok((prev_space_rev, new_space_rev))
+    }
+
+    fn remove_writer(
+        &self,
+        space_uri: &str,
+        writer_did: &str,
+        now_sec: u64,
+    ) -> Result<(Option<String>, String)> {
+        let mut guard = self.spaces.write().unwrap_or_else(|e| e.into_inner());
+        let Some(sp) = guard.get_mut(space_uri) else {
+            return Err(SpacesError::SpaceNotFound(space_uri.to_string()));
+        };
+        let prev_space_rev = sp.latest_space_rev.clone();
+        let new_space_rev = self.next_space_tid(now_sec);
+        sp.latest_space_rev = Some(new_space_rev.clone());
+        sp.writers.insert(
+            writer_did.to_string(),
+            SpaceWriterEvent::Removed {
+                did: writer_did.to_string(),
+                space_rev: new_space_rev.clone(),
             },
         );
         Ok((prev_space_rev, new_space_rev))
     }
 
-    fn remove_writer(&self, space_uri: &str, writer_did: &str) -> Result<()> {
-        let mut guard = self.spaces.write().unwrap_or_else(|e| e.into_inner());
-        let Some(sp) = guard.get_mut(space_uri) else {
-            return Err(SpacesError::SpaceNotFound(space_uri.to_string()));
-        };
-        sp.writers.remove(writer_did);
-        Ok(())
-    }
-
     fn register_subscriber(
         &self,
         space_uri: &str,
-        service: &str,
+        endpoint: &str,
+        token: &str,
         expires_at_sec: u64,
     ) -> Result<()> {
         let mut guard = self.spaces.write().unwrap_or_else(|e| e.into_inner());
         let Some(sp) = guard.get_mut(space_uri) else {
             return Err(SpacesError::SpaceNotFound(space_uri.to_string()));
         };
-        sp.subscribers.insert(service.to_string(), expires_at_sec);
+        sp.subscribers.insert(
+            (endpoint.to_string(), token.to_string()),
+            SpaceSubscriberEntry {
+                endpoint: endpoint.to_string(),
+                token: token.to_string(),
+                expires_at_sec,
+                notified_expired: false,
+            },
+        );
         Ok(())
     }
 
-    fn unregister_subscriber(&self, space_uri: &str, service: &str) -> Result<()> {
+    fn collect_subscribers_for_update(
+        &self,
+        space_uri: &str,
+        now_sec: u64,
+    ) -> Result<SubscriberUpdateTargets> {
         let mut guard = self.spaces.write().unwrap_or_else(|e| e.into_inner());
         let Some(sp) = guard.get_mut(space_uri) else {
             return Err(SpacesError::SpaceNotFound(space_uri.to_string()));
         };
-        sp.subscribers.remove(service);
-        Ok(())
+        let mut active = Vec::new();
+        let mut newly_expired = Vec::new();
+        for sub in sp.subscribers.values_mut() {
+            if sub.expires_at_sec > now_sec {
+                active.push((sub.endpoint.clone(), sub.token.clone()));
+            } else if !sub.notified_expired {
+                sub.notified_expired = true;
+                newly_expired.push((sub.endpoint.clone(), sub.token.clone()));
+            }
+        }
+        Ok((active, newly_expired))
     }
 
-    fn list_active_subscribers(&self, space_uri: &str, now_sec: u64) -> Result<Vec<String>> {
+    fn list_all_subscribers(&self, space_uri: &str) -> Result<Vec<(String, String)>> {
         let guard = self.spaces.read().unwrap_or_else(|e| e.into_inner());
         let Some(sp) = guard.get(space_uri) else {
             return Err(SpacesError::SpaceNotFound(space_uri.to_string()));
         };
         Ok(sp
             .subscribers
-            .iter()
-            .filter(|(_, &exp)| exp > now_sec)
-            .map(|(svc, _)| svc.clone())
+            .values()
+            .map(|s| (s.endpoint.clone(), s.token.clone()))
             .collect())
     }
 }
@@ -423,20 +529,53 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         &self.backend
     }
 
-    /// `com.atproto.space.getSpaceCredential`:
+    /// Build a `com.atproto.space.confirmRegistration` challenge request for an unconfirmed `notify` endpoint.
+    pub fn build_confirm_registration(
+        space_uri: &str,
+        token: &str,
+        challenge: &str,
+    ) -> Result<ConfirmRegistration> {
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        Ok(ConfirmRegistration {
+            space: AtSpaceUri::new(SmolStr::from(space.as_str()))
+                .map_err(|_| SpacesError::InvalidSpaceUri(space_uri.to_string()))?,
+            token: token.into(),
+            challenge: challenge.into(),
+            extra_data: None,
+        })
+    }
+
+    /// Verify a `com.atproto.space.confirmRegistration` challenge echo in constant time.
+    pub fn verify_confirm_registration_response(
+        expected_challenge: &str,
+        resp: &ConfirmRegistrationOutput,
+    ) -> Result<()> {
+        let actual = resp.challenge.as_str().as_bytes();
+        let expected = expected_challenge.as_bytes();
+        if actual.len() == expected.len() && bool::from(actual.ct_eq(expected)) {
+            Ok(())
+        } else {
+            Err(SpacesError::RegistrationNotConfirmed(
+                "confirmRegistration challenge mismatch".into(),
+            ))
+        }
+    }
+
+    /// `com.atproto.space.authorizeSpaceSync`:
     /// Verifies single-use 60s delegation JWT + replay cache, optional client attestation,
-    /// policy authorization, and mints a fresh `atproto-space-credential+jwt`.
-    pub async fn handle_get_space_credential(
+    /// policy authorization, optional inline `notify` registration, and mints a fresh
+    /// `atproto-space-credential+jwt` alongside the Space's current `spaceRev`.
+    pub async fn handle_authorize_space_sync(
         &self,
-        req: GetSpaceCredential,
+        req: AuthorizeSpaceSync,
         now_sec: u64,
-    ) -> Result<GetSpaceCredentialOutput> {
-        let space_str = req.space.as_str();
-        let space = SpaceUri::parse(space_str)?;
+    ) -> Result<AuthorizeSpaceSyncOutput> {
+        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space_str = space.as_str();
         if space.authority != self.authority_did {
             return Err(SpacesError::SpaceNotFound(space_str.to_string()));
         }
-        decode_p256_did_key(req.credential_kid.as_str())?;
+        decode_p256_did_key(req.credential_key.as_str())?;
 
         let requester_did = if let Some(delegation_jwt) = &req.delegation_token {
             let claims = verify_space_token(
@@ -509,13 +648,29 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             iat: now_sec,
             exp,
             jti: jti.clone(),
-            cnf_kid: Some(req.credential_kid.as_str().to_string()),
+            cnf_kid: Some(req.credential_key.as_str().to_string()),
         };
         let jwt = mint_space_token(
             SpaceTokenKind::Credential,
             &self.authority_signing_key,
             &cred_claims,
         )?;
+
+        if let Some(notify) = &req.notify {
+            let endpoint = notify.endpoint.as_str();
+            if !endpoint.starts_with("https://") {
+                return Err(SpacesError::RegistrationNotConfirmed(
+                    "notify.endpoint must use https://".into(),
+                ));
+            }
+            if notify.token.as_str().is_empty() {
+                return Err(SpacesError::RegistrationNotConfirmed(
+                    "notify.token must be non-empty".into(),
+                ));
+            }
+            self.backend
+                .register_subscriber(space_str, endpoint, notify.token.as_str(), exp)?;
+        }
 
         if let Some(user_did) = requester_did {
             let mut issued = self
@@ -527,8 +682,15 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             list.push(IssuedCredentialRecord { user_did, jti, exp });
         }
 
-        Ok(GetSpaceCredentialOutput {
+        let space_rev = self
+            .backend
+            .current_space_rev(space_str)?
+            .map(|s| Tid::new(&s).map_err(|_| SpacesError::FutureRev(s)))
+            .transpose()?;
+
+        Ok(AuthorizeSpaceSyncOutput {
             credential: jwt.into(),
+            space_rev,
             extra_data: None,
         })
     }
@@ -541,6 +703,8 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         expected_audience_did: &str,
         now_sec: u64,
     ) -> Result<SpaceTokenClaims> {
+        let space = SpaceUri::parse_hedged(expected_space)?;
+        let expected_space = space.as_str();
         let auth_hdr = headers
             .get(http::header::AUTHORIZATION)
             .ok_or_else(|| SpacesError::BadSpaceSignature("missing Authorization".into()))?
@@ -595,71 +759,97 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         Ok(claims)
     }
 
-    /// `com.atproto.space.listRepos`: returns writers ordered by ascending `spaceRev`.
-    pub async fn handle_list_repos(
+    /// `com.atproto.space.listWriters`: returns `#repoWrite` and `#repoRemoved` ordered by ascending `spaceRev`.
+    pub async fn handle_list_writers(
         &self,
         headers: &HeaderMap,
-        req: ListRepos,
+        req: ListWriters,
         now_sec: u64,
-    ) -> Result<ListReposOutput> {
-        let space_str = req.space.as_str();
+    ) -> Result<ListWritersOutput> {
+        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space_str = space.as_str();
         self.verify_presentation(headers, space_str, &self.authority_did, now_sec)
             .await?;
+
+        if let Some(c) = &req.cursor {
+            if decode_tid_micros(c.as_str()).is_none() {
+                return Err(SpacesError::InvalidCursor(format!(
+                    "invalid listWriters cursor TID: {}",
+                    c.as_str()
+                )));
+            }
+        }
 
         let limit = req.limit.unwrap_or(100).clamp(1, 1000) as usize;
         let writers =
             self.backend
                 .list_writers(space_str, req.cursor.as_ref().map(|c| c.as_str()), limit)?;
-        let cursor = writers
-            .last()
-            .map(|w| jacquard_common::deps::smol_str::SmolStr::from(w.space_rev.as_str()));
+        let cursor = writers.last().map(|w| SmolStr::from(w.space_rev()));
         let repos = writers
             .into_iter()
-            .map(|w| -> Result<Repo> {
-                let did_str = w.did.clone();
-                Ok(Repo {
-                    did: Did::new(jacquard_common::deps::smol_str::SmolStr::from(w.did))
-                        .map_err(|_| SpacesError::InvalidDid(did_str))?,
-                    repo_rev: Tid::new(&w.repo_rev)
-                        .map_err(|_| SpacesError::FutureRev(w.repo_rev.clone()))?,
-                    space_rev: Tid::new(&w.space_rev)
-                        .map_err(|_| SpacesError::FutureRev(w.space_rev.clone()))?,
-                    data: Bytes::copy_from_slice(&w.data),
-                    extra_data: None,
-                })
+            .map(|event| -> Result<ListWritersOutputReposItem> {
+                match event {
+                    SpaceWriterEvent::Write(w) => {
+                        let did_str = w.did.clone();
+                        Ok(ListWritersOutputReposItem::RepoWrite(Box::new(RepoWrite {
+                            repo: Did::new(SmolStr::from(w.did))
+                                .map_err(|_| SpacesError::InvalidDid(did_str))?,
+                            repo_rev: Tid::new(&w.repo_rev)
+                                .map_err(|_| SpacesError::FutureRev(w.repo_rev.clone()))?,
+                            space_rev: Tid::new(&w.space_rev)
+                                .map_err(|_| SpacesError::FutureRev(w.space_rev.clone()))?,
+                            prev_space_rev: None,
+                            data: Bytes::copy_from_slice(&w.data),
+                            extra_data: None,
+                        })))
+                    }
+                    SpaceWriterEvent::Removed { did, space_rev } => {
+                        let did_str = did.clone();
+                        Ok(ListWritersOutputReposItem::RepoRemoved(Box::new(
+                            RepoRemoved {
+                                repo: Did::new(SmolStr::from(did))
+                                    .map_err(|_| SpacesError::InvalidDid(did_str))?,
+                                space_rev: Tid::new(&space_rev)
+                                    .map_err(|_| SpacesError::FutureRev(space_rev.clone()))?,
+                                prev_space_rev: None,
+                                extra_data: None,
+                            },
+                        )))
+                    }
+                }
             })
             .collect::<Result<Vec<_>>>()?;
 
-        Ok(ListReposOutput {
+        Ok(ListWritersOutput {
             cursor,
             repos,
             extra_data: None,
         })
     }
 
-    /// `com.atproto.space.notifyWrite`: validates caller == `req.repo`, checks TID skew + monotonicity,
-    /// records writer commit, and returns `(forwarded_notify_write, active_subscriber_services)`.
-    pub async fn handle_notify_write(
+    /// `com.atproto.space.notifyRepoUpdate`: validates caller == `req.repo`, checks TID skew + monotonicity,
+    /// records writer commit, and builds outbound `(endpoint, NotifySpaceUpdate)` fanout messages.
+    pub async fn handle_notify_repo_update(
         &self,
         authenticated_caller_did: &str,
-        req: NotifyWrite,
+        req: NotifyRepoUpdate,
         now_sec: u64,
-    ) -> Result<(NotifyWrite, Vec<String>)> {
-        let space_str = req.space.as_str();
-        let space = SpaceUri::parse(space_str)?;
+    ) -> Result<Vec<(String, NotifySpaceUpdate)>> {
+        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space_str = space.as_str();
         if space.authority != self.authority_did {
             return Err(SpacesError::SpaceNotFound(space_str.to_string()));
         }
         if authenticated_caller_did != req.repo.as_str() {
             return Err(SpacesError::Forbidden(
-                "notifyWrite caller DID must match req.repo".into(),
+                "notifyRepoUpdate caller DID must match req.repo".into(),
             ));
         }
         let data: [u8; 32] = req
             .data
             .as_ref()
             .try_into()
-            .map_err(|_| SpacesError::Sync("notifyWrite data must be 32 bytes".into()))?;
+            .map_err(|_| SpacesError::Sync("notifyRepoUpdate data must be 32 bytes".into()))?;
 
         if let Some(tid_micros) = decode_tid_micros(req.repo_rev.as_str()) {
             let max_allowed = now_sec
@@ -680,73 +870,124 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             data,
             now_sec,
         )?;
-        let subscribers = self.backend.list_active_subscribers(space_str, now_sec)?;
+        let new_tid =
+            Tid::new(&new_space_rev).map_err(|_| SpacesError::FutureRev(new_space_rev.clone()))?;
+        let prev_tid = prev_space_rev
+            .as_deref()
+            .map(|s| Tid::new(s).map_err(|_| SpacesError::FutureRev(s.to_string())))
+            .transpose()?;
+        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+            .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
 
-        let forwarded = NotifyWrite {
-            space: req.space,
+        let (active_subs, expired_subs) = self
+            .backend
+            .collect_subscribers_for_update(space_str, now_sec)?;
+        let mut outbound = Vec::with_capacity(active_subs.len() + expired_subs.len());
+
+        let write_update = NotifySpaceUpdateUpdate::RepoWrite(Box::new(RepoWrite {
             repo: req.repo,
             repo_rev: req.repo_rev,
+            space_rev: new_tid.clone(),
+            prev_space_rev: prev_tid,
             data: Bytes::copy_from_slice(&data),
-            prev_space_rev: prev_space_rev.and_then(|s| Tid::new(&s).ok()),
-            space_rev: Tid::new(&new_space_rev).ok(),
             extra_data: None,
-        };
-        Ok((forwarded, subscribers))
+        }));
+        for (endpoint, token) in active_subs {
+            outbound.push((
+                endpoint,
+                NotifySpaceUpdate {
+                    space: canonical_at_space.clone(),
+                    token: token.into(),
+                    update: write_update.clone(),
+                    extra_data: None,
+                },
+            ));
+        }
+        let expired_update =
+            NotifySpaceUpdateUpdate::RegistrationExpired(Box::new(RegistrationExpired {
+                space_rev: new_tid,
+                extra_data: None,
+            }));
+        for (endpoint, token) in expired_subs {
+            outbound.push((
+                endpoint,
+                NotifySpaceUpdate {
+                    space: canonical_at_space.clone(),
+                    token: token.into(),
+                    update: expired_update.clone(),
+                    extra_data: None,
+                },
+            ));
+        }
+
+        Ok(outbound)
     }
 
-    /// `com.atproto.space.removeWriter`: restricts removal to the Space authority / owner.
+    /// `com.atproto.space.removeWriter`: restricts removal to the Space authority / owner,
+    /// sequences a `#repoRemoved` tombstone, and builds `NotifySpaceUpdate` fanout messages.
     pub async fn handle_remove_writer(
         &self,
         authenticated_caller_did: &str,
         req: RemoveWriter,
-    ) -> Result<()> {
-        let space_str = req.space.as_str();
-        let space = SpaceUri::parse(space_str)?;
+        now_sec: u64,
+    ) -> Result<Vec<(String, NotifySpaceUpdate)>> {
+        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space_str = space.as_str();
         if authenticated_caller_did != space.authority {
-            return Err(SpacesError::Forbidden("NotSpaceOwner".into()));
+            return Err(SpacesError::Forbidden("NotAuthorized".into()));
         }
-        self.backend.remove_writer(space_str, req.did.as_str())
-    }
+        let (prev_space_rev, new_space_rev) =
+            self.backend
+                .remove_writer(space_str, req.repo.as_str(), now_sec)?;
+        let new_tid =
+            Tid::new(&new_space_rev).map_err(|_| SpacesError::FutureRev(new_space_rev.clone()))?;
+        let prev_tid = prev_space_rev
+            .as_deref()
+            .map(|s| Tid::new(s).map_err(|_| SpacesError::FutureRev(s.to_string())))
+            .transpose()?;
+        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+            .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
 
-    /// `com.atproto.space.registerNotify`: registers a syncer notification target.
-    pub async fn handle_register_notify(
-        &self,
-        headers: &HeaderMap,
-        req: RegisterNotify,
-        now_sec: u64,
-    ) -> Result<RegisterNotifyOutput> {
-        let space_str = req.space.as_str();
-        self.verify_presentation(headers, space_str, &self.authority_did, now_sec)
-            .await?;
-        let svc_did = req.service.as_str().split('#').next().unwrap_or_default();
-        if !is_valid_did(svc_did) {
-            return Err(SpacesError::InvalidDid(req.service.as_str().to_string()));
-        }
-        let exp = now_sec.saturating_add(NOTIFY_SUBSCRIPTION_TTL_SECS);
-        self.backend
-            .register_subscriber(space_str, req.service.as_str(), exp)?;
-        let iso = format_unix_iso8601(exp);
-        let expires_at: Datetime = iso
-            .parse()
-            .map_err(|e| SpacesError::Sync(format!("invalid expiresAt datetime: {e}")))?;
-        Ok(RegisterNotifyOutput {
-            expires_at,
+        let (active_subs, expired_subs) = self
+            .backend
+            .collect_subscribers_for_update(space_str, now_sec)?;
+        let mut outbound = Vec::with_capacity(active_subs.len() + expired_subs.len());
+
+        let removed_update = NotifySpaceUpdateUpdate::RepoRemoved(Box::new(RepoRemoved {
+            repo: req.repo,
+            space_rev: new_tid.clone(),
+            prev_space_rev: prev_tid,
             extra_data: None,
-        })
-    }
+        }));
+        for (endpoint, token) in active_subs {
+            outbound.push((
+                endpoint,
+                NotifySpaceUpdate {
+                    space: canonical_at_space.clone(),
+                    token: token.into(),
+                    update: removed_update.clone(),
+                    extra_data: None,
+                },
+            ));
+        }
+        let expired_update =
+            NotifySpaceUpdateUpdate::RegistrationExpired(Box::new(RegistrationExpired {
+                space_rev: new_tid,
+                extra_data: None,
+            }));
+        for (endpoint, token) in expired_subs {
+            outbound.push((
+                endpoint,
+                NotifySpaceUpdate {
+                    space: canonical_at_space.clone(),
+                    token: token.into(),
+                    update: expired_update.clone(),
+                    extra_data: None,
+                },
+            ));
+        }
 
-    /// `com.atproto.space.unregisterNotify`: removes a syncer notification target.
-    pub async fn handle_unregister_notify(
-        &self,
-        headers: &HeaderMap,
-        req: UnregisterNotify,
-        now_sec: u64,
-    ) -> Result<()> {
-        let space_str = req.space.as_str();
-        self.verify_presentation(headers, space_str, &self.authority_did, now_sec)
-            .await?;
-        self.backend
-            .unregister_subscriber(space_str, req.service.as_str())
+        Ok(outbound)
     }
 
     /// `com.atproto.space.getSpace`: returns the Space URI and open-union policy document.
@@ -756,36 +997,41 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         req: GetSpace,
         now_sec: u64,
     ) -> Result<GetSpaceOutput> {
-        let space_str = req.space.as_str();
+        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space_str = space.as_str();
         self.verify_presentation(headers, space_str, &self.authority_did, now_sec)
             .await?;
         let policy_json = self.backend.get_space_policy_json(space_str)?;
         let policy: GetSpaceOutputPolicy = serde_json::from_value(policy_json)
             .map_err(|e| SpacesError::Sync(format!("decode space policy union: {e}")))?;
         let _ = Data::<jacquard_common::DefaultStr>::Null;
+        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+            .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
         Ok(GetSpaceOutput {
-            uri: req.space,
+            space: canonical_at_space,
             policy,
             extra_data: None,
         })
     }
 
     /// Revoke all active Space credentials issued to `revoked_user_did` in `space_uri`,
-    /// returning `(NotifyCredentialRevoked, target_writer_dids)`.
+    /// returning `(NotifyCredentialsRevoked, target_writer_dids)`.
     pub fn revoke_user_credentials_and_build_notice(
         &self,
         space_uri: &str,
         revoked_user_did: &str,
         now_sec: u64,
-    ) -> Result<(NotifyCredentialRevoked, Vec<String>)> {
-        let writer_targets = self.backend.all_writer_dids(space_uri)?;
+    ) -> Result<(NotifyCredentialsRevoked, Vec<String>)> {
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space_str = space.as_str();
+        let writer_targets = self.backend.all_writer_dids(space_str)?;
         let mut revoked_jtis = Vec::new();
         {
             let mut issued = self
                 .issued_credentials
                 .write()
                 .unwrap_or_else(|e| e.into_inner());
-            if let Some(list) = issued.get_mut(space_uri) {
+            if let Some(list) = issued.get_mut(space_str) {
                 let mut rev_map = self.revoked_jtis.write().unwrap_or_else(|e| e.into_inner());
                 rev_map.retain(|_, &mut exp| exp > now_sec);
                 list.retain(|rec| {
@@ -802,32 +1048,41 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             }
         }
 
-        let notice = NotifyCredentialRevoked {
-            space: AtSpaceUri::new(jacquard_common::deps::smol_str::SmolStr::from(space_uri))
-                .map_err(|_| SpacesError::InvalidSpaceUri(space_uri.to_string()))?,
-            credentials: revoked_jtis
-                .into_iter()
-                .map(jacquard_common::deps::smol_str::SmolStr::from)
-                .collect(),
+        let notice = NotifyCredentialsRevoked {
+            space: AtSpaceUri::new(SmolStr::from(space_str))
+                .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?,
+            credentials: revoked_jtis.into_iter().map(SmolStr::from).collect(),
             extra_data: None,
         };
         Ok((notice, writer_targets))
     }
 
-    /// Build `NotifySpaceDeleted` along with `(writer_dids, subscriber_services)` to fan out to.
-    pub fn build_notify_space_deleted(
-        &self,
-        space_uri: &str,
-        now_sec: u64,
-    ) -> Result<(NotifySpaceDeleted, Vec<String>, Vec<String>)> {
-        let writers = self.backend.all_writer_dids(space_uri)?;
-        let subscribers = self.backend.list_active_subscribers(space_uri, now_sec)?;
-        let notice = NotifySpaceDeleted {
-            space: AtSpaceUri::new(jacquard_common::deps::smol_str::SmolStr::from(space_uri))
-                .map_err(|_| SpacesError::InvalidSpaceUri(space_uri.to_string()))?,
-            extra_data: None,
-        };
-        Ok((notice, writers, subscribers))
+    /// Build `(writer_dids, subscriber_notices)` for Space deletion (`notifySpaceUpdate#spaceDeleted`),
+    /// delivered even to expired registrations per November 12 `authorizeSpaceSync` contract.
+    pub fn build_notify_space_deleted(&self, space_uri: &str) -> Result<SpaceDeletedFanout> {
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space_str = space.as_str();
+        let writers = self.backend.all_writer_dids(space_str)?;
+        let subscribers = self.backend.list_all_subscribers(space_str)?;
+        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+            .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
+        let deleted_update =
+            NotifySpaceUpdateUpdate::SpaceDeleted(Box::new(SpaceDeleted { extra_data: None }));
+        let notices = subscribers
+            .into_iter()
+            .map(|(endpoint, token)| {
+                (
+                    endpoint,
+                    NotifySpaceUpdate {
+                        space: canonical_at_space.clone(),
+                        token: token.into(),
+                        update: deleted_update.clone(),
+                        extra_data: None,
+                    },
+                )
+            })
+            .collect();
+        Ok((writers, notices))
     }
 }
 
@@ -857,25 +1112,4 @@ fn decode_tid_micros(tid: &str) -> Option<u64> {
         val = (val << 5) | digit;
     }
     Some(val >> 10)
-}
-
-fn format_unix_iso8601(secs: u64) -> String {
-    // Civil-from-days (Howard Hinnant algorithm) — zero chrono dependency needed.
-    let days = (secs / 86_400) as i64;
-    let rem = secs % 86_400;
-    let hour = rem / 3600;
-    let min = (rem % 3600) / 60;
-    let sec = rem % 60;
-
-    let z = days + 719_468;
-    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
-    let doe = (z - era * 146_097) as u64;
-    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365;
-    let y = (yoe as i64) + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = doy - (153 * mp + 2) / 5 + 1;
-    let m = if mp < 10 { mp + 3 } else { mp - 9 };
-    let year = if m <= 2 { y + 1 } else { y };
-    format!("{year:04}-{m:02}-{d:02}T{hour:02}:{min:02}:{sec:02}Z")
 }

@@ -15,6 +15,8 @@
 pub struct GetFeed<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub include_encrypted: core::option::Option<bool>,
     /// Defaults to `50`. Min: 1. Max: 100.
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -201,6 +203,7 @@ pub struct GetFeedBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
+        core::option::Option<bool>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
@@ -226,7 +229,7 @@ impl GetFeedBuilder<get_feed_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         GetFeedBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -237,7 +240,7 @@ impl<S: jacquard_common::BosStr> GetFeedBuilder<get_feed_state::Empty, S> {
     pub fn builder() -> Self {
         GetFeedBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -257,14 +260,27 @@ impl<St: get_feed_state::State, S: jacquard_common::BosStr> GetFeedBuilder<St, S
 }
 
 impl<St: get_feed_state::State, S: jacquard_common::BosStr> GetFeedBuilder<St, S> {
+    /// Set the `includeEncrypted` field (optional)
+    pub fn include_encrypted(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `includeEncrypted` field to an Option value (optional)
+    pub fn maybe_include_encrypted(mut self, value: Option<bool>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: get_feed_state::State, S: jacquard_common::BosStr> GetFeedBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.1 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self._fields.1 = value;
+        self._fields.2 = value;
         self
     }
 }
@@ -275,7 +291,7 @@ impl<St: get_feed_state::State, S: jacquard_common::BosStr> GetFeedBuilder<St, S
         mut self,
         value: impl Into<Option<jacquard_common::types::aturi::AtSpaceUri<S>>>,
     ) -> Self {
-        self._fields.2 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `space` field to an Option value (optional)
@@ -283,7 +299,7 @@ impl<St: get_feed_state::State, S: jacquard_common::BosStr> GetFeedBuilder<St, S
         mut self,
         value: Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> Self {
-        self._fields.2 = value;
+        self._fields.3 = value;
         self
     }
 }
@@ -296,8 +312,9 @@ where
     pub fn build(self) -> GetFeed<S> {
         GetFeed {
             cursor: self._fields.0,
-            limit: self._fields.1,
-            space: self._fields.2,
+            include_encrypted: self._fields.1,
+            limit: self._fields.2,
+            space: self._fields.3,
         }
     }
 }

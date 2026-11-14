@@ -10,6 +10,7 @@ pub mod accept_conversation;
 pub mod acknowledge_entries;
 pub mod acknowledge_welcome;
 pub mod activate_reset;
+pub mod approve_device;
 pub mod auth_full;
 pub mod cancel_direct_request_preparation;
 pub mod cancel_leaf_recovery;
@@ -1360,6 +1361,40 @@ pub struct CreationManifest<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeviceApprovalBody<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    pub actor_did: crate::generated::blue_catbird::chat::BareDid<S>,
+    pub auth_generation: i64,
+    pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
+    pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    pub signature_domain: S,
+    pub signed_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    pub target_auth_generation: i64,
+    pub target_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    pub target_key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub target_signature_public_key: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_device_approval_body_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 /// Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy. Version 2 with directRequestProfile advertises parser support only; admission additionally requires active revisioned exact-package DirectRequestGrant signatures.
 
 #[derive(
@@ -1547,7 +1582,14 @@ pub struct DeviceView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub available_package_count: i64,
     pub created_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub device_name: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub dormant_at: core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub last_active_at:
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     pub reserved_package_count: i64,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub signature_public_key: jacquard_common::deps::bytes::Bytes,
@@ -6585,6 +6627,31 @@ pub struct SignedCreation<S: jacquard_common::BosStr = jacquard_common::DefaultS
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
+pub struct SignedDeviceApproval<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub body: crate::generated::blue_catbird::chat::DeviceApprovalBody<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_signed_device_approval_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
 pub struct SignedDeviceEnrollment<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub body: crate::generated::blue_catbird::chat::DeviceEnrollmentBody<S>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -11017,6 +11084,213 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Cre
     }
 }
 
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DeviceApprovalBody<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "deviceApprovalBody"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "actor_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 261usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    max: 261usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.actor_did;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 12usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("actor_did"),
+                    min: 12usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.auth_generation;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "auth_generation",
+                    ),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.auth_generation;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "auth_generation",
+                    ),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.idempotency_key;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "idempotency_key",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.target_auth_generation;
+            if *value > 9007199254740991i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "target_auth_generation",
+                    ),
+                    max: 9007199254740991i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.target_auth_generation;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "target_auth_generation",
+                    ),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.target_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "target_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.target_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "target_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.target_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("target_key_id"),
+                    max: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.target_key_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 43usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("target_key_id"),
+                    min: 43usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DeviceCapability<S> {
     fn nsid() -> &'static str {
         "blue.catbird.chat.defs"
@@ -11589,6 +11863,26 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dev
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("device_id"),
                     min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.device_name {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 128usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_name"),
+                    max: 128usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.device_name {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 1usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("device_name"),
+                    min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -22972,6 +23266,23 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Sig
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for SignedDeviceApproval<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "signedDeviceApproval"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     for SignedDeviceEnrollment<S>
 {
     fn nsid() -> &'static str {
@@ -28729,6 +29040,165 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 }),
             );
             map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceApprovalBody"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signatureDomain",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDeviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("keyId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "authGeneration",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "targetDeviceId",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("targetKeyId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "targetSignaturePublicKey",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "targetAuthGeneration",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "idempotencyKey",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signedAt"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "actorDeviceId",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#deviceId"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#bareDid"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "authGeneration",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(1i64),
+                                        maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "idempotencyKey",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#operationId",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("keyId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#keyId"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "signatureDomain",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("signedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#canonicalDatetime",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "targetAuthGeneration",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(1i64),
+                                        maximum: Some(9007199254740991i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "targetDeviceId",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#deviceId"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "targetKeyId",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static("#keyId"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "targetSignaturePublicKey",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "deviceCapability",
                 ),
@@ -29399,10 +29869,42 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deviceName",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(1usize),
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "dormantAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "keyId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
                                 r#ref: ::jacquard_common::CowStr::new_static("#keyId"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "lastActiveAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#canonicalDatetime",
+                                ),
                                 ..Default::default()
                             }),
                         );
@@ -41710,6 +42212,45 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_lexicon::lexicon::LexRefUnion {
                                         refs: vec![::jacquard_common::CowStr::new_static(
                                             "#creationBody",
+                                        )],
+                                        closed: Some(true),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("signature"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(64usize),
+                                        min_length: Some(64usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("signedDeviceApproval"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("body"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("body"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
+                                    ::jacquard_lexicon::lexicon::LexRefUnion {
+                                        refs: vec![::jacquard_common::CowStr::new_static(
+                                            "#deviceApprovalBody",
                                         )],
                                         closed: Some(true),
                                         ..Default::default()
@@ -57697,6 +58238,603 @@ where
     }
 }
 
+fn deserialize_device_approval_body_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod device_approval_body_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ActorDeviceId;
+        type ActorDid;
+        type AuthGeneration;
+        type IdempotencyKey;
+        type KeyId;
+        type SignatureDomain;
+        type SignedAt;
+        type TargetAuthGeneration;
+        type TargetDeviceId;
+        type TargetKeyId;
+        type TargetSignaturePublicKey;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ActorDeviceId = Unset;
+        type ActorDid = Unset;
+        type AuthGeneration = Unset;
+        type IdempotencyKey = Unset;
+        type KeyId = Unset;
+        type SignatureDomain = Unset;
+        type SignedAt = Unset;
+        type TargetAuthGeneration = Unset;
+        type TargetDeviceId = Unset;
+        type TargetKeyId = Unset;
+        type TargetSignaturePublicKey = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `actor_did` field to Set
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = Set<members::actor_did>;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `auth_generation` field to Set
+    pub struct SetAuthGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthGeneration<St> {}
+    impl<St: State> State for SetAuthGeneration<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = Set<members::auth_generation>;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `idempotency_key` field to Set
+    pub struct SetIdempotencyKey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIdempotencyKey<St> {}
+    impl<St: State> State for SetIdempotencyKey<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = Set<members::idempotency_key>;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `key_id` field to Set
+    pub struct SetKeyId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyId<St> {}
+    impl<St: State> State for SetKeyId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = Set<members::key_id>;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `signature_domain` field to Set
+    pub struct SetSignatureDomain<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignatureDomain<St> {}
+    impl<St: State> State for SetSignatureDomain<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = Set<members::signature_domain>;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `signed_at` field to Set
+    pub struct SetSignedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignedAt<St> {}
+    impl<St: State> State for SetSignedAt<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = Set<members::signed_at>;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `target_auth_generation` field to Set
+    pub struct SetTargetAuthGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTargetAuthGeneration<St> {}
+    impl<St: State> State for SetTargetAuthGeneration<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = Set<members::target_auth_generation>;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `target_device_id` field to Set
+    pub struct SetTargetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTargetDeviceId<St> {}
+    impl<St: State> State for SetTargetDeviceId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = Set<members::target_device_id>;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `target_key_id` field to Set
+    pub struct SetTargetKeyId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTargetKeyId<St> {}
+    impl<St: State> State for SetTargetKeyId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = Set<members::target_key_id>;
+        type TargetSignaturePublicKey = St::TargetSignaturePublicKey;
+    }
+    ///State transition - sets the `target_signature_public_key` field to Set
+    pub struct SetTargetSignaturePublicKey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTargetSignaturePublicKey<St> {}
+    impl<St: State> State for SetTargetSignaturePublicKey<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+        type TargetAuthGeneration = St::TargetAuthGeneration;
+        type TargetDeviceId = St::TargetDeviceId;
+        type TargetKeyId = St::TargetKeyId;
+        type TargetSignaturePublicKey = Set<members::target_signature_public_key>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
+        ///Marker type for the `actor_did` field
+        pub struct actor_did(());
+        ///Marker type for the `auth_generation` field
+        pub struct auth_generation(());
+        ///Marker type for the `idempotency_key` field
+        pub struct idempotency_key(());
+        ///Marker type for the `key_id` field
+        pub struct key_id(());
+        ///Marker type for the `signature_domain` field
+        pub struct signature_domain(());
+        ///Marker type for the `signed_at` field
+        pub struct signed_at(());
+        ///Marker type for the `target_auth_generation` field
+        pub struct target_auth_generation(());
+        ///Marker type for the `target_device_id` field
+        pub struct target_device_id(());
+        ///Marker type for the `target_key_id` field
+        pub struct target_key_id(());
+        ///Marker type for the `target_signature_public_key` field
+        pub struct target_signature_public_key(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeviceApprovalBodyBuilder<
+    St: device_approval_body_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeviceApprovalBody<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::Empty, jacquard_common::DefaultStr>
+    {
+        DeviceApprovalBodyBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeviceApprovalBody<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeviceApprovalBodyBuilder<device_approval_body_state::Empty, S> {
+        DeviceApprovalBodyBuilder::builder()
+    }
+}
+
+impl DeviceApprovalBodyBuilder<device_approval_body_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<device_approval_body_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::ActorDeviceId: device_approval_body_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::ActorDid: device_approval_body_state::IsUnset,
+{
+    /// Set the `actorDid` field (required)
+    pub fn actor_did(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetActorDid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::AuthGeneration: device_approval_body_state::IsUnset,
+{
+    /// Set the `authGeneration` field (required)
+    pub fn auth_generation(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetAuthGeneration<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::IdempotencyKey: device_approval_body_state::IsUnset,
+{
+    /// Set the `idempotencyKey` field (required)
+    pub fn idempotency_key(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetIdempotencyKey<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::KeyId: device_approval_body_state::IsUnset,
+{
+    /// Set the `keyId` field (required)
+    pub fn key_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::KeyId<S>>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetKeyId<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::SignatureDomain: device_approval_body_state::IsUnset,
+{
+    /// Set the `signatureDomain` field (required)
+    pub fn signature_domain(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetSignatureDomain<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::SignedAt: device_approval_body_state::IsUnset,
+{
+    /// Set the `signedAt` field (required)
+    pub fn signed_at(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetSignedAt<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::TargetAuthGeneration: device_approval_body_state::IsUnset,
+{
+    /// Set the `targetAuthGeneration` field (required)
+    pub fn target_auth_generation(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetTargetAuthGeneration<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::TargetDeviceId: device_approval_body_state::IsUnset,
+{
+    /// Set the `targetDeviceId` field (required)
+    pub fn target_device_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetTargetDeviceId<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::TargetKeyId: device_approval_body_state::IsUnset,
+{
+    /// Set the `targetKeyId` field (required)
+    pub fn target_key_id(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::KeyId<S>>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetTargetKeyId<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::TargetSignaturePublicKey: device_approval_body_state::IsUnset,
+{
+    /// Set the `targetSignaturePublicKey` field (required)
+    pub fn target_signature_public_key(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeviceApprovalBodyBuilder<device_approval_body_state::SetTargetSignaturePublicKey<St>, S>
+    {
+        self._fields.10 = ::core::option::Option::Some(value.into());
+        DeviceApprovalBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceApprovalBodyBuilder<St, S>
+where
+    St: device_approval_body_state::State,
+    St::ActorDeviceId: device_approval_body_state::IsSet,
+    St::ActorDid: device_approval_body_state::IsSet,
+    St::AuthGeneration: device_approval_body_state::IsSet,
+    St::IdempotencyKey: device_approval_body_state::IsSet,
+    St::KeyId: device_approval_body_state::IsSet,
+    St::SignatureDomain: device_approval_body_state::IsSet,
+    St::SignedAt: device_approval_body_state::IsSet,
+    St::TargetAuthGeneration: device_approval_body_state::IsSet,
+    St::TargetDeviceId: device_approval_body_state::IsSet,
+    St::TargetKeyId: device_approval_body_state::IsSet,
+    St::TargetSignaturePublicKey: device_approval_body_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeviceApprovalBody<S> {
+        DeviceApprovalBody {
+            actor_device_id: self._fields.0.unwrap(),
+            actor_did: self._fields.1.unwrap(),
+            auth_generation: self._fields.2.unwrap(),
+            idempotency_key: self._fields.3.unwrap(),
+            key_id: self._fields.4.unwrap(),
+            signature_domain: self._fields.5.unwrap(),
+            signed_at: self._fields.6.unwrap(),
+            target_auth_generation: self._fields.7.unwrap(),
+            target_device_id: self._fields.8.unwrap(),
+            target_key_id: self._fields.9.unwrap(),
+            target_signature_public_key: self._fields.10.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeviceApprovalBody<S> {
+        DeviceApprovalBody {
+            actor_device_id: self._fields.0.unwrap(),
+            actor_did: self._fields.1.unwrap(),
+            auth_generation: self._fields.2.unwrap(),
+            idempotency_key: self._fields.3.unwrap(),
+            key_id: self._fields.4.unwrap(),
+            signature_domain: self._fields.5.unwrap(),
+            signed_at: self._fields.6.unwrap(),
+            target_auth_generation: self._fields.7.unwrap(),
+            target_device_id: self._fields.8.unwrap(),
+            target_key_id: self._fields.9.unwrap(),
+            target_signature_public_key: self._fields.10.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 fn deserialize_device_capability_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -60368,7 +61506,10 @@ pub struct DeviceViewBuilder<
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
+        core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::DeviceStatus<S>>,
@@ -60396,7 +61537,9 @@ impl DeviceViewBuilder<device_view_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         DeviceViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -60407,7 +61550,9 @@ impl<S: jacquard_common::BosStr> DeviceViewBuilder<device_view_state::Empty, S> 
     pub fn builder() -> Self {
         DeviceViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -60489,6 +61634,38 @@ where
     }
 }
 
+impl<St: device_view_state::State, S: jacquard_common::BosStr> DeviceViewBuilder<St, S> {
+    /// Set the `deviceName` field (optional)
+    pub fn device_name(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `deviceName` field to an Option value (optional)
+    pub fn maybe_device_name(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St: device_view_state::State, S: jacquard_common::BosStr> DeviceViewBuilder<St, S> {
+    /// Set the `dormantAt` field (optional)
+    pub fn dormant_at(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::CanonicalDatetime>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `dormantAt` field to an Option value (optional)
+    pub fn maybe_dormant_at(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> DeviceViewBuilder<St, S>
 where
     St: device_view_state::State,
@@ -60499,12 +61676,31 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::KeyId<S>>,
     ) -> DeviceViewBuilder<device_view_state::SetKeyId<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         DeviceViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: device_view_state::State, S: jacquard_common::BosStr> DeviceViewBuilder<St, S> {
+    /// Set the `lastActiveAt` field (optional)
+    pub fn last_active_at(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::CanonicalDatetime>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `lastActiveAt` field to an Option value (optional)
+    pub fn maybe_last_active_at(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
     }
 }
 
@@ -60518,7 +61714,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> DeviceViewBuilder<device_view_state::SetReservedPackageCount<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         DeviceViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -60537,7 +61733,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> DeviceViewBuilder<device_view_state::SetSignaturePublicKey<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         DeviceViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -60556,7 +61752,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::DeviceStatus<S>>,
     ) -> DeviceViewBuilder<device_view_state::SetStatus<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         DeviceViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -60575,7 +61771,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     ) -> DeviceViewBuilder<device_view_state::SetUpdatedAt<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.11 = ::core::option::Option::Some(value.into());
         DeviceViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -60604,11 +61800,14 @@ where
             available_package_count: self._fields.1.unwrap(),
             created_at: self._fields.2.unwrap(),
             device_id: self._fields.3.unwrap(),
-            key_id: self._fields.4.unwrap(),
-            reserved_package_count: self._fields.5.unwrap(),
-            signature_public_key: self._fields.6.unwrap(),
-            status: self._fields.7.unwrap(),
-            updated_at: self._fields.8.unwrap(),
+            device_name: self._fields.4,
+            dormant_at: self._fields.5,
+            key_id: self._fields.6.unwrap(),
+            last_active_at: self._fields.7,
+            reserved_package_count: self._fields.8.unwrap(),
+            signature_public_key: self._fields.9.unwrap(),
+            status: self._fields.10.unwrap(),
+            updated_at: self._fields.11.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -60625,11 +61824,14 @@ where
             available_package_count: self._fields.1.unwrap(),
             created_at: self._fields.2.unwrap(),
             device_id: self._fields.3.unwrap(),
-            key_id: self._fields.4.unwrap(),
-            reserved_package_count: self._fields.5.unwrap(),
-            signature_public_key: self._fields.6.unwrap(),
-            status: self._fields.7.unwrap(),
-            updated_at: self._fields.8.unwrap(),
+            device_name: self._fields.4,
+            dormant_at: self._fields.5,
+            key_id: self._fields.6.unwrap(),
+            last_active_at: self._fields.7,
+            reserved_package_count: self._fields.8.unwrap(),
+            signature_public_key: self._fields.9.unwrap(),
+            status: self._fields.10.unwrap(),
+            updated_at: self._fields.11.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -109730,6 +110932,195 @@ where
         >,
     ) -> SignedCreation<S> {
         SignedCreation {
+            body: self._fields.0.unwrap(),
+            signature: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_signed_device_approval_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod signed_device_approval_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Body;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Body = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `body` field to Set
+    pub struct SetBody<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBody<St> {}
+    impl<St: State> State for SetBody<St> {
+        type Body = Set<members::body>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type Body = St::Body;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `body` field
+        pub struct body(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct SignedDeviceApprovalBuilder<
+    St: signed_device_approval_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::DeviceApprovalBody<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl SignedDeviceApproval<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SignedDeviceApprovalBuilder<signed_device_approval_state::Empty, jacquard_common::DefaultStr>
+    {
+        SignedDeviceApprovalBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> SignedDeviceApproval<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SignedDeviceApprovalBuilder<signed_device_approval_state::Empty, S> {
+        SignedDeviceApprovalBuilder::builder()
+    }
+}
+
+impl SignedDeviceApprovalBuilder<signed_device_approval_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        SignedDeviceApprovalBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    SignedDeviceApprovalBuilder<signed_device_approval_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SignedDeviceApprovalBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SignedDeviceApprovalBuilder<St, S>
+where
+    St: signed_device_approval_state::State,
+    St::Body: signed_device_approval_state::IsUnset,
+{
+    /// Set the `body` field (required)
+    pub fn body(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::chat::DeviceApprovalBody<S>>,
+    ) -> SignedDeviceApprovalBuilder<signed_device_approval_state::SetBody<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        SignedDeviceApprovalBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SignedDeviceApprovalBuilder<St, S>
+where
+    St: signed_device_approval_state::State,
+    St::Signature: signed_device_approval_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> SignedDeviceApprovalBuilder<signed_device_approval_state::SetSignature<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        SignedDeviceApprovalBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SignedDeviceApprovalBuilder<St, S>
+where
+    St: signed_device_approval_state::State,
+    St::Body: signed_device_approval_state::IsSet,
+    St::Signature: signed_device_approval_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> SignedDeviceApproval<S> {
+        SignedDeviceApproval {
+            body: self._fields.0.unwrap(),
+            signature: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> SignedDeviceApproval<S> {
+        SignedDeviceApproval {
             body: self._fields.0.unwrap(),
             signature: self._fields.1.unwrap(),
             extra_data: Some(extra_data),

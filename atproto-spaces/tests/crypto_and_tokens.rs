@@ -10,16 +10,17 @@ use atproto_spaces::lthash::{
     compute_dagcbor_cid, compute_record_element_hash, LtHash, LTHASH_BYTES,
 };
 use atproto_spaces::mac::{
-    compute_commit_mac, compute_record_mac, format_commit_mac_header, format_record_mac_header,
-    verify_commit_mac, verify_record_mac,
+    format_accept_signature, parse_accept_signature, sign_commit_mac, sign_record_mac,
+    verify_commit_mac, verify_record_mac, MacProfile, DEFAULT_MAC_LABEL,
 };
 use atproto_spaces::star::{read_star_repo, write_star_repo, StarRecordEntry};
 use atproto_spaces::tokens::{
     mint_space_token, verify_space_token, SpaceKeyResolver, SpaceSigningKey, SpaceTokenClaims,
     SpaceTokenKind, SpaceVerifyingKey,
 };
+use atproto_spaces::{SpaceBlobLocator, SpaceUri};
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine as _};
-use http::HeaderMap;
+use http::{HeaderMap, HeaderValue};
 use p256::elliptic_curve::ops::Reduce;
 use p256::elliptic_curve::FieldBytes;
 use p256::{NistP256, Scalar};
@@ -62,12 +63,12 @@ fn lthash_is_order_independent_and_reversible() {
 }
 
 #[test]
-fn rfc9180_p256_kem_encapsulate_and_decapsulate_roundtrip_and_vector() {
-    // RFC 9180 Appendix A.3.1 deterministic vector
-    let sk_r_bytes = hex_decode("f3ce7fdae57e1a310d87f1ebbde6f328be0a99cdbcadf4d6589cf29de4b8ffd2");
-    let sk_e_bytes = hex_decode("4995788ef4b9d6132b249ce59a77281493eb39af373d236a1fe415cb0c2d7beb");
+fn rfc9180_hpke_export_only_p256_encapsulate_and_decapsulate_roundtrip_and_vector() {
+    // RFC 9180 export-only DHKEM(P-256, HKDF-SHA256) vector with info="atproto-mac" & context=""
+    let sk_e_bytes = hex_decode("2f18b059576a0ec5a17121c0fe7ec8f00ea86f7b046fa3889ac8f21f89dbd484");
+    let sk_r_bytes = hex_decode("62c3868357a464f8461d03aa0182c7cebcde841036aea7230ddc7339f1088346");
     let expected_shared =
-        hex_decode("c0d26aeab536609a572b07695d933b589dcf363ff9d93c93adea537aeabb8cb8");
+        hex_decode("2060e0558d1b34c10086bc137f849bb79ba59fcdc30544418e35c9cd301f0d0d");
 
     let sk_r = P256SecretKey::from_slice(&sk_r_bytes).expect("valid sk_r");
     let sk_e = P256SecretKey::from_slice(&sk_e_bytes).expect("valid sk_e");
@@ -92,39 +93,139 @@ fn rfc9180_p256_kem_encapsulate_and_decapsulate_roundtrip_and_vector() {
 }
 
 #[test]
-fn commit_and_record_macs_verify_and_reject_tampering() {
+fn structured_commit_and_record_macs_verify_canonicalize_and_reject_tampering() {
     let secret = [0x42u8; 32];
+    let eph = P256SecretKey::random(&mut rand::rngs::OsRng);
+    let key_share = encode_p256_did_key(&eph.public_key());
     let space = "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11";
     let repo = "did:plc:alice00000000000000000000";
     let rev = "3l2xyz0000001";
     let data = [0xabu8; 32];
 
-    let commit_mac = compute_commit_mac(&secret, space, repo, rev, &data).expect("commit mac");
-    let commit_hdr = format_commit_mac_header(&commit_mac);
-    verify_commit_mac(&secret, &commit_hdr, space, repo, rev, &data).expect("verify commit mac");
+    // Custom non-"mac" label + Accept-Signature round-trip
+    let custom_accept = format!(
+        "  sig1=(\"atproto-space-commit\"; sf); keyid=\"{key_share}\"; alg=\"hmac-sha256\"; tag=\"atproto-space-commit\"  "
+    );
+    let (parsed_label, parsed_ks) =
+        parse_accept_signature(&custom_accept, MacProfile::Commit).expect("parse custom label");
+    assert_eq!(parsed_label, "sig1");
+    assert_eq!(parsed_ks, key_share);
 
-    // Flipping a bit or changing repo/rev/type fails verification
+    let (commit_resp, _) = sign_commit_mac(&secret, &key_share, "sig1", space, repo, rev, &data)
+        .expect("sign commit mac");
+    let mut commit_hdrs = commit_resp.to_header_map().unwrap();
+    verify_commit_mac(&secret, &key_share, &commit_hdrs, space, repo, rev, &data)
+        .expect("verify commit mac with custom label");
+
+    // Flipping a bit or changing repo/rev/keyShare fails verification
     let mut bad_data = data;
     bad_data[0] ^= 0x01;
-    assert!(verify_commit_mac(&secret, &commit_hdr, space, repo, rev, &bad_data).is_err());
-    assert!(verify_commit_mac(&secret, &commit_hdr, space, "did:plc:mallory", rev, &data).is_err());
+    assert!(verify_commit_mac(
+        &secret,
+        &key_share,
+        &commit_hdrs,
+        space,
+        repo,
+        rev,
+        &bad_data
+    )
+    .is_err());
+    assert!(verify_commit_mac(
+        &secret,
+        &key_share,
+        &commit_hdrs,
+        space,
+        "did:plc:mallory",
+        rev,
+        &data
+    )
+    .is_err());
+    assert!(verify_commit_mac(
+        &secret,
+        "did:key:zDnaeWrongKeyShare",
+        &commit_hdrs,
+        space,
+        repo,
+        rev,
+        &data
+    )
+    .is_err());
+
+    // Duplicate tagged inner list in Signature-Input must be rejected
+    let dup_sig_input = format!(
+        "{}, dup=(\"atproto-space-commit\";sf);keyid=\"{key_share}\";tag=\"atproto-space-commit\"",
+        commit_resp.signature_input
+    );
+    commit_hdrs.insert(
+        "signature-input",
+        HeaderValue::from_str(&dup_sig_input).unwrap(),
+    );
+    assert!(verify_commit_mac(&secret, &key_share, &commit_hdrs, space, repo, rev, &data).is_err());
+
+    // Record MAC round-trip + profile separation
+    let accept_rec = format_accept_signature(MacProfile::Record, &key_share).unwrap();
+    assert!(parse_accept_signature(&accept_rec, MacProfile::Commit).is_err());
 
     let uri = format!("{space}/{repo}/blue.catbird.labyrinth.batch/3l2xyz0000001");
     let cid = compute_dagcbor_cid(b"\xa1dtest");
-    let record_mac = compute_record_mac(&secret, &uri, &cid.to_bytes()).expect("record mac");
-    let record_hdr = format_record_mac_header(&record_mac);
-    verify_record_mac(&secret, &record_hdr, &uri, &cid.to_bytes()).expect("verify record mac");
+    let (record_resp, _) = sign_record_mac(
+        &secret,
+        &key_share,
+        DEFAULT_MAC_LABEL,
+        &uri,
+        &cid.to_string(),
+    )
+    .expect("sign record mac");
+    let record_hdrs = record_resp.to_header_map().unwrap();
+    verify_record_mac(&secret, &key_share, &record_hdrs, &uri, &cid.to_string())
+        .expect("verify record mac");
 
-    // Commit header cannot pass as record header and vice-versa
-    assert!(verify_record_mac(&secret, &commit_hdr, &uri, &cid.to_bytes()).is_err());
-    assert!(verify_commit_mac(&secret, &record_hdr, space, repo, rev, &data).is_err());
+    // Commit headers cannot pass as record headers and vice-versa
+    assert!(verify_record_mac(
+        &secret,
+        &key_share,
+        &commit_resp.to_header_map().unwrap(),
+        &uri,
+        &cid.to_string()
+    )
+    .is_err());
+    assert!(verify_commit_mac(&secret, &key_share, &record_hdrs, space, repo, rev, &data).is_err());
+}
+
+#[test]
+fn hedged_space_uris_and_space_blob_locators_roundtrip_and_reject_malformed_inputs() {
+    let canonical =
+        "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11-2";
+    for input in [
+        canonical,
+        "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2",
+        "at://space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2",
+    ] {
+        let parsed = SpaceUri::parse_hedged(input).expect("parse_hedged");
+        assert_eq!(parsed.as_str(), canonical);
+    }
+
+    let cid = compute_dagcbor_cid(b"\xa1dblob\x01");
+    let space = SpaceUri::parse(canonical).unwrap();
+    let repo = "did:plc:ewvi7nxzyoun6zhxrhs64oiz";
+    let locator = SpaceBlobLocator::new(space, repo, cid).unwrap();
+    let encoded = locator.encoded();
+    assert_eq!(encoded, format!("{canonical}|{repo}|{cid}"));
+    assert_eq!(SpaceBlobLocator::parse(&encoded).unwrap(), locator);
+
+    let legacy = format!("{canonical}/{repo}#{cid}");
+    assert_eq!(SpaceBlobLocator::parse(&legacy).unwrap(), locator);
+
+    // Mixed | and # or non-ATProto DID must fail closed
+    assert!(SpaceBlobLocator::parse(&format!("{canonical}|{repo}#{cid}")).is_err());
+    assert!(SpaceBlobLocator::parse(&format!("{canonical}|did:key:zDnae123|{cid}")).is_err());
 }
 
 #[test]
 fn verify_credential_request_accepts_webcrypto_high_s_signature() {
     let ephemeral_key = P256SecretKey::random(&mut rand::rngs::OsRng);
     let cnf_did_key = encode_p256_did_key(&ephemeral_key.public_key());
-    let credential_jwt = "eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhdDovL2RpZDpwbGM6YWxpY2UvYmx1ZS5jYXRiaXJkLmxhYnlyaW50aC5tYWlsYm94L2xhYnlyaW50aC1tYWlsYm94In0.c2ln";
+    let credential_jwt = "eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhdDovL2RpZDpwbGM6YWxpY2UvYmx1ZS5jYXRiaXJkLmxhYnlyaW50aC5tYWlsYm94L3NlbGYifQ.c2ln";
     let audience_did = "did:plc:alice00000000000000000000";
     let now_sec = 1_762_000_000u64;
 
@@ -143,7 +244,6 @@ fn verify_credential_request_accepts_webcrypto_high_s_signature() {
     assert_eq!(verified.credential_jwt, credential_jwt);
     assert_eq!(verified.audience_did, audience_did);
 
-    // Extract raw 64-byte (r || s) from `atproto-space-credential=:<b64>:` and flip s -> n - s
     let b64 = signed
         .signature
         .strip_prefix("atproto-space-credential=:")
@@ -157,7 +257,6 @@ fn verify_credential_request_accepts_webcrypto_high_s_signature() {
     s_arr.copy_from_slice(&raw[32..]);
     let s_fb = FieldBytes::<NistP256>::from(s_arr);
     let s_scalar = <Scalar as Reduce<p256::U256>>::reduce_bytes(&s_fb);
-    // Signer must have emitted low-S (`bool::from(s.is_high()) == false`).
     assert!(
         !bool::from(p256::elliptic_curve::scalar::IsHigh::is_high(&s_scalar)),
         "sign_credential_request must emit low-S signature"
@@ -186,14 +285,12 @@ fn verify_credential_request_accepts_webcrypto_high_s_signature() {
     assert_eq!(verified_high.credential_jwt, credential_jwt);
     assert_eq!(verified_high.audience_did, audience_did);
 
-    // Also verify minimal Swan/Petrel form (no created/nonce parameters)
     let minimal =
         sign_credential_request_minimal(&ephemeral_key, credential_jwt, audience_did).unwrap();
     let minimal_map = minimal.to_header_map().unwrap();
     verify_credential_request(&minimal_map, &cnf_did_key, now_sec)
         .expect("minimal RFC 9421 form verifies");
 
-    // Wrong cnf.kid or tampered audience must fail
     let other_key = P256SecretKey::random(&mut rand::rngs::OsRng);
     let other_did_key = encode_p256_did_key(&other_key.public_key());
     assert!(verify_credential_request(&high_s_map, &other_did_key, now_sec).is_err());
@@ -264,7 +361,6 @@ fn verify_space_token_retries_once_on_rotated_did_web_key() {
         assert_eq!(verified.sub, claims.sub);
         assert_eq!(verified.cnf_kid.as_deref(), Some(cnf_kid.as_str()));
 
-        // If refreshed key is ALSO wrong, verify_space_token fails after 1 retry (2 calls total)
         let always_wrong = RotatingDidWebResolver {
             stale_key: old_sk.verifying_key(),
             rotated_key: old_sk.verifying_key(),
@@ -279,9 +375,8 @@ fn verify_space_token_retries_once_on_rotated_did_web_key() {
 }
 
 #[test]
-fn star_lite_roundtrips_canonical_sorted_records_and_rejects_violations() {
-    let space =
-        "at://did:plc:alice00000000000000000000/space/blue.catbird.labyrinth.mailbox/labyrinth-mailbox";
+fn star_v02_roundtrips_canonical_sorted_records_and_rejects_violations() {
+    let space = "at://did:plc:alice00000000000000000000/space/blue.catbird.labyrinth.mailbox/self";
     let repo = "did:plc:alice00000000000000000000";
     let rev = "3l2xyz0000009";
 
@@ -314,16 +409,17 @@ fn star_lite_roundtrips_canonical_sorted_records_and_rejects_violations() {
     let entries = vec![
         StarRecordEntry {
             path: "blue.catbird.labyrinth.batch/3l2xyz0000001".to_string(),
-            record_dagcbor: rec_1_bytes.clone(),
+            record_dagcbor: rec_1_bytes,
         },
         StarRecordEntry {
             path: "blue.catbird.labyrinth.device/dev-1".to_string(),
-            record_dagcbor: rec_2_bytes.clone(),
+            record_dagcbor: rec_2_bytes,
         },
     ];
 
     let star_bytes = write_star_repo(space, repo, rev, &data, &entries).expect("write star");
     assert_eq!(&star_bytes[..4], &[0x2a, 0x6c, 0x01, 0x00]);
+    assert_eq!(*star_bytes.last().unwrap(), 0x00);
 
     let parsed = read_star_repo(&star_bytes, space, repo).expect("read star");
     assert_eq!(parsed.rev, rev);
@@ -336,16 +432,23 @@ fn star_lite_roundtrips_canonical_sorted_records_and_rejects_violations() {
     assert!(read_star_repo(&star_bytes, "at://did:plc:other/space/x.y.z/1", repo).is_err());
     assert!(read_star_repo(&star_bytes, space, "did:plc:other").is_err());
 
-    // Unordered entries passed to write_star_repo must either sort or reject if raw stream is unsorted;
-    // craft unsorted stream directly by swapping the two path/record frames and verify read_star_repo rejects!
-    let reversed = vec![entries[1].clone(), entries[0].clone()];
-    assert!(
-        write_star_repo(space, repo, rev, &data, &reversed).is_err(),
-        "write_star_repo must reject non-lexicographic entry slices"
-    );
+    // Wrong LtHash commitment in metadata must fail closed inside read_star_repo!
+    let wrong_archive = write_star_repo(space, repo, rev, &[0xff; 32], &entries).unwrap();
+    assert!(matches!(
+        read_star_repo(&wrong_archive, space, repo),
+        Err(atproto_spaces::SpacesError::SetHashMismatch(_))
+    ));
 
-    // Trailing garbage byte must fail
-    let mut with_garbage = star_bytes.clone();
+    // Unsorted entries must be rejected
+    let reversed = vec![entries[1].clone(), entries[0].clone()];
+    assert!(write_star_repo(space, repo, rev, &data, &reversed).is_err());
+
+    // Missing end marker, invalid control byte, or trailing garbage byte must fail closed
+    assert!(read_star_repo(&star_bytes[..star_bytes.len() - 1], space, repo).is_err());
+    let mut bad_ctrl = star_bytes.clone();
+    *bad_ctrl.last_mut().unwrap() = 0x02;
+    assert!(read_star_repo(&bad_ctrl, space, repo).is_err());
+    let mut with_garbage = star_bytes;
     with_garbage.push(0x00);
     assert!(read_star_repo(&with_garbage, space, repo).is_err());
 }

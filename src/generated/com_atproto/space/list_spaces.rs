@@ -15,12 +15,12 @@
 pub struct ListSpaces<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cursor: core::option::Option<S>,
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
     /// Defaults to `50`. Min: 1. Max: 100.
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_did: core::option::Option<jacquard_common::types::string::Did<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub space_type: core::option::Option<jacquard_common::types::string::Nsid<S>>,
 }
@@ -50,6 +50,53 @@ pub struct ListSpacesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
 }
 
 #[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ListSpacesError {
+    #[serde(rename = "InvalidCursor")]
+    InvalidCursor(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ListSpacesError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidCursor(msg) => {
+                write!(f, "InvalidCursor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+#[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(
@@ -57,8 +104,17 @@ pub struct ListSpacesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SpaceView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// URI of the space.
-    pub uri: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// The current commit data of the account's repo in the space, if it has one.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub data: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    /// The current revision of the account's repo in the space, if it has one.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub repo_rev: core::option::Option<jacquard_common::types::string::Tid>,
+    pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
+    /// The current revision of the space. Only included if the account is the space's authority.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub space_rev: core::option::Option<jacquard_common::types::string::Tid>,
     #[serde(
         flatten,
         default,
@@ -81,7 +137,7 @@ impl jacquard_common::xrpc::XrpcResp for ListSpacesResponse {
     const NSID: &'static str = "com.atproto.space.listSpaces";
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = ListSpacesOutput<S>;
-    type Err = jacquard_common::xrpc::GenericError;
+    type Err = ListSpacesError;
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListSpaces<S> {
@@ -147,8 +203,8 @@ pub struct ListSpacesBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
-        core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<jacquard_common::types::string::Nsid<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -204,26 +260,32 @@ impl<St: list_spaces_state::State, S: jacquard_common::BosStr> ListSpacesBuilder
 }
 
 impl<St: list_spaces_state::State, S: jacquard_common::BosStr> ListSpacesBuilder<St, S> {
-    /// Set the `did` field (optional)
-    pub fn did(mut self, value: impl Into<Option<jacquard_common::types::string::Did<S>>>) -> Self {
+    /// Set the `limit` field (optional)
+    pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();
         self
     }
-    /// Set the `did` field to an Option value (optional)
-    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
+    /// Set the `limit` field to an Option value (optional)
+    pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
         self._fields.1 = value;
         self
     }
 }
 
 impl<St: list_spaces_state::State, S: jacquard_common::BosStr> ListSpacesBuilder<St, S> {
-    /// Set the `limit` field (optional)
-    pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
+    /// Set the `spaceDid` field (optional)
+    pub fn space_did(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
+    ) -> Self {
         self._fields.2 = value.into();
         self
     }
-    /// Set the `limit` field to an Option value (optional)
-    pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
+    /// Set the `spaceDid` field to an Option value (optional)
+    pub fn maybe_space_did(
+        mut self,
+        value: Option<jacquard_common::types::string::Did<S>>,
+    ) -> Self {
         self._fields.2 = value;
         self
     }
@@ -256,8 +318,8 @@ where
     pub fn build(self) -> ListSpaces<S> {
         ListSpaces {
             cursor: self._fields.0,
-            did: self._fields.1,
-            limit: self._fields.2,
+            limit: self._fields.1,
+            space_did: self._fields.2,
             space_type: self._fields.3,
         }
     }
@@ -297,25 +359,25 @@ pub mod space_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
+        type Space;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
+        type Space = Unset;
     }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
-    impl<St: State> sealed::Sealed for SetUri<St> {}
-    impl<St: State> State for SetUri<St> {
-        type Uri = Set<members::uri>;
+    ///State transition - sets the `space` field to Set
+    pub struct SetSpace<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSpace<St> {}
+    impl<St: State> State for SetSpace<St> {
+        type Space = Set<members::space>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
+        ///Marker type for the `space` field
+        pub struct space(());
     }
 }
 
@@ -325,7 +387,12 @@ pub struct SpaceViewBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,),
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+        core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -348,7 +415,7 @@ impl SpaceViewBuilder<space_view_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         SpaceViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -359,23 +426,52 @@ impl<S: jacquard_common::BosStr> SpaceViewBuilder<space_view_state::Empty, S> {
     pub fn builder() -> Self {
         SpaceViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: space_view_state::State, S: jacquard_common::BosStr> SpaceViewBuilder<St, S> {
+    /// Set the `data` field (optional)
+    pub fn data(mut self, value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `data` field to an Option value (optional)
+    pub fn maybe_data(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: space_view_state::State, S: jacquard_common::BosStr> SpaceViewBuilder<St, S> {
+    /// Set the `repoRev` field (optional)
+    pub fn repo_rev(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Tid>>,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `repoRev` field to an Option value (optional)
+    pub fn maybe_repo_rev(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
+        self._fields.1 = value;
+        self
     }
 }
 
 impl<St, S: jacquard_common::BosStr> SpaceViewBuilder<St, S>
 where
     St: space_view_state::State,
-    St::Uri: space_view_state::IsUnset,
+    St::Space: space_view_state::IsUnset,
 {
-    /// Set the `uri` field (required)
-    pub fn uri(
+    /// Set the `space` field (required)
+    pub fn space(
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
-    ) -> SpaceViewBuilder<space_view_state::SetUri<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+    ) -> SpaceViewBuilder<space_view_state::SetSpace<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         SpaceViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -384,15 +480,34 @@ where
     }
 }
 
+impl<St: space_view_state::State, S: jacquard_common::BosStr> SpaceViewBuilder<St, S> {
+    /// Set the `spaceRev` field (optional)
+    pub fn space_rev(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Tid>>,
+    ) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `spaceRev` field to an Option value (optional)
+    pub fn maybe_space_rev(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> SpaceViewBuilder<St, S>
 where
     St: space_view_state::State,
-    St::Uri: space_view_state::IsSet,
+    St::Space: space_view_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> SpaceView<S> {
         SpaceView {
-            uri: self._fields.0.unwrap(),
+            data: self._fields.0,
+            repo_rev: self._fields.1,
+            space: self._fields.2.unwrap(),
+            space_rev: self._fields.3,
             extra_data: Default::default(),
         }
     }
@@ -405,7 +520,10 @@ where
         >,
     ) -> SpaceView<S> {
         SpaceView {
-            uri: self._fields.0.unwrap(),
+            data: self._fields.0,
+            repo_rev: self._fields.1,
+            space: self._fields.2.unwrap(),
+            space_rev: self._fields.3,
             extra_data: Some(extra_data),
         }
     }
@@ -435,12 +553,20 @@ fn lexicon_doc_com_atproto_space_listSpaces() -> jacquard_lexicon::lexicon::Lexi
                                 );
                                 map.insert(
                                     ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                        "did",
+                                        "limit",
+                                    ),
+                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    }),
+                                );
+                                map.insert(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "spaceDid",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
-                                                "Filter to spaces under this authority DID.",
+                                                "Filter to spaces with this DID as their authority.",
                                             ),
                                         ),
                                         format: Some(
@@ -451,22 +577,9 @@ fn lexicon_doc_com_atproto_space_listSpaces() -> jacquard_lexicon::lexicon::Lexi
                                 );
                                 map.insert(
                                     ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                        "limit",
-                                    ),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    }),
-                                );
-                                map.insert(
-                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "spaceType",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "Filter to spaces of this space type.",
-                                            ),
-                                        ),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Nsid,
                                         ),
@@ -483,33 +596,70 @@ fn lexicon_doc_com_atproto_space_listSpaces() -> jacquard_lexicon::lexicon::Lexi
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("spaceView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "URI of the space.",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
-                                        ),
-                                        ..Default::default()
-                                    },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("space")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "data",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "repoRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The current revision of the account's repo in the space, if it has one.",
+                                    ),
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "space",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "spaceRev",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The current revision of the space. Only included if the account is the space's authority.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map
         },

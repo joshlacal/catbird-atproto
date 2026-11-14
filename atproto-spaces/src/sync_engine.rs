@@ -1,28 +1,33 @@
-//! Client & AppView ATProto Spaces sync engine (`SpaceSyncEngine`).
+//! Client & AppView ATProto Spaces sync engine (`SpaceSyncEngine`) for the November 12 Spaces alpha.
 //!
 //! Enforces strict MAC-before-parse ordering:
+//! - Writer discovery (`list_writers` / `list_active_writers`): `com.atproto.space.listWriters`
+//!   decoding `#repoWrite` and `#repoRemoved` entries in ascending `spaceRev` order.
 //! - Cold-open (`fetch_newest_records_verified`): `listRecords(reverse=true, excludeValues=true)`
-//!   followed by `getRecord` with `Atproto-Space-Want-Mac` (`atproto-space-record`), verifying
-//!   `Atproto-Space-Mac` BEFORE accepting or deserializing record content.
-//! - Incremental (`sync_writer_repo`): `listRepoOps(since)` with `Atproto-Space-Want-Mac`
-//!   (`atproto-space-repo`), verifying `Atproto-Space-Mac` FIRST on the head commit BEFORE
-//!   applying ops to a staged `LtHash` or inspecting record values; falls back to `getRepo`
-//!   `STAR-lite` when `allow_star_recovery` is enabled.
+//!   followed by `getRecord` with `Accept-Signature` (`atproto-space-record`), verifying
+//!   `Atproto-Space-Record` + `Signature-Input` + `Signature` BEFORE accepting or deserializing `value`.
+//! - Incremental (`sync_writer_repo`): `listRepoOps(since)` with `Accept-Signature`
+//!   (`atproto-space-commit`), requiring `commit` on every page and verifying
+//!   `Atproto-Space-Commit` + `Signature-Input` + `Signature` FIRST BEFORE applying ops to a
+//!   staged `LtHash` or inspecting record values; falls back to `getRepo` `STAR` v0.2 when
+//!   `allow_star_recovery` is enabled.
 
 use crate::credential_cache::{parse_xrpc_error, CredentialCache, DelegationMinter};
 use crate::did_resolver::SpaceDidResolver;
 use crate::kem::encapsulate_p256;
 use crate::lthash::{compute_dagcbor_cid, compute_record_element_hash, LtHash};
 use crate::mac::{
-    format_want_mac_header, verify_commit_mac, verify_record_mac, COMMIT_MAC_TYPE, RECORD_MAC_TYPE,
-    SPACE_MAC_HEADER_NAME, SPACE_WANT_MAC_HEADER_NAME,
+    format_accept_signature, verify_commit_mac, verify_record_mac, MacProfile,
+    ACCEPT_SIGNATURE_HEADER,
 };
-use crate::star::{read_star_metadata, read_star_repo, validate_canonical_dagcbor_record};
+use crate::star::{read_star_repo_authenticated, validate_canonical_dagcbor_record};
 use crate::{Result, SpaceUri, SpacesError};
 use catbird_atproto::com_atproto::space::get_record::GetRecordOutput;
 use catbird_atproto::com_atproto::space::list_records::ListRecordsOutput;
 use catbird_atproto::com_atproto::space::list_repo_ops::ListRepoOpsOutput;
-use catbird_atproto::com_atproto::space::list_repos::ListReposOutput;
+use catbird_atproto::com_atproto::space::list_writers::{
+    ListWritersOutput, ListWritersOutputReposItem,
+};
 use cid::Cid;
 use http::{HeaderMap, HeaderName, HeaderValue, Method};
 use std::collections::BTreeMap;
@@ -121,6 +126,12 @@ pub struct RepoCursorEntry {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub enum WriterUpdateEntry {
+    Write(RepoCursorEntry),
+    Removed { did: String, space_rev: String },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SyncOutcome {
     pub mode: SyncMode,
     pub latest_rev: String,
@@ -187,26 +198,30 @@ where
         }
     }
 
-    /// List active writer repos in `space_uri` in ascending `spaceRev` order.
-    pub async fn list_repos(
+    /// Query `com.atproto.space.listWriters` for `space_uri`, returning `#repoWrite` and
+    /// `#repoRemoved` entries in ascending `spaceRev` order along with any pagination cursor.
+    pub async fn list_writers(
         &self,
         space_uri: &str,
         cursor: Option<&str>,
         limit: Option<u32>,
         now_sec: u64,
-    ) -> Result<Vec<RepoCursorEntry>> {
-        let space = SpaceUri::parse(space_uri)?;
+    ) -> Result<(Vec<WriterUpdateEntry>, Option<String>)> {
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        let canonical_space = space.as_str();
         let authority_doc = self
             .did_resolver
             .resolve_did(&space.authority, false)
             .await?;
         let host_endpoint = authority_doc.space_host_endpoint()?.to_string();
 
-        let mut url = Url::parse(&format!("{host_endpoint}/xrpc/com.atproto.space.listRepos"))
-            .map_err(|e| SpacesError::Sync(format!("bad listRepos URL: {e}")))?;
+        let mut url = Url::parse(&format!(
+            "{host_endpoint}/xrpc/com.atproto.space.listWriters"
+        ))
+        .map_err(|e| SpacesError::Sync(format!("bad listWriters URL: {e}")))?;
         {
             let mut qp = url.query_pairs_mut();
-            qp.append_pair("space", space_uri);
+            qp.append_pair("space", canonical_space);
             if let Some(c) = cursor {
                 qp.append_pair("cursor", c);
             }
@@ -216,31 +231,70 @@ where
         }
 
         let resp = self
-            .send_authenticated_get(space_uri, &space.authority, url.as_str(), None, now_sec)
+            .send_authenticated_get(
+                canonical_space,
+                &space.authority,
+                url.as_str(),
+                None,
+                now_sec,
+            )
             .await?;
-        let out: ListReposOutput = serde_json::from_slice(&resp.body)
-            .map_err(|e| SpacesError::Sync(format!("decode listRepos: {e}")))?;
+        let out: ListWritersOutput = serde_json::from_slice(&resp.body)
+            .map_err(|e| SpacesError::Sync(format!("decode listWriters: {e}")))?;
 
         let mut entries = Vec::with_capacity(out.repos.len());
-        for repo in out.repos {
-            let data: [u8; 32] =
-                repo.data.as_ref().try_into().map_err(|_| {
-                    SpacesError::Sync("listRepos entry data must be 32 bytes".into())
-                })?;
-            entries.push(RepoCursorEntry {
-                did: repo.did.as_str().to_string(),
-                repo_rev: repo.repo_rev.as_str().to_string(),
-                space_rev: repo.space_rev.as_str().to_string(),
-                data,
-            });
+        for item in out.repos {
+            match item {
+                ListWritersOutputReposItem::RepoWrite(w) => {
+                    let data: [u8; 32] = w.data.as_ref().try_into().map_err(|_| {
+                        SpacesError::Sync("listWriters repoWrite data must be 32 bytes".into())
+                    })?;
+                    entries.push(WriterUpdateEntry::Write(RepoCursorEntry {
+                        did: w.repo.as_str().to_string(),
+                        repo_rev: w.repo_rev.as_str().to_string(),
+                        space_rev: w.space_rev.as_str().to_string(),
+                        data,
+                    }));
+                }
+                ListWritersOutputReposItem::RepoRemoved(r) => {
+                    entries.push(WriterUpdateEntry::Removed {
+                        did: r.repo.as_str().to_string(),
+                        space_rev: r.space_rev.as_str().to_string(),
+                    });
+                }
+                ListWritersOutputReposItem::Unknown(_) => {
+                    return Err(SpacesError::Sync(
+                        "unknown union variant in listWriters.repos".into(),
+                    ));
+                }
+            }
         }
-        Ok(entries)
+        let next_cursor = out.cursor.map(|c| c.as_str().to_string());
+        Ok((entries, next_cursor))
+    }
+
+    /// List active (`#repoWrite`) writer repos in `space_uri` in ascending `spaceRev` order.
+    pub async fn list_active_writers(
+        &self,
+        space_uri: &str,
+        cursor: Option<&str>,
+        limit: Option<u32>,
+        now_sec: u64,
+    ) -> Result<Vec<RepoCursorEntry>> {
+        let (items, _) = self.list_writers(space_uri, cursor, limit, now_sec).await?;
+        Ok(items
+            .into_iter()
+            .filter_map(|item| match item {
+                WriterUpdateEntry::Write(w) => Some(w),
+                WriterUpdateEntry::Removed { .. } => None,
+            })
+            .collect())
     }
 
     /// Cold-open newest records in `collection` from `writer_did`:
     /// 1. `listRecords(reverse=true, excludeValues=true)`
-    /// 2. `getRecord` per item with `Atproto-Space-Want-Mac` (`atproto-space-record`)
-    /// 3. Verifies `Atproto-Space-Mac` BEFORE accepting or deserializing record payload!
+    /// 2. `getRecord` per item with `Accept-Signature` (`atproto-space-record`)
+    /// 3. Verifies `Atproto-Space-Record` + `Signature-Input` + `Signature` BEFORE accepting or deserializing `value`!
     pub async fn fetch_newest_records_verified(
         &self,
         space_uri: &str,
@@ -249,7 +303,8 @@ where
         limit: u32,
         now_sec: u64,
     ) -> Result<Vec<VerifiedSpaceRecord>> {
-        let space = SpaceUri::parse(space_uri)?;
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        let canonical_space = space.as_str();
         let writer_doc = self.did_resolver.resolve_did(writer_did, false).await?;
         let pds_endpoint = writer_doc.pds_endpoint()?.to_string();
         let kem_did_key = writer_doc.atproto_kem_did_key.ok_or_else(|| {
@@ -262,7 +317,7 @@ where
         .map_err(|e| SpacesError::Sync(format!("bad listRecords URL: {e}")))?;
         {
             let mut qp = list_url.query_pairs_mut();
-            qp.append_pair("space", space_uri);
+            qp.append_pair("space", canonical_space);
             qp.append_pair("repo", writer_did);
             qp.append_pair("collection", collection);
             qp.append_pair("limit", &limit.to_string());
@@ -271,7 +326,13 @@ where
         }
 
         let list_resp = self
-            .send_authenticated_get(space_uri, writer_did, list_url.as_str(), None, now_sec)
+            .send_authenticated_get(
+                canonical_space,
+                writer_did,
+                list_url.as_str(),
+                None,
+                now_sec,
+            )
             .await?;
         let listed: ListRecordsOutput = serde_json::from_slice(&list_resp.body)
             .map_err(|e| SpacesError::Sync(format!("decode listRecords: {e}")))?;
@@ -280,14 +341,14 @@ where
         for stub in listed.records {
             let rkey = stub.rkey.as_ref().to_string();
             let encap = encapsulate_p256(&kem_did_key)?;
-            let want_mac = format_want_mac_header(&encap.key_share_did_key, RECORD_MAC_TYPE)?;
+            let accept_sig = format_accept_signature(MacProfile::Record, &encap.key_share_did_key)?;
 
             let mut get_url =
                 Url::parse(&format!("{pds_endpoint}/xrpc/com.atproto.space.getRecord"))
                     .map_err(|e| SpacesError::Sync(format!("bad getRecord URL: {e}")))?;
             {
                 let mut qp = get_url.query_pairs_mut();
-                qp.append_pair("space", space_uri);
+                qp.append_pair("space", canonical_space);
                 qp.append_pair("repo", writer_did);
                 qp.append_pair("collection", collection);
                 qp.append_pair("rkey", &rkey);
@@ -295,32 +356,27 @@ where
 
             let resp = self
                 .send_authenticated_get(
-                    space_uri,
+                    canonical_space,
                     writer_did,
                     get_url.as_str(),
-                    Some(&want_mac),
+                    Some(&accept_sig),
                     now_sec,
                 )
                 .await?;
 
-            let mac_header = resp
-                .headers
-                .get(SPACE_MAC_HEADER_NAME)
-                .ok_or_else(|| {
-                    SpacesError::MacMismatch("missing Atproto-Space-Mac on getRecord".into())
-                })?
-                .to_str()
-                .map_err(|_| {
-                    SpacesError::MacMismatch("non-ASCII Atproto-Space-Mac header".into())
-                })?;
-
-            // Parse minimal envelope (uri + cid) to verify Atproto-Space-Mac BEFORE touching value!
+            // Parse minimal envelope (uri + cid) to verify record MAC BEFORE touching value!
             let minimal: MinimalRecordEnvelope = serde_json::from_slice(&resp.body)
                 .map_err(|e| SpacesError::Sync(format!("decode getRecord envelope: {e}")))?;
             let claimed_cid: Cid = minimal
                 .cid
                 .parse()
                 .map_err(|e| SpacesError::MacMismatch(format!("invalid record CID: {e}")))?;
+            let claimed_cid_str = claimed_cid.to_string();
+            if claimed_cid_str != minimal.cid {
+                return Err(SpacesError::MacMismatch(
+                    "non-canonical CID string in getRecord response".into(),
+                ));
+            }
             let expected_uri = space.record_uri(writer_did, collection, &rkey)?;
             if minimal.uri != expected_uri {
                 return Err(SpacesError::MacMismatch(format!(
@@ -332,9 +388,10 @@ where
             // CRITICAL: Verify record MAC BEFORE deserializing or accepting `value`!
             verify_record_mac(
                 &encap.shared_secret,
-                mac_header,
+                &encap.key_share_did_key,
+                &resp.headers,
                 &expected_uri,
-                &claimed_cid.to_bytes(),
+                &claimed_cid_str,
             )?;
 
             let full: GetRecordOutput = serde_json::from_slice(&resp.body)
@@ -362,7 +419,7 @@ where
     }
 
     /// Incrementally sync `writer_did`'s repo in `space_uri` via `listRepoOps`, verifying
-    /// `Atproto-Space-Mac` FIRST and checking `LtHash` commitment BEFORE mutating `state`.
+    /// `Atproto-Space-Commit` MAC FIRST on every page and checking `LtHash` commitment BEFORE mutating `state`.
     /// When `allow_star_recovery` is `true`, falls back to `recover_writer_repo_via_star` on
     /// `SetHashMismatch` or oplog gap.
     pub async fn sync_writer_repo(
@@ -396,7 +453,8 @@ where
         state: &mut WriterSyncState,
         now_sec: u64,
     ) -> Result<SyncOutcome> {
-        let space = SpaceUri::parse(space_uri)?;
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        let canonical_space = space.as_str();
         let writer_doc = self.did_resolver.resolve_did(writer_did, false).await?;
         let pds_endpoint = writer_doc.pds_endpoint()?.to_string();
         let kem_did_key = writer_doc.atproto_kem_did_key.ok_or_else(|| {
@@ -419,7 +477,7 @@ where
                 ));
             }
             let encap = encapsulate_p256(&kem_did_key)?;
-            let want_mac = format_want_mac_header(&encap.key_share_did_key, COMMIT_MAC_TYPE)?;
+            let accept_sig = format_accept_signature(MacProfile::Commit, &encap.key_share_did_key)?;
 
             let mut url = Url::parse(&format!(
                 "{pds_endpoint}/xrpc/com.atproto.space.listRepoOps"
@@ -427,7 +485,7 @@ where
             .map_err(|e| SpacesError::Sync(format!("bad listRepoOps URL: {e}")))?;
             {
                 let mut qp = url.query_pairs_mut();
-                qp.append_pair("space", space_uri);
+                qp.append_pair("space", canonical_space);
                 qp.append_pair("repo", writer_did);
                 if let Some(since) = &state.latest_rev {
                     qp.append_pair("since", since);
@@ -439,54 +497,44 @@ where
 
             let resp = self
                 .send_authenticated_get(
-                    space_uri,
+                    canonical_space,
                     writer_did,
                     url.as_str(),
-                    Some(&want_mac),
+                    Some(&accept_sig),
                     now_sec,
                 )
                 .await?;
 
-            // If this page carries the head commit (cursor is absent), verify Atproto-Space-Mac
+            // November 12 contract: every listRepoOps page MUST carry a commit authenticated by MAC
             // BEFORE deserializing ops or applying anything to staged_lt!
             let minimal_page: MinimalOpsPage = serde_json::from_slice(&resp.body)
                 .map_err(|e| SpacesError::Sync(format!("decode listRepoOps envelope: {e}")))?;
-
-            let verified_head_commit: Option<(String, [u8; 32])> = if let Some(commit) =
-                &minimal_page.commit
-            {
-                let mac_header = resp
-                    .headers
-                    .get(SPACE_MAC_HEADER_NAME)
-                    .ok_or_else(|| {
-                        SpacesError::MacMismatch(
-                            "missing Atproto-Space-Mac on head listRepoOps page".into(),
-                        )
-                    })?
-                    .to_str()
-                    .map_err(|_| SpacesError::MacMismatch("non-ASCII Atproto-Space-Mac".into()))?;
-                let data: [u8; 32] =
-                    commit.data.as_ref().try_into().map_err(|_| {
-                        SpacesError::MacMismatch("commit.data must be 32 bytes".into())
-                    })?;
-                if commit.space != space_uri || commit.repo != writer_did || commit.ver != 1 {
-                    return Err(SpacesError::MacMismatch(
-                        "commit space/repo/ver mismatch on listRepoOps".into(),
-                    ));
-                }
-                // CRITICAL: Verify commit MAC BEFORE parsing or applying ops!
-                verify_commit_mac(
-                    &encap.shared_secret,
-                    mac_header,
-                    space_uri,
-                    writer_did,
-                    &commit.rev,
-                    &data,
-                )?;
-                Some((commit.rev.clone(), data))
-            } else {
-                None
+            let Some(commit) = &minimal_page.commit else {
+                return Err(SpacesError::MacMismatch(
+                    "listRepoOps page omitted required commit".into(),
+                ));
             };
+            let data: [u8; 32] = commit
+                .data
+                .as_ref()
+                .try_into()
+                .map_err(|_| SpacesError::MacMismatch("commit.data must be 32 bytes".into()))?;
+            if commit.space != canonical_space || commit.repo != writer_did || commit.ver != 1 {
+                return Err(SpacesError::MacMismatch(
+                    "commit space/repo/ver mismatch on listRepoOps".into(),
+                ));
+            }
+            // CRITICAL: Verify commit MAC BEFORE parsing or applying ops!
+            verify_commit_mac(
+                &encap.shared_secret,
+                &encap.key_share_did_key,
+                &resp.headers,
+                canonical_space,
+                writer_did,
+                &commit.rev,
+                &data,
+            )?;
+            let verified_head_commit = (commit.rev.clone(), data);
 
             let out: ListRepoOpsOutput = serde_json::from_slice(&resp.body)
                 .map_err(|e| SpacesError::Sync(format!("decode listRepoOps body: {e}")))?;
@@ -544,12 +592,7 @@ where
                 continue;
             }
 
-            let Some((head_rev, expected_commitment)) = verified_head_commit else {
-                return Err(SpacesError::Sync(
-                    "final listRepoOps page omitted head commit".into(),
-                ));
-            };
-
+            let (head_rev, expected_commitment) = verified_head_commit;
             let actual_commitment = staged_lt.commitment();
             if actual_commitment != expected_commitment {
                 return Err(SpacesError::SetHashMismatch(
@@ -572,8 +615,8 @@ where
         }
     }
 
-    /// Full repository recovery via `com.atproto.space.getRepo` (`STAR-lite`),
-    /// verifying `Atproto-Space-Mac` FIRST and recomputing `LtHash` over all records.
+    /// Full repository recovery via `com.atproto.space.getRepo` (`STAR` v0.2),
+    /// verifying commit MAC FIRST and recomputing `LtHash` over all records before mutating `state`.
     pub async fn recover_writer_repo_via_star(
         &self,
         space_uri: &str,
@@ -581,7 +624,8 @@ where
         state: &mut WriterSyncState,
         now_sec: u64,
     ) -> Result<SyncOutcome> {
-        let space = SpaceUri::parse(space_uri)?;
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        let canonical_space = space.as_str();
         let writer_doc = self.did_resolver.resolve_did(writer_did, false).await?;
         let pds_endpoint = writer_doc.pds_endpoint()?.to_string();
         let kem_did_key = writer_doc.atproto_kem_did_key.ok_or_else(|| {
@@ -589,44 +633,39 @@ where
         })?;
 
         let encap = encapsulate_p256(&kem_did_key)?;
-        let want_mac = format_want_mac_header(&encap.key_share_did_key, COMMIT_MAC_TYPE)?;
+        let accept_sig = format_accept_signature(MacProfile::Commit, &encap.key_share_did_key)?;
 
         let mut url = Url::parse(&format!("{pds_endpoint}/xrpc/com.atproto.space.getRepo"))
             .map_err(|e| SpacesError::Sync(format!("bad getRepo URL: {e}")))?;
         {
             let mut qp = url.query_pairs_mut();
-            qp.append_pair("space", space_uri);
+            qp.append_pair("space", canonical_space);
             qp.append_pair("repo", writer_did);
         }
 
         let resp = self
             .send_authenticated_get(
-                space_uri,
+                canonical_space,
                 writer_did,
                 url.as_str(),
-                Some(&want_mac),
+                Some(&accept_sig),
                 now_sec,
             )
             .await?;
 
-        let mac_header = resp
-            .headers
-            .get(SPACE_MAC_HEADER_NAME)
-            .ok_or_else(|| SpacesError::MacMismatch("missing Atproto-Space-Mac on getRepo".into()))?
-            .to_str()
-            .map_err(|_| SpacesError::MacMismatch("non-ASCII Atproto-Space-Mac".into()))?;
-
-        let meta = read_star_metadata(&resp.body, space_uri, writer_did)?;
-        // Verify commit MAC BEFORE deserializing record frames or mutating state!
-        verify_commit_mac(
-            &encap.shared_secret,
-            mac_header,
-            space_uri,
-            writer_did,
-            &meta.rev,
-            &meta.data,
-        )?;
-        let parsed = read_star_repo(&resp.body, space_uri, writer_did)?;
+        // Verify commit MAC BEFORE deserializing record frames, and verify LtHash before returning!
+        let parsed =
+            read_star_repo_authenticated(&resp.body, canonical_space, writer_did, |meta| {
+                verify_commit_mac(
+                    &encap.shared_secret,
+                    &encap.key_share_did_key,
+                    &resp.headers,
+                    canonical_space,
+                    writer_did,
+                    &meta.rev,
+                    &meta.data,
+                )
+            })?;
 
         let mut rebuilt_lt = LtHash::empty();
         let mut rebuilt_cids = BTreeMap::new();
@@ -650,12 +689,6 @@ where
         }
 
         let commitment = rebuilt_lt.commitment();
-        if commitment != parsed.data {
-            return Err(SpacesError::SetHashMismatch(
-                "STAR-lite recomputed LtHash commitment does not match metadata data".into(),
-            ));
-        }
-
         let mut deletes = Vec::new();
         for old_path in state.cid_by_path.keys() {
             if !rebuilt_cids.contains_key(old_path) {
@@ -683,7 +716,7 @@ where
         space_uri: &str,
         audience_did: &str,
         url: &str,
-        want_mac: Option<&str>,
+        accept_signature: Option<&str>,
         now_sec: u64,
     ) -> Result<HttpResponse> {
         for attempt in 0..2 {
@@ -693,11 +726,12 @@ where
                 .signed_headers_for_request(space_uri, audience_did, now_sec)
                 .await?;
             let mut headers = signed.to_header_map()?;
-            if let Some(wm) = want_mac {
+            if let Some(accept_sig) = accept_signature {
                 headers.insert(
-                    HeaderName::from_static(SPACE_WANT_MAC_HEADER_NAME),
-                    HeaderValue::from_str(wm)
-                        .map_err(|e| SpacesError::MacMismatch(format!("bad Want-Mac: {e}")))?,
+                    HeaderName::from_static(ACCEPT_SIGNATURE_HEADER),
+                    HeaderValue::from_str(accept_sig).map_err(|e| {
+                        SpacesError::MacMismatch(format!("bad Accept-Signature: {e}"))
+                    })?,
                 );
             }
             let resp = self

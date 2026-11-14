@@ -5,7 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// The policy governing a space, optionally published in the space so that syncers can view a description of the space's policy. Written to the space authority's own repo in the space, and kept in sync with the policy. Only authoritative in the authority's repo.
+/// A published copy of a space's policy. Only authoritative in the space authority's repo.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -17,7 +17,7 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Policy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The current policy governing the space, including its configuration.
+    /// PDSes must support all of the listed policies. Other space hosts may support only some of them, and any host may support policies beyond those listed.
     pub policy: PolicyPolicy<S>,
     #[serde(
         flatten,
@@ -283,7 +283,7 @@ fn lexicon_doc_com_atproto_space_policy() -> jacquard_lexicon::lexicon::LexiconD
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "The policy governing a space, optionally published in the space so that syncers can view a description of the space's policy. Written to the space authority's own repo in the space, and kept in sync with the policy. Only authoritative in the authority's repo.",
+                            "A published copy of a space's policy. Only authoritative in the space authority's repo.",
                         ),
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
@@ -303,7 +303,7 @@ fn lexicon_doc_com_atproto_space_policy() -> jacquard_lexicon::lexicon::LexiconD
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
-                                            "The current policy governing the space, including its configuration.",
+                                            "PDSes must support all of the listed policies. Other space hosts may support only some of them, and any host may support policies beyond those listed.",
                                         ),
                                     ),
                                     refs: vec![

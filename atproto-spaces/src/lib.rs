@@ -1,4 +1,4 @@
-//! ATProto Spaces (`atproto#5187` / Proposal 0016) shared Rust implementation.
+//! ATProto Spaces (`atproto#5187` / November 12, 2026 alpha) shared Rust implementation.
 //!
 //! Designed to compile cleanly on both native targets and `wasm32-unknown-unknown`
 //! with zero `tokio` dependencies.
@@ -15,6 +15,10 @@ pub mod sync_engine;
 pub mod tokens;
 pub mod vectors;
 
+use cid::Cid;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::fmt;
+use std::str::FromStr;
 use thiserror::Error;
 
 /// Unified error type for `atproto-spaces` cryptographic, token, sync, and Space-host operations.
@@ -22,6 +26,9 @@ use thiserror::Error;
 pub enum SpacesError {
     #[error("invalid space URI: {0}")]
     InvalidSpaceUri(String),
+
+    #[error("invalid space blob locator: {0}")]
+    InvalidBlobLocator(String),
 
     #[error("invalid DID: {0}")]
     InvalidDid(String),
@@ -50,6 +57,12 @@ pub enum SpacesError {
     #[error("invalid client attestation: {0}")]
     InvalidClientAttestation(String),
 
+    #[error("registration not confirmed: {0}")]
+    RegistrationNotConfirmed(String),
+
+    #[error("invalid pagination cursor: {0}")]
+    InvalidCursor(String),
+
     #[error("credential revoked")]
     CredentialRevoked,
 
@@ -65,7 +78,7 @@ pub enum SpacesError {
     #[error("forbidden: {0}")]
     Forbidden(String),
 
-    #[error("STAR-lite archive error: {0}")]
+    #[error("STAR archive error: {0}")]
     StarFormat(String),
 
     #[error("DID resolution error: {0}")]
@@ -82,9 +95,38 @@ pub enum SpacesError {
     Sync(String),
 }
 
+impl SpacesError {
+    /// Canonical November 12 `com.atproto.space.*` XRPC error code name.
+    pub fn atproto_error_name(&self) -> &'static str {
+        match self {
+            Self::MacMismatch(_) => "InvalidSpaceMac",
+            Self::BadSpaceSignature(_) | Self::InvalidSpaceCredential(_) => "InvalidSpaceSignature",
+            Self::Forbidden(_) => "AccountNotAuthorized",
+            Self::CredentialRevoked => "CredentialRevoked",
+            Self::SpaceNotFound(_) => "SpaceNotFound",
+            Self::SpaceDeleted(_) => "SpaceDeleted",
+            Self::InvalidDelegationToken(_) => "InvalidDelegationToken",
+            Self::InvalidClientAttestation(_) => "InvalidClientAttestation",
+            Self::RegistrationNotConfirmed(_) => "RegistrationNotConfirmed",
+            Self::FutureRev(_) => "FutureRev",
+            Self::InvalidCursor(_) => "InvalidCursor",
+            Self::InvalidSpaceUri(_)
+            | Self::InvalidBlobLocator(_)
+            | Self::InvalidDid(_)
+            | Self::InvalidDidKey(_)
+            | Self::Kem(_)
+            | Self::SetHashMismatch(_)
+            | Self::StarFormat(_)
+            | Self::DidResolution(_)
+            | Self::Transport { .. }
+            | Self::Sync(_) => "InvalidRequest",
+        }
+    }
+}
+
 pub type Result<T> = std::result::Result<T, SpacesError>;
 
-/// Parsed `at://{authority}/space/{space_type}/{rkey}` Space URI.
+/// Parsed canonical `at://{authority}/space/{space_type}/{rkey}` Space URI.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SpaceUri {
     pub raw: String,
@@ -132,6 +174,28 @@ impl SpaceUri {
         })
     }
 
+    /// Parse a canonical `at://{did}/space/{type}/{skey}` Space URI or normalize hedged
+    /// `at:space/{did}/{type}/{skey}` / `at://space/{did}/{type}/{skey}` forms onto canonical form.
+    pub fn parse_hedged(raw: &str) -> Result<Self> {
+        let rest = if let Some(s) = raw.strip_prefix("at:space/") {
+            Some(s)
+        } else {
+            raw.strip_prefix("at://space/")
+        };
+        if let Some(rest) = rest {
+            let parts: Vec<&str> = rest.split('/').collect();
+            if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
+                return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
+            }
+            return Self::new(parts[0], parts[1], parts[2]);
+        }
+        Self::parse(raw)
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.raw
+    }
+
     /// Canonical `SpaceRecordURI` (`at://{authority}/space/{space_type}/{skey}/{author_did}/{collection}/{rkey}`).
     pub fn record_uri(&self, author_did: &str, collection: &str, rkey: &str) -> Result<String> {
         if !is_valid_did(author_did) || !is_valid_nsid(collection) || !is_valid_rkey(rkey) {
@@ -142,6 +206,136 @@ impl SpaceUri {
         }
         Ok(format!("{}/{author_did}/{collection}/{rkey}", self.raw))
     }
+}
+
+impl fmt::Display for SpaceUri {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.raw)
+    }
+}
+
+impl FromStr for SpaceUri {
+    type Err = SpacesError;
+
+    fn from_str(s: &str) -> Result<Self> {
+        Self::parse(s)
+    }
+}
+
+impl Serialize for SpaceUri {
+    fn serialize<S: Serializer>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error> {
+        serializer.serialize_str(&self.raw)
+    }
+}
+
+impl<'de> Deserialize<'de> for SpaceUri {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
+        let s = String::deserialize(deserializer)?;
+        Self::parse_hedged(&s).map_err(serde::de::Error::custom)
+    }
+}
+
+/// Application-local locator for fetching an encrypted Space blob via `com.atproto.space.getBlob`.
+///
+/// Canonical encoding uses pipe delimiters (`{spaceURI}|{repoDID}|{cid}`). Parsing also accepts
+/// the transitional `{spaceURI}/{repoDID}#{cid}` encoding and hedged `at:space/...` Space URIs.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SpaceBlobLocator {
+    pub space: SpaceUri,
+    pub repo: String,
+    pub cid: Cid,
+}
+
+impl SpaceBlobLocator {
+    pub fn new(space: SpaceUri, repo: impl Into<String>, cid: Cid) -> Result<Self> {
+        let repo = repo.into();
+        if !is_atproto_did(&repo) {
+            return Err(SpacesError::InvalidBlobLocator(format!(
+                "invalid ATProto repo DID in blob locator: {repo}"
+            )));
+        }
+        Ok(Self { space, repo, cid })
+    }
+
+    pub fn parse(raw: &str) -> Result<Self> {
+        if raw.contains('|') {
+            if raw.contains('#') {
+                return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
+            }
+            let parts: Vec<&str> = raw.split('|').collect();
+            if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
+                return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
+            }
+            let space = SpaceUri::parse_hedged(parts[0])
+                .map_err(|_| SpacesError::InvalidBlobLocator(raw.to_string()))?;
+            let repo = parts[1];
+            let cid = parse_canonical_cid(parts[2])
+                .ok_or_else(|| SpacesError::InvalidBlobLocator(raw.to_string()))?;
+            return Self::new(space, repo, cid);
+        }
+
+        let Some((before_hash, raw_cid)) = raw.split_once('#') else {
+            return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
+        };
+        if raw_cid.is_empty() || raw_cid.contains('#') {
+            return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
+        }
+        let Some((raw_space, repo)) = before_hash.rsplit_once('/') else {
+            return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
+        };
+        if raw_space.is_empty() || repo.is_empty() {
+            return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
+        }
+        let space = SpaceUri::parse_hedged(raw_space)
+            .map_err(|_| SpacesError::InvalidBlobLocator(raw.to_string()))?;
+        let cid = parse_canonical_cid(raw_cid)
+            .ok_or_else(|| SpacesError::InvalidBlobLocator(raw.to_string()))?;
+        Self::new(space, repo, cid)
+    }
+
+    pub fn encoded(&self) -> String {
+        format!("{}|{}|{}", self.space.raw, self.repo, self.cid)
+    }
+}
+
+impl fmt::Display for SpaceBlobLocator {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}|{}|{}", self.space.raw, self.repo, self.cid)
+    }
+}
+
+impl FromStr for SpaceBlobLocator {
+    type Err = SpacesError;
+
+    fn from_str(s: &str) -> Result<Self> {
+        Self::parse(s)
+    }
+}
+
+impl Serialize for SpaceBlobLocator {
+    fn serialize<S: Serializer>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error> {
+        serializer.serialize_str(&self.encoded())
+    }
+}
+
+impl<'de> Deserialize<'de> for SpaceBlobLocator {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
+        let s = String::deserialize(deserializer)?;
+        Self::parse(&s).map_err(serde::de::Error::custom)
+    }
+}
+
+fn parse_canonical_cid(raw: &str) -> Option<Cid> {
+    let cid: Cid = raw.parse().ok()?;
+    if cid.to_string() == raw {
+        Some(cid)
+    } else {
+        None
+    }
+}
+
+pub fn is_atproto_did(did: &str) -> bool {
+    is_valid_did(did) && (did.starts_with("did:plc:") || did.starts_with("did:web:"))
 }
 
 pub fn is_valid_did(did: &str) -> bool {

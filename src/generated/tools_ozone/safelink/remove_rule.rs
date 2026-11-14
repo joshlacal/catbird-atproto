@@ -20,6 +20,10 @@ pub struct RemoveRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_by: core::option::Option<jacquard_common::types::string::Did<S>>,
     pub pattern: crate::generated::tools_ozone::safelink::PatternType<S>,
+    /// Source of the rule to remove  Defaults to `"ozone/default"`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_remove_rule_source")]
+    pub source: core::option::Option<S>,
     /// The URL or domain to remove the rule for
     pub url: S,
     #[serde(
@@ -136,6 +140,10 @@ impl jacquard_common::xrpc::XrpcEndpoint for RemoveRuleRequest {
     type Response = RemoveRuleResponse;
 }
 
+fn _default_remove_rule_source<S: jacquard_common::FromStaticStr>() -> ::core::option::Option<S> {
+    Some(S::from_static("ozone/default"))
+}
+
 pub mod remove_rule_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
@@ -191,6 +199,7 @@ pub struct RemoveRuleBuilder<
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<crate::generated::tools_ozone::safelink::PatternType<S>>,
         core::option::Option<S>,
+        core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -214,7 +223,7 @@ impl RemoveRuleBuilder<remove_rule_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         RemoveRuleBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -225,7 +234,7 @@ impl<S: jacquard_common::BosStr> RemoveRuleBuilder<remove_rule_state::Empty, S> 
     pub fn builder() -> Self {
         RemoveRuleBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -282,6 +291,19 @@ where
     }
 }
 
+impl<St: remove_rule_state::State, S: jacquard_common::BosStr> RemoveRuleBuilder<St, S> {
+    /// Set the `source` field (optional)
+    pub fn source(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `source` field to an Option value (optional)
+    pub fn maybe_source(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> RemoveRuleBuilder<St, S>
 where
     St: remove_rule_state::State,
@@ -292,7 +314,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RemoveRuleBuilder<remove_rule_state::SetUrl<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         RemoveRuleBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -313,7 +335,11 @@ where
             comment: self._fields.0,
             created_by: self._fields.1,
             pattern: self._fields.2.unwrap(),
-            url: self._fields.3.unwrap(),
+            source: self
+                ._fields
+                .3
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            url: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -329,7 +355,11 @@ where
             comment: self._fields.0,
             created_by: self._fields.1,
             pattern: self._fields.2.unwrap(),
-            url: self._fields.3.unwrap(),
+            source: self
+                ._fields
+                .3
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            url: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }

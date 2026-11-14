@@ -81,6 +81,12 @@ pub enum LeaveConvoError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// The user has already left the conversation and is not back in (a direct conversation can be restarted by a new message, which allows leaving again).
+    #[serde(rename = "AlreadyLeftConvo")]
+    AlreadyLeftConvo(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// The owner of a group conversation cannot leave before locking the group.
     #[serde(rename = "OwnerCannotLeave")]
     OwnerCannotLeave(
@@ -101,6 +107,13 @@ impl core::fmt::Display for LeaveConvoError {
         match self {
             Self::InvalidConvo(msg) => {
                 write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::AlreadyLeftConvo(msg) => {
+                write!(f, "AlreadyLeftConvo")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

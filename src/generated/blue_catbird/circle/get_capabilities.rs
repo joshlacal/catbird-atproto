@@ -15,6 +15,9 @@
 pub struct GetCapabilitiesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub enabled: bool,
     pub protocol_revision: S,
+    /// Whether this service accepts and serves encrypted Circle posts.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub supports_encrypted_posts: core::option::Option<bool>,
     pub supports_images: bool,
     #[serde(
         flatten,

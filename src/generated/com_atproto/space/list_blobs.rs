@@ -20,8 +20,6 @@ pub struct ListBlobs<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
     pub repo: jacquard_common::types::string::Did<S>,
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub since: core::option::Option<jacquard_common::types::string::Tid>,
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
 
@@ -230,7 +228,6 @@ pub struct ListBlobsBuilder<
         core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
-        core::option::Option<jacquard_common::types::string::Tid>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -255,7 +252,7 @@ impl ListBlobsBuilder<list_blobs_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         ListBlobsBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -266,7 +263,7 @@ impl<S: jacquard_common::BosStr> ListBlobsBuilder<list_blobs_state::Empty, S> {
     pub fn builder() -> Self {
         ListBlobsBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -317,19 +314,6 @@ where
     }
 }
 
-impl<St: list_blobs_state::State, S: jacquard_common::BosStr> ListBlobsBuilder<St, S> {
-    /// Set the `since` field (optional)
-    pub fn since(mut self, value: impl Into<Option<jacquard_common::types::string::Tid>>) -> Self {
-        self._fields.3 = value.into();
-        self
-    }
-    /// Set the `since` field to an Option value (optional)
-    pub fn maybe_since(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
-        self._fields.3 = value;
-        self
-    }
-}
-
 impl<St, S: jacquard_common::BosStr> ListBlobsBuilder<St, S>
 where
     St: list_blobs_state::State,
@@ -340,7 +324,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> ListBlobsBuilder<list_blobs_state::SetSpace<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ListBlobsBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -361,8 +345,7 @@ where
             cursor: self._fields.0,
             limit: self._fields.1,
             repo: self._fields.2.unwrap(),
-            since: self._fields.3,
-            space: self._fields.4.unwrap(),
+            space: self._fields.3.unwrap(),
         }
     }
 }

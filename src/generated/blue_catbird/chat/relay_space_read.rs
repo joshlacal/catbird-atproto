@@ -13,10 +13,13 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct RelaySpaceRead<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Optional RFC 9421 Accept-Signature header requesting Atproto-Space-Commit or Atproto-Space-Record MAC authentication (#atproto_kem did:key share in keyid).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub accept_signature: core::option::Option<S>,
     pub actor_device_id: crate::generated::blue_catbird::chat::DeviceId<S>,
     /// Space credential JWT forwarded in Authorization / Atproto-Space-Credential.
     pub credential: S,
-    /// Read-only com.atproto.space.* NSID (listRepos, getSpace, listRecords, getRecord, listRepoOps, getLatestCommit, getRepo, getBlob).
+    /// Read-only com.atproto.space.* NSID (listWriters, getSpace, listRecords, getRecord, listRepoOps, getLatestCommit, getRepo, getBlob).
     pub nsid: S,
     /// Raw URL-encoded query string without leading '?'.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -398,6 +401,7 @@ pub struct RelaySpaceReadBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<S>,
         core::option::Option<crate::generated::blue_catbird::chat::DeviceId<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
@@ -431,7 +435,7 @@ impl RelaySpaceReadBuilder<relay_space_read_state::Empty, jacquard_common::Defau
     pub fn new() -> Self {
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -442,9 +446,22 @@ impl<S: jacquard_common::BosStr> RelaySpaceReadBuilder<relay_space_read_state::E
     pub fn builder() -> Self {
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: relay_space_read_state::State, S: jacquard_common::BosStr> RelaySpaceReadBuilder<St, S> {
+    /// Set the `acceptSignature` field (optional)
+    pub fn accept_signature(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `acceptSignature` field to an Option value (optional)
+    pub fn maybe_accept_signature(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
+        self
     }
 }
 
@@ -458,7 +475,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::DeviceId<S>>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetActorDeviceId<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -477,7 +494,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetCredential<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -496,7 +513,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetNsid<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -508,12 +525,12 @@ where
 impl<St: relay_space_read_state::State, S: jacquard_common::BosStr> RelaySpaceReadBuilder<St, S> {
     /// Set the `query` field (optional)
     pub fn query(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.3 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `query` field to an Option value (optional)
     pub fn maybe_query(mut self, value: Option<S>) -> Self {
-        self._fields.3 = value;
+        self._fields.4 = value;
         self
     }
 }
@@ -528,7 +545,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetSignature<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -547,7 +564,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetSignatureInput<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -566,7 +583,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetSpaceAudience<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -585,7 +602,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> RelaySpaceReadBuilder<relay_space_read_state::SetTargetDid<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         RelaySpaceReadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -597,12 +614,12 @@ where
 impl<St: relay_space_read_state::State, S: jacquard_common::BosStr> RelaySpaceReadBuilder<St, S> {
     /// Set the `wantMac` field (optional)
     pub fn want_mac(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.8 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `wantMac` field to an Option value (optional)
     pub fn maybe_want_mac(mut self, value: Option<S>) -> Self {
-        self._fields.8 = value;
+        self._fields.9 = value;
         self
     }
 }
@@ -621,15 +638,16 @@ where
     /// Build the final struct.
     pub fn build(self) -> RelaySpaceRead<S> {
         RelaySpaceRead {
-            actor_device_id: self._fields.0.unwrap(),
-            credential: self._fields.1.unwrap(),
-            nsid: self._fields.2.unwrap(),
-            query: self._fields.3,
-            signature: self._fields.4.unwrap(),
-            signature_input: self._fields.5.unwrap(),
-            space_audience: self._fields.6.unwrap(),
-            target_did: self._fields.7.unwrap(),
-            want_mac: self._fields.8,
+            accept_signature: self._fields.0,
+            actor_device_id: self._fields.1.unwrap(),
+            credential: self._fields.2.unwrap(),
+            nsid: self._fields.3.unwrap(),
+            query: self._fields.4,
+            signature: self._fields.5.unwrap(),
+            signature_input: self._fields.6.unwrap(),
+            space_audience: self._fields.7.unwrap(),
+            target_did: self._fields.8.unwrap(),
+            want_mac: self._fields.9,
             extra_data: Default::default(),
         }
     }
@@ -642,15 +660,16 @@ where
         >,
     ) -> RelaySpaceRead<S> {
         RelaySpaceRead {
-            actor_device_id: self._fields.0.unwrap(),
-            credential: self._fields.1.unwrap(),
-            nsid: self._fields.2.unwrap(),
-            query: self._fields.3,
-            signature: self._fields.4.unwrap(),
-            signature_input: self._fields.5.unwrap(),
-            space_audience: self._fields.6.unwrap(),
-            target_did: self._fields.7.unwrap(),
-            want_mac: self._fields.8,
+            accept_signature: self._fields.0,
+            actor_device_id: self._fields.1.unwrap(),
+            credential: self._fields.2.unwrap(),
+            nsid: self._fields.3.unwrap(),
+            query: self._fields.4,
+            signature: self._fields.5.unwrap(),
+            signature_input: self._fields.6.unwrap(),
+            space_audience: self._fields.7.unwrap(),
+            target_did: self._fields.8.unwrap(),
+            want_mac: self._fields.9,
             extra_data: Some(extra_data),
         }
     }

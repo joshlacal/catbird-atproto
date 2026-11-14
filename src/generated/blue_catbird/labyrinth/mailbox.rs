@@ -11,7 +11,7 @@
 
 pub const NSID: &str = "blue.catbird.labyrinth.mailbox";
 pub const KEY_TYPE: &str = "literal:self";
-pub const NAME: &str = "Catbird message backup";
+pub const NAME: &str = "";
 pub const COLLECTIONS: &[&str] = &[
     "blue.catbird.labyrinth.device",
     "blue.catbird.labyrinth.virtualDevice",
@@ -20,4 +20,6 @@ pub const COLLECTIONS: &[&str] = &[
     "blue.catbird.labyrinth.otcSession",
     "blue.catbird.labyrinth.ownerBatch",
     "blue.catbird.labyrinth.attachmentManifest",
+    "blue.catbird.labyrinth.readState",
+    "blue.catbird.labyrinth.circleOwnerState",
 ];

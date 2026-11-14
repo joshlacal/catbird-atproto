@@ -1,20 +1,28 @@
-//! `STAR-lite` (`[0x2a, 0x6c, 0x01, 0x00]`) Space repository archive reader and writer.
+//! November 12 `STAR` v0.2 (`[0x2a, 0x6c, 0x01, 0x00]`) Space repository archive reader and writer.
 //!
-//! Format (`atproto#5187` / `SpaceSTARCodec`):
+//! Format (`atproto#5187` / `SpaceSTAR.swift`):
 //! - 4-byte magic `[0x2a, 0x6c, 0x01, 0x00]`
-//! - LEB128-framed canonical DAG-CBOR metadata map:
+//! - LEB128-framed canonical DAG-CBOR metadata map (`<= 64 KiB`):
 //!   `{"$type": "atproto-space-repo", "ver": 1, "repo": <did>, "space": <uri>, "rev": <tid>, "data": <bytes32>}`
-//! - Zero or more strictly ascending byte-lexicographic `(path_utf8_frame, record_dagcbor_frame)` pairs.
+//! - Zero or more `0x01 || path_utf8_frame (<= 4 KiB) || record_dagcbor_frame (<= 1 MiB)` pairs in
+//!   strictly ascending UTF-8 byte-lexicographic path order
+//! - Terminal `0x00` end control byte with zero trailing bytes.
 
-use crate::lthash::compute_dagcbor_cid;
+use crate::lthash::{compute_dagcbor_cid, compute_record_element_hash, LtHash};
 use crate::{is_valid_nsid, is_valid_rkey, Result, SpacesError};
 use cid::Cid;
 use serde::{Deserialize, Serialize};
 
 pub const STAR_LITE_MAGIC: [u8; 4] = [0x2a, 0x6c, 0x01, 0x00];
 pub const STAR_METADATA_TYPE: &str = "atproto-space-repo";
-pub const MAX_STAR_FRAME_BYTES: usize = 32 * 1024 * 1024;
-pub const MAX_STAR_ARCHIVE_BYTES: usize = 64 * 1024 * 1024;
+pub const STAR_PAIR_CONTROL: u8 = 0x01;
+pub const STAR_END_CONTROL: u8 = 0x00;
+
+pub const MAX_METADATA_BYTES: usize = 64 * 1024;
+pub const MAX_KEY_BYTES: usize = 4 * 1024;
+pub const MAX_RECORD_BYTES: usize = 1_048_576;
+pub const MAX_STAR_FRAME_BYTES: usize = MAX_RECORD_BYTES;
+pub const MAX_STAR_ARCHIVE_BYTES: usize = 128 * 1_048_576;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StarRecordEntry {
@@ -72,7 +80,7 @@ struct StarMetadataOwned {
     data: Vec<u8>,
 }
 
-/// Serialize a canonical `STAR-lite` repository archive.
+/// Serialize a canonical `STAR` v0.2 repository archive.
 /// Entries MUST already be in strictly ascending UTF-8 byte-lexicographic order by `path`.
 pub fn write_star_repo(
     space: &str,
@@ -96,6 +104,11 @@ pub fn write_star_repo(
     };
     let meta_bytes = serde_ipld_dagcbor::to_vec(&meta)
         .map_err(|e| SpacesError::StarFormat(format!("encode STAR metadata: {e}")))?;
+    if meta_bytes.len() > MAX_METADATA_BYTES {
+        return Err(SpacesError::StarFormat(
+            "STAR metadata frame exceeds 64 KiB".into(),
+        ));
+    }
 
     let mut out = Vec::new();
     out.extend_from_slice(&STAR_LITE_MAGIC);
@@ -103,6 +116,16 @@ pub fn write_star_repo(
 
     let mut prev_path: Option<&[u8]> = None;
     for entry in entries {
+        if entry.path.len() > MAX_KEY_BYTES {
+            return Err(SpacesError::StarFormat(format!(
+                "STAR record path exceeds {MAX_KEY_BYTES} bytes"
+            )));
+        }
+        if entry.record_dagcbor.len() > MAX_RECORD_BYTES {
+            return Err(SpacesError::StarFormat(format!(
+                "STAR record value exceeds {MAX_RECORD_BYTES} bytes"
+            )));
+        }
         validate_record_path(&entry.path)?;
         if let Some(prev) = prev_path {
             if entry.path.as_bytes() <= prev {
@@ -115,15 +138,17 @@ pub fn write_star_repo(
         }
         validate_canonical_dagcbor_record(&entry.record_dagcbor)?;
         prev_path = Some(entry.path.as_bytes());
+        out.push(STAR_PAIR_CONTROL);
         write_varint_frame(&mut out, entry.path.as_bytes());
         write_varint_frame(&mut out, &entry.record_dagcbor);
     }
+    out.push(STAR_END_CONTROL);
 
     Ok(out)
 }
 
-/// Parse and validate ONLY the leading `STAR-lite` metadata frame (`<= 64 KiB`) without
-/// deserializing any record frames, allowing callers to verify `Atproto-Space-Mac` FIRST.
+/// Parse and validate ONLY the leading `STAR` metadata frame (`<= 64 KiB`) without
+/// deserializing any record frames, allowing callers to verify commit MAC FIRST.
 pub fn read_star_metadata(
     bytes: &[u8],
     expected_space: &str,
@@ -140,21 +165,14 @@ fn read_star_metadata_with_cursor<'a>(
 ) -> Result<(StarCommitMetadata, &'a [u8])> {
     if bytes.len() < 4 || bytes.len() > MAX_STAR_ARCHIVE_BYTES {
         return Err(SpacesError::StarFormat(
-            "truncated or oversized STAR-lite archive".into(),
+            "truncated or oversized STAR archive".into(),
         ));
     }
     if bytes[..4] != STAR_LITE_MAGIC {
-        return Err(SpacesError::StarFormat(
-            "invalid STAR-lite magic header".into(),
-        ));
+        return Err(SpacesError::StarFormat("invalid STAR magic header".into()));
     }
     let mut cursor = &bytes[4..];
-    let meta_frame = read_varint_frame(&mut cursor)?;
-    if meta_frame.len() > 64 * 1024 {
-        return Err(SpacesError::StarFormat(
-            "STAR-lite metadata frame exceeds 64 KiB".into(),
-        ));
-    }
+    let meta_frame = read_varint_frame(&mut cursor, MAX_METADATA_BYTES)?;
     validate_no_cbor_floats_and_canonical(meta_frame, true)?;
 
     let meta: StarMetadataOwned = serde_ipld_dagcbor::from_slice(meta_frame)
@@ -213,48 +231,82 @@ fn read_star_metadata_with_cursor<'a>(
     ))
 }
 
-/// Parse and structurally validate a `STAR-lite` archive against `(expected_space, expected_repo)`.
-/// Note: Callers MUST verify `Atproto-Space-Mac` (e.g. via `read_star_metadata`) and compare `LtHash` commitment against `parsed.data`!
-pub fn read_star_repo(
+/// Parse, authenticate (via `authenticate` callback BEFORE touching record frames), and
+/// verify `LtHash` commitment of a `STAR` v0.2 archive before exposing any records.
+pub fn read_star_repo_authenticated<F>(
     bytes: &[u8],
     expected_space: &str,
     expected_repo: &str,
-) -> Result<ParsedStarRepo> {
+    authenticate: F,
+) -> Result<ParsedStarRepo>
+where
+    F: FnOnce(&StarCommitMetadata) -> Result<()>,
+{
     let (meta, mut cursor) = read_star_metadata_with_cursor(bytes, expected_space, expected_repo)?;
+    authenticate(&meta)?;
     let data = meta.data;
 
     let mut records = Vec::new();
     let mut prev_path: Option<String> = None;
+    let mut lt = LtHash::empty();
+    let mut saw_end = false;
 
-    while !cursor.is_empty() {
-        let path_bytes = read_varint_frame(&mut cursor)?;
-        if cursor.is_empty() {
-            return Err(SpacesError::StarFormat(
-                "dangling path frame without record frame in STAR-lite".into(),
-            ));
-        }
-        let path = std::str::from_utf8(path_bytes)
-            .map_err(|_| SpacesError::StarFormat("non-UTF-8 record path in STAR-lite".into()))?;
-        let (collection, rkey) = validate_record_path(path)?;
-        if let Some(prev) = &prev_path {
-            if path.as_bytes() <= prev.as_bytes() {
+    while let Some((&control, rest)) = cursor.split_first() {
+        cursor = rest;
+        match control {
+            STAR_END_CONTROL => {
+                if !cursor.is_empty() {
+                    return Err(SpacesError::StarFormat(
+                        "trailing bytes after STAR 0x00 end marker".into(),
+                    ));
+                }
+                saw_end = true;
+                break;
+            }
+            STAR_PAIR_CONTROL => {
+                let path_bytes = read_varint_frame(&mut cursor, MAX_KEY_BYTES)?;
+                let path = std::str::from_utf8(path_bytes)
+                    .map_err(|_| SpacesError::StarFormat("non-UTF-8 record path in STAR".into()))?;
+                let (collection, rkey) = validate_record_path(path)?;
+                if let Some(prev) = &prev_path {
+                    if path.as_bytes() <= prev.as_bytes() {
+                        return Err(SpacesError::StarFormat(format!(
+                            "STAR paths out of strict byte-lexicographic order: {path:?} <= {prev:?}"
+                        )));
+                    }
+                }
+                prev_path = Some(path.to_string());
+
+                let record_bytes = read_varint_frame(&mut cursor, MAX_RECORD_BYTES)?;
+                validate_canonical_dagcbor_record(record_bytes)?;
+                let cid = compute_dagcbor_cid(record_bytes);
+                lt.add(&compute_record_element_hash(collection, rkey, &cid));
+                records.push(VerifiedStarRecord {
+                    path: path.to_string(),
+                    collection: collection.to_string(),
+                    rkey: rkey.to_string(),
+                    cid,
+                    record_dagcbor: record_bytes.to_vec(),
+                });
+            }
+            other => {
                 return Err(SpacesError::StarFormat(format!(
-                    "STAR-lite paths out of strict byte-lexicographic order: {path:?} <= {prev:?}"
+                    "invalid STAR pair/end control byte 0x{other:02x}"
                 )));
             }
         }
-        prev_path = Some(path.to_string());
+    }
 
-        let record_bytes = read_varint_frame(&mut cursor)?;
-        validate_canonical_dagcbor_record(record_bytes)?;
-        let cid = compute_dagcbor_cid(record_bytes);
-        records.push(VerifiedStarRecord {
-            path: path.to_string(),
-            collection: collection.to_string(),
-            rkey: rkey.to_string(),
-            cid,
-            record_dagcbor: record_bytes.to_vec(),
-        });
+    if !saw_end {
+        return Err(SpacesError::StarFormat(
+            "missing terminal 0x00 end marker in STAR archive".into(),
+        ));
+    }
+
+    if lt.commitment() != data {
+        return Err(SpacesError::SetHashMismatch(
+            "STAR archive LtHash commitment does not match metadata data".into(),
+        ));
     }
 
     Ok(ParsedStarRepo {
@@ -264,6 +316,17 @@ pub fn read_star_repo(
         data,
         records,
     })
+}
+
+/// Parse, structurally validate, and verify the `LtHash` commitment of a `STAR` v0.2 archive.
+/// For network responses, prefer `read_star_repo_authenticated` so commit MAC verification runs
+/// before any record frames are parsed.
+pub fn read_star_repo(
+    bytes: &[u8],
+    expected_space: &str,
+    expected_repo: &str,
+) -> Result<ParsedStarRepo> {
+    read_star_repo_authenticated(bytes, expected_space, expected_repo, |_| Ok(()))
 }
 
 fn validate_record_path(path: &str) -> Result<(&str, &str)> {
@@ -344,7 +407,18 @@ fn reject_cbor_floats(val: &ciborium::Value, depth: usize) -> Result<()> {
                     "unsupported CBOR tag {tag} (only CID tag 42 allowed)"
                 )));
             }
-            reject_cbor_floats(inner, depth + 1)
+            let ciborium::Value::Bytes(raw) = inner.as_ref() else {
+                return Err(SpacesError::StarFormat(
+                    "CID tag 42 payload must be a byte string".into(),
+                ));
+            };
+            if raw.first() != Some(&0x00) || Cid::try_from(&raw[1..]).is_err() {
+                return Err(SpacesError::StarFormat(
+                    "CID tag 42 payload must start with 0x00 identity multibase prefix + valid CID"
+                        .into(),
+                ));
+            }
+            Ok(())
         }
         _ => Ok(()),
     }
@@ -366,7 +440,7 @@ fn write_varint_frame(out: &mut Vec<u8>, payload: &[u8]) {
     out.extend_from_slice(payload);
 }
 
-fn read_varint_frame<'a>(cursor: &mut &'a [u8]) -> Result<&'a [u8]> {
+fn read_varint_frame<'a>(cursor: &mut &'a [u8], max_len: usize) -> Result<&'a [u8]> {
     let mut len: usize = 0;
     let mut shift = 0u32;
     let mut idx = 0usize;
@@ -389,15 +463,15 @@ fn read_varint_frame<'a>(cursor: &mut &'a [u8]) -> Result<&'a [u8]> {
         }
         shift += 7;
     }
-    if len > MAX_STAR_FRAME_BYTES {
+    if len > max_len {
         return Err(SpacesError::StarFormat(format!(
-            "STAR-lite frame length {len} exceeds {MAX_STAR_FRAME_BYTES}"
+            "STAR frame length {len} exceeds limit {max_len}"
         )));
     }
     let after_varint = &cursor[idx..];
     if after_varint.len() < len {
         return Err(SpacesError::StarFormat(
-            "STAR-lite frame truncated before declared length".into(),
+            "STAR frame truncated before declared length".into(),
         ));
     }
     let frame = &after_varint[..len];

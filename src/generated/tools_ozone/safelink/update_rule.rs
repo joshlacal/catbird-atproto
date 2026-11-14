@@ -22,6 +22,10 @@ pub struct UpdateRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub created_by: core::option::Option<jacquard_common::types::string::Did<S>>,
     pub pattern: crate::generated::tools_ozone::safelink::PatternType<S>,
     pub reason: crate::generated::tools_ozone::safelink::ReasonType<S>,
+    /// Source of the rule to update  Defaults to `"ozone/default"`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_update_rule_source")]
+    pub source: core::option::Option<S>,
     /// The URL or domain to update the rule for
     pub url: S,
     #[serde(
@@ -78,6 +82,12 @@ pub enum UpdateRuleError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// A rule for this URL/domain is owned by another source
+    #[serde(rename = "RuleSourceConflict")]
+    RuleSourceConflict(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -92,6 +102,13 @@ impl core::fmt::Display for UpdateRuleError {
         match self {
             Self::RuleNotFound(msg) => {
                 write!(f, "RuleNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RuleSourceConflict(msg) => {
+                write!(f, "RuleSourceConflict")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -136,6 +153,10 @@ impl jacquard_common::xrpc::XrpcEndpoint for UpdateRuleRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = UpdateRule<S>;
     type Response = UpdateRuleResponse;
+}
+
+fn _default_update_rule_source<S: jacquard_common::FromStaticStr>() -> ::core::option::Option<S> {
+    Some(S::from_static("ozone/default"))
 }
 
 pub mod update_rule_state {
@@ -225,6 +246,7 @@ pub struct UpdateRuleBuilder<
         core::option::Option<crate::generated::tools_ozone::safelink::PatternType<S>>,
         core::option::Option<crate::generated::tools_ozone::safelink::ReasonType<S>>,
         core::option::Option<S>,
+        core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -248,7 +270,7 @@ impl UpdateRuleBuilder<update_rule_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         UpdateRuleBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -259,7 +281,7 @@ impl<S: jacquard_common::BosStr> UpdateRuleBuilder<update_rule_state::Empty, S> 
     pub fn builder() -> Self {
         UpdateRuleBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -354,6 +376,19 @@ where
     }
 }
 
+impl<St: update_rule_state::State, S: jacquard_common::BosStr> UpdateRuleBuilder<St, S> {
+    /// Set the `source` field (optional)
+    pub fn source(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `source` field to an Option value (optional)
+    pub fn maybe_source(mut self, value: Option<S>) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> UpdateRuleBuilder<St, S>
 where
     St: update_rule_state::State,
@@ -364,7 +399,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> UpdateRuleBuilder<update_rule_state::SetUrl<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         UpdateRuleBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -389,7 +424,11 @@ where
             created_by: self._fields.2,
             pattern: self._fields.3.unwrap(),
             reason: self._fields.4.unwrap(),
-            url: self._fields.5.unwrap(),
+            source: self
+                ._fields
+                .5
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            url: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -407,7 +446,11 @@ where
             created_by: self._fields.2,
             pattern: self._fields.3.unwrap(),
             reason: self._fields.4.unwrap(),
-            url: self._fields.5.unwrap(),
+            source: self
+                ._fields
+                .5
+                .or_else(|| Some(S::from_static("ozone/default"))),
+            url: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }

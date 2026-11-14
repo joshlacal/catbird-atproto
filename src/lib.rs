@@ -10,6 +10,7 @@ extern crate alloc;
     clippy::needless_update,
     clippy::new_ret_no_self,
     clippy::new_without_default,
+    clippy::result_large_err,
     clippy::type_complexity,
     clippy::unit_arg,
     clippy::unnecessary_lazy_evaluations

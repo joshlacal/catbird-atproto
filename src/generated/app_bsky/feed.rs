@@ -207,6 +207,12 @@ pub struct FeedViewPost<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     /// Context provided by feed generator that may be passed back alongside interactions.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub feed_context: core::option::Option<S>,
+    /// The total number of posts in the contiguous OP thread that this post belongs to. Only present when this post is part of the OP thread.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub op_thread_post_count: core::option::Option<i64>,
+    /// The 1-indexed position of this post within the contiguous OP thread. Only present when this post is part of the OP thread.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub op_thread_post_index: core::option::Option<i64>,
     pub post: crate::generated::app_bsky::feed::PostView<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reason: core::option::Option<FeedViewPostReason<S>>,
@@ -1968,6 +1974,22 @@ fn lexicon_doc_app_bsky_feed_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'st
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "opThreadPostCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "opThreadPostIndex",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "post",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
@@ -3393,6 +3415,8 @@ pub struct FeedViewPostBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
         core::option::Option<crate::generated::app_bsky::feed::PostView<S>>,
         core::option::Option<FeedViewPostReason<S>>,
         core::option::Option<crate::generated::app_bsky::feed::ReplyRef<S>>,
@@ -3420,7 +3444,7 @@ impl FeedViewPostBuilder<feed_view_post_state::Empty, jacquard_common::DefaultSt
     pub fn new() -> Self {
         FeedViewPostBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -3431,7 +3455,7 @@ impl<S: jacquard_common::BosStr> FeedViewPostBuilder<feed_view_post_state::Empty
     pub fn builder() -> Self {
         FeedViewPostBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -3450,6 +3474,32 @@ impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBu
     }
 }
 
+impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBuilder<St, S> {
+    /// Set the `opThreadPostCount` field (optional)
+    pub fn op_thread_post_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `opThreadPostCount` field to an Option value (optional)
+    pub fn maybe_op_thread_post_count(mut self, value: Option<i64>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBuilder<St, S> {
+    /// Set the `opThreadPostIndex` field (optional)
+    pub fn op_thread_post_index(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `opThreadPostIndex` field to an Option value (optional)
+    pub fn maybe_op_thread_post_index(mut self, value: Option<i64>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> FeedViewPostBuilder<St, S>
 where
     St: feed_view_post_state::State,
@@ -3460,7 +3510,7 @@ where
         mut self,
         value: impl Into<crate::generated::app_bsky::feed::PostView<S>>,
     ) -> FeedViewPostBuilder<feed_view_post_state::SetPost<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         FeedViewPostBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -3472,12 +3522,12 @@ where
 impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBuilder<St, S> {
     /// Set the `reason` field (optional)
     pub fn reason(mut self, value: impl Into<Option<FeedViewPostReason<S>>>) -> Self {
-        self._fields.2 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `reason` field to an Option value (optional)
     pub fn maybe_reason(mut self, value: Option<FeedViewPostReason<S>>) -> Self {
-        self._fields.2 = value;
+        self._fields.4 = value;
         self
     }
 }
@@ -3488,7 +3538,7 @@ impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBu
         mut self,
         value: impl Into<Option<crate::generated::app_bsky::feed::ReplyRef<S>>>,
     ) -> Self {
-        self._fields.3 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `reply` field to an Option value (optional)
@@ -3496,7 +3546,7 @@ impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBu
         mut self,
         value: Option<crate::generated::app_bsky::feed::ReplyRef<S>>,
     ) -> Self {
-        self._fields.3 = value;
+        self._fields.5 = value;
         self
     }
 }
@@ -3504,12 +3554,12 @@ impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBu
 impl<St: feed_view_post_state::State, S: jacquard_common::BosStr> FeedViewPostBuilder<St, S> {
     /// Set the `reqId` field (optional)
     pub fn req_id(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.4 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `reqId` field to an Option value (optional)
     pub fn maybe_req_id(mut self, value: Option<S>) -> Self {
-        self._fields.4 = value;
+        self._fields.6 = value;
         self
     }
 }
@@ -3523,10 +3573,12 @@ where
     pub fn build(self) -> FeedViewPost<S> {
         FeedViewPost {
             feed_context: self._fields.0,
-            post: self._fields.1.unwrap(),
-            reason: self._fields.2,
-            reply: self._fields.3,
-            req_id: self._fields.4,
+            op_thread_post_count: self._fields.1,
+            op_thread_post_index: self._fields.2,
+            post: self._fields.3.unwrap(),
+            reason: self._fields.4,
+            reply: self._fields.5,
+            req_id: self._fields.6,
             extra_data: Default::default(),
         }
     }
@@ -3540,10 +3592,12 @@ where
     ) -> FeedViewPost<S> {
         FeedViewPost {
             feed_context: self._fields.0,
-            post: self._fields.1.unwrap(),
-            reason: self._fields.2,
-            reply: self._fields.3,
-            req_id: self._fields.4,
+            op_thread_post_count: self._fields.1,
+            op_thread_post_index: self._fields.2,
+            post: self._fields.3.unwrap(),
+            reason: self._fields.4,
+            reply: self._fields.5,
+            req_id: self._fields.6,
             extra_data: Some(extra_data),
         }
     }

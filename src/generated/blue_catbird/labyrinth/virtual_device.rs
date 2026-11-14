@@ -46,6 +46,10 @@ pub struct VirtualDevice<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub last_used_at: core::option::Option<jacquard_common::types::string::Datetime>,
     /// Recovery mechanism this bundle backs.
     pub mechanism: VirtualDeviceMechanism<S>,
+    /// XEdDSA signature by deviceKey over the account DID, vdeviceId, mechanism, and createdAt.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub metadata_sig: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     /// WebAuthn credential id for the PRF wrap.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
@@ -547,6 +551,7 @@ pub struct VirtualDeviceBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -572,6 +577,7 @@ impl VirtualDeviceBuilder<virtual_device_state::Empty, jacquard_common::DefaultS
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -585,6 +591,7 @@ impl<S: jacquard_common::BosStr> VirtualDeviceBuilder<virtual_device_state::Empt
             _state: ::core::marker::PhantomData,
             _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -801,12 +808,31 @@ where
 }
 
 impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceBuilder<St, S> {
+    /// Set the `metadataSig` field (optional)
+    pub fn metadata_sig(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.11 = value.into();
+        self
+    }
+    /// Set the `metadataSig` field to an Option value (optional)
+    pub fn maybe_metadata_sig(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.11 = value;
+        self
+    }
+}
+
+impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceBuilder<St, S> {
     /// Set the `passkeyCredentialId` field (optional)
     pub fn passkey_credential_id(
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.11 = value.into();
+        self._fields.12 = value.into();
         self
     }
     /// Set the `passkeyCredentialId` field to an Option value (optional)
@@ -814,7 +840,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: Option<jacquard_common::deps::bytes::Bytes>,
     ) -> Self {
-        self._fields.11 = value;
+        self._fields.12 = value;
         self
     }
 }
@@ -825,7 +851,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.12 = value.into();
+        self._fields.13 = value.into();
         self
     }
     /// Set the `passkeyWrappedCode` field to an Option value (optional)
@@ -833,7 +859,7 @@ impl<St: virtual_device_state::State, S: jacquard_common::BosStr> VirtualDeviceB
         mut self,
         value: Option<jacquard_common::deps::bytes::Bytes>,
     ) -> Self {
-        self._fields.12 = value;
+        self._fields.13 = value;
         self
     }
 }
@@ -848,7 +874,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> VirtualDeviceBuilder<virtual_device_state::SetVdeviceId<St>, S> {
-        self._fields.13 = ::core::option::Option::Some(value.into());
+        self._fields.14 = ::core::option::Option::Some(value.into());
         VirtualDeviceBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -886,9 +912,10 @@ where
             format_version: self._fields.8.unwrap(),
             last_used_at: self._fields.9,
             mechanism: self._fields.10.unwrap(),
-            passkey_credential_id: self._fields.11,
-            passkey_wrapped_code: self._fields.12,
-            vdevice_id: self._fields.13.unwrap(),
+            metadata_sig: self._fields.11,
+            passkey_credential_id: self._fields.12,
+            passkey_wrapped_code: self._fields.13,
+            vdevice_id: self._fields.14.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -912,9 +939,10 @@ where
             format_version: self._fields.8.unwrap(),
             last_used_at: self._fields.9,
             mechanism: self._fields.10.unwrap(),
-            passkey_credential_id: self._fields.11,
-            passkey_wrapped_code: self._fields.12,
-            vdevice_id: self._fields.13.unwrap(),
+            metadata_sig: self._fields.11,
+            passkey_credential_id: self._fields.12,
+            passkey_wrapped_code: self._fields.13,
+            vdevice_id: self._fields.14.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -1068,6 +1096,16 @@ fn lexicon_doc_blue_catbird_labyrinth_virtualDevice(
                                             "Recovery mechanism this bundle backs.",
                                         ),
                                     ),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "metadataSig",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                    max_length: Some(64usize),
+                                    min_length: Some(64usize),
                                     ..Default::default()
                                 }),
                             );

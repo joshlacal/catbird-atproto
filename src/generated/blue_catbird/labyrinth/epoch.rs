@@ -31,6 +31,13 @@ pub struct Epoch<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub opened_by: jacquard_common::deps::bytes::Bytes,
     pub public: crate::generated::blue_catbird::labyrinth::EpochPublic<S>,
+    /// Canonical sorted deviceKeyPubkey entries evicted up to and including this epoch.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub revocations: core::option::Option<Vec<jacquard_common::deps::bytes::Bytes>>,
+    /// XEdDSA signature by openedBy over the epoch head and sorted revocations list.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub revocations_sig: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     #[serde(
         flatten,
         default,
@@ -109,6 +116,16 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Epo
         lexicon_doc_blue_catbird_labyrinth_epoch()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.revocations {
+            #[allow(unused_comparisons)]
+            if value.len() > 256usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("revocations"),
+                    max: 256usize,
+                    actual: value.len(),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -213,6 +230,8 @@ pub struct EpochBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::labyrinth::EpochPublic<S>>,
+        core::option::Option<Vec<jacquard_common::deps::bytes::Bytes>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -236,7 +255,7 @@ impl EpochBuilder<epoch_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         EpochBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -247,7 +266,7 @@ impl<S: jacquard_common::BosStr> EpochBuilder<epoch_state::Empty, S> {
     pub fn builder() -> Self {
         EpochBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -348,6 +367,44 @@ where
     }
 }
 
+impl<St: epoch_state::State, S: jacquard_common::BosStr> EpochBuilder<St, S> {
+    /// Set the `revocations` field (optional)
+    pub fn revocations(
+        mut self,
+        value: impl Into<Option<Vec<jacquard_common::deps::bytes::Bytes>>>,
+    ) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `revocations` field to an Option value (optional)
+    pub fn maybe_revocations(
+        mut self,
+        value: Option<Vec<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: epoch_state::State, S: jacquard_common::BosStr> EpochBuilder<St, S> {
+    /// Set the `revocationsSig` field (optional)
+    pub fn revocations_sig(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `revocationsSig` field to an Option value (optional)
+    pub fn maybe_revocations_sig(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> EpochBuilder<St, S>
 where
     St: epoch_state::State,
@@ -363,6 +420,8 @@ where
             encrypted_previous_epoch_root_key: self._fields.2,
             opened_by: self._fields.3.unwrap(),
             public: self._fields.4.unwrap(),
+            revocations: self._fields.5,
+            revocations_sig: self._fields.6,
             extra_data: Default::default(),
         }
     }
@@ -380,6 +439,8 @@ where
             encrypted_previous_epoch_root_key: self._fields.2,
             opened_by: self._fields.3.unwrap(),
             public: self._fields.4.unwrap(),
+            revocations: self._fields.5,
+            revocations_sig: self._fields.6,
             extra_data: Some(extra_data),
         }
     }
@@ -458,6 +519,33 @@ fn lexicon_doc_blue_catbird_labyrinth_epoch() -> jacquard_lexicon::lexicon::Lexi
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "blue.catbird.labyrinth.defs#epochPublic",
                                     ),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "revocations",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "Canonical sorted deviceKeyPubkey entries evicted up to and including this epoch.",
+                                        ),
+                                    ),
+                                    items: ::jacquard_lexicon::lexicon::LexArrayItem::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                        ..Default::default()
+                                    }),
+                                    max_length: Some(256usize),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "revocationsSig",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                    max_length: Some(64usize),
+                                    min_length: Some(64usize),
                                     ..Default::default()
                                 }),
                             );

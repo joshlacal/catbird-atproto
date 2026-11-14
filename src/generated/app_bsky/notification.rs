@@ -7,6 +7,7 @@
 
 //! Generated bindings for the `app.bsky.notification` Lexicon namespace/module.
 pub mod declaration;
+pub mod get_grouped_notifications;
 pub mod get_preferences;
 pub mod get_unread_count;
 pub mod list_activity_subscriptions;

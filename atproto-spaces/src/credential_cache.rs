@@ -1,5 +1,6 @@
 //! Ephemeral P-256 Space credential cache (`CredentialCache`).
 //!
+//! - Exchanges single-use delegation JWTs via `com.atproto.space.authorizeSpaceSync`.
 //! - Generates 1 fresh ephemeral `P-256` keypair per minted Space credential.
 //! - Verifies the returned `atproto-space-credential+jwt` signature + `iss`/`sub`/`exp`/`cnf.kid`
 //!   against the Space authority's DID document BEFORE caching (Gate 7).
@@ -11,11 +12,12 @@ use crate::kem::{encode_p256_did_key, P256SecretKey};
 use crate::sync_engine::SpaceTransport;
 use crate::tokens::{verify_space_token, SpaceTokenKind};
 use crate::{Result, SpaceUri, SpacesError};
-use catbird_atproto::com_atproto::space::get_space_credential::{
-    GetSpaceCredential, GetSpaceCredentialOutput,
+use catbird_atproto::com_atproto::space::authorize_space_sync::{
+    AuthorizeSpaceSync, AuthorizeSpaceSyncOutput, Notify,
 };
 use http::{HeaderMap, HeaderValue, Method};
 use jacquard_common::types::aturi::AtSpaceUri;
+use jacquard_common::types::string::UriValue;
 use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
@@ -46,11 +48,18 @@ impl<M: DelegationMinter + ?Sized> DelegationMinter for Arc<M> {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NotifyRegistration {
+    pub endpoint: String,
+    pub token: String,
+}
+
 #[derive(Clone)]
 struct CachedCredential {
     jwt: String,
     ephemeral_key: P256SecretKey,
     expires_at_sec: u64,
+    space_rev: Option<String>,
 }
 
 pub struct CredentialCache<T, R, M> {
@@ -58,6 +67,7 @@ pub struct CredentialCache<T, R, M> {
     did_resolver: R,
     delegation_minter: M,
     client_attestation: Option<String>,
+    notify: Option<NotifyRegistration>,
     entries: RwLock<BTreeMap<String, CachedCredential>>,
 }
 
@@ -73,12 +83,21 @@ where
             did_resolver,
             delegation_minter,
             client_attestation: None,
+            notify: None,
             entries: RwLock::new(BTreeMap::new()),
         }
     }
 
     pub fn with_client_attestation(mut self, jwt: impl Into<String>) -> Self {
         self.client_attestation = Some(jwt.into());
+        self
+    }
+
+    pub fn with_notify(mut self, endpoint: impl Into<String>, token: impl Into<String>) -> Self {
+        self.notify = Some(NotifyRegistration {
+            endpoint: endpoint.into(),
+            token: token.into(),
+        });
         self
     }
 
@@ -89,8 +108,17 @@ where
             .remove(space_uri);
     }
 
+    /// Last `spaceRev` observed during `authorizeSpaceSync` for `space_uri`, if cached.
+    pub fn cached_space_rev(&self, space_uri: &str) -> Option<String> {
+        self.entries
+            .read()
+            .unwrap_or_else(|e| e.into_inner())
+            .get(space_uri)
+            .and_then(|c| c.space_rev.clone())
+    }
+
     /// Obtain signed RFC 9421 request headers for `space_uri` bound to `audience_did`,
-    /// minting and Gate-7-verifying a fresh Space credential if missing or expiring.
+    /// minting and Gate-7-verifying a fresh Space credential via `authorizeSpaceSync` if missing or expiring.
     pub async fn signed_headers_for_request(
         &self,
         space_uri: &str,
@@ -102,16 +130,17 @@ where
     }
 
     async fn get_or_mint(&self, space_uri: &str, now_sec: u64) -> Result<CachedCredential> {
+        let space = SpaceUri::parse_hedged(space_uri)?;
+        let canonical_space = space.as_str();
         {
             let guard = self.entries.read().unwrap_or_else(|e| e.into_inner());
-            if let Some(entry) = guard.get(space_uri) {
+            if let Some(entry) = guard.get(canonical_space) {
                 if now_sec < entry.expires_at_sec {
                     return Ok(entry.clone());
                 }
             }
         }
 
-        let space = SpaceUri::parse(space_uri)?;
         let authority_doc = self
             .did_resolver
             .resolve_did(&space.authority, false)
@@ -123,19 +152,36 @@ where
         let cnf_did_key = encode_p256_did_key(&ephemeral_key.public_key());
         let delegation_jwt = self
             .delegation_minter
-            .mint_delegation_token(space_uri, &space.authority)
+            .mint_delegation_token(canonical_space, &space.authority)
             .await?;
 
-        let req_body = GetSpaceCredential {
-            space: AtSpaceUri::new(jacquard_common::deps::smol_str::SmolStr::from(space_uri))
-                .map_err(|_| SpacesError::InvalidSpaceUri(space_uri.to_string()))?,
-            credential_kid: cnf_did_key.as_str().into(),
+        let notify = match &self.notify {
+            Some(reg) => Some(Notify {
+                endpoint: UriValue::new_owned(reg.endpoint.as_str()).map_err(|_| {
+                    SpacesError::InvalidSpaceCredential(format!(
+                        "invalid notify endpoint URI: {}",
+                        reg.endpoint
+                    ))
+                })?,
+                token: reg.token.as_str().into(),
+                extra_data: None,
+            }),
+            None => None,
+        };
+
+        let req_body = AuthorizeSpaceSync {
+            space: AtSpaceUri::new(jacquard_common::deps::smol_str::SmolStr::from(
+                canonical_space,
+            ))
+            .map_err(|_| SpacesError::InvalidSpaceUri(canonical_space.to_string()))?,
+            credential_key: cnf_did_key.as_str().into(),
             delegation_token: Some(delegation_jwt.as_str().into()),
             client_attestation: self.client_attestation.as_deref().map(Into::into),
+            notify,
             extra_data: None,
         };
         let payload = serde_json::to_vec(&req_body).map_err(|e| {
-            SpacesError::InvalidSpaceCredential(format!("encode getSpaceCredential: {e}"))
+            SpacesError::InvalidSpaceCredential(format!("encode authorizeSpaceSync: {e}"))
         })?;
 
         let mut headers = HeaderMap::new();
@@ -143,7 +189,7 @@ where
             http::header::CONTENT_TYPE,
             HeaderValue::from_static("application/json"),
         );
-        let url = format!("{host_endpoint}/xrpc/com.atproto.space.getSpaceCredential");
+        let url = format!("{host_endpoint}/xrpc/com.atproto.space.authorizeSpaceSync");
         let resp = self
             .transport
             .send_http(Method::POST, &url, &headers, Some(&payload))
@@ -152,10 +198,11 @@ where
             return Err(parse_xrpc_error(resp.status, &resp.body));
         }
 
-        let out: GetSpaceCredentialOutput = serde_json::from_slice(&resp.body).map_err(|e| {
-            SpacesError::InvalidSpaceCredential(format!("decode getSpaceCredential response: {e}"))
+        let out: AuthorizeSpaceSyncOutput = serde_json::from_slice(&resp.body).map_err(|e| {
+            SpacesError::InvalidSpaceCredential(format!("decode authorizeSpaceSync response: {e}"))
         })?;
         let jwt = out.credential.as_str().to_string();
+        let space_rev = out.space_rev.map(|t| t.as_str().to_string());
 
         // Gate 7: Verify Space credential JWT signature + iss/sub/exp/cnf.kid BEFORE caching!
         let verified_claims = verify_space_token(
@@ -166,7 +213,7 @@ where
         )
         .await?;
         if verified_claims.iss != space.authority
-            || verified_claims.sub != space_uri
+            || verified_claims.sub != canonical_space
             || verified_claims.cnf_kid.as_deref() != Some(cnf_did_key.as_str())
         {
             return Err(SpacesError::InvalidSpaceCredential(
@@ -187,11 +234,12 @@ where
             jwt,
             ephemeral_key,
             expires_at_sec: capped_exp,
+            space_rev,
         };
         self.entries
             .write()
             .unwrap_or_else(|e| e.into_inner())
-            .insert(space_uri.to_string(), cached.clone());
+            .insert(canonical_space.to_string(), cached.clone());
         Ok(cached)
     }
 }
@@ -210,15 +258,22 @@ pub(crate) fn parse_xrpc_error(status: u16, body: &[u8]) -> SpacesError {
         .unwrap_or_else(|| format!("HTTP {status}"));
 
     match (status, code.as_deref()) {
-        (401, Some("CredentialRevoked")) | (401, _) => SpacesError::CredentialRevoked,
+        (401, Some("CredentialRevoked")) | (401, _) | (_, Some("CredentialRevoked")) => {
+            SpacesError::CredentialRevoked
+        }
         (_, Some("SpaceNotFound")) => SpacesError::SpaceNotFound(msg),
         (_, Some("SpaceDeleted")) => SpacesError::SpaceDeleted(msg),
         (_, Some("InvalidDelegationToken")) => SpacesError::InvalidDelegationToken(msg),
         (_, Some("InvalidClientAttestation")) => SpacesError::InvalidClientAttestation(msg),
-        (_, Some("BadSpaceMac")) => SpacesError::MacMismatch(msg),
-        (_, Some("BadSpaceSignature")) => SpacesError::BadSpaceSignature(msg),
+        (_, Some("RegistrationNotConfirmed")) => SpacesError::RegistrationNotConfirmed(msg),
+        (_, Some("InvalidCursor")) => SpacesError::InvalidCursor(msg),
+        (_, Some("InvalidSpaceMac")) | (_, Some("BadSpaceMac")) => SpacesError::MacMismatch(msg),
+        (_, Some("InvalidSpaceSignature")) | (_, Some("BadSpaceSignature")) => {
+            SpacesError::BadSpaceSignature(msg)
+        }
         (_, Some("FutureRev")) => SpacesError::FutureRev(msg),
         (403, _)
+        | (_, Some("AccountNotAuthorized"))
         | (_, Some("UserNotAuthorized"))
         | (_, Some("AppNotAuthorized"))
         | (_, Some("NotAuthorized")) => SpacesError::Forbidden(msg),

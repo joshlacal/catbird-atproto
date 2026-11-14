@@ -4,24 +4,25 @@ use atproto_spaces::host::{InMemorySpaceHostBackend, SpaceHost, SpaceRecordPolic
 use atproto_spaces::kem::{decapsulate_p256, encode_p256_did_key, P256SecretKey};
 use atproto_spaces::lthash::{compute_dagcbor_cid, compute_record_element_hash, LtHash};
 use atproto_spaces::mac::{
-    compute_commit_mac, compute_record_mac, format_commit_mac_header, format_record_mac_header,
-    parse_want_mac_header, COMMIT_MAC_TYPE, RECORD_MAC_TYPE, SPACE_MAC_HEADER_NAME,
-    SPACE_WANT_MAC_HEADER_NAME,
+    parse_accept_signature, sign_commit_mac, sign_record_mac, MacProfile, ACCEPT_SIGNATURE_HEADER,
 };
 use atproto_spaces::star::{write_star_repo, StarRecordEntry};
 use atproto_spaces::sync_engine::{
-    HttpResponse, SpaceSyncEngine, SpaceTransport, SyncMode, WriterSyncState,
+    HttpResponse, SpaceSyncEngine, SpaceTransport, SyncMode, WriterSyncState, WriterUpdateEntry,
 };
 use atproto_spaces::tokens::{mint_space_token, SpaceSigningKey, SpaceTokenClaims, SpaceTokenKind};
 use atproto_spaces::SpacesError;
-use catbird_atproto::com_atproto::space::get_space_credential::GetSpaceCredential;
-use catbird_atproto::com_atproto::space::list_repos::ListRepos;
-use catbird_atproto::com_atproto::space::notify_write::NotifyWrite;
+use catbird_atproto::com_atproto::space::authorize_space_sync::{AuthorizeSpaceSync, Notify};
+use catbird_atproto::com_atproto::space::confirm_registration::ConfirmRegistrationOutput;
+use catbird_atproto::com_atproto::space::list_writers::ListWriters;
+use catbird_atproto::com_atproto::space::notify_repo_update::NotifyRepoUpdate;
+use catbird_atproto::com_atproto::space::notify_space_update::NotifySpaceUpdateUpdate;
+use catbird_atproto::com_atproto::space::remove_writer::RemoveWriter;
 use http::{HeaderMap, HeaderValue, Method};
 use jacquard_common::deps::bytes::Bytes;
 use jacquard_common::deps::smol_str::SmolStr;
 use jacquard_common::types::aturi::AtSpaceUri;
-use jacquard_common::types::string::{Did, Tid};
+use jacquard_common::types::string::{Did, Tid, UriValue};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::rc::Rc;
@@ -73,6 +74,7 @@ struct MockRepoHost {
     latest_rev: String,
     tamper_next_list_ops_value: bool,
     tamper_next_record_mac: bool,
+    omit_next_list_ops_commit: bool,
 }
 
 #[derive(Clone)]
@@ -95,6 +97,7 @@ impl MockRepoHost {
             latest_rev: "3l2aaaaaaaaaa".to_string(),
             tamper_next_list_ops_value: false,
             tamper_next_record_mac: false,
+            omit_next_list_ops_commit: false,
         }
     }
 
@@ -167,12 +170,12 @@ impl SpaceTransport for MockNetwork {
         let query: BTreeMap<String, String> = parsed.query_pairs().into_owned().collect();
 
         match (method, path) {
-            (Method::POST, "/xrpc/com.atproto.space.getSpaceCredential") => {
-                let req: GetSpaceCredential =
+            (Method::POST, "/xrpc/com.atproto.space.authorizeSpaceSync") => {
+                let req: AuthorizeSpaceSync =
                     serde_json::from_slice(body.unwrap_or_default()).unwrap();
                 match self
                     .space_host
-                    .handle_get_space_credential(req, self.now_sec)
+                    .handle_authorize_space_sync(req, self.now_sec)
                     .await
                 {
                     Ok(out) => Ok(HttpResponse {
@@ -183,8 +186,8 @@ impl SpaceTransport for MockNetwork {
                     Err(err) => Ok(error_to_http(err)),
                 }
             }
-            (Method::GET, "/xrpc/com.atproto.space.listRepos") => {
-                let req = ListRepos {
+            (Method::GET, "/xrpc/com.atproto.space.listWriters") => {
+                let req = ListWriters {
                     space: AtSpaceUri::new(SmolStr::from(query.get("space").unwrap().as_str()))
                         .unwrap(),
                     cursor: query.get("cursor").map(|s| s.as_str().into()),
@@ -192,7 +195,7 @@ impl SpaceTransport for MockNetwork {
                 };
                 match self
                     .space_host
-                    .handle_list_repos(headers, req, self.now_sec)
+                    .handle_list_writers(headers, req, self.now_sec)
                     .await
                 {
                     Ok(out) => Ok(HttpResponse {
@@ -270,12 +273,12 @@ impl SpaceTransport for MockNetwork {
                     .verify_presentation(headers, &space, &repo_did, self.now_sec)
                     .await?;
 
-                let want_mac = headers
-                    .get(SPACE_WANT_MAC_HEADER_NAME)
+                let accept_sig = headers
+                    .get(ACCEPT_SIGNATURE_HEADER)
                     .unwrap()
                     .to_str()
                     .unwrap();
-                let key_share = parse_want_mac_header(want_mac, RECORD_MAC_TYPE)?;
+                let (label, key_share) = parse_accept_signature(accept_sig, MacProfile::Record)?;
 
                 let mut repos = self.repos.borrow_mut();
                 let host = repos.get_mut(&repo_did).unwrap();
@@ -286,18 +289,15 @@ impl SpaceTransport for MockNetwork {
                     .clone();
                 let cid = compute_dagcbor_cid(&rec.dagcbor);
                 let uri = format!("{space}/{repo_did}/{collection}/{rkey}");
-                let secret = decapsulate_p256(&host.kem_secret, &key_share)?;
-                let mut mac = compute_record_mac(&secret, &uri, &cid.to_bytes())?;
+                let mut secret = decapsulate_p256(&host.kem_secret, &key_share)?;
                 if host.tamper_next_record_mac {
                     host.tamper_next_record_mac = false;
-                    mac[0] ^= 0xff;
+                    secret[0] ^= 0xff;
                 }
+                let (mac_headers, _) =
+                    sign_record_mac(&secret, &key_share, &label, &uri, &cid.to_string())?;
                 let val: serde_json::Value = serde_ipld_dagcbor::from_slice(&rec.dagcbor).unwrap();
-                let mut resp_headers = HeaderMap::new();
-                resp_headers.insert(
-                    SPACE_MAC_HEADER_NAME,
-                    HeaderValue::from_str(&format_record_mac_header(&mac)).unwrap(),
-                );
+                let resp_headers = mac_headers.to_header_map()?;
                 Ok(HttpResponse {
                     status: 200,
                     headers: resp_headers,
@@ -317,17 +317,19 @@ impl SpaceTransport for MockNetwork {
                     .verify_presentation(headers, &space, &repo_did, self.now_sec)
                     .await?;
 
-                let want_mac = headers
-                    .get(SPACE_WANT_MAC_HEADER_NAME)
+                let accept_sig = headers
+                    .get(ACCEPT_SIGNATURE_HEADER)
                     .unwrap()
                     .to_str()
                     .unwrap();
-                let key_share = parse_want_mac_header(want_mac, COMMIT_MAC_TYPE)?;
+                let (label, key_share) = parse_accept_signature(accept_sig, MacProfile::Commit)?;
 
                 let mut repos = self.repos.borrow_mut();
                 let host = repos.get_mut(&repo_did).unwrap();
                 let tamper = host.tamper_next_list_ops_value;
                 host.tamper_next_list_ops_value = false;
+                let omit_commit = host.omit_next_list_ops_commit;
+                host.omit_next_list_ops_commit = false;
 
                 let ops_json: Vec<serde_json::Value> = host
                     .oplog
@@ -359,18 +361,24 @@ impl SpaceTransport for MockNetwork {
 
                 let data = host.current_commitment();
                 let secret = decapsulate_p256(&host.kem_secret, &key_share)?;
-                let mac = compute_commit_mac(&secret, &space, &repo_did, &host.latest_rev, &data)?;
-                let mut resp_headers = HeaderMap::new();
-                resp_headers.insert(
-                    SPACE_MAC_HEADER_NAME,
-                    HeaderValue::from_str(&format_commit_mac_header(&mac)).unwrap(),
-                );
+                let (mac_headers, _) = sign_commit_mac(
+                    &secret,
+                    &key_share,
+                    &label,
+                    &space,
+                    &repo_did,
+                    &host.latest_rev,
+                    &data,
+                )?;
+                let mut resp_headers = mac_headers.to_header_map()?;
                 let data_b64 =
                     base64::Engine::encode(&base64::engine::general_purpose::STANDARD, data);
-                Ok(HttpResponse {
-                    status: 200,
-                    headers: resp_headers,
-                    body: serde_json::to_vec(&serde_json::json!({
+                let payload = if omit_commit {
+                    resp_headers
+                        .insert("content-type", HeaderValue::from_static("application/json"));
+                    serde_json::json!({ "ops": ops_json })
+                } else {
+                    serde_json::json!({
                         "ops": ops_json,
                         "commit": {
                             "$type": "com.atproto.space.defs#commit",
@@ -380,8 +388,12 @@ impl SpaceTransport for MockNetwork {
                             "rev": host.latest_rev,
                             "data": { "$bytes": data_b64 },
                         }
-                    }))
-                    .unwrap(),
+                    })
+                };
+                Ok(HttpResponse {
+                    status: 200,
+                    headers: resp_headers,
+                    body: serde_json::to_vec(&payload).unwrap(),
                 })
             }
             (Method::GET, "/xrpc/com.atproto.space.getRepo") => {
@@ -391,12 +403,12 @@ impl SpaceTransport for MockNetwork {
                     .verify_presentation(headers, &space, &repo_did, self.now_sec)
                     .await?;
 
-                let want_mac = headers
-                    .get(SPACE_WANT_MAC_HEADER_NAME)
+                let accept_sig = headers
+                    .get(ACCEPT_SIGNATURE_HEADER)
                     .unwrap()
                     .to_str()
                     .unwrap();
-                let key_share = parse_want_mac_header(want_mac, COMMIT_MAC_TYPE)?;
+                let (label, key_share) = parse_accept_signature(accept_sig, MacProfile::Commit)?;
 
                 let repos = self.repos.borrow();
                 let host = repos.get(&repo_did).unwrap();
@@ -414,15 +426,18 @@ impl SpaceTransport for MockNetwork {
                     write_star_repo(&space, &repo_did, &host.latest_rev, &data, &entries)?;
 
                 let secret = decapsulate_p256(&host.kem_secret, &key_share)?;
-                let mac = compute_commit_mac(&secret, &space, &repo_did, &host.latest_rev, &data)?;
-                let mut resp_headers = HeaderMap::new();
-                resp_headers.insert(
-                    SPACE_MAC_HEADER_NAME,
-                    HeaderValue::from_str(&format_commit_mac_header(&mac)).unwrap(),
-                );
+                let (mac_headers, _) = sign_commit_mac(
+                    &secret,
+                    &key_share,
+                    &label,
+                    &space,
+                    &repo_did,
+                    &host.latest_rev,
+                    &data,
+                )?;
                 Ok(HttpResponse {
                     status: 200,
-                    headers: resp_headers,
+                    headers: mac_headers.to_header_map()?,
                     body: star_bytes,
                 })
             }
@@ -432,21 +447,18 @@ impl SpaceTransport for MockNetwork {
 }
 
 fn error_to_http(err: SpacesError) -> HttpResponse {
-    let (status, code) = match &err {
-        SpacesError::InvalidDelegationToken(_) => (400, "InvalidDelegationToken"),
-        SpacesError::InvalidClientAttestation(_) => (400, "InvalidClientAttestation"),
-        SpacesError::SpaceNotFound(_) => (404, "SpaceNotFound"),
-        SpacesError::SpaceDeleted(_) => (410, "SpaceDeleted"),
-        SpacesError::Forbidden(_) => (403, "UserNotAuthorized"),
-        SpacesError::CredentialRevoked => (401, "CredentialRevoked"),
-        SpacesError::FutureRev(_) => (400, "FutureRev"),
-        _ => (400, "InvalidRequest"),
+    let status = match &err {
+        SpacesError::SpaceNotFound(_) => 404,
+        SpacesError::SpaceDeleted(_) => 410,
+        SpacesError::Forbidden(_) => 403,
+        SpacesError::CredentialRevoked => 401,
+        _ => 400,
     };
     HttpResponse {
         status,
         headers: HeaderMap::new(),
         body: serde_json::to_vec(&serde_json::json!({
-            "error": code,
+            "error": err.atproto_error_name(),
             "message": err.to_string(),
         }))
         .unwrap(),
@@ -454,13 +466,38 @@ fn error_to_http(err: SpacesError) -> HttpResponse {
 }
 
 #[test]
-fn delegation_replay_is_rejected_with_invalid_delegation_token() {
+fn delegation_replay_and_confirm_registration_enforced_in_authorize_space_sync() {
     pollster_block_on(async {
         let now_sec = 1_762_000_000u64;
         let authority_did = "did:web:mls.catbird.blue";
         let alice_did = "did:plc:alice00000000000000000000";
         let space_uri =
             "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11";
+
+        let confirm_req = SpaceHost::<InMemorySpaceHostBackend>::build_confirm_registration(
+            space_uri,
+            "secret-token",
+            "challenge-xyz",
+        )
+        .unwrap();
+        SpaceHost::<InMemorySpaceHostBackend>::verify_confirm_registration_response(
+            "challenge-xyz",
+            &ConfirmRegistrationOutput {
+                challenge: confirm_req.challenge,
+                extra_data: None,
+            },
+        )
+        .expect("matching challenge verifies");
+        assert!(matches!(
+            SpaceHost::<InMemorySpaceHostBackend>::verify_confirm_registration_response(
+                "challenge-xyz",
+                &ConfirmRegistrationOutput {
+                    challenge: "wrong".into(),
+                    extra_data: None,
+                },
+            ),
+            Err(SpacesError::RegistrationNotConfirmed(_))
+        ));
 
         let authority_sk = SpaceSigningKey::random_p256();
         let alice_sk = SpaceSigningKey::random_p256();
@@ -490,7 +527,7 @@ fn delegation_replay_is_rejected_with_invalid_delegation_token() {
         let space_host = Rc::new(SpaceHost::new(
             authority_did.to_string(),
             authority_sk,
-            did_resolver.clone(),
+            did_resolver,
             backend,
         ));
 
@@ -505,35 +542,36 @@ fn delegation_replay_is_rejected_with_invalid_delegation_token() {
             .await
             .unwrap();
         let eph = P256SecretKey::random(&mut rand::rngs::OsRng);
-        let req = GetSpaceCredential {
+        let req = AuthorizeSpaceSync {
             space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
-            credential_kid: encode_p256_did_key(&eph.public_key()).into(),
+            credential_key: encode_p256_did_key(&eph.public_key()).into(),
             delegation_token: Some(delegation_jwt.as_str().into()),
             client_attestation: None,
+            notify: Some(Notify {
+                endpoint: UriValue::new_owned("https://syncer.catbird.blue").unwrap(),
+                token: "syncer-token-01".into(),
+                extra_data: None,
+            }),
             extra_data: None,
         };
 
-        // First exchange succeeds
         let minted = space_host
-            .handle_get_space_credential(req.clone(), now_sec)
+            .handle_authorize_space_sync(req.clone(), now_sec)
             .await
             .expect("first delegation exchange must succeed");
         assert!(!minted.credential.as_str().is_empty());
+        assert!(minted.space_rev.is_none());
 
-        // Replay of the exact same delegation jti MUST fail with InvalidDelegationToken
         let replay_err = space_host
-            .handle_get_space_credential(req, now_sec + 1)
+            .handle_authorize_space_sync(req, now_sec + 1)
             .await
             .expect_err("replayed delegation jti must fail");
-        assert!(
-            matches!(replay_err, SpacesError::InvalidDelegationToken(_)),
-            "expected InvalidDelegationToken, got {replay_err:?}"
-        );
+        assert!(matches!(replay_err, SpacesError::InvalidDelegationToken(_)));
     });
 }
 
 #[test]
-fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revocation() {
+fn nov12_cold_open_incremental_sync_notify_fanout_writer_removal_and_star_recovery() {
     pollster_block_on(async {
         let now_sec = 1_762_000_000u64;
         let authority_did = "did:web:mls.catbird.blue";
@@ -597,40 +635,6 @@ fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revoc
             serde_json::json!({ "$type": "blue.catbird.labyrinth.batch", "seq": 1 }),
         );
 
-        // Both Alice and Bob notifyWrite to SpaceHost
-        space_host
-            .handle_notify_write(
-                alice_did,
-                NotifyWrite {
-                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
-                    repo: Did::new(SmolStr::from(alice_did)).unwrap(),
-                    repo_rev: Tid::new("3l2aaaaaaaaab").unwrap(),
-                    data: Bytes::copy_from_slice(&commit_1),
-                    prev_space_rev: None,
-                    space_rev: None,
-                    extra_data: None,
-                },
-                now_sec,
-            )
-            .await
-            .expect("alice notifyWrite 1");
-        space_host
-            .handle_notify_write(
-                bob_did,
-                NotifyWrite {
-                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
-                    repo: Did::new(SmolStr::from(bob_did)).unwrap(),
-                    repo_rev: Tid::new("3l2aaaaaaaaac").unwrap(),
-                    data: Bytes::copy_from_slice(&bob_commit_1),
-                    prev_space_rev: None,
-                    space_rev: None,
-                    extra_data: None,
-                },
-                now_sec,
-            )
-            .await
-            .expect("bob notifyWrite 1");
-
         let mut repo_map = BTreeMap::new();
         repo_map.insert(alice_did.to_string(), alice_repo);
         repo_map.insert(bob_did.to_string(), bob_repo);
@@ -642,34 +646,77 @@ fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revoc
             now_sec,
         });
 
-        // Bob sets up CredentialCache + SpaceSyncEngine to read Alice's repo in the Space
         let bob_minter = Rc::new(StaticDelegationMinter {
             user_did: bob_did.to_string(),
             user_signing_key: bob_sk,
             fixed_jti: None,
             now_sec,
         });
-        let bob_cred_cache = Rc::new(CredentialCache::new(
-            network.clone(),
-            did_resolver.clone(),
-            bob_minter,
-        ));
+        let bob_cred_cache = Rc::new(
+            CredentialCache::new(network.clone(), did_resolver.clone(), bob_minter)
+                .with_notify("https://syncer.catbird.blue", "bob-notify-token"),
+        );
         let sync_engine = SpaceSyncEngine::new(
             network.clone(),
             did_resolver.clone(),
             bob_cred_cache.clone(),
         );
 
-        // 1. listRepos shows both Alice and Bob in ascending spaceRev order
+        // Trigger authorizeSpaceSync with inline notify registration before writes
+        let (initial_writers, _) = sync_engine
+            .list_writers(space_uri, None, Some(100), now_sec)
+            .await
+            .unwrap();
+        assert!(initial_writers.is_empty());
+
+        // Both Alice and Bob notifyRepoUpdate to SpaceHost -> Bob's notify endpoint gets #repoWrite
+        let fanout_1 = space_host
+            .handle_notify_repo_update(
+                alice_did,
+                NotifyRepoUpdate {
+                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
+                    repo: Did::new(SmolStr::from(alice_did)).unwrap(),
+                    repo_rev: Tid::new("3l2aaaaaaaaab").unwrap(),
+                    data: Bytes::copy_from_slice(&commit_1),
+                    extra_data: None,
+                },
+                now_sec,
+            )
+            .await
+            .expect("alice notifyRepoUpdate 1");
+        assert_eq!(fanout_1.len(), 1);
+        assert_eq!(fanout_1[0].0, "https://syncer.catbird.blue");
+        assert_eq!(fanout_1[0].1.token.as_str(), "bob-notify-token");
+        assert!(matches!(
+            fanout_1[0].1.update,
+            NotifySpaceUpdateUpdate::RepoWrite(_)
+        ));
+
+        space_host
+            .handle_notify_repo_update(
+                bob_did,
+                NotifyRepoUpdate {
+                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
+                    repo: Did::new(SmolStr::from(bob_did)).unwrap(),
+                    repo_rev: Tid::new("3l2aaaaaaaaac").unwrap(),
+                    data: Bytes::copy_from_slice(&bob_commit_1),
+                    extra_data: None,
+                },
+                now_sec,
+            )
+            .await
+            .expect("bob notifyRepoUpdate 1");
+
+        // 1. listWriters shows both Alice and Bob in ascending spaceRev order
         let listed = sync_engine
-            .list_repos(space_uri, None, Some(100), now_sec)
+            .list_active_writers(space_uri, None, Some(100), now_sec)
             .await
             .unwrap();
         assert_eq!(listed.len(), 2);
         assert_eq!(listed[0].did, alice_did);
         assert_eq!(listed[1].did, bob_did);
 
-        // 2. Cold-open newest record from Alice with record MAC check
+        // 2. Cold-open newest record from Alice with structured record MAC check
         let cold_records = sync_engine
             .fetch_newest_records_verified(
                 space_uri,
@@ -699,13 +746,23 @@ fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revoc
             )
             .await
             .expect_err("tampered record MAC must be rejected");
-        assert!(
-            matches!(bad_mac, SpacesError::MacMismatch(_)),
-            "got {bad_mac:?}"
-        );
+        assert!(matches!(bad_mac, SpacesError::MacMismatch(_)));
 
-        // 3. Initial sync_writer_repo via listRepoOps (since = None -> incremental from empty LtHash)
+        // Omitting commit on listRepoOps MUST fail closed with MacMismatch!
+        repos
+            .borrow_mut()
+            .get_mut(alice_did)
+            .unwrap()
+            .omit_next_list_ops_commit = true;
         let mut alice_state = WriterSyncState::empty();
+        assert!(matches!(
+            sync_engine
+                .sync_writer_repo(space_uri, alice_did, &mut alice_state, false, now_sec)
+                .await,
+            Err(SpacesError::MacMismatch(_))
+        ));
+
+        // 3. Initial sync_writer_repo via listRepoOps
         let sync_1 = sync_engine
             .sync_writer_repo(space_uri, alice_did, &mut alice_state, false, now_sec)
             .await
@@ -723,8 +780,7 @@ fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revoc
             serde_json::json!({ "$type": "blue.catbird.labyrinth.batch", "seq": 2 }),
         );
 
-        // Tamper next listRepoOps value (so record bytes do not match op.cid / LtHash commitment):
-        // With allow_star_recovery = false, MUST fail with SetHashMismatch and leave alice_state untouched!
+        // Tamper next listRepoOps value: fails with SetHashMismatch when allow_star_recovery = false
         repos
             .borrow_mut()
             .get_mut(alice_did)
@@ -734,17 +790,10 @@ fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revoc
             .sync_writer_repo(space_uri, alice_did, &mut alice_state, false, now_sec)
             .await
             .expect_err("tampered record value must fail");
-        assert!(
-            matches!(tamper_err, SpacesError::SetHashMismatch(_)),
-            "expected SetHashMismatch, got {tamper_err:?}"
-        );
-        assert_eq!(
-            alice_state.latest_rev.as_deref(),
-            Some("3l2aaaaaaaaab"),
-            "failed sync must not mutate caller WriterSyncState"
-        );
+        assert!(matches!(tamper_err, SpacesError::SetHashMismatch(_)));
+        assert_eq!(alice_state.latest_rev.as_deref(), Some("3l2aaaaaaaaab"));
 
-        // With allow_star_recovery = true, tampered listRepoOps automatically recovers via getRepo STAR-lite!
+        // With allow_star_recovery = true, tampered listRepoOps automatically recovers via getRepo STAR v0.2!
         repos
             .borrow_mut()
             .get_mut(alice_did)
@@ -753,14 +802,14 @@ fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revoc
         let recovered = sync_engine
             .sync_writer_repo(space_uri, alice_did, &mut alice_state, true, now_sec)
             .await
-            .expect("STAR-lite fallback recovery must succeed");
+            .expect("STAR v0.2 fallback recovery must succeed");
         assert_eq!(recovered.mode, SyncMode::StarRecovery);
         assert_eq!(recovered.latest_rev, "3l2aaaaaaaaaf");
         assert_eq!(recovered.upserts.len(), 2);
         assert_eq!(alice_state.lt_hash.commitment(), commit_2);
 
-        // 4. Removing Bob from Space: build_notify_credential_revoked lists Bob's active credential jti
-        // and targets every writer in listRepos!
+        // 4. Removing Bob's writer repo emits #repoRemoved in both notifySpaceUpdate and listWriters,
+        // and revoke_user_credentials_and_build_notice emits NotifyCredentialsRevoked!
         let (revocation, writer_targets) = space_host
             .revoke_user_credentials_and_build_notice(space_uri, bob_did, now_sec)
             .expect("build revocation notice");
@@ -769,6 +818,37 @@ fn full_cold_open_incremental_sync_tamper_rejection_and_star_recovery_plus_revoc
             writer_targets,
             vec![alice_did.to_string(), bob_did.to_string()]
         );
+
+        let remove_fanout = space_host
+            .handle_remove_writer(
+                authority_did,
+                RemoveWriter {
+                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
+                    repo: Did::new(SmolStr::from(bob_did)).unwrap(),
+                    extra_data: None,
+                },
+                now_sec,
+            )
+            .await
+            .expect("removeWriter");
+        assert!(matches!(
+            remove_fanout[0].1.update,
+            NotifySpaceUpdateUpdate::RepoRemoved(_)
+        ));
+
+        // Bob's cached credential was revoked -> CredentialCache evicts on 401 and mints fresh credential
+        // (since Bob is still in InMemorySpaceHostBackend.members until remove_member is called), allowing
+        // us to inspect listWriters's #repoRemoved tombstone!
+        let (all_events, _) = sync_engine
+            .list_writers(space_uri, None, Some(100), now_sec)
+            .await
+            .unwrap();
+        assert_eq!(all_events.len(), 2);
+        assert!(matches!(all_events[0], WriterUpdateEntry::Write(_)));
+        assert!(matches!(
+            &all_events[1],
+            WriterUpdateEntry::Removed { did, .. } if did == bob_did
+        ));
     });
 }
 

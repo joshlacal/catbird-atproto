@@ -7,13 +7,17 @@
 
 //! Generated bindings for the `blue.catbird.circle` Lexicon namespace/module.
 pub mod activate_circle;
+pub mod encrypted;
 pub mod get_capabilities;
 pub mod get_feed;
+pub mod get_keys;
 pub mod get_media;
 pub mod get_post_thread;
+pub mod key;
 pub mod list_circles;
 pub mod list_notifications;
 pub mod metadata;
+pub mod post;
 pub mod report_record;
 pub mod update_preferences;
 
@@ -27,6 +31,9 @@ pub mod update_preferences;
 pub struct CircleSummary<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// Stable Circle identity, independent of the Space key, so a Circle remains recognizable across a Space migration.
     pub circle_id: jacquard_common::types::string::Tid,
+    /// Latest content-key version known for an encrypted Circle; absent for plaintext Circles.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub latest_key_version: core::option::Option<i64>,
     /// Number of members on the owner's PDS member list. The member list itself is owner-only and is read from the owner's PDS, not from this service.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub member_count: core::option::Option<i64>,
@@ -56,9 +63,42 @@ pub struct CircleSummary<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
+pub struct EncryptedPostView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub indexed_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub like_count: core::option::Option<i64>,
+    pub record: crate::generated::blue_catbird::circle::post::Post<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reply_count: core::option::Option<i64>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub viewer: core::option::Option<crate::generated::app_bsky::feed::ViewerState<S>>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_encrypted_post_view_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
 pub struct FeedItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub circle: crate::generated::blue_catbird::circle::CircleSummary<S>,
-    pub post: crate::generated::app_bsky::feed::FeedViewPost<S>,
+    pub post: FeedItemPost<S>,
     #[serde(
         flatten,
         default,
@@ -71,6 +111,21 @@ pub struct FeedItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum FeedItemPost<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.feed.defs#feedViewPost")]
+    FeedViewPost(Box<crate::generated::app_bsky::feed::FeedViewPost<S>>),
+    #[serde(rename = "blue.catbird.circle.defs#encryptedPostView")]
+    EncryptedPostView(Box<crate::generated::blue_catbird::circle::EncryptedPostView<S>>),
 }
 
 #[derive(
@@ -197,6 +252,17 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Cir
         lexicon_doc_blue_catbird_circle_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.latest_key_version {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "latest_key_version",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
         if let Some(ref value) = self.member_count {
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
@@ -225,6 +291,39 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Cir
                     path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EncryptedPostView<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.circle.defs"
+    }
+    fn def_name() -> &'static str {
+        "encryptedPostView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_circle_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.like_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("like_count"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.reply_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("reply_count"),
+                    min: 0i64,
+                    actual: *value,
                 });
             }
         }
@@ -391,6 +490,7 @@ pub struct CircleSummaryBuilder<
     _fields: (
         core::option::Option<jacquard_common::types::string::Tid>,
         core::option::Option<i64>,
+        core::option::Option<i64>,
         core::option::Option<bool>,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
@@ -418,7 +518,7 @@ impl CircleSummaryBuilder<circle_summary_state::Empty, jacquard_common::DefaultS
     pub fn new() -> Self {
         CircleSummaryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -429,7 +529,7 @@ impl<S: jacquard_common::BosStr> CircleSummaryBuilder<circle_summary_state::Empt
     pub fn builder() -> Self {
         CircleSummaryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -455,14 +555,27 @@ where
 }
 
 impl<St: circle_summary_state::State, S: jacquard_common::BosStr> CircleSummaryBuilder<St, S> {
+    /// Set the `latestKeyVersion` field (optional)
+    pub fn latest_key_version(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `latestKeyVersion` field to an Option value (optional)
+    pub fn maybe_latest_key_version(mut self, value: Option<i64>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: circle_summary_state::State, S: jacquard_common::BosStr> CircleSummaryBuilder<St, S> {
     /// Set the `memberCount` field (optional)
     pub fn member_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.1 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `memberCount` field to an Option value (optional)
     pub fn maybe_member_count(mut self, value: Option<i64>) -> Self {
-        self._fields.1 = value;
+        self._fields.2 = value;
         self
     }
 }
@@ -470,12 +583,12 @@ impl<St: circle_summary_state::State, S: jacquard_common::BosStr> CircleSummaryB
 impl<St: circle_summary_state::State, S: jacquard_common::BosStr> CircleSummaryBuilder<St, S> {
     /// Set the `muted` field (optional)
     pub fn muted(mut self, value: impl Into<Option<bool>>) -> Self {
-        self._fields.2 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `muted` field to an Option value (optional)
     pub fn maybe_muted(mut self, value: Option<bool>) -> Self {
-        self._fields.2 = value;
+        self._fields.3 = value;
         self
     }
 }
@@ -490,7 +603,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> CircleSummaryBuilder<circle_summary_state::SetName<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         CircleSummaryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -509,7 +622,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> CircleSummaryBuilder<circle_summary_state::SetOwner<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         CircleSummaryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -528,7 +641,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> CircleSummaryBuilder<circle_summary_state::SetUri<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         CircleSummaryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -549,11 +662,12 @@ where
     pub fn build(self) -> CircleSummary<S> {
         CircleSummary {
             circle_id: self._fields.0.unwrap(),
-            member_count: self._fields.1,
-            muted: self._fields.2,
-            name: self._fields.3.unwrap(),
-            owner: self._fields.4.unwrap(),
-            uri: self._fields.5.unwrap(),
+            latest_key_version: self._fields.1,
+            member_count: self._fields.2,
+            muted: self._fields.3,
+            name: self._fields.4.unwrap(),
+            owner: self._fields.5.unwrap(),
+            uri: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -567,11 +681,12 @@ where
     ) -> CircleSummary<S> {
         CircleSummary {
             circle_id: self._fields.0.unwrap(),
-            member_count: self._fields.1,
-            muted: self._fields.2,
-            name: self._fields.3.unwrap(),
-            owner: self._fields.4.unwrap(),
-            uri: self._fields.5.unwrap(),
+            latest_key_version: self._fields.1,
+            member_count: self._fields.2,
+            muted: self._fields.3,
+            name: self._fields.4.unwrap(),
+            owner: self._fields.5.unwrap(),
+            uri: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -610,6 +725,15 @@ fn lexicon_doc_blue_catbird_circle_defs() -> jacquard_lexicon::lexicon::LexiconD
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
                                 ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "latestKeyVersion",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
                                 ..Default::default()
                             }),
                         );
@@ -668,6 +792,112 @@ fn lexicon_doc_blue_catbird_circle_defs() -> jacquard_lexicon::lexicon::LexiconD
                 }),
             );
             map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptedPostView"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.actor.defs#profileViewBasic",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("likeCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "blue.catbird.circle.post",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "replyCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewer"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.feed.defs#viewerState",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("feedItem"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
@@ -691,11 +921,16 @@ fn lexicon_doc_blue_catbird_circle_defs() -> jacquard_lexicon::lexicon::LexiconD
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("post"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.feed.defs#feedViewPost",
-                                        ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
+                                    ::jacquard_lexicon::lexicon::LexRefUnion {
+                                        refs: vec![
+                                            ::jacquard_common::CowStr::new_static(
+                                                "app.bsky.feed.defs#feedViewPost",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "#encryptedPostView",
+                                            ),
+                                        ],
                                         ..Default::default()
                                     },
                                 ),
@@ -797,6 +1032,370 @@ fn lexicon_doc_blue_catbird_circle_defs() -> jacquard_lexicon::lexicon::LexiconD
     }
 }
 
+fn deserialize_encrypted_post_view_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod encrypted_post_view_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Author;
+        type Cid;
+        type IndexedAt;
+        type Record;
+        type Uri;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Author = Unset;
+        type Cid = Unset;
+        type IndexedAt = Unset;
+        type Record = Unset;
+        type Uri = Unset;
+    }
+    ///State transition - sets the `author` field to Set
+    pub struct SetAuthor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthor<St> {}
+    impl<St: State> State for SetAuthor<St> {
+        type Author = Set<members::author>;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
+        type Author = St::Author;
+        type Cid = Set<members::cid>;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `indexed_at` field to Set
+    pub struct SetIndexedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndexedAt<St> {}
+    impl<St: State> State for SetIndexedAt<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = Set<members::indexed_at>;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = Set<members::record>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = Set<members::uri>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `author` field
+        pub struct author(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
+        ///Marker type for the `indexed_at` field
+        pub struct indexed_at(());
+        ///Marker type for the `record` field
+        pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct EncryptedPostViewBuilder<
+    St: encrypted_post_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::circle::post::Post<S>>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<crate::generated::app_bsky::feed::ViewerState<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl EncryptedPostView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> EncryptedPostViewBuilder<encrypted_post_view_state::Empty, jacquard_common::DefaultStr>
+    {
+        EncryptedPostViewBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> EncryptedPostView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EncryptedPostViewBuilder<encrypted_post_view_state::Empty, S> {
+        EncryptedPostViewBuilder::builder()
+    }
+}
+
+impl EncryptedPostViewBuilder<encrypted_post_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        EncryptedPostViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> EncryptedPostViewBuilder<encrypted_post_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EncryptedPostViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EncryptedPostViewBuilder<St, S>
+where
+    St: encrypted_post_view_state::State,
+    St::Author: encrypted_post_view_state::IsUnset,
+{
+    /// Set the `author` field (required)
+    pub fn author(
+        mut self,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+    ) -> EncryptedPostViewBuilder<encrypted_post_view_state::SetAuthor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        EncryptedPostViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EncryptedPostViewBuilder<St, S>
+where
+    St: encrypted_post_view_state::State,
+    St::Cid: encrypted_post_view_state::IsUnset,
+{
+    /// Set the `cid` field (required)
+    pub fn cid(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> EncryptedPostViewBuilder<encrypted_post_view_state::SetCid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        EncryptedPostViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EncryptedPostViewBuilder<St, S>
+where
+    St: encrypted_post_view_state::State,
+    St::IndexedAt: encrypted_post_view_state::IsUnset,
+{
+    /// Set the `indexedAt` field (required)
+    pub fn indexed_at(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> EncryptedPostViewBuilder<encrypted_post_view_state::SetIndexedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        EncryptedPostViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: encrypted_post_view_state::State, S: jacquard_common::BosStr>
+    EncryptedPostViewBuilder<St, S>
+{
+    /// Set the `likeCount` field (optional)
+    pub fn like_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `likeCount` field to an Option value (optional)
+    pub fn maybe_like_count(mut self, value: Option<i64>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EncryptedPostViewBuilder<St, S>
+where
+    St: encrypted_post_view_state::State,
+    St::Record: encrypted_post_view_state::IsUnset,
+{
+    /// Set the `record` field (required)
+    pub fn record(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::circle::post::Post<S>>,
+    ) -> EncryptedPostViewBuilder<encrypted_post_view_state::SetRecord<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        EncryptedPostViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: encrypted_post_view_state::State, S: jacquard_common::BosStr>
+    EncryptedPostViewBuilder<St, S>
+{
+    /// Set the `replyCount` field (optional)
+    pub fn reply_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `replyCount` field to an Option value (optional)
+    pub fn maybe_reply_count(mut self, value: Option<i64>) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EncryptedPostViewBuilder<St, S>
+where
+    St: encrypted_post_view_state::State,
+    St::Uri: encrypted_post_view_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> EncryptedPostViewBuilder<encrypted_post_view_state::SetUri<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        EncryptedPostViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: encrypted_post_view_state::State, S: jacquard_common::BosStr>
+    EncryptedPostViewBuilder<St, S>
+{
+    /// Set the `viewer` field (optional)
+    pub fn viewer(
+        mut self,
+        value: impl Into<Option<crate::generated::app_bsky::feed::ViewerState<S>>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `viewer` field to an Option value (optional)
+    pub fn maybe_viewer(
+        mut self,
+        value: Option<crate::generated::app_bsky::feed::ViewerState<S>>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EncryptedPostViewBuilder<St, S>
+where
+    St: encrypted_post_view_state::State,
+    St::Author: encrypted_post_view_state::IsSet,
+    St::Cid: encrypted_post_view_state::IsSet,
+    St::IndexedAt: encrypted_post_view_state::IsSet,
+    St::Record: encrypted_post_view_state::IsSet,
+    St::Uri: encrypted_post_view_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> EncryptedPostView<S> {
+        EncryptedPostView {
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            like_count: self._fields.3,
+            record: self._fields.4.unwrap(),
+            reply_count: self._fields.5,
+            uri: self._fields.6.unwrap(),
+            viewer: self._fields.7,
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> EncryptedPostView<S> {
+        EncryptedPostView {
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            like_count: self._fields.3,
+            record: self._fields.4.unwrap(),
+            reply_count: self._fields.5,
+            uri: self._fields.6.unwrap(),
+            viewer: self._fields.7,
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 fn deserialize_feed_item_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -873,7 +1472,7 @@ pub struct FeedItemBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::blue_catbird::circle::CircleSummary<S>>,
-        core::option::Option<crate::generated::app_bsky::feed::FeedViewPost<S>>,
+        core::option::Option<FeedItemPost<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -941,7 +1540,7 @@ where
     /// Set the `post` field (required)
     pub fn post(
         mut self,
-        value: impl Into<crate::generated::app_bsky::feed::FeedViewPost<S>>,
+        value: impl Into<FeedItemPost<S>>,
     ) -> FeedItemBuilder<feed_item_state::SetPost<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         FeedItemBuilder {
@@ -1310,9 +1909,11 @@ where
 // An author-owned private posting audience
 pub const NSID: &str = "blue.catbird.circle";
 pub const KEY_TYPE: &str = "tid";
-pub const NAME: &str = "Catbird Circle";
+pub const NAME: &str = "";
 pub const COLLECTIONS: &[&str] = &[
     "blue.catbird.circle.metadata",
+    "blue.catbird.circle.key",
+    "blue.catbird.circle.post",
     "app.bsky.feed.post",
     "app.bsky.feed.like",
 ];

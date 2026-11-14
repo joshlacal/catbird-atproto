@@ -13,15 +13,10 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct PutRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// The NSID of the record collection.
     pub collection: jacquard_common::types::string::Nsid<S>,
-    /// The record to write.
     pub record: jacquard_common::types::value::Data<S>,
-    /// The DID of the repo to write to (the authenticated member).
     pub repo: jacquard_common::types::string::Did<S>,
-    /// The Record Key.
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    /// Reference to the space.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     /// Can be set to 'false' to skip Lexicon schema validation of record data, 'true' to require it, or leave unset to validate only for known Lexicons.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -48,7 +43,6 @@ pub struct PutRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 )]
 pub struct PutRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cid: jacquard_common::types::string::Cid<S>,
-    /// URI of the written record.
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub validation_status: core::option::Option<PutRecordOutputValidationStatus<S>>,

@@ -41,8 +41,8 @@ pub enum ExportSpaceMetaError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    #[serde(rename = "NotSpaceOwner")]
-    NotSpaceOwner(
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -65,8 +65,8 @@ impl core::fmt::Display for ExportSpaceMetaError {
                 }
                 Ok(())
             }
-            Self::NotSpaceOwner(msg) => {
-                write!(f, "NotSpaceOwner")?;
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -89,7 +89,7 @@ Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self:
 pub struct ExportSpaceMetaResponse;
 impl jacquard_common::xrpc::XrpcResp for ExportSpaceMetaResponse {
     const NSID: &'static str = "com.atproto.space.exportSpaceMeta";
-    const ENCODING: &'static str = "application/octet-stream";
+    const ENCODING: &'static str = "application/vnd.dasl.star";
     type Output<S: jacquard_common::BosStr> = ExportSpaceMetaOutput;
     type Err = ExportSpaceMetaError;
     fn encode_output<S: jacquard_common::BosStr>(

@@ -1,19 +1,18 @@
-//! Deterministic cross-language conformance vectors (`atproto_spaces_v1.json`)
-//! shared across Rust (`atproto-spaces` + `circle-appview`), Swift client (`Petrel`),
-//! and Swift PDS (`Swan`).
+//! Deterministic cross-language conformance vectors (`atproto_spaces_v1.json` and `atproto_spaces_v2.json`)
+//! shared across Rust (`atproto-spaces` + `circle-appview` + `catbird-mls` + `mls-ds`),
+//! Swift client (`Petrel`), and Swift PDS (`Swan`).
 
 use crate::http_signature::sign_credential_request;
 use crate::kem::{encapsulate_p256_deterministic, encode_p256_did_key};
 use crate::lthash::{compute_dagcbor_cid, compute_record_element_hash, LtHash};
 use crate::mac::{
-    compute_commit_mac, compute_record_mac, format_commit_mac_header, format_record_mac_header,
-    format_want_mac_header, COMMIT_MAC_TYPE, RECORD_MAC_TYPE,
+    format_accept_signature, sign_commit_mac, sign_record_mac, MacProfile, DEFAULT_MAC_LABEL,
 };
 use crate::star::{write_star_repo, StarRecordEntry};
 use crate::tokens::{
     mint_space_token, SpaceSigningKey, SpaceTokenClaims, SpaceTokenKind, ATPROTO_KEY_ID,
 };
-use crate::{Result, SpaceUri, SpacesError};
+use crate::{Result, SpaceBlobLocator, SpaceUri, SpacesError};
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine as _};
 use ipld_core::ipld::Ipld;
 use p256::SecretKey;
@@ -39,6 +38,23 @@ pub struct AtprotoSpacesVectorsV1 {
     pub delegation_jwt_did_plc: DelegationJwtVector,
     pub credential_jwt_did_web: CredentialJwtVector,
     pub star_repo: StarRepoVectors,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AtprotoSpacesVectorsV2 {
+    pub version: u32,
+    pub lthash: LtHashVectors,
+    pub kem_p256: KemP256Vector,
+    pub hpke_rfc9180_export: HpkeRfc9180ExportVector,
+    pub commit_mac: CommitMacVector,
+    pub record_mac: RecordMacVector,
+    pub rfc9421_low_s: Rfc9421Vector,
+    pub rfc9421_high_s: Rfc9421Vector,
+    pub delegation_jwt_did_plc: DelegationJwtVector,
+    pub credential_jwt_did_web: CredentialJwtVector,
+    pub star_repo: StarRepoVectors,
+    pub star_v02_cid_link: StarCidLinkVector,
+    pub uri_and_blob_locator: UriAndBlobLocatorVector,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -77,6 +93,15 @@ pub struct KemP256Vector {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct HpkeRfc9180ExportVector {
+    pub sender_secret_hex: String,
+    pub author_secret_hex: String,
+    pub author_kem_did_key: String,
+    pub key_share_did_key: String,
+    pub shared_secret_hex: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CommitMacVector {
     pub shared_secret_hex: String,
     pub space: String,
@@ -84,7 +109,9 @@ pub struct CommitMacVector {
     pub rev: String,
     pub data_hex: String,
     pub mac_hex: String,
-    pub header_value: String,
+    pub covered_header: String,
+    pub signature_input: String,
+    pub signature: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -94,7 +121,9 @@ pub struct RecordMacVector {
     pub cid: String,
     pub cid_bytes_hex: String,
     pub mac_hex: String,
-    pub header_value: String,
+    pub covered_header: String,
+    pub signature_input: String,
+    pub signature: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -153,7 +182,29 @@ pub struct StarRepoVectors {
     pub populated_archive_hex: String,
 }
 
-/// Generate the canonical deterministic `atproto_spaces_v1` vector suite.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct StarCidLinkVector {
+    pub space: String,
+    pub repo: String,
+    pub rev: String,
+    pub archive_base64: String,
+    pub expected_path: String,
+    pub expected_cid: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct UriAndBlobLocatorVector {
+    pub canonical_space_uri: String,
+    pub hedged_at_space: String,
+    pub hedged_at_slash_space: String,
+    pub repo: String,
+    pub cid: String,
+    pub canonical_blob_locator: String,
+    pub legacy_blob_locator: String,
+}
+
+/// Generate the canonical deterministic `atproto_spaces_v1` vector suite (November 12 wire format,
+/// byte-identical to `Petrel/Tests/PetrelTests/Vectors/atproto_spaces_v1.json`).
 pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
     let space_str = "at://did:web:ds.catbird.blue/space/blue.catbird.mlsChat/3l2aaaaaaaaaa";
     let space = SpaceUri::parse(space_str)?;
@@ -230,7 +281,7 @@ pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
         after_remove_a_commitment_hex: hex_encode(&after_remove_a.commitment()),
     };
 
-    // 2. KEM P-256
+    // 2. KEM P-256 (HPKE Base-mode Export-only)
     let author_sk_bytes: [u8; 32] = [0x11; 32];
     let eph_sk_bytes: [u8; 32] = [0x22; 32];
     let author_sk = SecretKey::from_slice(&author_sk_bytes)
@@ -239,8 +290,56 @@ pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
         .map_err(|e| SpacesError::Kem(format!("eph_sk: {e}")))?;
     let author_kem_did_key = encode_p256_did_key(&author_sk.public_key());
     let encap = encapsulate_p256_deterministic(&author_kem_did_key, &eph_sk)?;
-    let want_commit_mac_header = format_want_mac_header(&encap.key_share_did_key, COMMIT_MAC_TYPE)?;
-    let want_record_mac_header = format_want_mac_header(&encap.key_share_did_key, RECORD_MAC_TYPE)?;
+    let want_commit_mac_header =
+        format_accept_signature(MacProfile::Commit, &encap.key_share_did_key)?;
+    let want_record_mac_header =
+        format_accept_signature(MacProfile::Record, &encap.key_share_did_key)?;
+
+    // 3. Commit MAC (RFC 9421 / RFC 9651 structured-field MAC)
+    let data_32 = combined_ab.commitment();
+    let rev = rkey_b;
+    let (commit_headers, commit_mac_bytes) = sign_commit_mac(
+        &encap.shared_secret,
+        &encap.key_share_did_key,
+        DEFAULT_MAC_LABEL,
+        space_str,
+        alice_did,
+        rev,
+        &data_32,
+    )?;
+    let commit_mac = CommitMacVector {
+        shared_secret_hex: hex_encode(&encap.shared_secret),
+        space: space_str.to_string(),
+        repo: alice_did.to_string(),
+        rev: rev.to_string(),
+        data_hex: hex_encode(&data_32),
+        mac_hex: hex_encode(&commit_mac_bytes),
+        covered_header: commit_headers.covered_header,
+        signature_input: commit_headers.signature_input,
+        signature: commit_headers.signature,
+    };
+
+    // 4. Record MAC (RFC 9421 / RFC 9651 structured-field MAC)
+    let record_uri = space.record_uri(alice_did, "blue.catbird.mlsChat.message", rkey_b)?;
+    let cid_b_str = cid_b.to_string();
+    let cid_b_bytes = cid_b.to_bytes();
+    let (record_headers, record_mac_bytes) = sign_record_mac(
+        &encap.shared_secret,
+        &encap.key_share_did_key,
+        DEFAULT_MAC_LABEL,
+        &record_uri,
+        &cid_b_str,
+    )?;
+    let record_mac = RecordMacVector {
+        shared_secret_hex: hex_encode(&encap.shared_secret),
+        record_uri,
+        cid: cid_b_str,
+        cid_bytes_hex: hex_encode(&cid_b_bytes),
+        mac_hex: hex_encode(&record_mac_bytes),
+        covered_header: record_headers.covered_header,
+        signature_input: record_headers.signature_input,
+        signature: record_headers.signature,
+    };
 
     let kem_p256 = KemP256Vector {
         author_secret_hex: hex_encode(&author_sk_bytes),
@@ -250,34 +349,6 @@ pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
         shared_secret_hex: hex_encode(&encap.shared_secret),
         want_commit_mac_header,
         want_record_mac_header,
-    };
-
-    // 3. Commit MAC
-    let data_32 = combined_ab.commitment();
-    let rev = rkey_b;
-    let commit_mac_bytes =
-        compute_commit_mac(&encap.shared_secret, space_str, alice_did, rev, &data_32)?;
-    let commit_mac = CommitMacVector {
-        shared_secret_hex: hex_encode(&encap.shared_secret),
-        space: space_str.to_string(),
-        repo: alice_did.to_string(),
-        rev: rev.to_string(),
-        data_hex: hex_encode(&data_32),
-        mac_hex: hex_encode(&commit_mac_bytes),
-        header_value: format_commit_mac_header(&commit_mac_bytes),
-    };
-
-    // 4. Record MAC
-    let record_uri = space.record_uri(alice_did, "blue.catbird.mlsChat.message", rkey_b)?;
-    let cid_b_bytes = cid_b.to_bytes();
-    let record_mac_bytes = compute_record_mac(&encap.shared_secret, &record_uri, &cid_b_bytes)?;
-    let record_mac = RecordMacVector {
-        shared_secret_hex: hex_encode(&encap.shared_secret),
-        record_uri,
-        cid: cid_b.to_string(),
-        cid_bytes_hex: hex_encode(&cid_b_bytes),
-        mac_hex: hex_encode(&record_mac_bytes),
-        header_value: format_record_mac_header(&record_mac_bytes),
     };
 
     // 5. Delegation JWT (did:plc user -> did:web Space authority) & Credential JWT (did:web Space authority)
@@ -401,7 +472,7 @@ pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
         raw_signature_hex: hex_encode(&high_s_arr),
     };
 
-    // 7. STAR-lite repo vectors (both empty Swan fixture and populated 2-record fixture)
+    // 7. STAR v0.2 repo vectors (empty Swan fixture + populated 2-record fixture)
     let empty_swan_space = "at://did:plc:alice/space/app.bsky.bookmarks/self";
     let empty_swan_repo = "did:plc:alice";
     let empty_swan_rev = "2222222222222";
@@ -453,6 +524,78 @@ pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
         delegation_jwt_did_plc,
         credential_jwt_did_web,
         star_repo,
+    })
+}
+
+/// Generate the extended `atproto_spaces_v2` vector suite (adds RFC 9180 HPKE export-only P-256 vector,
+/// independent Python cbor2/BLAKE3 STAR v0.2 CID-link vector, and hedged `SpaceUri` + `SpaceBlobLocator` vectors).
+pub fn generate_v2_vectors() -> Result<AtprotoSpacesVectorsV2> {
+    let v1 = generate_v1_vectors()?;
+
+    let sender_secret_hex = "2f18b059576a0ec5a17121c0fe7ec8f00ea86f7b046fa3889ac8f21f89dbd484";
+    let author_secret_hex = "62c3868357a464f8461d03aa0182c7cebcde841036aea7230ddc7339f1088346";
+    let sender_sk = SecretKey::from_slice(&hex_decode(sender_secret_hex)?)
+        .map_err(|e| SpacesError::Kem(format!("rfc9180 sender_sk: {e}")))?;
+    let author_sk = SecretKey::from_slice(&hex_decode(author_secret_hex)?)
+        .map_err(|e| SpacesError::Kem(format!("rfc9180 author_sk: {e}")))?;
+    let author_kem_did_key = encode_p256_did_key(&author_sk.public_key());
+    let encap = encapsulate_p256_deterministic(&author_kem_did_key, &sender_sk)?;
+    let hpke_rfc9180_export = HpkeRfc9180ExportVector {
+        sender_secret_hex: sender_secret_hex.to_string(),
+        author_secret_hex: author_secret_hex.to_string(),
+        author_kem_did_key,
+        key_share_did_key: encap.key_share_did_key,
+        shared_secret_hex: hex_encode(&encap.shared_secret),
+    };
+
+    let star_v02_cid_link = StarCidLinkVector {
+        space: "at://did:example:space/space/app.bsky.group/test".to_string(),
+        repo: "did:example:alice".to_string(),
+        rev: "3kbcq3p7ad422".to_string(),
+        archive_base64: "KmwBAKcBpmNyZXZtM2tiY3EzcDdhZDQyMmN2ZXIBZGRhdGFYIAPti/dnzI3Ij07mC2HCTa1QGHC6pGj8nXzGZVYsfhnaZHJlcG9xZGlkOmV4YW1wbGU6YWxpY2VlJHR5cGVyYXRwcm90by1zcGFjZS1yZXBvZXNwYWNleDBhdDovL2RpZDpleGFtcGxlOnNwYWNlL3NwYWNlL2FwcC5ic2t5Lmdyb3VwL3Rlc3QBF2FwcC5ic2t5LmZlZWQucG9zdC9zZWxmQKNjcmVm2CpYJQABcRIgZCjwIwS424yxB8iTNkgfD+rXKL83TKgBaNLHGTjO+udkdGV4dGVoZWxsb2Vjb3VudAEA".to_string(),
+        expected_path: "app.bsky.feed.post/self".to_string(),
+        expected_cid: "bafyreidpnhlqcmg7f3bbn6zd7kr2p3x3ciaqgpy7333hlp3gc4vluyuzvm".to_string(),
+    };
+
+    let canonical_space_uri =
+        "at://did:web:ds.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11-gen1";
+    let hedged_at_space =
+        "at:space/did:web:ds.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-gen1";
+    let hedged_at_slash_space =
+        "at://space/did:web:ds.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-gen1";
+    let locator_space = SpaceUri::parse(canonical_space_uri)?;
+    let locator_repo = "did:plc:ewvi7nxzyoun6zhxrhs64oiz";
+    let locator_cid: cid::Cid = v1
+        .lthash
+        .record_b
+        .cid
+        .parse()
+        .map_err(|e| SpacesError::InvalidBlobLocator(format!("cid: {e}")))?;
+    let locator = SpaceBlobLocator::new(locator_space, locator_repo, locator_cid)?;
+    let uri_and_blob_locator = UriAndBlobLocatorVector {
+        canonical_space_uri: canonical_space_uri.to_string(),
+        hedged_at_space: hedged_at_space.to_string(),
+        hedged_at_slash_space: hedged_at_slash_space.to_string(),
+        repo: locator_repo.to_string(),
+        cid: locator_cid.to_string(),
+        canonical_blob_locator: locator.encoded(),
+        legacy_blob_locator: format!("{canonical_space_uri}/{locator_repo}#{locator_cid}"),
+    };
+
+    Ok(AtprotoSpacesVectorsV2 {
+        version: 2,
+        lthash: v1.lthash,
+        kem_p256: v1.kem_p256,
+        hpke_rfc9180_export,
+        commit_mac: v1.commit_mac,
+        record_mac: v1.record_mac,
+        rfc9421_low_s: v1.rfc9421_low_s,
+        rfc9421_high_s: v1.rfc9421_high_s,
+        delegation_jwt_did_plc: v1.delegation_jwt_did_plc,
+        credential_jwt_did_web: v1.credential_jwt_did_web,
+        star_repo: v1.star_repo,
+        star_v02_cid_link,
+        uri_and_blob_locator,
     })
 }
 

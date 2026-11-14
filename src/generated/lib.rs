@@ -58,6 +58,9 @@ pub mod com_atproto;
 #[cfg(feature = "com_germnetwork")]
 pub mod com_germnetwork;
 
+#[cfg(feature = "network_bsky")]
+pub mod network_bsky;
+
 #[cfg(feature = "place_stream")]
 pub mod place_stream;
 

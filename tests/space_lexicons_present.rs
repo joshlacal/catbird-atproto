@@ -1,33 +1,42 @@
-//! Plan 02 (WS) Task 1: Verify all clean-slate Spaces, Labyrinth PQ, Chat pruning/relay,
-//! and Push Gateway lexicon bindings are generated in `catbird-atproto`.
+//! Verify all clean-slate + November 12 Spaces, Labyrinth PQ, Encrypted Circles,
+//! Chat pruning/relay, and Push Gateway lexicon bindings are generated in `catbird-atproto`.
 
 use catbird_atproto::blue_catbird::chat::{
-    acknowledge_entries::AcknowledgeEntries, register_push_gateway::RegisterPushGateway,
+    acknowledge_entries::AcknowledgeEntries, approve_device::ApproveDevice,
+    create_conversation::CreateConversationError, register_push_gateway::RegisterPushGateway,
     relay_space_credential::RelaySpaceCredential, relay_space_read::RelaySpaceRead,
-    AccountDeletedEntry, ApplicationAad, ApplicationEntry, ConversationEntry, SequencerReceipt,
+    AccountDeletedEntry, ApplicationAad, ApplicationEntry, ConversationEntry, DeviceApprovalBody,
+    DeviceView, SequencerReceipt, SignedDeviceApproval,
 };
+use catbird_atproto::blue_catbird::circle::encrypted as circle_encrypted;
 use catbird_atproto::blue_catbird::labyrinth::{
-    attachment_manifest::AttachmentManifest, batch::Batch, conversation,
-    conversation_policy::ConversationPolicy, device::Device, epoch_member::EpochMember, mailbox,
-    otc_session::OtcSession, virtual_device::VirtualDevice, EpochPublic, SealedMessage,
+    attachment_manifest::AttachmentManifest, author_redaction::AuthorRedaction, batch::Batch,
+    circle_owner_state::CircleOwnerState, conversation, conversation_policy::ConversationPolicy,
+    device::Device, epoch::Epoch, epoch_member::EpochMember, mailbox, otc_session::OtcSession,
+    read_state::ReadState, virtual_device::VirtualDevice, DeviceRevocation, EpochPublic,
+    OriginalSenderArchiveAttestation, SealedMessage,
 };
 use catbird_atproto::blue_catbird::push::{deliver::Deliver, register_key::RegisterKey};
 use catbird_atproto::com_atproto::space::{
-    apply_writes::ApplyWrites, get_blob::GetBlob, get_repo::GetRepo,
-    get_space_credential::GetSpaceCredential, list_repo_ops::ListRepoOps,
-    notify_credential_revoked::NotifyCredentialRevoked, notify_space_deleted::NotifySpaceDeleted,
-    remove_writer::RemoveWriter,
+    apply_writes::ApplyWrites, authorize_space_sync::AuthorizeSpaceSync,
+    confirm_registration::ConfirmRegistration, get_blob::GetBlob, get_repo::GetRepo,
+    list_repo_ops::ListRepoOps, list_writers::ListWriters,
+    notify_credentials_revoked::NotifyCredentialsRevoked, notify_repo_update::NotifyRepoUpdate,
+    notify_space_update::NotifySpaceUpdate, remove_writer::RemoveWriter,
 };
 
 #[test]
 fn atproto_space_and_labyrinth_space_declarations_are_present() {
     let _ = core::mem::size_of::<ApplyWrites>();
-    let _ = core::mem::size_of::<GetSpaceCredential>();
+    let _ = core::mem::size_of::<AuthorizeSpaceSync>();
+    let _ = core::mem::size_of::<ConfirmRegistration>();
     let _ = core::mem::size_of::<ListRepoOps>();
+    let _ = core::mem::size_of::<ListWriters>();
     let _ = core::mem::size_of::<GetRepo>();
     let _ = core::mem::size_of::<GetBlob>();
-    let _ = core::mem::size_of::<NotifyCredentialRevoked>();
-    let _ = core::mem::size_of::<NotifySpaceDeleted>();
+    let _ = core::mem::size_of::<NotifyCredentialsRevoked>();
+    let _ = core::mem::size_of::<NotifyRepoUpdate>();
+    let _ = core::mem::size_of::<NotifySpaceUpdate>();
     let _ = core::mem::size_of::<RemoveWriter>();
 
     assert_eq!(mailbox::NSID, "blue.catbird.labyrinth.mailbox");
@@ -42,6 +51,8 @@ fn atproto_space_and_labyrinth_space_declarations_are_present() {
             "blue.catbird.labyrinth.otcSession",
             "blue.catbird.labyrinth.ownerBatch",
             "blue.catbird.labyrinth.attachmentManifest",
+            "blue.catbird.labyrinth.readState",
+            "blue.catbird.labyrinth.circleOwnerState",
         ]
     );
 
@@ -53,14 +64,18 @@ fn atproto_space_and_labyrinth_space_declarations_are_present() {
             "blue.catbird.labyrinth.batch",
             "blue.catbird.labyrinth.mek",
             "blue.catbird.labyrinth.attachmentManifest",
+            "blue.catbird.labyrinth.authorRedaction",
         ]
     );
+
+    assert_eq!(circle_encrypted::NSID, "blue.catbird.circle.encrypted");
 }
 
 #[test]
 fn clean_slate_labyrinth_chat_and_push_types_roundtrip() {
     let _ = core::mem::size_of::<ConversationPolicy>();
     let _ = core::mem::size_of::<AttachmentManifest>();
+    let _ = core::mem::size_of::<AuthorRedaction>();
     let _ = core::mem::size_of::<OtcSession>();
     let _ = core::mem::size_of::<Batch>();
     let _ = core::mem::size_of::<Device>();
@@ -77,7 +92,9 @@ fn clean_slate_labyrinth_chat_and_push_types_roundtrip() {
     let _ = core::mem::size_of::<ApplicationAad>();
     let _ = core::mem::size_of::<ApplicationEntry>();
     let _ = core::mem::size_of::<ConversationEntry>();
+    let _ = core::mem::size_of::<OriginalSenderArchiveAttestation>();
     let _ = core::mem::size_of::<SequencerReceipt>();
+    let _ = CreateConversationError::SignedOperationExpired(None);
     let _check_receipt_fields = |r: &SequencerReceipt| {
         let _: &catbird_atproto::jacquard_common::deps::bytes::Bytes = &r.archive_commitment;
         let _: &catbird_atproto::jacquard_common::deps::bytes::Bytes = &r.group_id;
@@ -88,4 +105,28 @@ fn clean_slate_labyrinth_chat_and_push_types_roundtrip() {
 
     let _ = core::mem::size_of::<RegisterKey>();
     let _ = core::mem::size_of::<Deliver>();
+
+    let _ = core::mem::size_of::<ApproveDevice>();
+    let _ = core::mem::size_of::<DeviceApprovalBody>();
+    let _ = core::mem::size_of::<SignedDeviceApproval>();
+    let _ = core::mem::size_of::<DeviceRevocation>();
+    let _ = core::mem::size_of::<Epoch>();
+    let _ = core::mem::size_of::<ReadState>();
+    let _ = core::mem::size_of::<CircleOwnerState>();
+    let _check_multi_device_fields = |dv: &DeviceView,
+                                      rs: &ReadState,
+                                      cos: &CircleOwnerState,
+                                      dev: &Device,
+                                      ep: &Epoch,
+                                      vd: &VirtualDevice| {
+        let _ = &dv.device_name;
+        let _ = &dv.last_active_at;
+        let _ = &dv.dormant_at;
+        let _: i64 = rs.epoch;
+        let _: i64 = cos.epoch;
+        let _ = &dev.revocation;
+        let _ = &ep.revocations;
+        let _ = &ep.revocations_sig;
+        let _ = &vd.metadata_sig;
+    };
 }

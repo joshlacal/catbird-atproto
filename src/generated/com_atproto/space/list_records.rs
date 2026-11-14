@@ -26,8 +26,6 @@ pub struct ListRecords<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
     pub repo: jacquard_common::types::string::Did<S>,
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub reverse: core::option::Option<bool>,
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
 }
 
@@ -92,6 +90,11 @@ pub enum ListRecordsError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "InvalidCursor")]
+    InvalidCursor(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -139,6 +142,13 @@ impl core::fmt::Display for ListRecordsError {
                 }
                 Ok(())
             }
+            Self::InvalidCursor(msg) => {
+                write!(f, "InvalidCursor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -161,7 +171,6 @@ pub struct Record<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub cid: jacquard_common::types::string::Cid<S>,
     pub collection: jacquard_common::types::string::Nsid<S>,
     pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
-    /// The record's value. Inlined by default; omitted when excludeValues is set.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub value: core::option::Option<jacquard_common::types::value::Data<S>>,
     #[serde(
@@ -285,7 +294,6 @@ pub struct ListRecordsBuilder<
         core::option::Option<bool>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
-        core::option::Option<bool>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -310,7 +318,7 @@ impl ListRecordsBuilder<list_records_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         ListRecordsBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -321,7 +329,7 @@ impl<S: jacquard_common::BosStr> ListRecordsBuilder<list_records_state::Empty, S
     pub fn builder() -> Self {
         ListRecordsBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -404,19 +412,6 @@ where
     }
 }
 
-impl<St: list_records_state::State, S: jacquard_common::BosStr> ListRecordsBuilder<St, S> {
-    /// Set the `reverse` field (optional)
-    pub fn reverse(mut self, value: impl Into<Option<bool>>) -> Self {
-        self._fields.5 = value.into();
-        self
-    }
-    /// Set the `reverse` field to an Option value (optional)
-    pub fn maybe_reverse(mut self, value: Option<bool>) -> Self {
-        self._fields.5 = value;
-        self
-    }
-}
-
 impl<St, S: jacquard_common::BosStr> ListRecordsBuilder<St, S>
 where
     St: list_records_state::State,
@@ -427,7 +422,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> ListRecordsBuilder<list_records_state::SetSpace<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ListRecordsBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -450,8 +445,7 @@ where
             exclude_values: self._fields.2,
             limit: self._fields.3,
             repo: self._fields.4.unwrap(),
-            reverse: self._fields.5,
-            space: self._fields.6.unwrap(),
+            space: self._fields.5.unwrap(),
         }
     }
 }
@@ -728,7 +722,7 @@ fn lexicon_doc_com_atproto_space_listRecords() -> jacquard_lexicon::lexicon::Lex
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
-                                                "The NSID of the record collection. If omitted, lists records across all collections.",
+                                                "If omitted, lists records across all collections.",
                                             ),
                                         ),
                                         format: Some(
@@ -766,11 +760,6 @@ fn lexicon_doc_com_atproto_space_listRecords() -> jacquard_lexicon::lexicon::Lex
                                         "repo",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "The DID of the account whose repo to list.",
-                                            ),
-                                        ),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
@@ -779,22 +768,9 @@ fn lexicon_doc_com_atproto_space_listRecords() -> jacquard_lexicon::lexicon::Lex
                                 );
                                 map.insert(
                                     ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                        "reverse",
-                                    ),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    }),
-                                );
-                                map.insert(
-                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "space",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(
-                                            ::jacquard_common::CowStr::new_static(
-                                                "Reference to the space.",
-                                            ),
-                                        ),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
                                         ),

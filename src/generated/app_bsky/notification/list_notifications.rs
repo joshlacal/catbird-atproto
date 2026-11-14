@@ -39,6 +39,7 @@ pub struct ListNotificationsOutput<S: jacquard_common::BosStr = jacquard_common:
     pub cursor: core::option::Option<S>,
     pub notifications:
         Vec<crate::generated::app_bsky::notification::list_notifications::Notification<S>>,
+    /// Deprecated: this field is no longer populated.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub priority: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -952,6 +953,11 @@ fn lexicon_doc_app_bsky_notification_listNotifications(
                                         "seenAt",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(
+                                            ::jacquard_common::CowStr::new_static(
+                                                "Deprecated: this parameter is unsupported and will cause an error.",
+                                            ),
+                                        ),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),

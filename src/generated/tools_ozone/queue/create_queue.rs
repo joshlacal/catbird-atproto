@@ -20,7 +20,10 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Collection name for record subjects. Required if subjectTypes includes 'record'.
+    /// Match any of these tags on the account that is being reported against.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub account_tags: core::option::Option<Vec<S>>,
+    /// Collection name for record subjects. Omit to accept every collection.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub collection: core::option::Option<jacquard_common::types::string::Nsid<S>>,
     /// Optional description of the queue
@@ -28,12 +31,21 @@ pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub description: core::option::Option<S>,
     /// Display name for the queue (must be unique)
     pub name: S,
+    /// Labels to recommend for this queue and use as fallback appeal routing mappings
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub recommended_labels: core::option::Option<Vec<S>>,
     /// Policy keys to recommend when actioning reports in this queue
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub recommended_policies: core::option::Option<Vec<S>>,
     /// Report reason types (fully qualified NSIDs)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub report_types: core::option::Option<Vec<S>>,
+    /// Match any listed tag on the account submitting the report.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reporter_tags: core::option::Option<Vec<S>>,
+    /// Admins can always list this queue and browse its reports. Other roles require an active queue assignment. Individual report and moderation event access is unchanged.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub strict_access: core::option::Option<bool>,
     /// Subject types this queue accepts
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub subject_types: core::option::Option<Vec<CreateQueueSubjectTypes<S>>>,

@@ -12,9 +12,45 @@
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
+pub struct DisclosedMedia<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: S,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub iv: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub key: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_disclosed_media_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
 pub struct ReportRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub details: core::option::Option<S>,
+    /// Decryption material for attachments the reporter chooses to disclose.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub disclosed_media: core::option::Option<
+        Vec<crate::generated::blue_catbird::circle::report_record::DisclosedMedia<S>>,
+    >,
+    /// Per-post key voluntarily disclosed by the reporter so moderators can read an encrypted post.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub disclosed_post_key: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     pub reason: ReportRecordReason<S>,
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -241,6 +277,32 @@ impl core::fmt::Display for ReportRecordError {
     }
 }
 
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DisclosedMedia<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.circle.reportRecord"
+    }
+    fn def_name() -> &'static str {
+        "disclosedMedia"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_circle_reportRecord()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.cid;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 128usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("cid"),
+                    max: 128usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
 /** Response marker for the `blue.catbird.circle.reportRecord` procedure.
 
 Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ReportRecordOutput<S>` for this endpoint.*/
@@ -269,6 +331,385 @@ impl jacquard_common::xrpc::XrpcEndpoint for ReportRecordRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<S: jacquard_common::BosStr> = ReportRecord<S>;
     type Response = ReportRecordResponse;
+}
+
+fn deserialize_disclosed_media_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod disclosed_media_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Cid;
+        type Iv;
+        type Key;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Cid = Unset;
+        type Iv = Unset;
+        type Key = Unset;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
+        type Cid = Set<members::cid>;
+        type Iv = St::Iv;
+        type Key = St::Key;
+    }
+    ///State transition - sets the `iv` field to Set
+    pub struct SetIv<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIv<St> {}
+    impl<St: State> State for SetIv<St> {
+        type Cid = St::Cid;
+        type Iv = Set<members::iv>;
+        type Key = St::Key;
+    }
+    ///State transition - sets the `key` field to Set
+    pub struct SetKey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKey<St> {}
+    impl<St: State> State for SetKey<St> {
+        type Cid = St::Cid;
+        type Iv = St::Iv;
+        type Key = Set<members::key>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `cid` field
+        pub struct cid(());
+        ///Marker type for the `iv` field
+        pub struct iv(());
+        ///Marker type for the `key` field
+        pub struct key(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DisclosedMediaBuilder<
+    St: disclosed_media_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DisclosedMedia<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DisclosedMediaBuilder<disclosed_media_state::Empty, jacquard_common::DefaultStr>
+    {
+        DisclosedMediaBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DisclosedMedia<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DisclosedMediaBuilder<disclosed_media_state::Empty, S> {
+        DisclosedMediaBuilder::builder()
+    }
+}
+
+impl DisclosedMediaBuilder<disclosed_media_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DisclosedMediaBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DisclosedMediaBuilder<disclosed_media_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DisclosedMediaBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DisclosedMediaBuilder<St, S>
+where
+    St: disclosed_media_state::State,
+    St::Cid: disclosed_media_state::IsUnset,
+{
+    /// Set the `cid` field (required)
+    pub fn cid(
+        mut self,
+        value: impl Into<S>,
+    ) -> DisclosedMediaBuilder<disclosed_media_state::SetCid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DisclosedMediaBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DisclosedMediaBuilder<St, S>
+where
+    St: disclosed_media_state::State,
+    St::Iv: disclosed_media_state::IsUnset,
+{
+    /// Set the `iv` field (required)
+    pub fn iv(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DisclosedMediaBuilder<disclosed_media_state::SetIv<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DisclosedMediaBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DisclosedMediaBuilder<St, S>
+where
+    St: disclosed_media_state::State,
+    St::Key: disclosed_media_state::IsUnset,
+{
+    /// Set the `key` field (required)
+    pub fn key(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DisclosedMediaBuilder<disclosed_media_state::SetKey<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        DisclosedMediaBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DisclosedMediaBuilder<St, S>
+where
+    St: disclosed_media_state::State,
+    St::Cid: disclosed_media_state::IsSet,
+    St::Iv: disclosed_media_state::IsSet,
+    St::Key: disclosed_media_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DisclosedMedia<S> {
+        DisclosedMedia {
+            cid: self._fields.0.unwrap(),
+            iv: self._fields.1.unwrap(),
+            key: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DisclosedMedia<S> {
+        DisclosedMedia {
+            cid: self._fields.0.unwrap(),
+            iv: self._fields.1.unwrap(),
+            key: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_blue_catbird_circle_reportRecord() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.circle.reportRecord"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("disclosedMedia"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("key"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("iv"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        max_length: Some(128usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("iv"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("key"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(64usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
+                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
+                        encoding: ::jacquard_common::CowStr::new_static(
+                            "application/json",
+                        ),
+                        schema: Some(
+                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
+                                required: Some(
+                                    vec![
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("space"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("reason")
+                                    ],
+                                ),
+                                properties: {
+                                    #[allow(unused_mut)]
+                                    let mut map = ::alloc::collections::BTreeMap::new();
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "details",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            max_length: Some(500usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "disclosedMedia",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Decryption material for attachments the reporter chooses to disclose.",
+                                                ),
+                                            ),
+                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "#disclosedMedia",
+                                                ),
+                                                ..Default::default()
+                                            }),
+                                            max_length: Some(32usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "disclosedPostKey",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            max_length: Some(32usize),
+                                            min_length: Some(32usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "reason",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "space",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            format: Some(
+                                                ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                            ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "uri",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            format: Some(
+                                                ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                            ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map
+                                },
+                                ..Default::default()
+                            }),
+                        ),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
+    }
 }
 
 pub mod report_record_state {
@@ -337,6 +778,10 @@ pub struct ReportRecordBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
+        core::option::Option<
+            Vec<crate::generated::blue_catbird::circle::report_record::DisclosedMedia<S>>,
+        >,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<ReportRecordReason<S>>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
@@ -363,7 +808,7 @@ impl ReportRecordBuilder<report_record_state::Empty, jacquard_common::DefaultStr
     pub fn new() -> Self {
         ReportRecordBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -374,7 +819,7 @@ impl<S: jacquard_common::BosStr> ReportRecordBuilder<report_record_state::Empty,
     pub fn builder() -> Self {
         ReportRecordBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -393,6 +838,48 @@ impl<St: report_record_state::State, S: jacquard_common::BosStr> ReportRecordBui
     }
 }
 
+impl<St: report_record_state::State, S: jacquard_common::BosStr> ReportRecordBuilder<St, S> {
+    /// Set the `disclosedMedia` field (optional)
+    pub fn disclosed_media(
+        mut self,
+        value: impl Into<
+            Option<Vec<crate::generated::blue_catbird::circle::report_record::DisclosedMedia<S>>>,
+        >,
+    ) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `disclosedMedia` field to an Option value (optional)
+    pub fn maybe_disclosed_media(
+        mut self,
+        value: Option<
+            Vec<crate::generated::blue_catbird::circle::report_record::DisclosedMedia<S>>,
+        >,
+    ) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: report_record_state::State, S: jacquard_common::BosStr> ReportRecordBuilder<St, S> {
+    /// Set the `disclosedPostKey` field (optional)
+    pub fn disclosed_post_key(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `disclosedPostKey` field to an Option value (optional)
+    pub fn maybe_disclosed_post_key(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ReportRecordBuilder<St, S>
 where
     St: report_record_state::State,
@@ -403,7 +890,7 @@ where
         mut self,
         value: impl Into<ReportRecordReason<S>>,
     ) -> ReportRecordBuilder<report_record_state::SetReason<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ReportRecordBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -422,7 +909,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> ReportRecordBuilder<report_record_state::SetSpace<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ReportRecordBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -441,7 +928,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::AtUri<S>>,
     ) -> ReportRecordBuilder<report_record_state::SetUri<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ReportRecordBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -461,9 +948,11 @@ where
     pub fn build(self) -> ReportRecord<S> {
         ReportRecord {
             details: self._fields.0,
-            reason: self._fields.1.unwrap(),
-            space: self._fields.2.unwrap(),
-            uri: self._fields.3.unwrap(),
+            disclosed_media: self._fields.1,
+            disclosed_post_key: self._fields.2,
+            reason: self._fields.3.unwrap(),
+            space: self._fields.4.unwrap(),
+            uri: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -477,9 +966,11 @@ where
     ) -> ReportRecord<S> {
         ReportRecord {
             details: self._fields.0,
-            reason: self._fields.1.unwrap(),
-            space: self._fields.2.unwrap(),
-            uri: self._fields.3.unwrap(),
+            disclosed_media: self._fields.1,
+            disclosed_post_key: self._fields.2,
+            reason: self._fields.3.unwrap(),
+            space: self._fields.4.unwrap(),
+            uri: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }

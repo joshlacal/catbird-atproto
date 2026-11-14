@@ -30,6 +30,7 @@ pub mod listitem;
 pub mod mute_actor;
 pub mod mute_actor_list;
 pub mod mute_thread;
+pub mod referencelistoptout;
 pub mod search_starter_packs;
 pub mod search_starter_packs_v2;
 pub mod starterpack;
@@ -66,6 +67,9 @@ impl core::fmt::Display for Curatelist {
 )]
 pub struct ListItemView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub subject: crate::generated::app_bsky::actor::ProfileView<S>,
+    /// Set to true when the subject has opted out of appearing in the reference list. Only set when the viewer owns the list.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_opted_out: core::option::Option<bool>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(
         flatten,
@@ -256,6 +260,9 @@ pub struct ListViewerState<S: jacquard_common::BosStr = jacquard_common::Default
     pub blocked: core::option::Option<jacquard_common::types::string::AtUri<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub muted: core::option::Option<bool>,
+    /// The authenticated viewer's app.bsky.graph.referencelistoptout record URI for this reference list. Only set for reference lists. A client can delete this record to undo the opt-out.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reference_list_opt_out: core::option::Option<jacquard_common::types::string::AtUri<S>>,
     #[serde(
         flatten,
         default,
@@ -823,6 +830,7 @@ pub struct ListItemViewBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<crate::generated::app_bsky::actor::ProfileView<S>>,
+        core::option::Option<bool>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -847,7 +855,7 @@ impl ListItemViewBuilder<list_item_view_state::Empty, jacquard_common::DefaultSt
     pub fn new() -> Self {
         ListItemViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -858,7 +866,7 @@ impl<S: jacquard_common::BosStr> ListItemViewBuilder<list_item_view_state::Empty
     pub fn builder() -> Self {
         ListItemViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -883,6 +891,19 @@ where
     }
 }
 
+impl<St: list_item_view_state::State, S: jacquard_common::BosStr> ListItemViewBuilder<St, S> {
+    /// Set the `subjectOptedOut` field (optional)
+    pub fn subject_opted_out(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `subjectOptedOut` field to an Option value (optional)
+    pub fn maybe_subject_opted_out(mut self, value: Option<bool>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ListItemViewBuilder<St, S>
 where
     St: list_item_view_state::State,
@@ -893,7 +914,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::AtUri<S>>,
     ) -> ListItemViewBuilder<list_item_view_state::SetUri<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ListItemViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -912,7 +933,8 @@ where
     pub fn build(self) -> ListItemView<S> {
         ListItemView {
             subject: self._fields.0.unwrap(),
-            uri: self._fields.1.unwrap(),
+            subject_opted_out: self._fields.1,
+            uri: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -926,7 +948,8 @@ where
     ) -> ListItemView<S> {
         ListItemView {
             subject: self._fields.0.unwrap(),
-            uri: self._fields.1.unwrap(),
+            subject_opted_out: self._fields.1,
+            uri: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -964,6 +987,16 @@ fn lexicon_doc_app_bsky_graph_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'s
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.actor.defs#profileView",
                                         ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "subjectOptedOut",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
                                         ..Default::default()
                                     },
                                 ),
@@ -1281,36 +1314,52 @@ fn lexicon_doc_app_bsky_graph_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'s
                 ),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("listViewerState"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("blocked"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("muted"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "listViewerState",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "blocked",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "muted",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "referenceListOptOut",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The authenticated viewer's app.bsky.graph.referencelistoptout record URI for this reference list. Only set for reference lists. A client can delete this record to undo the opt-out.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("modlist"),

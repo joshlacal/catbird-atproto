@@ -5,6 +5,114 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Encryption<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Encryption scheme identifier.
+    pub scheme: EncryptionScheme<S>,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_encryption_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Encryption scheme identifier.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum EncryptionScheme<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    CircleV1,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> EncryptionScheme<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::CircleV1 => "circle-v1",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "circle-v1" => Self::CircleV1,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for EncryptionScheme<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for EncryptionScheme<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for EncryptionScheme<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for EncryptionScheme<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for EncryptionScheme<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EncryptionScheme<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = EncryptionScheme<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            EncryptionScheme::CircleV1 => EncryptionScheme::CircleV1,
+            EncryptionScheme::Other(v) => EncryptionScheme::Other(v.into_static()),
+        }
+    }
+}
+
 /// Circle metadata, authored by the Space authority into its own permissioned repo. The only Catbird-specific record type in a Circle; posts and likes are unmodified Bluesky records.
 
 #[derive(
@@ -20,6 +128,13 @@ pub struct Metadata<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// Stable Circle identity, independent of the Space key. Survives migration to a different Space, which is the only identifier that does.
     pub circle_id: jacquard_common::types::string::Tid,
     pub created_at: jacquard_common::types::string::Datetime,
+    /// Present only on encrypted Circles; absent on plaintext Circles.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub encryption:
+        core::option::Option<crate::generated::blue_catbird::circle::metadata::Encryption<S>>,
+    /// Whether members added later can decrypt posts made before they joined. Only meaningful for encrypted Circles.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub history_for_new_members: core::option::Option<bool>,
     /// The Space this Circle's content was migrated from, if any.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub migrated_from: core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
@@ -64,6 +179,21 @@ impl<S: jacquard_common::BosStr> Metadata<S> {
         jacquard_common::types::uri::RecordUri::try_from_uri(
             jacquard_common::types::string::AtUri::new(uri)?,
         )
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Encryption<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.circle.metadata"
+    }
+    fn def_name() -> &'static str {
+        "encryption"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_circle_metadata()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
     }
 }
 
@@ -128,6 +258,182 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Met
             }
         }
         Ok(())
+    }
+}
+
+fn deserialize_encryption_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+fn lexicon_doc_blue_catbird_circle_metadata() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.circle.metadata"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("encryption"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("scheme"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("scheme"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Encryption scheme identifier.",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Circle metadata, authored by the Space authority into its own permissioned repo. The only Catbird-specific record type in a Circle; posts and likes are unmodified Bluesky records.",
+                        ),
+                    ),
+                    key: Some(::jacquard_common::CowStr::new_static("literal:self")),
+                    record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(
+                            vec![
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("circleId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
+                            ],
+                        ),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "circleId",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "Stable Circle identity, independent of the Space key. Survives migration to a different Space, which is the only identifier that does.",
+                                        ),
+                                    ),
+                                    format: Some(
+                                        ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
+                                    ),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "createdAt",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                    format: Some(
+                                        ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                    ),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "encryption",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static("#encryption"),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "historyForNewMembers",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "migratedFrom",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "The Space this Circle's content was migrated from, if any.",
+                                        ),
+                                    ),
+                                    format: Some(
+                                        ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                    ),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "migratedTo",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "The Space this Circle's content was migrated to, if any. Set when the Circle has moved and this Space is retained read-only.",
+                                        ),
+                                    ),
+                                    format: Some(
+                                        ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                    ),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "name",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                    min_length: Some(1usize),
+                                    max_length: Some(64usize),
+                                    ..Default::default()
+                                }),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
     }
 }
 
@@ -228,6 +534,8 @@ pub struct MetadataBuilder<
     _fields: (
         core::option::Option<jacquard_common::types::string::Tid>,
         core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<crate::generated::blue_catbird::circle::metadata::Encryption<S>>,
+        core::option::Option<bool>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<S>,
@@ -254,7 +562,7 @@ impl MetadataBuilder<metadata_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         MetadataBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -265,7 +573,7 @@ impl<S: jacquard_common::BosStr> MetadataBuilder<metadata_state::Empty, S> {
     pub fn builder() -> Self {
         MetadataBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -310,12 +618,44 @@ where
 }
 
 impl<St: metadata_state::State, S: jacquard_common::BosStr> MetadataBuilder<St, S> {
+    /// Set the `encryption` field (optional)
+    pub fn encryption(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::circle::metadata::Encryption<S>>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `encryption` field to an Option value (optional)
+    pub fn maybe_encryption(
+        mut self,
+        value: Option<crate::generated::blue_catbird::circle::metadata::Encryption<S>>,
+    ) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: metadata_state::State, S: jacquard_common::BosStr> MetadataBuilder<St, S> {
+    /// Set the `historyForNewMembers` field (optional)
+    pub fn history_for_new_members(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `historyForNewMembers` field to an Option value (optional)
+    pub fn maybe_history_for_new_members(mut self, value: Option<bool>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St: metadata_state::State, S: jacquard_common::BosStr> MetadataBuilder<St, S> {
     /// Set the `migratedFrom` field (optional)
     pub fn migrated_from(
         mut self,
         value: impl Into<Option<jacquard_common::types::aturi::AtSpaceUri<S>>>,
     ) -> Self {
-        self._fields.2 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `migratedFrom` field to an Option value (optional)
@@ -323,7 +663,7 @@ impl<St: metadata_state::State, S: jacquard_common::BosStr> MetadataBuilder<St, 
         mut self,
         value: Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> Self {
-        self._fields.2 = value;
+        self._fields.4 = value;
         self
     }
 }
@@ -334,7 +674,7 @@ impl<St: metadata_state::State, S: jacquard_common::BosStr> MetadataBuilder<St, 
         mut self,
         value: impl Into<Option<jacquard_common::types::aturi::AtSpaceUri<S>>>,
     ) -> Self {
-        self._fields.3 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `migratedTo` field to an Option value (optional)
@@ -342,7 +682,7 @@ impl<St: metadata_state::State, S: jacquard_common::BosStr> MetadataBuilder<St, 
         mut self,
         value: Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> Self {
-        self._fields.3 = value;
+        self._fields.5 = value;
         self
     }
 }
@@ -354,7 +694,7 @@ where
 {
     /// Set the `name` field (required)
     pub fn name(mut self, value: impl Into<S>) -> MetadataBuilder<metadata_state::SetName<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         MetadataBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -375,9 +715,11 @@ where
         Metadata {
             circle_id: self._fields.0.unwrap(),
             created_at: self._fields.1.unwrap(),
-            migrated_from: self._fields.2,
-            migrated_to: self._fields.3,
-            name: self._fields.4.unwrap(),
+            encryption: self._fields.2,
+            history_for_new_members: self._fields.3,
+            migrated_from: self._fields.4,
+            migrated_to: self._fields.5,
+            name: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -392,118 +734,12 @@ where
         Metadata {
             circle_id: self._fields.0.unwrap(),
             created_at: self._fields.1.unwrap(),
-            migrated_from: self._fields.2,
-            migrated_to: self._fields.3,
-            name: self._fields.4.unwrap(),
+            encryption: self._fields.2,
+            history_for_new_members: self._fields.3,
+            migrated_from: self._fields.4,
+            migrated_to: self._fields.5,
+            name: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-fn lexicon_doc_blue_catbird_circle_metadata() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("blue.catbird.circle.metadata"),
-        defs: {
-            let mut map = ::alloc::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Circle metadata, authored by the Space authority into its own permissioned repo. The only Catbird-specific record type in a Circle; posts and likes are unmodified Bluesky records.",
-                        ),
-                    ),
-                    key: Some(::jacquard_common::CowStr::new_static("literal:self")),
-                    record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(
-                            vec![
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("circleId"),
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
-                            ],
-                        ),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "circleId",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: Some(
-                                        ::jacquard_common::CowStr::new_static(
-                                            "Stable Circle identity, independent of the Space key. Survives migration to a different Space, which is the only identifier that does.",
-                                        ),
-                                    ),
-                                    format: Some(
-                                        ::jacquard_lexicon::lexicon::LexStringFormat::Tid,
-                                    ),
-                                    ..Default::default()
-                                }),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "createdAt",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    format: Some(
-                                        ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                    ),
-                                    ..Default::default()
-                                }),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "migratedFrom",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: Some(
-                                        ::jacquard_common::CowStr::new_static(
-                                            "The Space this Circle's content was migrated from, if any.",
-                                        ),
-                                    ),
-                                    format: Some(
-                                        ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
-                                    ),
-                                    ..Default::default()
-                                }),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "migratedTo",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: Some(
-                                        ::jacquard_common::CowStr::new_static(
-                                            "The Space this Circle's content was migrated to, if any. Set when the Circle has moved and this Space is retained read-only.",
-                                        ),
-                                    ),
-                                    format: Some(
-                                        ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
-                                    ),
-                                    ..Default::default()
-                                }),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "name",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    min_length: Some(1usize),
-                                    max_length: Some(64usize),
-                                    ..Default::default()
-                                }),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    }),
-                    ..Default::default()
-                }),
-            );
-            map
-        },
-        ..Default::default()
     }
 }

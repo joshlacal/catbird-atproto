@@ -10,7 +10,9 @@ pub mod append_batch;
 pub mod append_owner_batch;
 pub mod append_space_batch;
 pub mod attachment_manifest;
+pub mod author_redaction;
 pub mod batch;
+pub mod circle_owner_state;
 pub mod conversation;
 pub mod conversation_policy;
 pub mod create_device;
@@ -58,10 +60,41 @@ pub mod owner_batch;
 pub mod publish_epoch_head;
 pub mod purge_mailbox;
 pub mod put_attachment_ref;
+pub mod read_state;
 pub mod redact_message;
 pub mod register_orf_state;
 pub mod touch_virtual_device;
 pub mod virtual_device;
+
+/// Authenticated device revocation statement signed by a physical mailbox device over the target device key and revocation timestamp.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeviceRevocation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// XEdDSA deviceKeyPubkey of the physical device that signed this revocation.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub revoked_by: jacquard_common::deps::bytes::Bytes,
+    /// XEdDSA signature over the domain-separated (did, targetDeviceKey, revokedAt) revocation statement.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sig: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_device_revocation_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
 
 /// Public data of one mailbox epoch (SPEC §5.2-5.3). Everything needed to recompute and verify the epoch head.
 
@@ -136,6 +169,38 @@ pub struct MekRecipient<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         flatten,
         default,
         deserialize_with = "deserialize_mek_recipient_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Original sender device signature over the domain-separated canonical (threadId, messageId, archiveCommitment) tuple. Stored beside, never inside, the commitment input.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct OriginalSenderArchiveAttestation<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub sender_device_id: S,
+    pub sender_did: jacquard_common::types::string::Did<S>,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub sender_transport_pubkey: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_original_sender_archive_attestation_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -380,6 +445,8 @@ pub struct SequencerReceipt<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub group_id: jacquard_common::deps::bytes::Bytes,
     pub issued_at_ms: i64,
     pub kid: S,
+    pub original_sender_attestation:
+        crate::generated::blue_catbird::labyrinth::OriginalSenderArchiveAttestation<S>,
     pub sender_device_id: S,
     pub sender_did: jacquard_common::types::string::Did<S>,
     pub seq: i64,
@@ -523,6 +590,21 @@ pub struct TransportAttestation<S: jacquard_common::BosStr = jacquard_common::De
     >,
 }
 
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DeviceRevocation<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.labyrinth.defs"
+    }
+    fn def_name() -> &'static str {
+        "deviceRevocation"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_labyrinth_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EpochPublic<S> {
     fn nsid() -> &'static str {
         "blue.catbird.labyrinth.defs"
@@ -569,6 +651,49 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mek
         lexicon_doc_blue_catbird_labyrinth_defs()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for OriginalSenderArchiveAttestation<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.labyrinth.defs"
+    }
+    fn def_name() -> &'static str {
+        "originalSenderArchiveAttestation"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_labyrinth_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.sender_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "sender_device_id",
+                    ),
+                    max: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.sender_device_id;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 36usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "sender_device_id",
+                    ),
+                    min: 36usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -1124,6 +1249,1260 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
     }
 }
 
+fn deserialize_device_revocation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod device_revocation_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type RevokedBy;
+        type Sig;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type RevokedBy = Unset;
+        type Sig = Unset;
+    }
+    ///State transition - sets the `revoked_by` field to Set
+    pub struct SetRevokedBy<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRevokedBy<St> {}
+    impl<St: State> State for SetRevokedBy<St> {
+        type RevokedBy = Set<members::revoked_by>;
+        type Sig = St::Sig;
+    }
+    ///State transition - sets the `sig` field to Set
+    pub struct SetSig<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSig<St> {}
+    impl<St: State> State for SetSig<St> {
+        type RevokedBy = St::RevokedBy;
+        type Sig = Set<members::sig>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `revoked_by` field
+        pub struct revoked_by(());
+        ///Marker type for the `sig` field
+        pub struct sig(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeviceRevocationBuilder<
+    St: device_revocation_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeviceRevocation<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> DeviceRevocationBuilder<device_revocation_state::Empty, jacquard_common::DefaultStr> {
+        DeviceRevocationBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeviceRevocation<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeviceRevocationBuilder<device_revocation_state::Empty, S> {
+        DeviceRevocationBuilder::builder()
+    }
+}
+
+impl DeviceRevocationBuilder<device_revocation_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeviceRevocationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeviceRevocationBuilder<device_revocation_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeviceRevocationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceRevocationBuilder<St, S>
+where
+    St: device_revocation_state::State,
+    St::RevokedBy: device_revocation_state::IsUnset,
+{
+    /// Set the `revokedBy` field (required)
+    pub fn revoked_by(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeviceRevocationBuilder<device_revocation_state::SetRevokedBy<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeviceRevocationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceRevocationBuilder<St, S>
+where
+    St: device_revocation_state::State,
+    St::Sig: device_revocation_state::IsUnset,
+{
+    /// Set the `sig` field (required)
+    pub fn sig(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeviceRevocationBuilder<device_revocation_state::SetSig<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DeviceRevocationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceRevocationBuilder<St, S>
+where
+    St: device_revocation_state::State,
+    St::RevokedBy: device_revocation_state::IsSet,
+    St::Sig: device_revocation_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeviceRevocation<S> {
+        DeviceRevocation {
+            revoked_by: self._fields.0.unwrap(),
+            sig: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeviceRevocation<S> {
+        DeviceRevocation {
+            revoked_by: self._fields.0.unwrap(),
+            sig: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.labyrinth.defs"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "deviceRevocation",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Authenticated device revocation statement signed by a physical mailbox device over the target device key and revocation timestamp.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("revokedBy"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sig")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "revokedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sig",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("epochPublic"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Public data of one mailbox epoch (SPEC §5.2-5.3). Everything needed to recompute and verify the epoch head.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochNumber"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("authPubkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptionPubkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signingPubkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("membersHash"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochHead"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("selfSig"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("attestation")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "attestation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#transportAttestation",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "authPubkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "encryptionPubkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(1216usize),
+                                min_length: Some(1216usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epochHead",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epochNumber",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(1099511627776i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "membersHash",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "prevSig",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "previousEpochHead",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "selfSig",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signingPubkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("mekRecipient"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "recipientEpochHead",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ciphertext"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "ciphertext",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(1200usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Recipient account.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "recipientEpochHead",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        max_length: Some(32usize),
+                                        min_length: Some(32usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "originalSenderArchiveAttestation",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Original sender device signature over the domain-separated canonical (threadId, messageId, archiveCommitment) tuple. Stored beside, never inside, the commitment input.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDeviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderTransportPubkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderDeviceId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderTransportPubkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signature",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerMessage"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "One owner-encrypted message or delete-for-me tombstone (SPEC §7.1, [CB-37], [CB-38], I13). frameNonce lives strictly inside owner-encrypted ciphertext.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("threadId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("timestamp"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochNumber"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("version"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("encrypted")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "encrypted",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(262144usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epochNumber",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(1099511627776i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "messageId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("Message id."),
+                                ),
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerReceipt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#sequencerReceipt",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "threadId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("Conversation id."),
+                                ),
+                                max_length: Some(256usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "timestamp",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "version",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(5i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("redaction"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "A redaction of a sender item. Two variants. (1) [CB-38] author unsend: transportPubkey and sig, Ed25519 by one of the author's chat device keys over 'catbird.labyrinth.redaction:did=' || did || ';message_id=' || messageId || ';thread_id=' || hex(threadId). (2) Server redaction for an account deletion (deleteAccountData / purgeAuthor): transportPubkey is absent; by is the redacting (sequencer) DS's DID, reason is 'accountDeleted', redactedAt is the server's, and sig, when present, is Ed25519 by that DS's redaction key over the UTF-8 string 'catbird.labyrinth.ds_redaction:by=' || by || ';did=' || author DID || ';message_id=' || messageId || ';reason=accountDeleted;redacted_at=' || redactedAt || ';thread_id=' || hex(utf8(threadId)). Readers show variant 2 as 'account deleted' only when sig verifies under the key of the conversation's sequencer DID, and otherwise as 'removed by server'; never as an author unsend.",
+                        ),
+                    ),
+                    required: Some(vec![]),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("by"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Server redactions: the DID of the DS that applied it (the conversation's sequencer).",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reason",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Server redactions: why the server redacted the item.",
+                                    ),
+                                ),
+                                max_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "redactedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Set by the server when it applied the redaction.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sig",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "transportPubkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("sealedMessage"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "One v1.1 sender-encrypted message (SPEC §7.2, I13). frameNonce lives strictly inside MEK-encrypted signedEncMessage so archiveCommitment remains hiding. A redacted item ([CB-38]) keeps messageId, timestamp, mekId and senderTransportPubkey, carries redaction, and has an empty signedEncMessage.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("timestamp"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("mekId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderTransportPubkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signedEncMessage")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "mekId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(12usize),
+                                min_length: Some(12usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "messageId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("Chat message id."),
+                                ),
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "redaction",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static("#redaction"),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderTransportPubkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerReceipt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#sequencerReceipt",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signedEncMessage",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(262144usize),
+                                min_length: Some(0usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "timestamp",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "sequencerReceipt",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "[I13] Sequencer receipt signed by {sequencerDid}#mls-receipt-1 binding Labyrinth history items to live MLS applicationAad.archiveCommitment.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("conversationId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("generation"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("entryId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDeviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("archiveCommitment"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("issuedAtMs"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("kid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("originalSenderAttestation")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "archiveCommitment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "conversationId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "entryId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epoch",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "generation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "groupId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "issuedAtMs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "kid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                max_length: Some(320usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "originalSenderAttestation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#originalSenderArchiveAttestation",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderDeviceId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "senderDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sequencerDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signature",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("serverOrder"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "The order mls-ds assigned to a record when it was written ([CB-27]). Readers bound a removed chat key by it instead of the sender's timestamp.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("receivedAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "chatSeq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "receivedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Receive time on the server clock.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                maximum: Some(9007199254740991i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "spaceBatchRedaction",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Authoritative tombstone overlay for an item in an immutable sender batch. Apply after verifying the source record.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("timestamp"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("redaction")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "messageId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "redaction",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "blue.catbird.labyrinth.defs#redaction",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "timestamp",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(0i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("spaceBatchView"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "An immutable Space batch reference and its authenticated sequencer order. Server tombstones remain authoritative even if the source ciphertext is still readable.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("space"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("generation"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("order"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("redactions"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("itemCount")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "author",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "generation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Immutable UUID identifying this conversation storage lifecycle. A recreated Space requires a new generation.",
+                                    ),
+                                ),
+                                min_length: Some(36usize),
+                                max_length: Some(36usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "itemCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                minimum: Some(1i64),
+                                maximum: Some(256i64),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "order",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "blue.catbird.labyrinth.defs#serverOrder",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "redactions",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "blue.catbird.labyrinth.defs#spaceBatchRedaction",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                max_length: Some(256usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::RecordKey,
+                                ),
+                                max_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "space",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Conversation Space reference, bound to the storage generation.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "transportAttestation",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "[CB-18] Binds an epoch head to the account's MLS chat identity: Ed25519 by a chat device transport key over 'catbird.labyrinth.epoch_head_attest:' || did || ':' || head.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("transportPubkey"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sig")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sig",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "transportPubkey",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(32usize),
+                                min_length: Some(32usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
+    }
+}
+
 fn deserialize_epoch_public_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -1602,951 +2981,6 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_labyrinth_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("blue.catbird.labyrinth.defs"),
-        defs: {
-            let mut map = ::alloc::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("epochPublic"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Public data of one mailbox epoch (SPEC §5.2-5.3). Everything needed to recompute and verify the epoch head.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochNumber"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("authPubkey"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("encryptionPubkey"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signingPubkey"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("membersHash"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochHead"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("selfSig"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("attestation")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "attestation",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#transportAttestation",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "authPubkey",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "encryptionPubkey",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(1216usize),
-                                min_length: Some(1216usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "epochHead",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "epochNumber",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(1099511627776i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "membersHash",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "prevSig",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(64usize),
-                                min_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "previousEpochHead",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "selfSig",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(64usize),
-                                min_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "signingPubkey",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("mekRecipient"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "recipientEpochHead",
-                            ),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ciphertext"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "ciphertext",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                    ::jacquard_lexicon::lexicon::LexBytes {
-                                        max_length: Some(1200usize),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Recipient account.",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "recipientEpochHead",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                    ::jacquard_lexicon::lexicon::LexBytes {
-                                        max_length: Some(32usize),
-                                        min_length: Some(32usize),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerMessage"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "One owner-encrypted message or delete-for-me tombstone (SPEC §7.1, [CB-37], [CB-38], I13). frameNonce lives strictly inside owner-encrypted ciphertext.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("threadId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("timestamp"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epochNumber"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("version"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("encrypted")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "encrypted",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(262144usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "epochNumber",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(1099511627776i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "messageId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Message id."),
-                                ),
-                                max_length: Some(128usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "seq",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(1i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sequencerReceipt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#sequencerReceipt",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "threadId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Conversation id."),
-                                ),
-                                max_length: Some(256usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "timestamp",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "version",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(5i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("redaction"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "A redaction of a sender item. Two variants. (1) [CB-38] author unsend: transportPubkey and sig, Ed25519 by one of the author's chat device keys over 'catbird.labyrinth.redaction:did=' || did || ';message_id=' || messageId || ';thread_id=' || hex(threadId). (2) Server redaction for an account deletion (deleteAccountData / purgeAuthor): transportPubkey is absent; by is the redacting (sequencer) DS's DID, reason is 'accountDeleted', redactedAt is the server's, and sig, when present, is Ed25519 by that DS's redaction key over the UTF-8 string 'catbird.labyrinth.ds_redaction:by=' || by || ';did=' || author DID || ';message_id=' || messageId || ';reason=accountDeleted;redacted_at=' || redactedAt || ';thread_id=' || hex(utf8(threadId)). Readers show variant 2 as 'account deleted' only when sig verifies under the key of the conversation's sequencer DID, and otherwise as 'removed by server'; never as an author unsend.",
-                        ),
-                    ),
-                    required: Some(vec![]),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("by"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Server redactions: the DID of the DS that applied it (the conversation's sequencer).",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "reason",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Server redactions: why the server redacted the item.",
-                                    ),
-                                ),
-                                max_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "redactedAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Set by the server when it applied the redaction.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sig",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(64usize),
-                                min_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "transportPubkey",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("sealedMessage"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "One v1.1 sender-encrypted message (SPEC §7.2, I13). frameNonce lives strictly inside MEK-encrypted signedEncMessage so archiveCommitment remains hiding. A redacted item ([CB-38]) keeps messageId, timestamp, mekId and senderTransportPubkey, carries redaction, and has an empty signedEncMessage.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("timestamp"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("mekId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderTransportPubkey"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signedEncMessage")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "mekId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(12usize),
-                                min_length: Some(12usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "messageId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Chat message id."),
-                                ),
-                                max_length: Some(128usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "redaction",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static("#redaction"),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "senderTransportPubkey",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "seq",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(1i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sequencerReceipt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#sequencerReceipt",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "signedEncMessage",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(262144usize),
-                                min_length: Some(0usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "timestamp",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "sequencerReceipt",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "[I13] Sequencer receipt signed by {sequencerDid}#mls-receipt-1 binding Labyrinth history items to live MLS applicationAad.archiveCommitment.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("conversationId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("generation"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("entryId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("senderDeviceId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("archiveCommitment"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("issuedAtMs"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sequencerDid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("kid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "archiveCommitment",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "conversationId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                min_length: Some(36usize),
-                                max_length: Some(36usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "entryId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                min_length: Some(36usize),
-                                max_length: Some(36usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "epoch",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "generation",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "groupId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "issuedAtMs",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "kid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                max_length: Some(320usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "senderDeviceId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                min_length: Some(36usize),
-                                max_length: Some(36usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "senderDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "seq",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(1i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sequencerDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "signature",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(64usize),
-                                min_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("serverOrder"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "The order mls-ds assigned to a record when it was written ([CB-27]). Readers bound a removed chat key by it instead of the sender's timestamp.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("receivedAt")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "chatSeq",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "receivedAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Receive time on the server clock.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "seq",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                maximum: Some(9007199254740991i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "spaceBatchRedaction",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Authoritative tombstone overlay for an item in an immutable sender batch. Apply after verifying the source record.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("timestamp"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("redaction")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "messageId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                max_length: Some(128usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "redaction",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.labyrinth.defs#redaction",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "timestamp",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("spaceBatchView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "An immutable Space batch reference and its authenticated sequencer order. Server tombstones remain authoritative even if the source ciphertext is still readable.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rkey"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("space"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("generation"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("order"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("redactions"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("itemCount")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "author",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "cid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "generation",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Immutable UUID identifying this conversation storage lifecycle. A recreated Space requires a new generation.",
-                                    ),
-                                ),
-                                min_length: Some(36usize),
-                                max_length: Some(36usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "itemCount",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(1i64),
-                                maximum: Some(256i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "order",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "blue.catbird.labyrinth.defs#serverOrder",
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "redactions",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    r#ref: ::jacquard_common::CowStr::new_static(
-                                        "blue.catbird.labyrinth.defs#spaceBatchRedaction",
-                                    ),
-                                    ..Default::default()
-                                }),
-                                max_length: Some(256usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "rkey",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::RecordKey,
-                                ),
-                                max_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "space",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Conversation Space reference, bound to the storage generation.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::SpaceRef,
-                                ),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                    "transportAttestation",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "[CB-18] Binds an epoch head to the account's MLS chat identity: Ed25519 by a chat device transport key over 'catbird.labyrinth.epoch_head_attest:' || did || ':' || head.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("transportPubkey"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sig")
-                        ],
-                    ),
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::alloc::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "sig",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(64usize),
-                                min_length: Some(64usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "transportPubkey",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                max_length: Some(32usize),
-                                min_length: Some(32usize),
-                                ..Default::default()
-                            }),
-                        );
-                        map
-                    },
-                    ..Default::default()
-                }),
-            );
-            map
-        },
-        ..Default::default()
-    }
-}
-
 fn deserialize_mek_recipient_extra_data<'de, S, D>(
     deserializer: D,
 ) -> Result<
@@ -2764,6 +3198,291 @@ where
             ciphertext: self._fields.0.unwrap(),
             did: self._fields.1.unwrap(),
             recipient_epoch_head: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_original_sender_archive_attestation_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod original_sender_archive_attestation_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type SenderDeviceId;
+        type SenderDid;
+        type SenderTransportPubkey;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type SenderDeviceId = Unset;
+        type SenderDid = Unset;
+        type SenderTransportPubkey = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `sender_device_id` field to Set
+    pub struct SetSenderDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDeviceId<St> {}
+    impl<St: State> State for SetSenderDeviceId<St> {
+        type SenderDeviceId = Set<members::sender_device_id>;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_did` field to Set
+    pub struct SetSenderDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDid<St> {}
+    impl<St: State> State for SetSenderDid<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = Set<members::sender_did>;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `sender_transport_pubkey` field to Set
+    pub struct SetSenderTransportPubkey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderTransportPubkey<St> {}
+    impl<St: State> State for SetSenderTransportPubkey<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = Set<members::sender_transport_pubkey>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type SenderTransportPubkey = St::SenderTransportPubkey;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `sender_device_id` field
+        pub struct sender_device_id(());
+        ///Marker type for the `sender_did` field
+        pub struct sender_did(());
+        ///Marker type for the `sender_transport_pubkey` field
+        pub struct sender_transport_pubkey(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct OriginalSenderArchiveAttestationBuilder<
+    St: original_sender_archive_attestation_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl OriginalSenderArchiveAttestation<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> OriginalSenderArchiveAttestationBuilder<
+        original_sender_archive_attestation_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        OriginalSenderArchiveAttestationBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> OriginalSenderArchiveAttestation<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> OriginalSenderArchiveAttestationBuilder<original_sender_archive_attestation_state::Empty, S>
+    {
+        OriginalSenderArchiveAttestationBuilder::builder()
+    }
+}
+
+impl
+    OriginalSenderArchiveAttestationBuilder<
+        original_sender_archive_attestation_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        OriginalSenderArchiveAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    OriginalSenderArchiveAttestationBuilder<original_sender_archive_attestation_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        OriginalSenderArchiveAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> OriginalSenderArchiveAttestationBuilder<St, S>
+where
+    St: original_sender_archive_attestation_state::State,
+    St::SenderDeviceId: original_sender_archive_attestation_state::IsUnset,
+{
+    /// Set the `senderDeviceId` field (required)
+    pub fn sender_device_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> OriginalSenderArchiveAttestationBuilder<
+        original_sender_archive_attestation_state::SetSenderDeviceId<St>,
+        S,
+    > {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        OriginalSenderArchiveAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> OriginalSenderArchiveAttestationBuilder<St, S>
+where
+    St: original_sender_archive_attestation_state::State,
+    St::SenderDid: original_sender_archive_attestation_state::IsUnset,
+{
+    /// Set the `senderDid` field (required)
+    pub fn sender_did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> OriginalSenderArchiveAttestationBuilder<
+        original_sender_archive_attestation_state::SetSenderDid<St>,
+        S,
+    > {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        OriginalSenderArchiveAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> OriginalSenderArchiveAttestationBuilder<St, S>
+where
+    St: original_sender_archive_attestation_state::State,
+    St::SenderTransportPubkey: original_sender_archive_attestation_state::IsUnset,
+{
+    /// Set the `senderTransportPubkey` field (required)
+    pub fn sender_transport_pubkey(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> OriginalSenderArchiveAttestationBuilder<
+        original_sender_archive_attestation_state::SetSenderTransportPubkey<St>,
+        S,
+    > {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        OriginalSenderArchiveAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> OriginalSenderArchiveAttestationBuilder<St, S>
+where
+    St: original_sender_archive_attestation_state::State,
+    St::Signature: original_sender_archive_attestation_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> OriginalSenderArchiveAttestationBuilder<
+        original_sender_archive_attestation_state::SetSignature<St>,
+        S,
+    > {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        OriginalSenderArchiveAttestationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> OriginalSenderArchiveAttestationBuilder<St, S>
+where
+    St: original_sender_archive_attestation_state::State,
+    St::SenderDeviceId: original_sender_archive_attestation_state::IsSet,
+    St::SenderDid: original_sender_archive_attestation_state::IsSet,
+    St::SenderTransportPubkey: original_sender_archive_attestation_state::IsSet,
+    St::Signature: original_sender_archive_attestation_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> OriginalSenderArchiveAttestation<S> {
+        OriginalSenderArchiveAttestation {
+            sender_device_id: self._fields.0.unwrap(),
+            sender_did: self._fields.1.unwrap(),
+            sender_transport_pubkey: self._fields.2.unwrap(),
+            signature: self._fields.3.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> OriginalSenderArchiveAttestation<S> {
+        OriginalSenderArchiveAttestation {
+            sender_device_id: self._fields.0.unwrap(),
+            sender_did: self._fields.1.unwrap(),
+            sender_transport_pubkey: self._fields.2.unwrap(),
+            signature: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -3580,6 +4299,7 @@ pub mod sequencer_receipt_state {
         type GroupId;
         type IssuedAtMs;
         type Kid;
+        type OriginalSenderAttestation;
         type SenderDeviceId;
         type SenderDid;
         type Seq;
@@ -3598,6 +4318,7 @@ pub mod sequencer_receipt_state {
         type GroupId = Unset;
         type IssuedAtMs = Unset;
         type Kid = Unset;
+        type OriginalSenderAttestation = Unset;
         type SenderDeviceId = Unset;
         type SenderDid = Unset;
         type Seq = Unset;
@@ -3616,6 +4337,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3634,6 +4356,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3652,6 +4375,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3670,6 +4394,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3688,6 +4413,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3706,6 +4432,7 @@ pub mod sequencer_receipt_state {
         type GroupId = Set<members::group_id>;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3724,6 +4451,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = Set<members::issued_at_ms>;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3742,6 +4470,26 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = Set<members::kid>;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
+        type SenderDeviceId = St::SenderDeviceId;
+        type SenderDid = St::SenderDid;
+        type Seq = St::Seq;
+        type SequencerDid = St::SequencerDid;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `original_sender_attestation` field to Set
+    pub struct SetOriginalSenderAttestation<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOriginalSenderAttestation<St> {}
+    impl<St: State> State for SetOriginalSenderAttestation<St> {
+        type ArchiveCommitment = St::ArchiveCommitment;
+        type ConversationId = St::ConversationId;
+        type EntryId = St::EntryId;
+        type Epoch = St::Epoch;
+        type Generation = St::Generation;
+        type GroupId = St::GroupId;
+        type IssuedAtMs = St::IssuedAtMs;
+        type Kid = St::Kid;
+        type OriginalSenderAttestation = Set<members::original_sender_attestation>;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3760,6 +4508,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = Set<members::sender_device_id>;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3778,6 +4527,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = Set<members::sender_did>;
         type Seq = St::Seq;
@@ -3796,6 +4546,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = Set<members::seq>;
@@ -3814,6 +4565,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3832,6 +4584,7 @@ pub mod sequencer_receipt_state {
         type GroupId = St::GroupId;
         type IssuedAtMs = St::IssuedAtMs;
         type Kid = St::Kid;
+        type OriginalSenderAttestation = St::OriginalSenderAttestation;
         type SenderDeviceId = St::SenderDeviceId;
         type SenderDid = St::SenderDid;
         type Seq = St::Seq;
@@ -3857,6 +4610,8 @@ pub mod sequencer_receipt_state {
         pub struct issued_at_ms(());
         ///Marker type for the `kid` field
         pub struct kid(());
+        ///Marker type for the `original_sender_attestation` field
+        pub struct original_sender_attestation(());
         ///Marker type for the `sender_device_id` field
         pub struct sender_device_id(());
         ///Marker type for the `sender_did` field
@@ -3885,6 +4640,9 @@ pub struct SequencerReceiptBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<S>,
+        core::option::Option<
+            crate::generated::blue_catbird::labyrinth::OriginalSenderArchiveAttestation<S>,
+        >,
         core::option::Option<S>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<i64>,
@@ -3915,7 +4673,7 @@ impl SequencerReceiptBuilder<sequencer_receipt_state::Empty, jacquard_common::De
         SequencerReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -3928,7 +4686,7 @@ impl<S: jacquard_common::BosStr> SequencerReceiptBuilder<sequencer_receipt_state
         SequencerReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -4090,6 +4848,25 @@ where
 impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
 where
     St: sequencer_receipt_state::State,
+    St::OriginalSenderAttestation: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `originalSenderAttestation` field (required)
+    pub fn original_sender_attestation(
+        mut self,
+        value: impl Into<crate::generated::blue_catbird::labyrinth::OriginalSenderArchiveAttestation<S>>,
+    ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetOriginalSenderAttestation<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SequencerReceiptBuilder<St, S>
+where
+    St: sequencer_receipt_state::State,
     St::SenderDeviceId: sequencer_receipt_state::IsUnset,
 {
     /// Set the `senderDeviceId` field (required)
@@ -4097,7 +4874,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSenderDeviceId<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         SequencerReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -4116,7 +4893,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSenderDid<St>, S> {
-        self._fields.9 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         SequencerReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -4135,7 +4912,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSeq<St>, S> {
-        self._fields.10 = ::core::option::Option::Some(value.into());
+        self._fields.11 = ::core::option::Option::Some(value.into());
         SequencerReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -4154,7 +4931,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSequencerDid<St>, S> {
-        self._fields.11 = ::core::option::Option::Some(value.into());
+        self._fields.12 = ::core::option::Option::Some(value.into());
         SequencerReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -4173,7 +4950,7 @@ where
         mut self,
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> SequencerReceiptBuilder<sequencer_receipt_state::SetSignature<St>, S> {
-        self._fields.12 = ::core::option::Option::Some(value.into());
+        self._fields.13 = ::core::option::Option::Some(value.into());
         SequencerReceiptBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -4193,6 +4970,7 @@ where
     St::GroupId: sequencer_receipt_state::IsSet,
     St::IssuedAtMs: sequencer_receipt_state::IsSet,
     St::Kid: sequencer_receipt_state::IsSet,
+    St::OriginalSenderAttestation: sequencer_receipt_state::IsSet,
     St::SenderDeviceId: sequencer_receipt_state::IsSet,
     St::SenderDid: sequencer_receipt_state::IsSet,
     St::Seq: sequencer_receipt_state::IsSet,
@@ -4210,11 +4988,12 @@ where
             group_id: self._fields.5.unwrap(),
             issued_at_ms: self._fields.6.unwrap(),
             kid: self._fields.7.unwrap(),
-            sender_device_id: self._fields.8.unwrap(),
-            sender_did: self._fields.9.unwrap(),
-            seq: self._fields.10.unwrap(),
-            sequencer_did: self._fields.11.unwrap(),
-            signature: self._fields.12.unwrap(),
+            original_sender_attestation: self._fields.8.unwrap(),
+            sender_device_id: self._fields.9.unwrap(),
+            sender_did: self._fields.10.unwrap(),
+            seq: self._fields.11.unwrap(),
+            sequencer_did: self._fields.12.unwrap(),
+            signature: self._fields.13.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -4235,11 +5014,12 @@ where
             group_id: self._fields.5.unwrap(),
             issued_at_ms: self._fields.6.unwrap(),
             kid: self._fields.7.unwrap(),
-            sender_device_id: self._fields.8.unwrap(),
-            sender_did: self._fields.9.unwrap(),
-            seq: self._fields.10.unwrap(),
-            sequencer_did: self._fields.11.unwrap(),
-            signature: self._fields.12.unwrap(),
+            original_sender_attestation: self._fields.8.unwrap(),
+            sender_device_id: self._fields.9.unwrap(),
+            sender_did: self._fields.10.unwrap(),
+            seq: self._fields.11.unwrap(),
+            sequencer_did: self._fields.12.unwrap(),
+            signature: self._fields.13.unwrap(),
             extra_data: Some(extra_data),
         }
     }

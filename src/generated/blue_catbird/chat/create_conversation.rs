@@ -151,6 +151,11 @@ pub enum CreateConversationError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    #[serde(rename = "SignedOperationExpired")]
+    SignedOperationExpired(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnsupportedMlsProfile")]
     UnsupportedMlsProfile(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -309,6 +314,13 @@ impl core::fmt::Display for CreateConversationError {
             }
             Self::RelationshipPolicyUnavailable(msg) => {
                 write!(f, "RelationshipPolicyUnavailable")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::SignedOperationExpired(msg) => {
+                write!(f, "SignedOperationExpired")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

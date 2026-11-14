@@ -17,6 +17,8 @@ pub struct GetPostThread<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     #[serde(default = "_default_depth")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub depth: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub include_encrypted: core::option::Option<bool>,
     /// Defaults to `80`. Min: 0. Max: 100.
     #[serde(default = "_default_parent_height")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -231,6 +233,7 @@ pub struct GetPostThreadBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<i64>,
+        core::option::Option<bool>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::aturi::AtSpaceUri<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
@@ -258,7 +261,7 @@ impl GetPostThreadBuilder<get_post_thread_state::Empty, jacquard_common::Default
     pub fn new() -> Self {
         GetPostThreadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -269,7 +272,7 @@ impl<S: jacquard_common::BosStr> GetPostThreadBuilder<get_post_thread_state::Emp
     pub fn builder() -> Self {
         GetPostThreadBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -289,14 +292,27 @@ impl<St: get_post_thread_state::State, S: jacquard_common::BosStr> GetPostThread
 }
 
 impl<St: get_post_thread_state::State, S: jacquard_common::BosStr> GetPostThreadBuilder<St, S> {
+    /// Set the `includeEncrypted` field (optional)
+    pub fn include_encrypted(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `includeEncrypted` field to an Option value (optional)
+    pub fn maybe_include_encrypted(mut self, value: Option<bool>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: get_post_thread_state::State, S: jacquard_common::BosStr> GetPostThreadBuilder<St, S> {
     /// Set the `parentHeight` field (optional)
     pub fn parent_height(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.1 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `parentHeight` field to an Option value (optional)
     pub fn maybe_parent_height(mut self, value: Option<i64>) -> Self {
-        self._fields.1 = value;
+        self._fields.2 = value;
         self
     }
 }
@@ -311,7 +327,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::aturi::AtSpaceUri<S>>,
     ) -> GetPostThreadBuilder<get_post_thread_state::SetSpace<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         GetPostThreadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -330,7 +346,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::AtUri<S>>,
     ) -> GetPostThreadBuilder<get_post_thread_state::SetUri<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         GetPostThreadBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -349,9 +365,10 @@ where
     pub fn build(self) -> GetPostThread<S> {
         GetPostThread {
             depth: self._fields.0,
-            parent_height: self._fields.1,
-            space: self._fields.2.unwrap(),
-            uri: self._fields.3.unwrap(),
+            include_encrypted: self._fields.1,
+            parent_height: self._fields.2,
+            space: self._fields.3.unwrap(),
+            uri: self._fields.4.unwrap(),
         }
     }
 }

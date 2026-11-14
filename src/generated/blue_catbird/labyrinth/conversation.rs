@@ -7,13 +7,14 @@
 
 //! Space declaration descriptor for `blue.catbird.labyrinth.conversation`.
 //!
-//! Sender-written post-quantum encrypted MLS conversation history, MEKs, and attachment manifests
+//! Sender-written post-quantum encrypted MLS conversation history, MEKs, attachment manifests, and author redactions
 
 pub const NSID: &str = "blue.catbird.labyrinth.conversation";
 pub const KEY_TYPE: &str = "any";
-pub const NAME: &str = "Catbird chat history";
+pub const NAME: &str = "";
 pub const COLLECTIONS: &[&str] = &[
     "blue.catbird.labyrinth.batch",
     "blue.catbird.labyrinth.mek",
     "blue.catbird.labyrinth.attachmentManifest",
+    "blue.catbird.labyrinth.authorRedaction",
 ];

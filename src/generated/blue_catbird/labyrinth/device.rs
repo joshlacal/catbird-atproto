@@ -39,6 +39,10 @@ pub struct Device<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// pk_sign(deviceKey, 0x32, epochStorageKeyPubkey) (100% PQ domain tag 0x32, I16).
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub epoch_storage_key_sig: jacquard_common::deps::bytes::Bytes,
+    /// Cryptographic signature by the revoking physical device authenticating revokedAt.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub revocation:
+        core::option::Option<crate::generated::blue_catbird::labyrinth::DeviceRevocation<S>>,
     /// Set once when the device is revoked; the revoking device opens a new epoch that excludes it ([CB-11]).
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub revoked_at: core::option::Option<jacquard_common::types::string::Datetime>,
@@ -262,6 +266,7 @@ pub struct DeviceBuilder<
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<crate::generated::blue_catbird::labyrinth::DeviceRevocation<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<bool>,
     ),
@@ -287,7 +292,7 @@ impl DeviceBuilder<device_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         DeviceBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -298,7 +303,7 @@ impl<S: jacquard_common::BosStr> DeviceBuilder<device_state::Empty, S> {
     pub fn builder() -> Self {
         DeviceBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -438,12 +443,31 @@ where
 }
 
 impl<St: device_state::State, S: jacquard_common::BosStr> DeviceBuilder<St, S> {
+    /// Set the `revocation` field (optional)
+    pub fn revocation(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::labyrinth::DeviceRevocation<S>>>,
+    ) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `revocation` field to an Option value (optional)
+    pub fn maybe_revocation(
+        mut self,
+        value: Option<crate::generated::blue_catbird::labyrinth::DeviceRevocation<S>>,
+    ) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
+impl<St: device_state::State, S: jacquard_common::BosStr> DeviceBuilder<St, S> {
     /// Set the `revokedAt` field (optional)
     pub fn revoked_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self._fields.7 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `revokedAt` field to an Option value (optional)
@@ -451,7 +475,7 @@ impl<St: device_state::State, S: jacquard_common::BosStr> DeviceBuilder<St, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self._fields.7 = value;
+        self._fields.8 = value;
         self
     }
 }
@@ -466,7 +490,7 @@ where
         mut self,
         value: impl Into<bool>,
     ) -> DeviceBuilder<device_state::SetVirtual<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         DeviceBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -494,8 +518,9 @@ where
             epoch_storage_auth_key_sig: self._fields.4,
             epoch_storage_key_pubkey: self._fields.5.unwrap(),
             epoch_storage_key_sig: self._fields.6.unwrap(),
-            revoked_at: self._fields.7,
-            r#virtual: self._fields.8.unwrap(),
+            revocation: self._fields.7,
+            revoked_at: self._fields.8,
+            r#virtual: self._fields.9.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -515,8 +540,9 @@ where
             epoch_storage_auth_key_sig: self._fields.4,
             epoch_storage_key_pubkey: self._fields.5.unwrap(),
             epoch_storage_key_sig: self._fields.6.unwrap(),
-            revoked_at: self._fields.7,
-            r#virtual: self._fields.8.unwrap(),
+            revocation: self._fields.7,
+            revoked_at: self._fields.8,
+            r#virtual: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -619,6 +645,17 @@ fn lexicon_doc_blue_catbird_labyrinth_device() -> jacquard_lexicon::lexicon::Lex
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
                                     max_length: Some(64usize),
                                     min_length: Some(64usize),
+                                    ..Default::default()
+                                }),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "revocation",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "blue.catbird.labyrinth.defs#deviceRevocation",
+                                    ),
                                     ..Default::default()
                                 }),
                             );

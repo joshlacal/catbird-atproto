@@ -5,7 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// Space policy that defers each user access decision to an external managing app, which the authority asks via checkUserAccess.
+/// Space policy that delegates access decisions to an external app through checkAccess.
 
 #[derive(
     serde::Serialize,
@@ -22,9 +22,9 @@
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct Policy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Service identifier of the managing app: a DID with an optional service fragment (e.g. 'did:web:example.com#forum').
+    /// The `did#serviceId` reference of the managing app.
     pub managing_app: S,
-    /// Publish the policy to readers as a com.atproto.space.policy record in the authority's repo in the space.  Defaults to `false`.
+    /// Publish the policy as a com.atproto.space.policy record in the space.  Defaults to `false`.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_policy_publish_policy")]
     pub publish_policy: core::option::Option<bool>,
@@ -96,7 +96,7 @@ fn lexicon_doc_com_atproto_managedspace_policy() -> jacquard_lexicon::lexicon::L
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Space policy that defers each user access decision to an external managing app, which the authority asks via checkUserAccess.",
+                            "Space policy that delegates access decisions to an external app through checkAccess.",
                         ),
                     ),
                     required: Some(
@@ -114,7 +114,7 @@ fn lexicon_doc_com_atproto_managedspace_policy() -> jacquard_lexicon::lexicon::L
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "Service identifier of the managing app: a DID with an optional service fragment (e.g. 'did:web:example.com#forum').",
+                                        "The `did#serviceId` reference of the managing app.",
                                     ),
                                 ),
                                 ..Default::default()

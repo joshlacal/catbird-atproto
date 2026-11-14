@@ -30,7 +30,37 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (Task 5 receipt projection, regenerated 2026-11-11)
+## Current generation (Wave 1 Spaces Nov-12 + Petrel 2.0 + Encrypted Circles convergence, regenerated 2026-11-13)
+
+This generation updates the core corpus to published Petrel
+`2912970ccda2579da71c3f7673a8da733b1ac83b` (Petrel 2.0 + November 12, 2026
+ATProto Spaces `d4def6e9`, 471 core lexicon files) and the overlay corpus to
+PetrelCatbird Wave 1 (`2e7f07a1`, 208 overlay lexicon files: encrypted-Circle
+schemas `blue.catbird.circle.encrypted`/`key`/`post`/`getKeys`, `name` ->
+`title` across all four Space declarations, `blue.catbird.labyrinth.authorRedaction`
+and `#originalSenderArchiveAttestation`, `blue.catbird.chat.authFull` reconciled
+to the exact 35 live `blue.catbird.chat.*` RPC endpoints plus create-only
+repository permissions on `blue.catbird.chat.device` and
+`blue.catbird.labyrinth.mailboxKeys`, `SignedOperationExpired` on
+`blue.catbird.chat.createConversation`, and November 12 `authorizeSpaceSync` /
+`listWriters` / RFC 9421 `acceptSignature` parameters on
+`blue.catbird.chat.relaySpaceCredential` and `blue.catbird.chat.relaySpaceRead`).
+It used `gen-lexicons` built from mls-ds `3079aca5b751c3757db3475d82a552a4ec9789b5`
+(`mls-codegen` unchanged). `Scripts/regenerate.py generate` followed by `check`
+reproduced all 707 generated Rust files byte for byte.
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 471 | `8bf4f0e4ada9249cfbdcd2175d334af8da3b0f047b90d5f3073c7e2b086246d7` |
+| PetrelCatbird `lexicons` | 208 | `9a92f47aad03ec507338619f3bfcef2ccf827fbd3cf76facd66b0fab2be88a60` |
+| Rust `src/generated` | 707 | `783f72db31c17a9883c68b9f334aa8aa4392f098abe5a790f7113dccfb3d4392` |
+
+Key overlay lexicon input hashes:
+- `blue.catbird.chat.defs.json`: `b0fe4af17f657647a8e1ceedb7a34765a0c72d514420ce3b153d6ecd11d240ff`
+- `blue.catbird.chat.authFull.json`: `81e4bb8fbe28c3325488a376a4642253156493f94a086a5e832ba84c43a641e3`
+- `blue.catbird.chat.createConversation.json`: `57b9564be2fc2039481a9cf68d4e680c3ad6f7ca014e289be2f58e4de16b085a`
+
+## Previous generation (Task 5 receipt projection, regenerated 2026-11-11)
 
 This generation removes the unsupported optional `sequencerReceipt` from
 `blue.catbird.chat.defs#accountDeletedEntry`, whose independently verified

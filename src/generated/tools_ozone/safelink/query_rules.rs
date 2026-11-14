@@ -43,6 +43,9 @@ pub struct QueryRules<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default = "_default_query_rules_sort_direction")]
     pub sort_direction: core::option::Option<QueryRulesSortDirection<S>>,
+    /// Filter by exact rule source. Omit to include all sources.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub source: core::option::Option<S>,
     /// Filter by specific URLs or domains
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub urls: core::option::Option<Vec<S>>,
