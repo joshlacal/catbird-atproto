@@ -192,10 +192,64 @@ pub fn verify_credential_request(
     let combined_sig_input = combine_header_lines(headers, SIGNATURE_INPUT_HEADER)?;
     let combined_sig = combine_header_lines(headers, SIGNATURE_HEADER)?;
 
-    let parsed_input = parse_labeled_signature_input(&combined_sig_input)?;
-    let sig_bytes = parse_labeled_signature_bytes(&combined_sig)?;
+    let input_dict = SfParser::parse_dictionary(&combined_sig_input)?;
+    let sig_dict = SfParser::parse_dictionary(&combined_sig)?;
 
-    if parsed_input.components != ["authorization", "atproto-space-audience"] {
+    let tagged: Vec<&(String, SfMember)> = input_dict
+        .entries
+        .iter()
+        .filter(|(_, member)| match member {
+            SfMember::InnerList(list) => {
+                list.params.get("tag") == Some(&SfBareItem::String(SPACE_CREDENTIAL_LABEL.into()))
+            }
+            SfMember::Item(_) => false,
+        })
+        .collect();
+
+    if tagged.len() != 1 {
+        return Err(SpacesError::BadSpaceSignature(
+            "Signature-Input must contain uniquely one tag=\"atproto-space-credential\" inner list"
+                .into(),
+        ));
+    }
+
+    let (sig_label, SfMember::InnerList(parsed_input)) = tagged[0] else {
+        return Err(SpacesError::BadSpaceSignature(
+            "tagged Signature-Input member must be an inner list".into(),
+        ));
+    };
+
+    let Some(SfMember::Item(sig_item)) = sig_dict.get(sig_label) else {
+        return Err(SpacesError::BadSpaceSignature(
+            "Signature dictionary missing matching entry for tagged Signature-Input member".into(),
+        ));
+    };
+    if !sig_item.params.is_empty() {
+        return Err(SpacesError::BadSpaceSignature(
+            "Signature byte-sequence item must not carry parameters".into(),
+        ));
+    }
+    let SfBareItem::ByteSequence(sig_bytes) = &sig_item.value else {
+        return Err(SpacesError::BadSpaceSignature(
+            "Signature member must be an RFC 8941 byte sequence".into(),
+        ));
+    };
+
+    let mut components = Vec::with_capacity(parsed_input.items.len());
+    for item in &parsed_input.items {
+        if !item.params.is_empty() {
+            return Err(SpacesError::BadSpaceSignature(
+                "component parameters are not supported in atproto-space-credential".into(),
+            ));
+        }
+        let SfBareItem::String(comp) = &item.value else {
+            return Err(SpacesError::BadSpaceSignature(
+                "Signature-Input covered components must be structured-field strings".into(),
+            ));
+        };
+        components.push(comp.as_str());
+    }
+    if components != ["authorization", "atproto-space-audience"] {
         return Err(SpacesError::BadSpaceSignature(
             "Signature-Input must cover (\"authorization\" \"atproto-space-audience\")".into(),
         ));
@@ -206,7 +260,7 @@ pub fn verify_credential_request(
     let mut expires: Option<u64> = None;
     let mut nonce: Option<String> = None;
 
-    for (k, v) in &parsed_input.params {
+    for (k, v) in &parsed_input.params.entries {
         match k.as_str() {
             "tag" => match v {
                 SfBareItem::String(s) if s == SPACE_CREDENTIAL_LABEL => seen_tag = true,
@@ -288,7 +342,7 @@ pub fn verify_credential_request(
         }
     }
 
-    let canonical_params = serialize_inner_list(&parsed_input.components, &parsed_input.params);
+    let canonical_params = serialize_inner_list(parsed_input);
     let base = build_signature_base(authorization, audience_did, &canonical_params);
 
     if sig_bytes.len() != 64 {
@@ -297,7 +351,7 @@ pub fn verify_credential_request(
             sig_bytes.len()
         )));
     }
-    let sig = Signature::from_slice(&sig_bytes)
+    let sig = Signature::from_slice(sig_bytes)
         .map_err(|e| SpacesError::BadSpaceSignature(format!("malformed ECDSA signature: {e}")))?;
     // Normalize high-S -> low-S before verification so WebCrypto high-S signatures pass cleanly!
     let normalized = sig.normalize_s().unwrap_or(sig);
@@ -334,9 +388,9 @@ fn combine_header_lines(headers: &HeaderMap, name: &str) -> Result<String> {
     for v in vals {
         let s = v
             .to_str()
-            .map_err(|_| SpacesError::BadSpaceSignature(format!("non-ASCII {name}")))?
-            .trim_matches([' ', '\t']);
-        total = total.saturating_add(s.len() + 2);
+            .map_err(|_| SpacesError::BadSpaceSignature(format!("non-ASCII {name}")))?;
+        let sep = if parts.is_empty() { 0 } else { 2 };
+        total = total.saturating_add(sep).saturating_add(s.len());
         if total > MAX_SIGNATURE_HEADER_BYTES {
             return Err(SpacesError::BadSpaceSignature(format!(
                 "{name} exceeds {MAX_SIGNATURE_HEADER_BYTES} bytes"
@@ -350,244 +404,378 @@ fn combine_header_lines(headers: &HeaderMap, name: &str) -> Result<String> {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum SfBareItem {
     Integer(i64),
+    Decimal(String),
     String(String),
     Token(String),
+    ByteSequence(Vec<u8>),
     Boolean(bool),
 }
 
-struct ParsedInnerList {
-    components: Vec<String>,
-    params: Vec<(String, SfBareItem)>,
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+struct SfParams {
+    entries: Vec<(String, SfBareItem)>,
 }
 
-fn parse_labeled_signature_input(raw: &str) -> Result<ParsedInnerList> {
-    let mut rest = raw.trim_matches([' ', '\t']);
-    while !rest.is_empty() {
-        let key = take_sf_key(&mut rest)?;
-        rest = rest.trim_start_matches([' ', '\t']);
-        if !rest.starts_with('=') {
+impl SfParams {
+    fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+
+    fn get(&self, key: &str) -> Option<&SfBareItem> {
+        self.entries.iter().find(|(k, _)| k == key).map(|(_, v)| v)
+    }
+
+    fn set(&mut self, key: String, val: SfBareItem) {
+        if let Some(existing) = self.entries.iter_mut().find(|(k, _)| k == &key) {
+            existing.1 = val;
+        } else {
+            self.entries.push((key, val));
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct SfItem {
+    value: SfBareItem,
+    params: SfParams,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct SfInnerList {
+    items: Vec<SfItem>,
+    params: SfParams,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum SfMember {
+    Item(SfItem),
+    InnerList(SfInnerList),
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+struct SfDictionary {
+    entries: Vec<(String, SfMember)>,
+}
+
+impl SfDictionary {
+    fn get(&self, key: &str) -> Option<&SfMember> {
+        self.entries.iter().find(|(k, _)| k == key).map(|(_, v)| v)
+    }
+
+    fn set(&mut self, key: String, val: SfMember) {
+        if let Some(existing) = self.entries.iter_mut().find(|(k, _)| k == &key) {
+            existing.1 = val;
+        } else {
+            self.entries.push((key, val));
+        }
+    }
+}
+
+/// Strict RFC 8941 §4.2 dictionary parser matching `Swan`'s `StructuredFieldParser`.
+struct SfParser<'a> {
+    bytes: &'a [u8],
+    index: usize,
+}
+
+impl<'a> SfParser<'a> {
+    fn parse_dictionary(text: &'a str) -> Result<SfDictionary> {
+        let mut parser = Self {
+            bytes: text.as_bytes(),
+            index: 0,
+        };
+        parser.discard_spaces();
+        let dict = parser.dictionary()?;
+        parser.discard_spaces();
+        if !parser.is_at_end() {
             return Err(SpacesError::BadSpaceSignature(
-                "Signature-Input member must have '='".into(),
+                "trailing bytes in structured-field dictionary".into(),
             ));
         }
-        rest = &rest[1..];
-        rest = rest.trim_start_matches([' ', '\t']);
-        if !rest.starts_with('(') {
+        Ok(dict)
+    }
+
+    fn is_at_end(&self) -> bool {
+        self.index >= self.bytes.len()
+    }
+
+    fn peek(&self) -> Option<u8> {
+        self.bytes.get(self.index).copied()
+    }
+
+    fn consume(&mut self) -> Option<u8> {
+        let b = self.peek()?;
+        self.index += 1;
+        Some(b)
+    }
+
+    fn discard_spaces(&mut self) {
+        while self.peek() == Some(b' ') {
+            self.index += 1;
+        }
+    }
+
+    fn discard_ows(&mut self) {
+        while matches!(self.peek(), Some(b' ' | b'\t')) {
+            self.index += 1;
+        }
+    }
+
+    fn dictionary(&mut self) -> Result<SfDictionary> {
+        let mut dict = SfDictionary::default();
+        while !self.is_at_end() {
+            let key = self.key()?;
+            let member = if self.peek() == Some(b'=') {
+                self.index += 1;
+                self.item_or_inner_list()?
+            } else {
+                SfMember::Item(SfItem {
+                    value: SfBareItem::Boolean(true),
+                    params: self.parameters()?,
+                })
+            };
+            dict.set(key, member);
+            self.discard_ows();
+            if self.is_at_end() {
+                return Ok(dict);
+            }
+            if self.consume() != Some(b',') {
+                return Err(SpacesError::BadSpaceSignature(
+                    "malformed dictionary separator".into(),
+                ));
+            }
+            self.discard_ows();
+            if self.is_at_end() {
+                return Err(SpacesError::BadSpaceSignature(
+                    "trailing comma in structured-field dictionary".into(),
+                ));
+            }
+        }
+        Ok(dict)
+    }
+
+    fn item_or_inner_list(&mut self) -> Result<SfMember> {
+        if self.peek() == Some(b'(') {
+            Ok(SfMember::InnerList(self.inner_list()?))
+        } else {
+            Ok(SfMember::Item(self.item()?))
+        }
+    }
+
+    fn inner_list(&mut self) -> Result<SfInnerList> {
+        if self.consume() != Some(b'(') {
             return Err(SpacesError::BadSpaceSignature(
-                "Signature-Input member value must be an inner list".into(),
+                "expected '(' starting inner list".into(),
             ));
         }
-        rest = &rest[1..];
-        let mut components = Vec::new();
-        loop {
-            rest = rest.trim_start_matches(' ');
-            if rest.starts_with(')') {
-                rest = &rest[1..];
-                break;
+        let mut items = Vec::new();
+        while !self.is_at_end() {
+            self.discard_spaces();
+            if self.peek() == Some(b')') {
+                self.index += 1;
+                let params = self.parameters()?;
+                return Ok(SfInnerList { items, params });
             }
-            if rest.is_empty() {
-                return Err(SpacesError::BadSpaceSignature(
-                    "unterminated inner list in Signature-Input".into(),
-                ));
-            }
-            let comp = take_sf_string(&mut rest)?;
-            if rest.starts_with(';') {
-                return Err(SpacesError::BadSpaceSignature(
-                    "component parameters are not supported in atproto-space-credential".into(),
-                ));
-            }
-            components.push(comp);
-            if !rest.starts_with(' ') && !rest.starts_with(')') {
+            items.push(self.item()?);
+            if !matches!(self.peek(), Some(b' ' | b')')) {
                 return Err(SpacesError::BadSpaceSignature(
                     "expected space or ')' in inner list".into(),
                 ));
             }
         }
-        let params = take_sf_params(&mut rest)?;
-        rest = rest.trim_start_matches([' ', '\t']);
-        if key == SPACE_CREDENTIAL_LABEL {
-            return Ok(ParsedInnerList { components, params });
-        }
-        if rest.starts_with(',') {
-            rest = rest[1..].trim_start_matches([' ', '\t']);
-        } else if !rest.is_empty() {
-            return Err(SpacesError::BadSpaceSignature(
-                "malformed dictionary separator in Signature-Input".into(),
-            ));
-        }
+        Err(SpacesError::BadSpaceSignature(
+            "unterminated inner list".into(),
+        ))
     }
-    Err(SpacesError::BadSpaceSignature(
-        "missing atproto-space-credential entry in Signature-Input".into(),
-    ))
-}
 
-fn parse_labeled_signature_bytes(raw: &str) -> Result<Vec<u8>> {
-    let mut rest = raw.trim_matches([' ', '\t']);
-    while !rest.is_empty() {
-        let key = take_sf_key(&mut rest)?;
-        rest = rest.trim_start_matches([' ', '\t']);
-        if !rest.starts_with('=') {
-            return Err(SpacesError::BadSpaceSignature(
-                "Signature member must have '='".into(),
-            ));
-        }
-        rest = rest[1..].trim_start_matches([' ', '\t']);
-        if !rest.starts_with(':') {
-            return Err(SpacesError::BadSpaceSignature(
-                "Signature member must be a byte sequence".into(),
-            ));
-        }
-        rest = &rest[1..];
-        let Some(end_colon) = rest.find(':') else {
-            return Err(SpacesError::BadSpaceSignature(
-                "unterminated byte sequence in Signature".into(),
-            ));
-        };
-        let b64 = &rest[..end_colon];
-        rest = &rest[end_colon + 1..];
-        let params = take_sf_params(&mut rest)?;
-        if key == SPACE_CREDENTIAL_LABEL {
-            if !params.is_empty() {
-                return Err(SpacesError::BadSpaceSignature(
-                    "Signature item must not carry parameters".into(),
-                ));
-            }
-            return BASE64_STANDARD
-                .decode(b64)
-                .map_err(|e| SpacesError::BadSpaceSignature(format!("bad Signature base64: {e}")));
-        }
-        rest = rest.trim_start_matches([' ', '\t']);
-        if rest.starts_with(',') {
-            rest = rest[1..].trim_start_matches([' ', '\t']);
-        } else if !rest.is_empty() {
-            return Err(SpacesError::BadSpaceSignature(
-                "malformed dictionary separator in Signature".into(),
-            ));
-        }
+    fn item(&mut self) -> Result<SfItem> {
+        let value = self.bare_item()?;
+        let params = self.parameters()?;
+        Ok(SfItem { value, params })
     }
-    Err(SpacesError::BadSpaceSignature(
-        "missing atproto-space-credential entry in Signature".into(),
-    ))
-}
 
-fn take_sf_key(rest: &mut &str) -> Result<String> {
-    let bytes = rest.as_bytes();
-    if bytes.is_empty() || !(bytes[0].is_ascii_lowercase() || bytes[0] == b'*') {
-        return Err(SpacesError::BadSpaceSignature(
-            "invalid structured-field key start".into(),
-        ));
-    }
-    let mut idx = 1;
-    while idx < bytes.len() {
-        let b = bytes[idx];
-        if b.is_ascii_lowercase() || b.is_ascii_digit() || matches!(b, b'_' | b'-' | b'.' | b'*') {
-            idx += 1;
-        } else {
-            break;
-        }
-    }
-    let key = rest[..idx].to_string();
-    *rest = &rest[idx..];
-    Ok(key)
-}
-
-fn take_sf_string(rest: &mut &str) -> Result<String> {
-    if !rest.starts_with('"') {
-        return Err(SpacesError::BadSpaceSignature(
-            "expected structured-field string".into(),
-        ));
-    }
-    *rest = &rest[1..];
-    let mut out = String::new();
-    let mut chars = rest.char_indices();
-    while let Some((idx, ch)) = chars.next() {
-        if ch == '"' {
-            *rest = &rest[idx + 1..];
-            return Ok(out);
-        }
-        if ch == '\\' {
-            let Some((_, escaped)) = chars.next() else {
-                return Err(SpacesError::BadSpaceSignature("unterminated escape".into()));
+    fn parameters(&mut self) -> Result<SfParams> {
+        let mut params = SfParams::default();
+        while self.peek() == Some(b';') {
+            self.index += 1;
+            self.discard_spaces();
+            let key = self.key()?;
+            let val = if self.peek() == Some(b'=') {
+                self.index += 1;
+                self.bare_item()?
+            } else {
+                SfBareItem::Boolean(true)
             };
-            if escaped != '"' && escaped != '\\' {
-                return Err(SpacesError::BadSpaceSignature(
-                    "invalid structured-field escape".into(),
-                ));
-            }
-            out.push(escaped);
-        } else if ('\x20'..='\x7e').contains(&ch) {
-            out.push(ch);
-        } else {
+            params.set(key, val);
+        }
+        Ok(params)
+    }
+
+    fn key(&mut self) -> Result<String> {
+        let Some(first) = self.peek() else {
             return Err(SpacesError::BadSpaceSignature(
-                "control or non-ASCII char in structured-field string".into(),
+                "unexpected end of structured-field key".into(),
+            ));
+        };
+        if !(first.is_ascii_lowercase() || first == b'*') {
+            return Err(SpacesError::BadSpaceSignature(
+                "invalid structured-field key start".into(),
             ));
         }
-    }
-    Err(SpacesError::BadSpaceSignature(
-        "unterminated structured-field string".into(),
-    ))
-}
-
-fn take_sf_params(rest: &mut &str) -> Result<Vec<(String, SfBareItem)>> {
-    let mut params: Vec<(String, SfBareItem)> = Vec::new();
-    loop {
-        *rest = rest.trim_start_matches(' ');
-        if !rest.starts_with(';') {
-            break;
+        let start = self.index;
+        while let Some(b) = self.peek() {
+            if b.is_ascii_lowercase()
+                || b.is_ascii_digit()
+                || matches!(b, b'_' | b'-' | b'.' | b'*')
+            {
+                self.index += 1;
+            } else {
+                break;
+            }
         }
-        *rest = rest[1..].trim_start_matches(' ');
-        let key = take_sf_key(rest)?;
-        let val = if rest.starts_with('=') {
-            *rest = &rest[1..];
-            take_sf_bare_item(rest)?
-        } else {
-            SfBareItem::Boolean(true)
+        Ok(String::from_utf8_lossy(&self.bytes[start..self.index]).into_owned())
+    }
+
+    fn bare_item(&mut self) -> Result<SfBareItem> {
+        let Some(first) = self.peek() else {
+            return Err(SpacesError::BadSpaceSignature(
+                "empty structured-field item".into(),
+            ));
         };
-        if let Some(existing) = params.iter_mut().find(|(k, _)| k == &key) {
-            existing.1 = val;
-        } else {
-            params.push((key, val));
+        if first == b'-' || first.is_ascii_digit() {
+            return self.integer_or_decimal();
         }
+        if first == b'"' {
+            return Ok(SfBareItem::String(self.string()?));
+        }
+        if first.is_ascii_alphabetic() || first == b'*' {
+            return Ok(SfBareItem::Token(self.token()));
+        }
+        if first == b':' {
+            return Ok(SfBareItem::ByteSequence(self.byte_sequence()?));
+        }
+        if first == b'?' {
+            return Ok(SfBareItem::Boolean(self.boolean()?));
+        }
+        Err(SpacesError::BadSpaceSignature(
+            "unsupported structured-field bare item".into(),
+        ))
     }
-    Ok(params)
-}
 
-fn take_sf_bare_item(rest: &mut &str) -> Result<SfBareItem> {
-    let bytes = rest.as_bytes();
-    if bytes.is_empty() {
-        return Err(SpacesError::BadSpaceSignature(
-            "empty parameter value".into(),
-        ));
-    }
-    if bytes[0] == b'"' {
-        return Ok(SfBareItem::String(take_sf_string(rest)?));
-    }
-    if bytes[0] == b'?' {
-        if rest.starts_with("?1") {
-            *rest = &rest[2..];
-            return Ok(SfBareItem::Boolean(true));
-        } else if rest.starts_with("?0") {
-            *rest = &rest[2..];
-            return Ok(SfBareItem::Boolean(false));
+    fn integer_or_decimal(&mut self) -> Result<SfBareItem> {
+        let mut is_decimal = false;
+        let mut negative = false;
+        let mut digits = Vec::new();
+        if self.peek() == Some(b'-') {
+            self.index += 1;
+            negative = true;
         }
-        return Err(SpacesError::BadSpaceSignature("invalid boolean".into()));
-    }
-    if bytes[0] == b'-' || bytes[0].is_ascii_digit() {
-        let mut idx = if bytes[0] == b'-' { 1 } else { 0 };
-        while idx < bytes.len() && bytes[idx].is_ascii_digit() {
-            idx += 1;
+        let Some(first) = self.peek() else {
+            return Err(SpacesError::BadSpaceSignature("invalid number".into()));
+        };
+        if !first.is_ascii_digit() {
+            return Err(SpacesError::BadSpaceSignature("invalid number".into()));
         }
-        let num_str = &rest[..idx];
-        let val: i64 = num_str
-            .parse()
-            .map_err(|_| SpacesError::BadSpaceSignature("invalid integer parameter".into()))?;
-        *rest = &rest[idx..];
-        return Ok(SfBareItem::Integer(val));
+        while let Some(b) = self.peek() {
+            if b.is_ascii_digit() {
+                digits.push(b);
+                self.index += 1;
+            } else if !is_decimal && b == b'.' {
+                if digits.len() > 12 {
+                    return Err(SpacesError::BadSpaceSignature(
+                        "decimal integer part too long".into(),
+                    ));
+                }
+                digits.push(b);
+                self.index += 1;
+                is_decimal = true;
+            } else {
+                break;
+            }
+            if !is_decimal && digits.len() > 15 {
+                return Err(SpacesError::BadSpaceSignature(
+                    "integer exceeds 15 digits".into(),
+                ));
+            }
+            if is_decimal && digits.len() > 16 {
+                return Err(SpacesError::BadSpaceSignature(
+                    "decimal exceeds 16 characters".into(),
+                ));
+            }
+        }
+        let text = std::str::from_utf8(&digits)
+            .map_err(|_| SpacesError::BadSpaceSignature("invalid UTF-8 digits".into()))?;
+        if !is_decimal {
+            let mag: i64 = text
+                .parse()
+                .map_err(|_| SpacesError::BadSpaceSignature("invalid integer".into()))?;
+            return Ok(SfBareItem::Integer(if negative { -mag } else { mag }));
+        }
+        if digits.last() == Some(&b'.') {
+            return Err(SpacesError::BadSpaceSignature(
+                "decimal ends with '.'".into(),
+            ));
+        }
+        let Some((int_raw, frac_raw)) = text.split_once('.') else {
+            return Err(SpacesError::BadSpaceSignature("malformed decimal".into()));
+        };
+        if frac_raw.len() > 3 || frac_raw.contains('.') {
+            return Err(SpacesError::BadSpaceSignature(
+                "decimal fractional part exceeds 3 digits".into(),
+            ));
+        }
+        let int_trimmed = int_raw.trim_start_matches('0');
+        let frac_trimmed = frac_raw.trim_end_matches('0');
+        let int_text = if int_trimmed.is_empty() {
+            "0"
+        } else {
+            int_trimmed
+        };
+        let frac_text = if frac_trimmed.is_empty() {
+            "0"
+        } else {
+            frac_trimmed
+        };
+        let is_zero = int_text == "0" && frac_text == "0";
+        let sign = if negative && !is_zero { "-" } else { "" };
+        Ok(SfBareItem::Decimal(format!("{sign}{int_text}.{frac_text}")))
     }
-    if bytes[0].is_ascii_alphabetic() || bytes[0] == b'*' {
-        let mut idx = 1;
-        while idx < bytes.len() {
-            let b = bytes[idx];
+
+    fn string(&mut self) -> Result<String> {
+        if self.consume() != Some(b'"') {
+            return Err(SpacesError::BadSpaceSignature("expected '\"'".into()));
+        }
+        let mut out = Vec::new();
+        while let Some(b) = self.consume() {
+            if b == b'\\' {
+                let Some(escaped) = self.consume() else {
+                    return Err(SpacesError::BadSpaceSignature("unterminated escape".into()));
+                };
+                if escaped != b'"' && escaped != b'\\' {
+                    return Err(SpacesError::BadSpaceSignature(
+                        "invalid structured-field string escape".into(),
+                    ));
+                }
+                out.push(escaped);
+            } else if b == b'"' {
+                return String::from_utf8(out).map_err(|_| {
+                    SpacesError::BadSpaceSignature("non-UTF8 structured-field string".into())
+                });
+            } else if !(0x20..=0x7e).contains(&b) {
+                return Err(SpacesError::BadSpaceSignature(
+                    "control or non-ASCII byte in structured-field string".into(),
+                ));
+            } else {
+                out.push(b);
+            }
+        }
+        Err(SpacesError::BadSpaceSignature(
+            "unterminated structured-field string".into(),
+        ))
+    }
+
+    fn token(&mut self) -> String {
+        let start = self.index;
+        while let Some(b) = self.peek() {
             if b.is_ascii_alphanumeric()
                 || matches!(
                     b,
@@ -609,61 +797,107 @@ fn take_sf_bare_item(rest: &mut &str) -> Result<SfBareItem> {
                         | b'/'
                 )
             {
-                idx += 1;
+                self.index += 1;
             } else {
                 break;
             }
         }
-        let tok = rest[..idx].to_string();
-        *rest = &rest[idx..];
-        return Ok(SfBareItem::Token(tok));
+        String::from_utf8_lossy(&self.bytes[start..self.index]).into_owned()
     }
-    Err(SpacesError::BadSpaceSignature(
-        "unsupported structured-field bare item".into(),
-    ))
+
+    fn byte_sequence(&mut self) -> Result<Vec<u8>> {
+        if self.consume() != Some(b':') {
+            return Err(SpacesError::BadSpaceSignature(
+                "expected ':' starting byte sequence".into(),
+            ));
+        }
+        let start = self.index;
+        while let Some(b) = self.consume() {
+            if b == b':' {
+                let raw_b64 = std::str::from_utf8(&self.bytes[start..self.index - 1])
+                    .map_err(|_| SpacesError::BadSpaceSignature("non-ASCII base64".into()))?;
+                let pad = (4 - raw_b64.len() % 4) % 4;
+                let mut padded = String::with_capacity(raw_b64.len() + pad);
+                padded.push_str(raw_b64);
+                for _ in 0..pad {
+                    padded.push('=');
+                }
+                return BASE64_STANDARD.decode(padded).map_err(|e| {
+                    SpacesError::BadSpaceSignature(format!("bad byte-sequence base64: {e}"))
+                });
+            }
+            if !(b.is_ascii_alphanumeric() || matches!(b, b'+' | b'/' | b'=')) {
+                return Err(SpacesError::BadSpaceSignature(
+                    "invalid base64 character in byte sequence".into(),
+                ));
+            }
+        }
+        Err(SpacesError::BadSpaceSignature(
+            "unterminated byte sequence".into(),
+        ))
+    }
+
+    fn boolean(&mut self) -> Result<bool> {
+        if self.consume() != Some(b'?') {
+            return Err(SpacesError::BadSpaceSignature("expected '?'".into()));
+        }
+        match self.consume() {
+            Some(b'1') => Ok(true),
+            Some(b'0') => Ok(false),
+            _ => Err(SpacesError::BadSpaceSignature("invalid boolean".into())),
+        }
+    }
 }
 
-fn serialize_inner_list(components: &[String], params: &[(String, SfBareItem)]) -> String {
+fn serialize_inner_list(list: &SfInnerList) -> String {
     let mut out = String::from("(");
-    for (i, comp) in components.iter().enumerate() {
+    for (i, item) in list.items.iter().enumerate() {
         if i > 0 {
             out.push(' ');
         }
-        out.push('"');
-        for ch in comp.chars() {
-            if ch == '"' || ch == '\\' {
-                out.push('\\');
-            }
-            out.push(ch);
-        }
-        out.push('"');
+        serialize_item_into(&mut out, item);
     }
     out.push(')');
-    for (k, v) in params {
+    serialize_params_into(&mut out, &list.params);
+    out
+}
+
+fn serialize_item_into(out: &mut String, item: &SfItem) {
+    serialize_bare_item_into(out, &item.value);
+    serialize_params_into(out, &item.params);
+}
+
+fn serialize_params_into(out: &mut String, params: &SfParams) {
+    for (k, v) in &params.entries {
         out.push(';');
         out.push_str(k);
-        match v {
-            SfBareItem::Boolean(true) => {}
-            SfBareItem::Boolean(false) => out.push_str("=?0"),
-            SfBareItem::Integer(n) => {
-                out.push('=');
-                out.push_str(&n.to_string());
-            }
-            SfBareItem::String(s) => {
-                out.push_str("=\"");
-                for ch in s.chars() {
-                    if ch == '"' || ch == '\\' {
-                        out.push('\\');
-                    }
-                    out.push(ch);
-                }
-                out.push('"');
-            }
-            SfBareItem::Token(t) => {
-                out.push('=');
-                out.push_str(t);
-            }
+        if v != &SfBareItem::Boolean(true) {
+            out.push('=');
+            serialize_bare_item_into(out, v);
         }
     }
-    out
+}
+
+fn serialize_bare_item_into(out: &mut String, val: &SfBareItem) {
+    match val {
+        SfBareItem::Integer(n) => out.push_str(&n.to_string()),
+        SfBareItem::Decimal(d) => out.push_str(d),
+        SfBareItem::String(s) => {
+            out.push('"');
+            for ch in s.chars() {
+                if ch == '"' || ch == '\\' {
+                    out.push('\\');
+                }
+                out.push(ch);
+            }
+            out.push('"');
+        }
+        SfBareItem::Token(t) => out.push_str(t),
+        SfBareItem::ByteSequence(bytes) => {
+            out.push(':');
+            out.push_str(&BASE64_STANDARD.encode(bytes));
+            out.push(':');
+        }
+        SfBareItem::Boolean(flag) => out.push_str(if *flag { "?1" } else { "?0" }),
+    }
 }

@@ -136,13 +136,28 @@ pub struct SpaceUri {
 }
 
 impl SpaceUri {
+    pub const MAILBOX_SPACE_TYPE: &'static str = "blue.catbird.labyrinth.mailbox";
+    pub const MAILBOX_SKEY: &'static str = "self";
+    pub const CONVERSATION_SPACE_TYPE: &'static str = "blue.catbird.labyrinth.conversation";
+    pub const LEGACY_SPACE_COLLECTION: &'static str = "com.atproto.space.space";
+
     pub fn new(authority: &str, space_type: &str, skey: &str) -> Result<Self> {
         Self::parse(&format!("at://{authority}/space/{space_type}/{skey}"))
     }
 
+    /// Canonical personal mailbox Space (`at://{did}/space/blue.catbird.labyrinth.mailbox/self`).
+    pub fn mailbox(did: &str) -> Result<Self> {
+        Self::new(did, Self::MAILBOX_SPACE_TYPE, Self::MAILBOX_SKEY)
+    }
+
+    /// Canonical conversation Space (`at://{authority_did}/space/blue.catbird.labyrinth.conversation/{skey}`).
+    pub fn conversation(authority_did: &str, skey: &str) -> Result<Self> {
+        Self::new(authority_did, Self::CONVERSATION_SPACE_TYPE, skey)
+    }
+
     pub fn parse(raw: &str) -> Result<Self> {
         if raw.is_empty()
-            || raw.len() > 2048
+            || raw.len() > 8192
             || raw.bytes().any(|b| b <= 0x20 || b == 0x7f)
             || raw.contains('?')
             || raw.contains('#')
@@ -175,25 +190,76 @@ impl SpaceUri {
     }
 
     /// Parse a canonical `at://{did}/space/{type}/{skey}` Space URI or normalize hedged
-    /// `at:space/{did}/{type}/{skey}` / `at://space/{did}/{type}/{skey}` forms onto canonical form.
+    /// `at:space/{did}/{type}/{skey}`, `at://space/{did}/{type}/{skey}`, and legacy
+    /// `at://{did}/com.atproto.space.space/{rkey}` forms onto canonical form.
     pub fn parse_hedged(raw: &str) -> Result<Self> {
-        let rest = if let Some(s) = raw.strip_prefix("at:space/") {
-            Some(s)
-        } else {
-            raw.strip_prefix("at://space/")
-        };
-        if let Some(rest) = rest {
+        if let Some(rest) = raw
+            .strip_prefix("at:space/")
+            .or_else(|| raw.strip_prefix("at://space/"))
+        {
             let parts: Vec<&str> = rest.split('/').collect();
             if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
                 return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
             }
             return Self::new(parts[0], parts[1], parts[2]);
         }
+
+        if let Some(rest) = raw.strip_prefix("at://") {
+            let parts: Vec<&str> = rest.split('/').collect();
+            if parts.len() == 4
+                && parts[1] == Self::LEGACY_SPACE_COLLECTION
+                && !parts.iter().any(|p| p.is_empty())
+            {
+                return Self::new(parts[0], parts[2], parts[3]);
+            }
+            if parts.len() == 3
+                && parts[1] == Self::LEGACY_SPACE_COLLECTION
+                && !parts.iter().any(|p| p.is_empty())
+            {
+                let authority = parts[0];
+                let raw_rkey = parts[2];
+                if let Some((st, sk)) = raw_rkey.split_once(':') {
+                    if is_valid_nsid(st) && is_valid_rkey(sk) {
+                        return Self::new(authority, st, sk);
+                    }
+                }
+                return Self::new(authority, Self::LEGACY_SPACE_COLLECTION, raw_rkey);
+            }
+        }
+
         Self::parse(raw)
     }
 
     pub fn as_str(&self) -> &str {
         &self.raw
+    }
+
+    /// Emit the hedged `at:space/{authority}/{space_type}/{rkey}` spelling.
+    pub fn to_hedged_uri(&self) -> String {
+        format!(
+            "at:space/{}/{}/{}",
+            self.authority, self.space_type, self.rkey
+        )
+    }
+
+    /// Emit the AT-URI record-collection spelling (`at://{authority}/com.atproto.space.space/...`).
+    pub fn to_legacy_space_record_uri(&self) -> String {
+        if self.space_type == Self::LEGACY_SPACE_COLLECTION {
+            format!(
+                "at://{}/{}/{}",
+                self.authority,
+                Self::LEGACY_SPACE_COLLECTION,
+                self.rkey
+            )
+        } else {
+            format!(
+                "at://{}/{}/{}:{}",
+                self.authority,
+                Self::LEGACY_SPACE_COLLECTION,
+                self.space_type,
+                self.rkey
+            )
+        }
     }
 
     /// Canonical `SpaceRecordURI` (`at://{authority}/space/{space_type}/{skey}/{author_did}/{collection}/{rkey}`).

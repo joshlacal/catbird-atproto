@@ -200,10 +200,44 @@ fn hedged_space_uris_and_space_blob_locators_roundtrip_and_reject_malformed_inpu
         canonical,
         "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2",
         "at://space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2",
+        "at://did:web:mls.catbird.blue/com.atproto.space.space/blue.catbird.labyrinth.conversation:01980a11-2",
+        "at://did:web:mls.catbird.blue/com.atproto.space.space/blue.catbird.labyrinth.conversation/01980a11-2",
     ] {
         let parsed = SpaceUri::parse_hedged(input).expect("parse_hedged");
         assert_eq!(parsed.as_str(), canonical);
+        assert_eq!(
+            parsed.to_hedged_uri(),
+            "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2"
+        );
+        assert_eq!(
+            parsed.to_legacy_space_record_uri(),
+            "at://did:web:mls.catbird.blue/com.atproto.space.space/blue.catbird.labyrinth.conversation:01980a11-2"
+        );
     }
+
+    let bare_record =
+        SpaceUri::parse_hedged("at://did:web:mls.catbird.blue/com.atproto.space.space/01980a11-2")
+            .expect("bare com.atproto.space.space rkey");
+    assert_eq!(
+        bare_record.as_str(),
+        "at://did:web:mls.catbird.blue/space/com.atproto.space.space/01980a11-2"
+    );
+    assert_eq!(
+        bare_record.to_legacy_space_record_uri(),
+        "at://did:web:mls.catbird.blue/com.atproto.space.space/01980a11-2"
+    );
+    assert_eq!(
+        SpaceUri::mailbox("did:plc:ewvi7nxzyoun6zhxrhs64oiz")
+            .unwrap()
+            .as_str(),
+        "at://did:plc:ewvi7nxzyoun6zhxrhs64oiz/space/blue.catbird.labyrinth.mailbox/self"
+    );
+    assert_eq!(
+        SpaceUri::conversation("did:web:mls.catbird.blue", "01980a11-2")
+            .unwrap()
+            .as_str(),
+        canonical
+    );
 
     let cid = compute_dagcbor_cid(b"\xa1dblob\x01");
     let space = SpaceUri::parse(canonical).unwrap();
@@ -298,6 +332,96 @@ fn verify_credential_request_accepts_webcrypto_high_s_signature() {
     let mut tampered: HeaderMap = high_s_map.clone();
     tampered.insert("atproto-space-audience", "did:plc:mallory".parse().unwrap());
     assert!(verify_credential_request(&tampered, &cnf_did_key, now_sec).is_err());
+
+    // B11 Swan parity checks:
+    // 1. Non-default label ("sig1") with tag="atproto-space-credential" + alg="ecdsa-p256-sha256" + keyid matches Swan.
+    let custom_params = format!(
+        "(\"authorization\" \"atproto-space-audience\");alg=\"ecdsa-p256-sha256\";keyid=\"{cnf_did_key}\";tag=\"atproto-space-credential\""
+    );
+    let custom_auth = format!("Atproto-Space-Credential {credential_jwt}");
+    let custom_base = format!(
+        "\"authorization\": {custom_auth}\n\"atproto-space-audience\": {audience_did}\n\"@signature-params\": {custom_params}"
+    );
+    let signing_key = p256::ecdsa::SigningKey::from(&ephemeral_key);
+    let custom_sig: p256::ecdsa::Signature =
+        p256::ecdsa::signature::Signer::sign(&signing_key, custom_base.as_bytes());
+    let custom_sig_b64 = BASE64_STANDARD.encode(custom_sig.to_bytes());
+    let mut custom_map = HeaderMap::new();
+    custom_map.insert("authorization", custom_auth.parse().unwrap());
+    custom_map.insert("atproto-space-audience", audience_did.parse().unwrap());
+    custom_map.insert(
+        "signature-input",
+        format!("other=1, sig1={custom_params}").parse().unwrap(),
+    );
+    custom_map.insert(
+        "signature",
+        format!("other=1, sig1=:{custom_sig_b64}:").parse().unwrap(),
+    );
+    verify_credential_request(&custom_map, &cnf_did_key, now_sec)
+        .expect("custom dictionary key with unique tag=atproto-space-credential must verify");
+
+    // 2. Duplicate tagged entries in Signature-Input must be rejected (tagged.count == 1).
+    let mut dup_tag = custom_map.clone();
+    dup_tag.insert(
+        "signature-input",
+        format!("sig1={custom_params}, sig2={custom_params}")
+            .parse()
+            .unwrap(),
+    );
+    dup_tag.insert(
+        "signature",
+        format!("sig1=:{custom_sig_b64}:, sig2=:{custom_sig_b64}:")
+            .parse()
+            .unwrap(),
+    );
+    assert!(verify_credential_request(&dup_tag, &cnf_did_key, now_sec).is_err());
+
+    // 3. Duplicate Authorization or Atproto-Space-Audience header lines must be rejected (headersDistinct).
+    let mut dup_auth = minimal_map.clone();
+    dup_auth.append("authorization", custom_auth.parse().unwrap());
+    assert!(verify_credential_request(&dup_auth, &cnf_did_key, now_sec).is_err());
+
+    let mut dup_aud = minimal_map.clone();
+    dup_aud.append("atproto-space-audience", audience_did.parse().unwrap());
+    assert!(verify_credential_request(&dup_aud, &cnf_did_key, now_sec).is_err());
+
+    // 4. Unsupported alg or non-string keyid must be rejected.
+    let mut bad_alg = custom_map.clone();
+    bad_alg.insert(
+        "signature-input",
+        "sig1=(\"authorization\" \"atproto-space-audience\");alg=\"ed25519\";tag=\"atproto-space-credential\""
+            .parse()
+            .unwrap(),
+    );
+    assert!(verify_credential_request(&bad_alg, &cnf_did_key, now_sec).is_err());
+
+    let mut token_keyid = custom_map.clone();
+    token_keyid.insert(
+        "signature-input",
+        "sig1=(\"authorization\" \"atproto-space-audience\");keyid=tokkey;tag=\"atproto-space-credential\""
+            .parse()
+            .unwrap(),
+    );
+    assert!(verify_credential_request(&token_keyid, &cnf_did_key, now_sec).is_err());
+
+    // 5. > 8192 byte combined Signature-Input must be rejected, while trailing garbage after valid entry is also rejected.
+    let mut trailing_garbage = minimal_map.clone();
+    trailing_garbage.insert(
+        "signature-input",
+        format!("{}, @bad", minimal.signature_input)
+            .parse()
+            .unwrap(),
+    );
+    assert!(verify_credential_request(&trailing_garbage, &cnf_did_key, now_sec).is_err());
+
+    let mut oversized = minimal_map.clone();
+    oversized.insert(
+        "signature-input",
+        format!("{}, pad=\"{}\"", minimal.signature_input, "x".repeat(8193))
+            .parse()
+            .unwrap(),
+    );
+    assert!(verify_credential_request(&oversized, &cnf_did_key, now_sec).is_err());
 }
 
 struct RotatingDidWebResolver {

@@ -19,6 +19,7 @@ pub mod close_conversation;
 pub mod create_conversation;
 pub mod declaration;
 pub mod device;
+pub mod device_revocation;
 pub mod enroll_device;
 pub mod get_conversation_state;
 pub mod get_conversations;
