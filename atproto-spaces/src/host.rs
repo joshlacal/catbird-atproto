@@ -11,6 +11,9 @@
 
 use crate::http_signature::verify_credential_request;
 use crate::kem::decode_p256_did_key;
+use crate::signature_replay::{
+    check_presentation_replay, InMemorySignatureReplayCache, SignatureReplayStore,
+};
 use crate::tokens::{
     inspect_untrusted_space_token, mint_space_token, verify_space_token, SpaceKeyResolver,
     SpaceSigningKey, SpaceTokenClaims, SpaceTokenKind, CREDENTIAL_DEFAULT_LIFETIME_SECS,
@@ -505,6 +508,7 @@ pub struct SpaceHost<
     delegation_replay_cache: RwLock<BTreeMap<String, u64>>, // (issuer + jti) -> exp_with_skew
     issued_credentials: RwLock<BTreeMap<String, Vec<IssuedCredentialRecord>>>, // space_uri -> active creds
     revoked_jtis: RwLock<BTreeMap<String, u64>>,                               // jti -> exp
+    signature_replay_store: Arc<dyn SignatureReplayStore + Send + Sync>,
 }
 
 impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
@@ -522,7 +526,19 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             delegation_replay_cache: RwLock::new(BTreeMap::new()),
             issued_credentials: RwLock::new(BTreeMap::new()),
             revoked_jtis: RwLock::new(BTreeMap::new()),
+            signature_replay_store: Arc::new(InMemorySignatureReplayCache::new()),
         }
+    }
+
+    /// Replace the default per-process [`InMemorySignatureReplayCache`] with a
+    /// store shared between host processes. Every host that accepts
+    /// presentations for the same Spaces should use the same store.
+    pub fn with_signature_replay_store(
+        mut self,
+        store: Arc<dyn SignatureReplayStore + Send + Sync>,
+    ) -> Self {
+        self.signature_replay_store = store;
+        self
     }
 
     pub fn backend(&self) -> &B {
@@ -696,6 +712,10 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
     }
 
     /// Verify RFC 9421 + `atproto-space-credential+jwt` presentation on a Space-host or Repo-host route.
+    ///
+    /// A presentation that carries a signature `nonce` is recorded under the
+    /// credential issuer once it fully verifies; the same `(issuer, nonce)`
+    /// is refused for the rest of its freshness window.
     pub async fn verify_presentation(
         &self,
         headers: &HeaderMap,
@@ -756,6 +776,12 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         {
             return Err(SpacesError::CredentialRevoked);
         }
+        check_presentation_replay(
+            &*self.signature_replay_store,
+            &claims.iss,
+            &verified_sig,
+            now_sec,
+        )?;
         Ok(claims)
     }
 

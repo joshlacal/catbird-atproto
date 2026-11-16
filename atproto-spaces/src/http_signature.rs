@@ -64,6 +64,7 @@ pub struct VerifiedSpaceHeaders {
     pub audience_did: String,
     pub cnf_did_key: String,
     pub created: Option<u64>,
+    pub expires: Option<u64>,
     pub nonce: Option<String>,
 }
 
@@ -146,7 +147,8 @@ fn sign_with_params(
 /// [`MAX_CLOCK_SKEW_SECS`], and `nonce` must be a non-empty string of at most
 /// [`MAX_NONCE_BYTES`] bytes. A presentation without them carries no freshness
 /// constraint here. This function is stateless: it does not detect a repeated
-/// `nonce`.
+/// `nonce`. Callers that keep state record verified nonces with
+/// [`check_presentation_replay`](crate::signature_replay::check_presentation_replay).
 ///
 /// Structured fields follow RFC 8941: a repeated dictionary key or parameter
 /// key overwrites the earlier value in place, and the signature base uses the
@@ -384,6 +386,7 @@ pub fn verify_credential_request(
         audience_did: audience_did.to_string(),
         cnf_did_key: expected_cnf_did_key.to_string(),
         created,
+        expires,
         nonce,
     })
 }

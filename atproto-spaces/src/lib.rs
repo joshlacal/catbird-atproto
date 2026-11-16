@@ -10,6 +10,7 @@ pub mod http_signature;
 pub mod kem;
 pub mod lthash;
 pub mod mac;
+pub mod signature_replay;
 pub mod star;
 pub mod sync_engine;
 pub mod tokens;
