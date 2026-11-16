@@ -10,11 +10,15 @@
 //! processes. [`InMemorySignatureReplayCache`] is the bounded per-process
 //! default that [`SpaceHost`](crate::host::SpaceHost) uses.
 //!
-//! Presentations without a `nonce` are not tracked. When a nonce-bearing
-//! presentation omits `created`, the window is measured from the moment the
-//! verifier first saw it, because nothing in the presentation dates it.
+//! Presentations without a `nonce` are not tracked. A nonce is remembered
+//! until the first second at which the presentation can no longer verify:
+//! `created` plus the maximum signature age, `expires` plus the clock skew,
+//! or the credential token's `exp` plus its expiry skew, whichever is first.
+//! A presentation that omits both `created` and `expires` is therefore
+//! remembered for the rest of its credential's lifetime.
 
 use crate::http_signature::{VerifiedSpaceHeaders, MAX_CLOCK_SKEW_SECS, MAX_SIGNATURE_AGE_SECS};
+use crate::tokens::{SpaceTokenClaims, EXPIRY_CLOCK_SKEW_SECS};
 use crate::{Result, SpacesError};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeSet, HashMap};
@@ -64,47 +68,55 @@ impl<S: SignatureReplayStore + ?Sized> SignatureReplayStore for Box<S> {
     }
 }
 
-/// The first Unix second at which `verified` can no longer pass the freshness
-/// checks, so its nonce no longer needs to be remembered.
+/// The first Unix second at which a presentation can no longer verify, so
+/// its nonce no longer needs to be remembered.
 ///
-/// With `created`, that is `created + MAX_SIGNATURE_AGE_SECS + 1`; without it,
-/// `now_sec + MAX_SIGNATURE_AGE_SECS + MAX_CLOCK_SKEW_SECS`. With `expires`,
-/// the window also ends at `expires + MAX_CLOCK_SKEW_SECS + 1`.
-pub fn replay_window_end(verified: &VerifiedSpaceHeaders, now_sec: u64) -> u64 {
-    let by_created = match verified.created {
-        Some(created) => created
-            .saturating_add(MAX_SIGNATURE_AGE_SECS)
-            .saturating_add(1),
-        None => now_sec
-            .saturating_add(MAX_SIGNATURE_AGE_SECS)
-            .saturating_add(MAX_CLOCK_SKEW_SECS),
-    };
-    match verified.expires {
-        Some(expires) => by_created.min(
+/// That is the earliest of `created + MAX_SIGNATURE_AGE_SECS + 1`,
+/// `expires + MAX_CLOCK_SKEW_SECS + 1` and
+/// `credential_exp + EXPIRY_CLOCK_SKEW_SECS + 1`, counting only the
+/// signature parameters that are present.
+pub fn replay_window_end(verified: &VerifiedSpaceHeaders, credential_exp: u64) -> u64 {
+    let mut end = credential_exp
+        .saturating_add(EXPIRY_CLOCK_SKEW_SECS)
+        .saturating_add(1);
+    if let Some(created) = verified.created {
+        end = end.min(
+            created
+                .saturating_add(MAX_SIGNATURE_AGE_SECS)
+                .saturating_add(1),
+        );
+    }
+    if let Some(expires) = verified.expires {
+        end = end.min(
             expires
                 .saturating_add(MAX_CLOCK_SKEW_SECS)
                 .saturating_add(1),
-        ),
-        None => by_created,
+        );
     }
+    end
 }
 
-/// Records the nonce of a verified presentation under the credential
-/// `issuer`, refusing a pair seen before inside its freshness window.
+/// Records the nonce of a verified presentation under the credential issuer
+/// (`credential.iss`), refusing a pair seen before inside its window.
 ///
-/// Call this only after the signature and the credential token have both
-/// verified, so unauthenticated requests cannot occupy the store. A
-/// presentation without a nonce passes unchanged.
+/// Call this after the signature and the credential token have both
+/// verified, with the token's verified claims, so unauthenticated requests
+/// cannot occupy the store. A presentation without a nonce passes unchanged.
 pub fn check_presentation_replay<S: SignatureReplayStore + ?Sized>(
     store: &S,
-    issuer: &str,
+    credential: &SpaceTokenClaims,
     verified: &VerifiedSpaceHeaders,
     now_sec: u64,
 ) -> Result<()> {
     let Some(nonce) = verified.nonce.as_deref() else {
         return Ok(());
     };
-    store.record_nonce(issuer, nonce, replay_window_end(verified, now_sec), now_sec)
+    store.record_nonce(
+        &credential.iss,
+        nonce,
+        replay_window_end(verified, credential.exp),
+        now_sec,
+    )
 }
 
 type ReplayKey = [u8; 32];
@@ -259,23 +271,40 @@ mod tests {
         assert_eq!(cache.len(), 2);
     }
 
+    fn credential(exp: u64) -> SpaceTokenClaims {
+        SpaceTokenClaims {
+            iss: "i".into(),
+            sub: "at://did:web:i/space/x/y".into(),
+            aud: None,
+            iat: 0,
+            exp,
+            jti: "j".into(),
+            cnf_kid: None,
+        }
+    }
+
     #[test]
-    fn window_follows_created_and_expires() {
+    fn window_ends_at_the_first_freshness_bound() {
+        let far = 1_000_000;
         assert_eq!(
-            replay_window_end(&verified(Some(1_000), None, Some("n")), 1_100),
+            replay_window_end(&verified(Some(1_000), None, Some("n")), far),
             1_301
         );
         assert_eq!(
-            replay_window_end(&verified(None, None, Some("n")), 1_100),
-            1_430
+            replay_window_end(&verified(None, None, Some("n")), 5_000),
+            5_061
         );
         assert_eq!(
-            replay_window_end(&verified(Some(1_000), Some(1_010), Some("n")), 1_005),
+            replay_window_end(&verified(Some(1_000), Some(1_010), Some("n")), far),
             1_041
         );
         assert_eq!(
-            replay_window_end(&verified(None, Some(5_000), Some("n")), 1_100),
-            1_430
+            replay_window_end(&verified(None, Some(5_000), Some("n")), far),
+            5_031
+        );
+        assert_eq!(
+            replay_window_end(&verified(Some(1_000), None, Some("n")), 1_100),
+            1_161
         );
     }
 
@@ -283,13 +312,17 @@ mod tests {
     fn presentations_without_nonce_pass_untracked() {
         let cache = InMemorySignatureReplayCache::with_capacity(1);
         for _ in 0..3 {
-            check_presentation_replay(&cache, "i", &verified(Some(100), None, None), 100).unwrap();
+            check_presentation_replay(
+                &cache,
+                &credential(1_000),
+                &verified(Some(100), None, None),
+                100,
+            )
+            .unwrap();
         }
         assert!(cache.is_empty());
-        check_presentation_replay(&cache, "i", &verified(Some(100), None, Some("n")), 100).unwrap();
-        assert!(
-            check_presentation_replay(&cache, "i", &verified(Some(100), None, Some("n")), 200)
-                .is_err()
-        );
+        let nonced = verified(Some(100), None, Some("n"));
+        check_presentation_replay(&cache, &credential(1_000), &nonced, 100).unwrap();
+        assert!(check_presentation_replay(&cache, &credential(1_000), &nonced, 200).is_err());
     }
 }

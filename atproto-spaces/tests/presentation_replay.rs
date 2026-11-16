@@ -191,6 +191,8 @@ struct ReplayStep {
     nonce: Option<String>,
     created: Option<u64>,
     expires: Option<u64>,
+    /// The verified credential token's `exp`, in Unix seconds.
+    credential_exp: u64,
     now_sec: u64,
     /// `accept` or `reject`.
     expect: String,
@@ -203,6 +205,7 @@ struct ReplayVectorFile {
     description: String,
     max_signature_age_secs: u64,
     max_clock_skew_secs: u64,
+    credential_expiry_skew_secs: u64,
     steps: Vec<ReplayStep>,
 }
 
@@ -211,6 +214,7 @@ fn replay_vectors() -> ReplayVectorFile {
                 nonce: Option<&str>,
                 created: Option<u64>,
                 expires: Option<u64>,
+                credential_exp: u64,
                 now_sec: u64,
                 accept: bool,
                 note: &str| ReplayStep {
@@ -218,30 +222,34 @@ fn replay_vectors() -> ReplayVectorFile {
         nonce: nonce.map(str::to_string),
         created,
         expires,
+        credential_exp,
         now_sec,
         expect: if accept { "accept" } else { "reject" }.into(),
         note: note.into(),
     };
     let a = "did:web:authority-a.example.com";
     let b = "did:web:authority-b.example.com";
+    const EXP: u64 = NOW + 3_600;
     ReplayVectorFile {
         version: 1,
-        description: "Ordered presentations, already signature- and token-verified, offered to one replay store keyed on (credential issuer, nonce). Each step's created/expires/nonce passed the freshness checks at now_sec.".into(),
+        description: "Ordered presentations, already signature- and token-verified, offered to one replay store keyed on (credential issuer, nonce). Each step's created/expires/nonce passed the freshness checks at now_sec, and its credential token (exp = credential_exp) passed the token checks. A nonce is remembered while the presentation could still verify: until created + max_signature_age_secs, expires + max_clock_skew_secs, or credential_exp + credential_expiry_skew_secs, whichever comes first.".into(),
         max_signature_age_secs: atproto_spaces::http_signature::MAX_SIGNATURE_AGE_SECS,
         max_clock_skew_secs: atproto_spaces::http_signature::MAX_CLOCK_SKEW_SECS,
+        credential_expiry_skew_secs: atproto_spaces::tokens::EXPIRY_CLOCK_SKEW_SECS,
         steps: vec![
-            step(a, Some("n-1"), Some(NOW), None, NOW, true, "first use"),
-            step(a, Some("n-1"), Some(NOW), None, NOW + 1, false, "same issuer and nonce inside the window"),
-            step(b, Some("n-1"), Some(NOW), None, NOW + 1, true, "same nonce under another issuer"),
-            step(a, Some("n-2"), Some(NOW), None, NOW + 2, true, "new nonce"),
-            step(a, None, Some(NOW), None, NOW + 2, true, "no nonce: untracked"),
-            step(a, None, Some(NOW), None, NOW + 3, true, "no nonce again: still untracked"),
-            step(a, Some("n-1"), Some(NOW), None, NOW + 300, false, "last second the created window accepts"),
-            step(a, Some("n-3"), None, None, NOW + 10, true, "no created: window measured from first sight"),
-            step(a, Some("n-3"), None, None, NOW + 339, false, "no created: still inside now + 330"),
-            step(a, Some("n-3"), None, None, NOW + 340, true, "no created: window over, the store has forgotten it"),
-            step(a, Some("n-4"), Some(NOW + 400), Some(NOW + 410), NOW + 400, true, "expires bounds the window"),
-            step(a, Some("n-4"), Some(NOW + 400), Some(NOW + 410), NOW + 440, false, "last second expires (+30 s skew) accepts"),
+            step(a, Some("n-1"), Some(NOW), None, EXP, NOW, true, "first use"),
+            step(a, Some("n-1"), Some(NOW), None, EXP, NOW + 1, false, "same issuer and nonce inside the window"),
+            step(b, Some("n-1"), Some(NOW), None, EXP, NOW + 1, true, "same nonce under another issuer"),
+            step(a, Some("n-2"), Some(NOW), None, EXP, NOW + 2, true, "new nonce"),
+            step(a, None, Some(NOW), None, EXP, NOW + 2, true, "no nonce: untracked"),
+            step(a, None, Some(NOW), None, EXP, NOW + 3, true, "no nonce again: still untracked"),
+            step(a, Some("n-1"), Some(NOW), None, EXP, NOW + 300, false, "last second the created window accepts"),
+            step(a, Some("n-3"), None, None, NOW + 1_000, NOW + 10, true, "no created: first use"),
+            step(a, Some("n-3"), None, None, NOW + 1_000, NOW + 339, false, "no created: seen 329 s ago"),
+            step(a, Some("n-3"), None, None, NOW + 1_000, NOW + 340, false, "no created: the credential is still valid, so the nonce is still remembered"),
+            step(a, Some("n-3"), None, None, NOW + 1_000, NOW + 1_060, false, "no created: last second the credential (+60 s skew) accepts"),
+            step(a, Some("n-4"), Some(NOW + 400), Some(NOW + 410), EXP, NOW + 400, true, "expires bounds the window"),
+            step(a, Some("n-4"), Some(NOW + 400), Some(NOW + 410), EXP, NOW + 440, false, "last second expires (+30 s skew) accepts"),
         ],
     }
 }
@@ -277,7 +285,16 @@ fn replay_sequence_vectors_match_fixture_and_in_memory_store() {
             expires: s.expires,
             nonce: s.nonce.clone(),
         };
-        let accepted = check_presentation_replay(&store, &s.issuer, &verified, s.now_sec).is_ok();
+        let credential = SpaceTokenClaims {
+            iss: s.issuer.clone(),
+            sub: SPACE.to_string(),
+            aud: Some(AUTHORITY.to_string()),
+            iat: NOW,
+            exp: s.credential_exp,
+            jti: format!("replay-step-{i}"),
+            cnf_kid: Some("did:key:zDnae".to_string()),
+        };
+        let accepted = check_presentation_replay(&store, &credential, &verified, s.now_sec).is_ok();
         assert_eq!(
             accepted,
             s.expect == "accept",

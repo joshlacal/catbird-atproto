@@ -778,7 +778,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         }
         check_presentation_replay(
             &*self.signature_replay_store,
-            &claims.iss,
+            &claims,
             &verified_sig,
             now_sec,
         )?;
