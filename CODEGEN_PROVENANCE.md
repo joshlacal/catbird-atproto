@@ -30,7 +30,37 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (Wave 2 deviceRevocation + 64-bit Kotlin parity + Spaces Nov-12 convergence, regenerated 2026-11-15)
+## Current generation (account-deleted actor write + recovery-share methods, regenerated 2026-11-16)
+
+This generation keeps the core reference at Petrel
+`221c857162e0c90f4453a55ac1a8587da014edf6` (its 471 core lexicon files are
+unchanged from `87acd38094470f0629134dc98d602334d3e0f01f`) and moves the
+overlay corpus to PetrelCatbird `59117054d8fc309ad07ab33ea05c6ad4abdff05e`
+(217 overlay lexicon files). The overlay adds the optional
+`actorWrite` (`#accountDeletionActorWrite`) and `keyProof` fields to
+`blue.catbird.chat.defs#accountDeletedEntry`, extends the
+`#deviceCapability` description, and adds the five private
+`blue.catbird.labyrinth` methods `putRecoveryShare`, `getRecoveryShare`,
+`deleteRecoveryShare`, `listRecoveryShares` and `listRecoveryShareEvents`.
+It used `gen-lexicons` built from mls-ds
+`2a70790e126574fa8e40bf03635c60e5c15de536` (`mls-codegen` unchanged since
+`3079aca5`). `Scripts/regenerate.py generate` followed by `check`
+reproduced all 716 generated Rust files byte for byte. Only
+`blue_catbird/chat.rs`, `blue_catbird/labyrinth.rs` and the five new
+`blue_catbird/labyrinth/*_recovery_share*.rs` modules changed.
+
+| Input/output | Files | Aggregate SHA-256 |
+| --- | ---: | --- |
+| Petrel `generator/lexicons` | 471 | `8bf4f0e4ada9249cfbdcd2175d334af8da3b0f047b90d5f3073c7e2b086246d7` |
+| PetrelCatbird `lexicons` | 217 | `8a17e1e2174031daadaef5f4c48f9dfb8fade24cf597095d5a6cd26f899521b1` |
+| Rust `src/generated` | 716 | `3a68de4b086586a71cea3a02c2eab75c0c98ac93732d9ad1ad9a2d2dd83782ae` |
+
+Key overlay lexicon input hashes:
+- `blue.catbird.chat.defs.json`: `81b7cc0835421b583d2449e7f0a8dfe5f647393a353b649a08fe6c1dba9b3cf5`
+- `blue.catbird.chat.authFull.json`: `4082c305fd4be83e6f9fce184274f84d2cc7be15f7ee5f5e89955cc0f032ff71`
+- `blue.catbird.labyrinth.putRecoveryShare.json`: `45db6411cb87f6337115d0099877564a9643825c46e55122e1572e8e1df2ca5a`
+
+## Previous generation (Wave 2 deviceRevocation + 64-bit Kotlin parity + Spaces Nov-12 convergence, regenerated 2026-11-15)
 
 This generation updates the core reference commit to Petrel
 `87acd38094470f0629134dc98d602334d3e0f01f` (471 core lexicon files; complete
