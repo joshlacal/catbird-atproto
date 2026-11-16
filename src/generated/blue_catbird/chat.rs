@@ -89,9 +89,17 @@ pub struct AccessEndedEvent<S: jacquard_common::BosStr = jacquard_common::Defaul
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AccountDeletedEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Optional. Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. The deleting device's own signed deleteAccountData request, copied verbatim. It sits beside sequencerAuthority, whose transcript does not cover it.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub actor_write:
+        core::option::Option<crate::generated::blue_catbird::chat::AccountDeletionActorWrite<S>>,
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub deleted_did: crate::generated::blue_catbird::chat::BareDid<S>,
     pub entry_id: crate::generated::blue_catbird::chat::OperationId<S>,
+    /// Optional; present only together with actorWrite. Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. A CARv1 repository proof in the com.atproto.sync.getRecord shape: the signed repository commit of deletedDid, the MST path, and the record block for blue.catbird.chat.device/{actorDeviceId}, where actorDeviceId comes from actorWrite.writeBody. It verifies under the #atproto key of deletedDid's DID document, so a reader can check the signing device's key after deletedDid's repository is gone. It is captured before the repository is deleted and copied verbatim into every copy of the entry.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub key_proof: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub seq: i64,
     pub sequencer_authority: crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>,
@@ -103,6 +111,34 @@ pub struct AccountDeletedEntry<S: jacquard_common::BosStr = jacquard_common::Def
         flatten,
         default,
         deserialize_with = "deserialize_account_deleted_entry_extra_data",
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. The signed request with which a device of deletedDid called blue.catbird.labyrinth.deleteAccountData. writeBody is the exact labyrinthWriteBody JSON bytes the device sent, {operationId, actorDeviceId, endpointNsid, payloadSha256, signedAt}, never re-encoded. signature is the device's 64-byte Ed25519 signature over UTF8(CATBIRD-LABYRINTH-WRITE\0) followed by writeBody. endpointNsid is blue.catbird.labyrinth.deleteAccountData, actorDeviceId names the signing device of deletedDid, and signedAt is the device-signed deletion instant. Every direct, relayed and mirrored copy of the entry carries the same bytes.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AccountDeletionActorWrite<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub write_body: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        deserialize_with = "deserialize_account_deletion_actor_write_extra_data",
         skip_serializing_if = "core::option::Option::is_none"
     )]
     pub extra_data: core::option::Option<
@@ -1396,7 +1432,7 @@ pub struct DeviceApprovalBody<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
-/// Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy. Version 2 with directRequestProfile advertises parser support only; admission additionally requires active revisioned exact-package DirectRequestGrant signatures.
+/// Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy. Version 2 with directRequestProfile advertises parser support only; admission additionally requires active revisioned exact-package DirectRequestGrant signatures. This exact profile, including the empty KeyPackage, LeafNode and GroupContext extension lists, is fixed for protocol versions 1 and 2. A later protocol version may define optional LeafNode extensions in the RFC 9420 private-use range; such leaves appear only in conversations of that version, which the service never returns to a session whose supportedProtocolVersions does not list it. GroupContext extensions, GroupContextExtensions proposals and RequiredCapabilities stay unused. Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -8133,6 +8169,23 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                 });
             }
         }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for AccountDeletionActorWrite<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "accountDeletionActorWrite"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         Ok(())
     }
 }
@@ -25571,6 +25624,17 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorWrite",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#accountDeletionActorWrite",
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "conversationId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
@@ -25597,6 +25661,16 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "#operationId",
                                 ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "keyProof",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16384usize),
+                                min_length: Some(1usize),
                                 ..Default::default()
                             }),
                         );
@@ -25648,6 +25722,50 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
                                 max_length: Some(64usize),
                                 min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "accountDeletionActorWrite",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. The signed request with which a device of deletedDid called blue.catbird.labyrinth.deleteAccountData. writeBody is the exact labyrinthWriteBody JSON bytes the device sent, {operationId, actorDeviceId, endpointNsid, payloadSha256, signedAt}, never re-encoded. signature is the device's 64-byte Ed25519 signature over UTF8(CATBIRD-LABYRINTH-WRITE\\0) followed by writeBody. endpointNsid is blue.catbird.labyrinth.deleteAccountData, actorDeviceId names the signing device of deletedDid, and signedAt is the device-signed deletion instant. Every direct, relayed and mirrored copy of the entry carries the same bytes.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("writeBody"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("signature")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "signature",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(64usize),
+                                min_length: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "writeBody",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(1024usize),
+                                min_length: Some(1usize),
                                 ..Default::default()
                             }),
                         );
@@ -29206,7 +29324,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy. Version 2 with directRequestProfile advertises parser support only; admission additionally requires active revisioned exact-package DirectRequestGrant signatures.",
+                            "Protocol v1 exact capability profile: suite 0x004D, BasicCredential, by-value Add/Remove and ordinary sender Update path. KeyPackage, LeafNode, and GroupContext extensions are empty; GroupInfo has exactly [ratchet_tree, external_pub]. External commits remain forbidden by protocol policy. Version 2 with directRequestProfile advertises parser support only; admission additionally requires active revisioned exact-package DirectRequestGrant signatures. This exact profile, including the empty KeyPackage, LeafNode and GroupContext extension lists, is fixed for protocol versions 1 and 2. A later protocol version may define optional LeafNode extensions in the RFC 9420 private-use range; such leaves appear only in conversations of that version, which the service never returns to a session whose supportedProtocolVersions does not list it. GroupContext extensions, GroupContextExtensions proposals and RequiredCapabilities stay unused. Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon.",
                         ),
                     ),
                     required: Some(
@@ -44949,9 +45067,11 @@ pub struct AccountDeletedEntryBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::AccountDeletionActorWrite<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>>,
@@ -44982,7 +45102,7 @@ impl AccountDeletedEntryBuilder<account_deleted_entry_state::Empty, jacquard_com
     pub fn new() -> Self {
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -44993,9 +45113,30 @@ impl<S: jacquard_common::BosStr> AccountDeletedEntryBuilder<account_deleted_entr
     pub fn builder() -> Self {
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: account_deleted_entry_state::State, S: jacquard_common::BosStr>
+    AccountDeletedEntryBuilder<St, S>
+{
+    /// Set the `actorWrite` field (optional)
+    pub fn actor_write(
+        mut self,
+        value: impl Into<Option<crate::generated::blue_catbird::chat::AccountDeletionActorWrite<S>>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `actorWrite` field to an Option value (optional)
+    pub fn maybe_actor_write(
+        mut self,
+        value: Option<crate::generated::blue_catbird::chat::AccountDeletionActorWrite<S>>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
     }
 }
 
@@ -45009,7 +45150,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetConversationId<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45028,7 +45169,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetDeletedDid<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45047,12 +45188,30 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::OperationId<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetEntryId<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: account_deleted_entry_state::State, S: jacquard_common::BosStr>
+    AccountDeletedEntryBuilder<St, S>
+{
+    /// Set the `keyProof` field (optional)
+    pub fn key_proof(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `keyProof` field to an Option value (optional)
+    pub fn maybe_key_proof(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
+        self._fields.4 = value;
+        self
     }
 }
 
@@ -45066,7 +45225,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetReceivedAt<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45085,7 +45244,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSeq<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45104,7 +45263,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSequencerAuthority<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45123,7 +45282,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSequencerDid<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45140,12 +45299,12 @@ impl<St: account_deleted_entry_state::State, S: jacquard_common::BosStr>
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.7 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `signature` field to an Option value (optional)
     pub fn maybe_signature(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.7 = value;
+        self._fields.9 = value;
         self
     }
 }
@@ -45164,14 +45323,16 @@ where
     /// Build the final struct.
     pub fn build(self) -> AccountDeletedEntry<S> {
         AccountDeletedEntry {
-            conversation_id: self._fields.0.unwrap(),
-            deleted_did: self._fields.1.unwrap(),
-            entry_id: self._fields.2.unwrap(),
-            received_at: self._fields.3.unwrap(),
-            seq: self._fields.4.unwrap(),
-            sequencer_authority: self._fields.5.unwrap(),
-            sequencer_did: self._fields.6.unwrap(),
-            signature: self._fields.7,
+            actor_write: self._fields.0,
+            conversation_id: self._fields.1.unwrap(),
+            deleted_did: self._fields.2.unwrap(),
+            entry_id: self._fields.3.unwrap(),
+            key_proof: self._fields.4,
+            received_at: self._fields.5.unwrap(),
+            seq: self._fields.6.unwrap(),
+            sequencer_authority: self._fields.7.unwrap(),
+            sequencer_did: self._fields.8.unwrap(),
+            signature: self._fields.9,
             extra_data: Default::default(),
         }
     }
@@ -45184,14 +45345,214 @@ where
         >,
     ) -> AccountDeletedEntry<S> {
         AccountDeletedEntry {
-            conversation_id: self._fields.0.unwrap(),
-            deleted_did: self._fields.1.unwrap(),
-            entry_id: self._fields.2.unwrap(),
-            received_at: self._fields.3.unwrap(),
-            seq: self._fields.4.unwrap(),
-            sequencer_authority: self._fields.5.unwrap(),
-            sequencer_did: self._fields.6.unwrap(),
-            signature: self._fields.7,
+            actor_write: self._fields.0,
+            conversation_id: self._fields.1.unwrap(),
+            deleted_did: self._fields.2.unwrap(),
+            entry_id: self._fields.3.unwrap(),
+            key_proof: self._fields.4,
+            received_at: self._fields.5.unwrap(),
+            seq: self._fields.6.unwrap(),
+            sequencer_authority: self._fields.7.unwrap(),
+            sequencer_did: self._fields.8.unwrap(),
+            signature: self._fields.9,
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn deserialize_account_deletion_actor_write_extra_data<'de, S, D>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+    D::Error,
+>
+where
+    S: jacquard_common::BosStr + serde::Deserialize<'de>,
+    D: serde::Deserializer<'de>,
+{
+    let data = <core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    Ok(data.filter(|extra_data| !extra_data.is_empty()))
+}
+
+pub mod account_deletion_actor_write_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Signature;
+        type WriteBody;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Signature = Unset;
+        type WriteBody = Unset;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type Signature = Set<members::signature>;
+        type WriteBody = St::WriteBody;
+    }
+    ///State transition - sets the `write_body` field to Set
+    pub struct SetWriteBody<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWriteBody<St> {}
+    impl<St: State> State for SetWriteBody<St> {
+        type Signature = St::Signature;
+        type WriteBody = Set<members::write_body>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `signature` field
+        pub struct signature(());
+        ///Marker type for the `write_body` field
+        pub struct write_body(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct AccountDeletionActorWriteBuilder<
+    St: account_deletion_actor_write_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl AccountDeletionActorWrite<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> AccountDeletionActorWriteBuilder<
+        account_deletion_actor_write_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        AccountDeletionActorWriteBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> AccountDeletionActorWrite<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> AccountDeletionActorWriteBuilder<account_deletion_actor_write_state::Empty, S> {
+        AccountDeletionActorWriteBuilder::builder()
+    }
+}
+
+impl
+    AccountDeletionActorWriteBuilder<
+        account_deletion_actor_write_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        AccountDeletionActorWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    AccountDeletionActorWriteBuilder<account_deletion_actor_write_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        AccountDeletionActorWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletionActorWriteBuilder<St, S>
+where
+    St: account_deletion_actor_write_state::State,
+    St::Signature: account_deletion_actor_write_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> AccountDeletionActorWriteBuilder<account_deletion_actor_write_state::SetSignature<St>, S>
+    {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        AccountDeletionActorWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletionActorWriteBuilder<St, S>
+where
+    St: account_deletion_actor_write_state::State,
+    St::WriteBody: account_deletion_actor_write_state::IsUnset,
+{
+    /// Set the `writeBody` field (required)
+    pub fn write_body(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> AccountDeletionActorWriteBuilder<account_deletion_actor_write_state::SetWriteBody<St>, S>
+    {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        AccountDeletionActorWriteBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountDeletionActorWriteBuilder<St, S>
+where
+    St: account_deletion_actor_write_state::State,
+    St::Signature: account_deletion_actor_write_state::IsSet,
+    St::WriteBody: account_deletion_actor_write_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> AccountDeletionActorWrite<S> {
+        AccountDeletionActorWrite {
+            signature: self._fields.0.unwrap(),
+            write_body: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> AccountDeletionActorWrite<S> {
+        AccountDeletionActorWrite {
+            signature: self._fields.0.unwrap(),
+            write_body: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
