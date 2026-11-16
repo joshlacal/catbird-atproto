@@ -5,12 +5,14 @@ use atproto_spaces::did_resolver::{DidDocument, StaticDidResolver};
 use atproto_spaces::host::{InMemorySpaceHostBackend, SpaceHost, SpaceRecordPolicy};
 use atproto_spaces::http_signature::{sign_credential_request, sign_credential_request_minimal};
 use atproto_spaces::kem::{encode_p256_did_key, P256SecretKey};
+use atproto_spaces::signature_replay::{InMemorySignatureReplayCache, SignatureReplayStore};
 use atproto_spaces::tokens::{mint_space_token, SpaceSigningKey, SpaceTokenClaims, SpaceTokenKind};
 use atproto_spaces::SpacesError;
 use catbird_atproto::com_atproto::space::authorize_space_sync::AuthorizeSpaceSync;
 use jacquard_common::deps::smol_str::SmolStr;
 use jacquard_common::types::aturi::AtSpaceUri;
 use std::rc::Rc;
+use std::sync::Arc;
 
 const NOW: u64 = 1_800_000_000;
 const AUTHORITY: &str = "did:web:mls.catbird.blue";
@@ -20,11 +22,16 @@ const SPACE: &str =
 
 struct Fixture {
     host: SpaceHost<InMemorySpaceHostBackend, Rc<StaticDidResolver>>,
+    alice_sk: SpaceSigningKey,
     credential_jwt: String,
     ephemeral: P256SecretKey,
 }
 
 async fn fixture() -> Fixture {
+    fixture_with_store(None).await
+}
+
+async fn fixture_with_store(store: Option<Arc<dyn SignatureReplayStore + Send + Sync>>) -> Fixture {
     let authority_sk = SpaceSigningKey::random_p256();
     let alice_sk = SpaceSigningKey::random_p256();
     let resolver = StaticDidResolver::new();
@@ -46,23 +53,40 @@ async fn fixture() -> Fixture {
         AUTHORITY,
         SpaceRecordPolicy::Members(vec![ALICE.to_string()]),
     );
-    let host = SpaceHost::new(
+    let mut host = SpaceHost::new(
         AUTHORITY.to_string(),
         authority_sk,
         Rc::new(resolver),
         backend,
     );
+    if let Some(store) = store {
+        host = host.with_signature_replay_store(store);
+    }
+    let (credential_jwt, ephemeral) = mint_credential(&host, &alice_sk, "a").await;
+    Fixture {
+        host,
+        alice_sk,
+        credential_jwt,
+        ephemeral,
+    }
+}
 
+/// Mints a Space credential bound to a fresh ephemeral key.
+async fn mint_credential(
+    host: &SpaceHost<InMemorySpaceHostBackend, Rc<StaticDidResolver>>,
+    alice_sk: &SpaceSigningKey,
+    tag: &str,
+) -> (String, P256SecretKey) {
     let delegation = mint_space_token(
         SpaceTokenKind::Delegation,
-        &alice_sk,
+        alice_sk,
         &SpaceTokenClaims {
             iss: ALICE.to_string(),
             sub: SPACE.to_string(),
             aud: Some(format!("{AUTHORITY}#atproto_pds")),
             iat: NOW,
             exp: NOW + 60,
-            jti: "presentation-replay-delegation".to_string(),
+            jti: format!("presentation-replay-delegation-{tag}"),
             cnf_kid: None,
         },
     )
@@ -82,11 +106,7 @@ async fn fixture() -> Fixture {
         )
         .await
         .expect("credential minted");
-    Fixture {
-        host,
-        credential_jwt: out.credential.as_str().to_string(),
-        ephemeral,
-    }
+    (out.credential.as_str().to_string(), ephemeral)
 }
 
 #[test]
@@ -141,6 +161,55 @@ fn repeated_nonce_is_refused_within_the_freshness_window() {
             .await
             .expect_err("a stale presentation must be refused");
         assert!(matches!(late, SpacesError::BadSpaceSignature(_)));
+    });
+}
+
+#[test]
+fn one_credential_key_cannot_exhaust_the_nonce_store_for_others() {
+    block_on(async {
+        let store: Arc<dyn SignatureReplayStore + Send + Sync> =
+            Arc::new(InMemorySignatureReplayCache::with_capacity(32));
+        let f = fixture_with_store(Some(store)).await;
+        let (other_jwt, other_key) = mint_credential(&f.host, &f.alice_sk, "b").await;
+
+        // Both credentials come from the same authority; only the bound key
+        // differs. The first key presents far more nonces than the store holds.
+        let mut refused = 0;
+        for i in 0..40 {
+            let headers = sign_credential_request(
+                &f.ephemeral,
+                &f.credential_jwt,
+                AUTHORITY,
+                NOW,
+                &format!("flood-nonce-{i:04}"),
+            )
+            .unwrap()
+            .to_header_map()
+            .unwrap();
+            if f.host
+                .verify_presentation(&headers, SPACE, AUTHORITY, NOW + 1)
+                .await
+                .is_err()
+            {
+                refused += 1;
+            }
+        }
+        assert!(refused > 0, "one key must not record unbounded nonces");
+
+        let headers = sign_credential_request(
+            &other_key,
+            &other_jwt,
+            AUTHORITY,
+            NOW,
+            "other-key-nonce-0001",
+        )
+        .unwrap()
+        .to_header_map()
+        .unwrap();
+        f.host
+            .verify_presentation(&headers, SPACE, AUTHORITY, NOW + 1)
+            .await
+            .expect("another credential key still has room in the store");
     });
 }
 
@@ -257,9 +326,7 @@ fn replay_vectors() -> ReplayVectorFile {
 #[test]
 fn replay_sequence_vectors_match_fixture_and_in_memory_store() {
     use atproto_spaces::http_signature::VerifiedSpaceHeaders;
-    use atproto_spaces::signature_replay::{
-        check_presentation_replay, InMemorySignatureReplayCache,
-    };
+    use atproto_spaces::signature_replay::check_presentation_replay;
 
     let generated = replay_vectors();
     let expected_json = serde_json::to_string_pretty(&generated).expect("serialize") + "\n";
