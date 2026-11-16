@@ -20,6 +20,8 @@ pub const SIGNATURE_HEADER: &str = "signature";
 pub const MAX_SIGNATURE_HEADER_BYTES: usize = 8 * 1024;
 pub const MAX_CLOCK_SKEW_SECS: u64 = 30;
 pub const MAX_SIGNATURE_AGE_SECS: u64 = 300;
+/// Longest accepted `nonce` signature parameter, in bytes.
+pub const MAX_NONCE_BYTES: usize = 512;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SpaceRequestHeaders {
@@ -136,6 +138,20 @@ fn sign_with_params(
 
 /// Verify an RFC 9421 `atproto-space-credential` request against `expected_cnf_did_key`.
 /// Accepts **both** low-S and WebCrypto high-S ECDSA P-256 signatures.
+///
+/// The optional `created`, `expires` and `nonce` signature parameters are
+/// enforced against `now_sec` (Unix seconds) whenever they are present:
+/// `created` may be at most [`MAX_SIGNATURE_AGE_SECS`] old and at most
+/// [`MAX_CLOCK_SKEW_SECS`] ahead, `expires` may have passed by at most
+/// [`MAX_CLOCK_SKEW_SECS`], and `nonce` must be a non-empty string of at most
+/// [`MAX_NONCE_BYTES`] bytes. A presentation without them carries no freshness
+/// constraint here. This function is stateless: it does not detect a repeated
+/// `nonce`.
+///
+/// Structured fields follow RFC 8941: a repeated dictionary key or parameter
+/// key overwrites the earlier value in place, and the signature base uses the
+/// re-serialized parameters. Swan's verifier behaves identically; the shared
+/// vectors in `tests/vectors/space_credential_signature_v1.json` pin this.
 pub fn verify_credential_request(
     headers: &HeaderMap,
     expected_cnf_did_key: &str,
@@ -303,7 +319,9 @@ pub fn verify_credential_request(
                 }
             },
             "nonce" => match v {
-                SfBareItem::String(s) if !s.is_empty() && s.len() <= 512 => nonce = Some(s.clone()),
+                SfBareItem::String(s) if !s.is_empty() && s.len() <= MAX_NONCE_BYTES => {
+                    nonce = Some(s.clone())
+                }
                 _ => {
                     return Err(SpacesError::BadSpaceSignature(
                         "nonce parameter must be a non-empty bounded string".into(),
@@ -320,25 +338,25 @@ pub fn verify_credential_request(
         ));
     }
 
-    if now_sec > 0 {
-        if let Some(c) = created {
-            if c > now_sec.saturating_add(MAX_CLOCK_SKEW_SECS) {
-                return Err(SpacesError::BadSpaceSignature(
-                    "Signature-Input created is in the future".into(),
-                ));
-            }
-            if now_sec > c.saturating_add(MAX_SIGNATURE_AGE_SECS) {
-                return Err(SpacesError::BadSpaceSignature(
-                    "Signature-Input created is expired".into(),
-                ));
-            }
+    // Freshness is checked against the caller's clock on every call; a zero
+    // clock is the Unix epoch, not a switch that turns the checks off.
+    if let Some(c) = created {
+        if c > now_sec.saturating_add(MAX_CLOCK_SKEW_SECS) {
+            return Err(SpacesError::BadSpaceSignature(
+                "Signature-Input created is in the future".into(),
+            ));
         }
-        if let Some(exp) = expires {
-            if now_sec > exp.saturating_add(MAX_CLOCK_SKEW_SECS) {
-                return Err(SpacesError::BadSpaceSignature(
-                    "Signature-Input expires has passed".into(),
-                ));
-            }
+        if now_sec > c.saturating_add(MAX_SIGNATURE_AGE_SECS) {
+            return Err(SpacesError::BadSpaceSignature(
+                "Signature-Input created is expired".into(),
+            ));
+        }
+    }
+    if let Some(exp) = expires {
+        if now_sec > exp.saturating_add(MAX_CLOCK_SKEW_SECS) {
+            return Err(SpacesError::BadSpaceSignature(
+                "Signature-Input expires has passed".into(),
+            ));
         }
     }
 
@@ -411,6 +429,8 @@ enum SfBareItem {
     Boolean(bool),
 }
 
+/// RFC 8941 parameters in insertion order. A repeated key overwrites the
+/// earlier value and keeps its first position (RFC 8941 §4.2.3.2).
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 struct SfParams {
     entries: Vec<(String, SfBareItem)>,
@@ -452,6 +472,8 @@ enum SfMember {
     InnerList(SfInnerList),
 }
 
+/// RFC 8941 dictionary in insertion order. A repeated key overwrites the
+/// earlier member and keeps its first position (RFC 8941 §4.2.2).
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 struct SfDictionary {
     entries: Vec<(String, SfMember)>,
