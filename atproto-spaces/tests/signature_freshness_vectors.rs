@@ -22,7 +22,8 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 const NOW: u64 = 1_800_000_000;
-const CNF_SECRET_HEX: &str = "5ec4e7f1d2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d";
+const TEST_ONLY_CNF_SECRET_HEX: &str =
+    "5ec4e7f1d2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d";
 const AUTHORIZATION: &str =
     "Atproto-Space-Credential eyJhbGciOiJFUzI1NiJ9.eyJ2ZWN0b3IiOiJmcmVzaG5lc3MifQ.c2lnbmF0dXJl";
 const AUDIENCE: &str = "did:web:space-host.example.com";
@@ -33,7 +34,8 @@ const TAG: &str = ";tag=\"atproto-space-credential\"";
 struct SignatureVectorFile {
     version: u32,
     description: String,
-    cnf_secret_hex: String,
+    /// Deterministic signing key for these vectors only; never a deployed key.
+    test_only_cnf_secret_hex: String,
     cnf_did_key: String,
     authorization: String,
     atproto_space_audience: String,
@@ -74,7 +76,7 @@ fn hex_decode(s: &str) -> Vec<u8> {
 }
 
 fn signing_key() -> (SigningKey, String) {
-    let secret = SecretKey::from_slice(&hex_decode(CNF_SECRET_HEX)).expect("secret");
+    let secret = SecretKey::from_slice(&hex_decode(TEST_ONLY_CNF_SECRET_HEX)).expect("secret");
     let did_key = encode_p256_did_key(&secret.public_key());
     (SigningKey::from(&secret), did_key)
 }
@@ -270,7 +272,7 @@ fn generate() -> SignatureVectorFile {
     SignatureVectorFile {
         version: 1,
         description: "RFC 9421 atproto-space-credential verifier vectors: created / expires / nonce bounds and RFC 8941 duplicate-key handling. Each case is verified against cnf_did_key with the given verifier clock.".into(),
-        cnf_secret_hex: CNF_SECRET_HEX.into(),
+        test_only_cnf_secret_hex: TEST_ONLY_CNF_SECRET_HEX.into(),
         cnf_did_key,
         authorization: AUTHORIZATION.into(),
         atproto_space_audience: AUDIENCE.into(),
