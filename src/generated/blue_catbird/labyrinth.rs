@@ -40,6 +40,7 @@ pub mod get_mailbox_keys_record;
 pub mod get_member_devices;
 pub mod get_messages;
 pub mod get_recovery_share;
+pub mod get_recovery_share_capabilities;
 pub mod get_space_membership;
 pub mod get_thread_storage;
 pub mod get_virtual_device;

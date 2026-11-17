@@ -58,8 +58,8 @@ pub struct ListRecoverySharesOutput<S: jacquard_common::BosStr = jacquard_common
 )]
 #[serde(tag = "error", content = "message")]
 pub enum ListRecoverySharesError {
-    #[serde(rename = "LabyrinthDeviceNotBound")]
-    LabyrinthDeviceNotBound(
+    #[serde(rename = "ChatDeviceNotActive")]
+    ChatDeviceNotActive(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -75,8 +75,8 @@ pub enum ListRecoverySharesError {
 impl core::fmt::Display for ListRecoverySharesError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::LabyrinthDeviceNotBound(msg) => {
-                write!(f, "LabyrinthDeviceNotBound")?;
+            Self::ChatDeviceNotActive(msg) => {
+                write!(f, "ChatDeviceNotActive")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -107,7 +107,7 @@ pub struct ShareView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     /// Chat device that stored the share.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub created_by_device_id: core::option::Option<S>,
-    /// Successful restore fetches; verify reads are not counted.
+    /// Successful share reads other than the creator's first verify read within ten minutes of put; later purpose-verify reads are counted as fetches.
     pub fetch_count: i64,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub last_fetched_at: core::option::Option<jacquard_common::types::string::Datetime>,

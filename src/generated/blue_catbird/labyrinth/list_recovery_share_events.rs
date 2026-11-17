@@ -188,8 +188,8 @@ pub struct ListRecoveryShareEventsOutput<S: jacquard_common::BosStr = jacquard_c
 )]
 #[serde(tag = "error", content = "message")]
 pub enum ListRecoveryShareEventsError {
-    #[serde(rename = "LabyrinthDeviceNotBound")]
-    LabyrinthDeviceNotBound(
+    #[serde(rename = "ChatDeviceNotActive")]
+    ChatDeviceNotActive(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -205,8 +205,8 @@ pub enum ListRecoveryShareEventsError {
 impl core::fmt::Display for ListRecoveryShareEventsError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::LabyrinthDeviceNotBound(msg) => {
-                write!(f, "LabyrinthDeviceNotBound")?;
+            Self::ChatDeviceNotActive(msg) => {
+                write!(f, "ChatDeviceNotActive")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

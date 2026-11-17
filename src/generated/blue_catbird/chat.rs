@@ -121,7 +121,7 @@ pub struct AccountDeletedEntry<S: jacquard_common::BosStr = jacquard_common::Def
     >,
 }
 
-/// Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. The signed request with which a device of deletedDid called blue.catbird.labyrinth.deleteAccountData. writeBody is the exact labyrinthWriteBody JSON bytes the device sent, {operationId, actorDeviceId, endpointNsid, payloadSha256, signedAt}, never re-encoded. signature is the device's 64-byte Ed25519 signature over UTF8(CATBIRD-LABYRINTH-WRITE\0) followed by writeBody. endpointNsid is blue.catbird.labyrinth.deleteAccountData, actorDeviceId names the signing device of deletedDid, and signedAt is the device-signed deletion instant. Every direct, relayed and mirrored copy of the entry carries the same bytes.
+/// Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. The signed request with which a device of deletedDid called blue.catbird.labyrinth.deleteAccountData. writeBody is the exact labyrinthWriteBody JSON bytes the device sent, {operationId, actorDeviceId, endpointNsid, payloadSha256, signedAt}, never re-encoded. payloadBytes is the exact HTTP JSON body whose SHA-256 equals writeBody.payloadSha256; readers parse it as an empty object and do not trust only the hash. signature is the device's 64-byte Ed25519 signature over UTF8(CATBIRD-LABYRINTH-WRITE\0) followed by writeBody. endpointNsid is blue.catbird.labyrinth.deleteAccountData, actorDeviceId names the signing device of deletedDid, and signedAt is the device-signed deletion instant. Every direct, relayed and mirrored copy of the entry carries the same bytes. Historical entries without payloadBytes decode but do not meet the client deletion-proof gate.
 
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -131,6 +131,10 @@ pub struct AccountDeletedEntry<S: jacquard_common::BosStr = jacquard_common::Def
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AccountDeletionActorWrite<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Optional for historical decoding; required for client enforcement. Exact signed deleteAccountData HTTP request body bytes, copied before account data is removed. The reader verifies SHA-256 against writeBody.payloadSha256 and requires the parsed JSON object to have no members.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub payload_bytes: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub signature: jacquard_common::deps::bytes::Bytes,
     #[serde(with = "jacquard_common::serde_bytes_helper")]
@@ -25737,7 +25741,7 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. The signed request with which a device of deletedDid called blue.catbird.labyrinth.deleteAccountData. writeBody is the exact labyrinthWriteBody JSON bytes the device sent, {operationId, actorDeviceId, endpointNsid, payloadSha256, signedAt}, never re-encoded. signature is the device's 64-byte Ed25519 signature over UTF8(CATBIRD-LABYRINTH-WRITE\\0) followed by writeBody. endpointNsid is blue.catbird.labyrinth.deleteAccountData, actorDeviceId names the signing device of deletedDid, and signedAt is the device-signed deletion instant. Every direct, relayed and mirrored copy of the entry carries the same bytes.",
+                            "Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. The signed request with which a device of deletedDid called blue.catbird.labyrinth.deleteAccountData. writeBody is the exact labyrinthWriteBody JSON bytes the device sent, {operationId, actorDeviceId, endpointNsid, payloadSha256, signedAt}, never re-encoded. payloadBytes is the exact HTTP JSON body whose SHA-256 equals writeBody.payloadSha256; readers parse it as an empty object and do not trust only the hash. signature is the device's 64-byte Ed25519 signature over UTF8(CATBIRD-LABYRINTH-WRITE\\0) followed by writeBody. endpointNsid is blue.catbird.labyrinth.deleteAccountData, actorDeviceId names the signing device of deletedDid, and signedAt is the device-signed deletion instant. Every direct, relayed and mirrored copy of the entry carries the same bytes. Historical entries without payloadBytes decode but do not meet the client deletion-proof gate.",
                         ),
                     ),
                     required: Some(
@@ -25749,6 +25753,16 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                     properties: {
                         #[allow(unused_mut)]
                         let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "payloadBytes",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(1024usize),
+                                min_length: Some(2usize),
+                                ..Default::default()
+                            }),
+                        );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "signature",
@@ -45437,6 +45451,7 @@ pub struct AccountDeletionActorWriteBuilder<
     _fields: (
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -45469,7 +45484,7 @@ impl
     pub fn new() -> Self {
         AccountDeletionActorWriteBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -45482,9 +45497,30 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         AccountDeletionActorWriteBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<St: account_deletion_actor_write_state::State, S: jacquard_common::BosStr>
+    AccountDeletionActorWriteBuilder<St, S>
+{
+    /// Set the `payloadBytes` field (optional)
+    pub fn payload_bytes(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `payloadBytes` field to an Option value (optional)
+    pub fn maybe_payload_bytes(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
     }
 }
 
@@ -45499,7 +45535,7 @@ where
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> AccountDeletionActorWriteBuilder<account_deletion_actor_write_state::SetSignature<St>, S>
     {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         AccountDeletionActorWriteBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45519,7 +45555,7 @@ where
         value: impl Into<jacquard_common::deps::bytes::Bytes>,
     ) -> AccountDeletionActorWriteBuilder<account_deletion_actor_write_state::SetWriteBody<St>, S>
     {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         AccountDeletionActorWriteBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45537,8 +45573,9 @@ where
     /// Build the final struct.
     pub fn build(self) -> AccountDeletionActorWrite<S> {
         AccountDeletionActorWrite {
-            signature: self._fields.0.unwrap(),
-            write_body: self._fields.1.unwrap(),
+            payload_bytes: self._fields.0,
+            signature: self._fields.1.unwrap(),
+            write_body: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -45551,8 +45588,9 @@ where
         >,
     ) -> AccountDeletionActorWrite<S> {
         AccountDeletionActorWrite {
-            signature: self._fields.0.unwrap(),
-            write_body: self._fields.1.unwrap(),
+            payload_bytes: self._fields.0,
+            signature: self._fields.1.unwrap(),
+            write_body: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }

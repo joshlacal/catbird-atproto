@@ -16,7 +16,7 @@ pub struct GetRecoveryShare<S: jacquard_common::BosStr = jacquard_common::Defaul
     /// The 32-byte fetch token derived from the recovery code. It is independent of the code-derived bundle key.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub fetch_token: jacquard_common::deps::bytes::Bytes,
-    /// restore (the default) for a device recovering the account. verify is the storing device's read-back right after putRecoveryShare; the service honours it only for the active device that stored this share and records it as a verify event, otherwise it treats the call as restore.
+    /// restore (the default) for a device recovering the account. verify is the storing device's single uncounted read-back within ten minutes after putRecoveryShare; the service honours it only once for the active device that stored this share and records it as a verify event. Later or other-device reads are recorded and counted as restore fetches even when purpose is verify.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub purpose: core::option::Option<GetRecoverySharePurpose<S>>,
     /// Fresh single-use X25519 public key the share is sealed to.
@@ -38,7 +38,7 @@ pub struct GetRecoveryShare<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
-/// restore (the default) for a device recovering the account. verify is the storing device's read-back right after putRecoveryShare; the service honours it only for the active device that stored this share and records it as a verify event, otherwise it treats the call as restore.
+/// restore (the default) for a device recovering the account. verify is the storing device's single uncounted read-back within ten minutes after putRecoveryShare; the service honours it only once for the active device that stored this share and records it as a verify event. Later or other-device reads are recorded and counted as restore fetches even when purpose is verify.
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GetRecoverySharePurpose<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {

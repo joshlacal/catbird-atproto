@@ -30,7 +30,33 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (account-deleted actor write + recovery-share methods, regenerated 2026-11-16)
+## Current generation (exact deletion body bytes, local readiness candidate)
+
+Regenerated on November 16, 2026 from the candidate's Petrel
+`278bd47fa47a676ce6cc30fd0fc083294fc29e1f` and PetrelCatbird
+`6d67a76c962d34d586fd4a45d1b7fee0eabaccfe` workspaces using the canonical
+commands above and Rust 1.99.1. These are local candidate identities, not a
+publication or release qualification.
+
+The overlay already declared optional `accountDeletionActorWrite.payloadBytes`
+(bytes, length 2–1024). The prior Rust DTO and embedded schema omitted it,
+causing valid stored deletion entries to fail schema-aware read projection.
+Regeneration preserves those exact signed HTTP-body bytes without weakening
+unknown-field rejection or deletion authorization.
+
+Reproduction receipts:
+
+- `gen-lexicons` SHA-256: `ce9b4689505b14efe9a19301a69917ea97c27b7daa5f63587a294a026b2318a5`.
+- Generator workspace `Cargo.lock` SHA-256: `0b148abfd4f7473f6bb9460dd7abfd08ce9377b4d7892dd4422bfd3c2aa016ab`.
+- Overlay `blue.catbird.chat.defs.json` SHA-256: `4b941d3a0c0d57c237885fce5ac216a955b41340ab84beb36f0b4a71c164c7f3`.
+- `Scripts/regenerate.py` SHA-256: `b20bc29aaf19f0a1e74cba9335bef5e723bf9271a0e1dd15e31dce5b5959baae`.
+- Canonical generation/check reproduced all 717 generated files.
+- `blue_catbird_chat_surface`: 6 passed; `named_bytes_contract`: 2 passed.
+
+The server's deletion read-path integration tests are the behavioral regression
+gate; these generator checks alone do not qualify the server or app binaries.
+
+## Prior generation (account-deleted actor write + recovery-share methods, regenerated 2026-11-16)
 
 This generation keeps the core reference at Petrel
 `221c857162e0c90f4453a55ac1a8587da014edf6` (its 471 core lexicon files are

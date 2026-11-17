@@ -103,8 +103,8 @@ pub enum DeleteRecoveryShareError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
-    #[serde(rename = "LabyrinthDeviceNotBound")]
-    LabyrinthDeviceNotBound(
+    #[serde(rename = "ChatDeviceNotActive")]
+    ChatDeviceNotActive(
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
@@ -127,8 +127,8 @@ impl core::fmt::Display for DeleteRecoveryShareError {
                 }
                 Ok(())
             }
-            Self::LabyrinthDeviceNotBound(msg) => {
-                write!(f, "LabyrinthDeviceNotBound")?;
+            Self::ChatDeviceNotActive(msg) => {
+                write!(f, "ChatDeviceNotActive")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
