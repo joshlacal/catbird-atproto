@@ -15,6 +15,9 @@
 pub struct GetConversationState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor_device_id: S,
     pub conversation_id: S,
+    /// (min: 0, max: 9007199254740991)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub deletions_after: core::option::Option<i64>,
 }
 
 #[derive(
@@ -25,8 +28,11 @@ pub struct GetConversationState<S: jacquard_common::BosStr = jacquard_common::De
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetConversationStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    /// Every accountDeletedEntry of this conversation in ascending seq, each exactly as sequenced with its sequencerAuthority. The sequencer, a group mirror and a C33 transport home serve it to any authenticated device of a current member DID, including a device that is not yet an MLS member and holds no entry entitlement, and to no one else. It survives ciphertext pruning. Clients verify each sequencerAuthority with the sequencer's #mls-receipt-1 key before hiding deletedDid's restored history.
+    /// One page of this conversation's accountDeletedEntry records in strictly increasing sequence order, each exactly as sequenced with its sequencerAuthority. The sequencer, group mirror and C33 transport home serve the inventory to any authenticated device of a current member DID, including a device without entry entitlement. It survives ciphertext pruning. Restore requires a complete traversal and independent verification of deletion evidence.
     pub account_deletions: Vec<crate::generated::blue_catbird::chat::AccountDeletedEntry<S>>,
+    /// Present only if more account deletions remain. Equal to the sequence of the last entry in accountDeletions. Pass this value as deletionsAfter to fetch the next page.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub deletions_cursor: core::option::Option<i64>,
     /// Open unexpired leaf recoveries bound to the current coordinate, visible only to an active concrete device leaf that may fulfill them. Excludes the requesting exact device, but includes other devices of the same DID. Ordered oldest first; successful fulfillment changes the coordinate and stale requests must be renewed. Absent on older servers; empty for logical participants without a current concrete leaf. This is separate from the exact-target-device getLeafRecoveryInbox and grants no additional application history.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pending_leaf_recovery_requests:
@@ -304,7 +310,11 @@ pub struct GetConversationStateBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<S>, core::option::Option<S>),
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -329,7 +339,7 @@ impl GetConversationStateBuilder<get_conversation_state_state::Empty, jacquard_c
     pub fn new() -> Self {
         GetConversationStateBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -342,7 +352,7 @@ impl<S: jacquard_common::BosStr>
     pub fn builder() -> Self {
         GetConversationStateBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -386,6 +396,21 @@ where
     }
 }
 
+impl<St: get_conversation_state_state::State, S: jacquard_common::BosStr>
+    GetConversationStateBuilder<St, S>
+{
+    /// Set the `deletionsAfter` field (optional)
+    pub fn deletions_after(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `deletionsAfter` field to an Option value (optional)
+    pub fn maybe_deletions_after(mut self, value: Option<i64>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> GetConversationStateBuilder<St, S>
 where
     St: get_conversation_state_state::State,
@@ -397,6 +422,7 @@ where
         GetConversationState {
             actor_device_id: self._fields.0.unwrap(),
             conversation_id: self._fields.1.unwrap(),
+            deletions_after: self._fields.2,
         }
     }
 }

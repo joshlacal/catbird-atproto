@@ -30,7 +30,25 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
-## Current generation (account-deletion revocationProof, Dec 1 readiness A1 closure)
+## Current generation for deletion evidence and pagination
+
+Petrel `278bd47fa47a676ce6cc30fd0fc083294fc29e1f` and PetrelCatbird
+`322a3302ec5835e45109391c691c114c69bc858b` supply the core and overlay
+lexicons. A repeat of the canonical generation compared all 717 files
+byte for byte. The optional `getConversationState` input `deletionsAfter`
+and output `deletionsCursor` are 64-bit sequence numbers. A deletion retry
+can refresh `actorWrite.signedAt` while keeping the original signed
+repository record for that operation.
+
+| Input | SHA-256 |
+| --- | --- |
+| Candidate `gen-lexicons` binary | `c8509ae7f5f5aa32c7b6b5d5f1156e2b2e4ea3a5832af7f2a603b416522b1d83` |
+| Generator workspace `Cargo.lock` | `e26a3d7a56fc75e3e20e72f35739d28a8f68b4af9f555577888b53e6d2cc56d7` |
+| Overlay `blue.catbird.chat.defs.json` | `331dfccd668b27487571cb9453564f237fccc312d3c365852b5594daad1bcc2b` |
+| Overlay `blue.catbird.chat.getConversationState.json` | `473a913f135de6fd3c858d6ec0222a930cc2dbbb128d57200e013da752dbb413` |
+| `Scripts/regenerate.py` | `b20bc29aaf19f0a1e74cba9335bef5e723bf9271a0e1dd15e31dce5b5959baae` |
+
+## Prior generation (account-deletion revocationProof, Dec 1 readiness A1 closure)
 
 Regenerated on November 17, 2026 from the candidate's Petrel
 `278bd47fa47a676ce6cc30fd0fc083294fc29e1f` and PetrelCatbird
