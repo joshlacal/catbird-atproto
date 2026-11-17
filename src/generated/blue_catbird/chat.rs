@@ -101,6 +101,10 @@ pub struct AccountDeletedEntry<S: jacquard_common::BosStr = jacquard_common::Def
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
     pub key_proof: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     pub received_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
+    /// Optional; present only together with actorWrite. Private Catbird surface (blue.catbird.*), not an ATProto or community-ratified lexicon. A CARv1 repository proof in the com.atproto.sync.getRecord shape: the signed repository commit of deletedDid, the MST path, and the record block for the create-only blue.catbird.chat.deviceRevocation/{actorDeviceId} record where targetDeviceId == actorDeviceId, createdAt == actorWrite.signedAt, and reason == 'deleteAccountData:' || operationId. Because deviceRevocation is create-only, a valid CARv1 under deletedDid's #atproto key proves actorDeviceId had not been revoked prior to signing deletion even after deletedDid's repository is gone.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub revocation_proof: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     pub seq: i64,
     pub sequencer_authority: crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>,
     pub sequencer_did: crate::generated::blue_catbird::chat::BareDid<S>,
@@ -25691,6 +25695,16 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "revocationProof",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                max_length: Some(16384usize),
+                                min_length: Some(1usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "seq",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
@@ -45087,6 +45101,7 @@ pub struct AccountDeletedEntryBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<crate::generated::blue_catbird::chat::CanonicalDatetime>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
         core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BareDid<S>>,
@@ -45116,7 +45131,9 @@ impl AccountDeletedEntryBuilder<account_deleted_entry_state::Empty, jacquard_com
     pub fn new() -> Self {
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -45127,7 +45144,9 @@ impl<S: jacquard_common::BosStr> AccountDeletedEntryBuilder<account_deleted_entr
     pub fn builder() -> Self {
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -45248,6 +45267,27 @@ where
     }
 }
 
+impl<St: account_deleted_entry_state::State, S: jacquard_common::BosStr>
+    AccountDeletedEntryBuilder<St, S>
+{
+    /// Set the `revocationProof` field (optional)
+    pub fn revocation_proof(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `revocationProof` field to an Option value (optional)
+    pub fn maybe_revocation_proof(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> AccountDeletedEntryBuilder<St, S>
 where
     St: account_deleted_entry_state::State,
@@ -45258,7 +45298,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSeq<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45277,7 +45317,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::AccountDeletionAuthority<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSequencerAuthority<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45296,7 +45336,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::BareDid<S>>,
     ) -> AccountDeletedEntryBuilder<account_deleted_entry_state::SetSequencerDid<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         AccountDeletedEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -45313,12 +45353,12 @@ impl<St: account_deleted_entry_state::State, S: jacquard_common::BosStr>
         mut self,
         value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
     ) -> Self {
-        self._fields.9 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `signature` field to an Option value (optional)
     pub fn maybe_signature(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
-        self._fields.9 = value;
+        self._fields.10 = value;
         self
     }
 }
@@ -45343,10 +45383,11 @@ where
             entry_id: self._fields.3.unwrap(),
             key_proof: self._fields.4,
             received_at: self._fields.5.unwrap(),
-            seq: self._fields.6.unwrap(),
-            sequencer_authority: self._fields.7.unwrap(),
-            sequencer_did: self._fields.8.unwrap(),
-            signature: self._fields.9,
+            revocation_proof: self._fields.6,
+            seq: self._fields.7.unwrap(),
+            sequencer_authority: self._fields.8.unwrap(),
+            sequencer_did: self._fields.9.unwrap(),
+            signature: self._fields.10,
             extra_data: Default::default(),
         }
     }
@@ -45365,10 +45406,11 @@ where
             entry_id: self._fields.3.unwrap(),
             key_proof: self._fields.4,
             received_at: self._fields.5.unwrap(),
-            seq: self._fields.6.unwrap(),
-            sequencer_authority: self._fields.7.unwrap(),
-            sequencer_did: self._fields.8.unwrap(),
-            signature: self._fields.9,
+            revocation_proof: self._fields.6,
+            seq: self._fields.7.unwrap(),
+            sequencer_authority: self._fields.8.unwrap(),
+            sequencer_did: self._fields.9.unwrap(),
+            signature: self._fields.10,
             extra_data: Some(extra_data),
         }
     }
