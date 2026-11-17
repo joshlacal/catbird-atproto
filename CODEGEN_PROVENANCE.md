@@ -35,7 +35,9 @@ cargo clippy --locked --all-targets --all-features
 Regenerated on November 16, 2026 from the candidate's Petrel
 `278bd47fa47a676ce6cc30fd0fc083294fc29e1f` and PetrelCatbird
 `6d67a76c962d34d586fd4a45d1b7fee0eabaccfe` workspaces using the canonical
-commands above and Rust 1.99.1. These are local candidate identities, not a
+commands above. The requested `RUSTUP_TOOLCHAIN=1.99.1` did not override this
+Mac's direct stable-toolchain symlinks (Rust/Cargo 1.97.1); selecting another
+compiler requires `rustup run`. These are local candidate identities, not a
 publication or release qualification.
 
 The overlay already declared optional `accountDeletionActorWrite.payloadBytes`
