@@ -48,6 +48,9 @@ pub struct DeleteAccountData<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteAccountDataOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Present as confirmed only after the service verifies completion for the authenticated deletion operation at every required peer. Hosted callers require this exact value before proceeding with account shutdown.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub erasure_completion: core::option::Option<DeleteAccountDataOutputErasureCompletion<S>>,
     #[serde(
         flatten,
         default,
@@ -59,6 +62,92 @@ pub struct DeleteAccountDataOutput<S: jacquard_common::BosStr = jacquard_common:
             jacquard_common::types::value::Data<S>,
         >,
     >,
+}
+
+/// Present as confirmed only after the service verifies completion for the authenticated deletion operation at every required peer. Hosted callers require this exact value before proceeding with account shutdown.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum DeleteAccountDataOutputErasureCompletion<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    Confirmed,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> DeleteAccountDataOutputErasureCompletion<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Confirmed => "confirmed",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "confirmed" => Self::Confirmed,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display
+    for DeleteAccountDataOutputErasureCompletion<S>
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for DeleteAccountDataOutputErasureCompletion<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for DeleteAccountDataOutputErasureCompletion<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for DeleteAccountDataOutputErasureCompletion<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for DeleteAccountDataOutputErasureCompletion<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for DeleteAccountDataOutputErasureCompletion<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = DeleteAccountDataOutputErasureCompletion<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            DeleteAccountDataOutputErasureCompletion::Confirmed => {
+                DeleteAccountDataOutputErasureCompletion::Confirmed
+            }
+            DeleteAccountDataOutputErasureCompletion::Other(v) => {
+                DeleteAccountDataOutputErasureCompletion::Other(v.into_static())
+            }
+        }
+    }
 }
 
 #[derive(
@@ -78,6 +167,18 @@ pub enum DeleteAccountDataError {
         #[serde(skip_serializing_if = "core::option::Option::is_none")]
         core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
     ),
+    /// Peer erasure for the authenticated operation is still pending. Retry the same operation.
+    #[serde(rename = "PeerErasurePending")]
+    PeerErasurePending(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    /// The service cannot verify complete peer erasure for the authenticated operation.
+    #[serde(rename = "PeerErasureUnverified")]
+    PeerErasureUnverified(
+        #[serde(skip_serializing_if = "core::option::Option::is_none")]
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -92,6 +193,20 @@ impl core::fmt::Display for DeleteAccountDataError {
         match self {
             Self::LabyrinthDeviceNotBound(msg) => {
                 write!(f, "LabyrinthDeviceNotBound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::PeerErasurePending(msg) => {
+                write!(f, "PeerErasurePending")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::PeerErasureUnverified(msg) => {
+                write!(f, "PeerErasureUnverified")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
