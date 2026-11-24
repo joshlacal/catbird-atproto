@@ -22,6 +22,12 @@ jobs:
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
       CMAKE_POLICY_VERSION_MINIMUM: '3.5'
+      # Fetch git dependencies with the git CLI so the jacquard mirror below
+      # applies, abort a transfer stalled under 1 KB/s for 60 s, and retry.
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CARGO_NET_RETRY: '10'
+      GIT_HTTP_LOW_SPEED_LIMIT: '1000'
+      GIT_HTTP_LOW_SPEED_TIME: '60'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,12 +35,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: joshlacal/catbird-mls
-          # Head of codex/main-consolidation-native-20261002: the last public
-          # clean-chat-line revision before catbird-mls added the private
-          # labyrinth path dependency. 1495be65 predates the direct-request
-          # chat surface and no longer compiles against this SDK.
-          ref: 94a55cab94918415fe8e585c7ed720fe63063f67
+          # The catbird-mls and labyrinth commits of the latest CatbirdMLSCore
+          # FFI release (v1.5.23, Scripts/ffi-release-inputs.json). Move them
+          # together with it. The earlier pin, 94a55cab, still called the chat
+          # blob endpoints this SDK no longer has.
+          ref: ba6d618fb8f3530752d97351bbc8535a542c7a08
           path: catbird-mls
+      - uses: actions/checkout@v4
+        with:
+          repository: joshlacal/labyrinth
+          ref: a484e9ef14ddb42d7d7212f1c9eb468ee152acd7
+          path: labyrinth
+      - name: Fetch jacquard from its GitHub mirror
+        # tangled.org stalls or resets clones of jacquard (Nov 21 this job hung
+        # 45 min and was cancelled). joshlacal/jacquard carries the pinned rev
+        # 3287244a, so redirect the fetch there; Cargo.lock is unchanged.
+        run: git config --global url."https://github.com/joshlacal/jacquard".insteadOf "https://tangled.org/nonbinary.computer/jacquard"
       - name: Install compiler
         run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
       - uses: actions/cache@v4
