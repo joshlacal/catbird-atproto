@@ -22,6 +22,12 @@ jobs:
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
       CMAKE_POLICY_VERSION_MINIMUM: '3.5'
+      # Fetch git dependencies with the git CLI so the jacquard mirror below
+      # applies, abort a transfer stalled under 1 KB/s for 60 s, and retry.
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CARGO_NET_RETRY: '10'
+      GIT_HTTP_LOW_SPEED_LIMIT: '1000'
+      GIT_HTTP_LOW_SPEED_TIME: '60'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,6 +41,11 @@ jobs:
           # chat surface and no longer compiles against this SDK.
           ref: 94a55cab94918415fe8e585c7ed720fe63063f67
           path: catbird-mls
+      - name: Fetch jacquard from its GitHub mirror
+        # tangled.org stalls or resets clones of jacquard (Nov 21 this job hung
+        # 45 min and was cancelled). joshlacal/jacquard carries the pinned rev
+        # 3287244a, so redirect the fetch there; Cargo.lock is unchanged.
+        run: git config --global url."https://github.com/joshlacal/jacquard".insteadOf "https://tangled.org/nonbinary.computer/jacquard"
       - name: Install compiler
         run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
       - uses: actions/cache@v4
