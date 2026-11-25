@@ -551,7 +551,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         token: &str,
         challenge: &str,
     ) -> Result<ConfirmRegistration> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         Ok(ConfirmRegistration {
             space: AtSpaceUri::new(SmolStr::from(space.as_str()))
                 .map_err(|_| SpacesError::InvalidSpaceUri(space_uri.to_string()))?,
@@ -586,7 +586,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         req: AuthorizeSpaceSync,
         now_sec: u64,
     ) -> Result<AuthorizeSpaceSyncOutput> {
-        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space = SpaceUri::parse(req.space.as_str())?;
         let space_str = space.as_str();
         if space.authority != self.authority_did {
             return Err(SpacesError::SpaceNotFound(space_str.to_string()));
@@ -723,7 +723,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         expected_audience_did: &str,
         now_sec: u64,
     ) -> Result<SpaceTokenClaims> {
-        let space = SpaceUri::parse_hedged(expected_space)?;
+        let space = SpaceUri::parse(expected_space)?;
         let expected_space = space.as_str();
         let auth_hdr = headers
             .get(http::header::AUTHORIZATION)
@@ -792,7 +792,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         req: ListWriters,
         now_sec: u64,
     ) -> Result<ListWritersOutput> {
-        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space = SpaceUri::parse(req.space.as_str())?;
         let space_str = space.as_str();
         self.verify_presentation(headers, space_str, &self.authority_did, now_sec)
             .await?;
@@ -861,7 +861,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         req: NotifyRepoUpdate,
         now_sec: u64,
     ) -> Result<Vec<(String, NotifySpaceUpdate)>> {
-        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space = SpaceUri::parse(req.space.as_str())?;
         let space_str = space.as_str();
         if space.authority != self.authority_did {
             return Err(SpacesError::SpaceNotFound(space_str.to_string()));
@@ -957,7 +957,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         req: RemoveWriter,
         now_sec: u64,
     ) -> Result<Vec<(String, NotifySpaceUpdate)>> {
-        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space = SpaceUri::parse(req.space.as_str())?;
         let space_str = space.as_str();
         if authenticated_caller_did != space.authority {
             return Err(SpacesError::Forbidden("NotAuthorized".into()));
@@ -1023,7 +1023,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         req: GetSpace,
         now_sec: u64,
     ) -> Result<GetSpaceOutput> {
-        let space = SpaceUri::parse_hedged(req.space.as_str())?;
+        let space = SpaceUri::parse(req.space.as_str())?;
         let space_str = space.as_str();
         self.verify_presentation(headers, space_str, &self.authority_did, now_sec)
             .await?;
@@ -1048,7 +1048,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         revoked_user_did: &str,
         now_sec: u64,
     ) -> Result<(NotifyCredentialsRevoked, Vec<String>)> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         let space_str = space.as_str();
         let writer_targets = self.backend.all_writer_dids(space_str)?;
         let mut revoked_jtis = Vec::new();
@@ -1086,7 +1086,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
     /// Build `(writer_dids, subscriber_notices)` for Space deletion (`notifySpaceUpdate#spaceDeleted`),
     /// delivered even to expired registrations per November 12 `authorizeSpaceSync` contract.
     pub fn build_notify_space_deleted(&self, space_uri: &str) -> Result<SpaceDeletedFanout> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         let space_str = space.as_str();
         let writers = self.backend.all_writer_dids(space_str)?;
         let subscribers = self.backend.list_all_subscribers(space_str)?;

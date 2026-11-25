@@ -17,7 +17,7 @@ use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine as _};
 use p256::SecretKey;
 use std::path::PathBuf;
 
-const SWAN_EMPTY_STAR_V02_VECTOR: &str = "2a6c0100a301a6637265766d32323232323232323232323232637665720164646174615820e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad647265706f6d6469643a706c633a616c69636565247479706572617470726f746f2d73706163652d7265706f657370616365783061743a2f2f6469643a706c633a616c6963652f73706163652f6170702e62736b792e626f6f6b6d61726b732f73656c6600";
+const SWAN_EMPTY_STAR_V02_VECTOR: &str = "2a6c0100a101a6637265766d32323232323232323232323232637665720164646174615820e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad647265706f6d6469643a706c633a616c69636565247479706572617470726f746f2d73706163652d7265706f657370616365782e61743a73706163652f6469643a706c633a616c6963652f6170702e62736b792e626f6f6b6d61726b732f73656c6600";
 
 fn vector_v1_file_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/vectors/atproto_spaces_v1.json")
@@ -234,7 +234,7 @@ fn v1_and_v2_vectors_match_on_disk_fixtures_and_all_primitives() {
     .expect("read populated STAR v0.2");
     assert_eq!(parsed_pop.records.len(), 2);
 
-    // 8. v2 extras: RFC 9180 HPKE export vector, Python CID-link STAR v0.2 archive, hedged URI & blob locator
+    // 8. v2 extras: RFC 9180 HPKE export vector, Python CID-link STAR v0.2 archive, Space URI forms & blob locator
     assert_eq!(
         v2.hpke_rfc9180_export.shared_secret_hex,
         "2060e0558d1b34c10086bc137f849bb79ba59fcdc30544418e35c9cd301f0d0d"
@@ -279,16 +279,18 @@ fn v1_and_v2_vectors_match_on_disk_fixtures_and_all_primitives() {
         v2.star_v02_cid_link.expected_cid
     );
 
-    let hedged_1 = SpaceUri::parse_hedged(&v2.uri_and_blob_locator.hedged_at_space).unwrap();
-    let hedged_2 = SpaceUri::parse_hedged(&v2.uri_and_blob_locator.hedged_at_slash_space).unwrap();
+    let canonical = SpaceUri::parse(&v2.uri_and_blob_locator.canonical_space_uri).unwrap();
     assert_eq!(
-        hedged_1.as_str(),
+        canonical.as_str(),
         v2.uri_and_blob_locator.canonical_space_uri
     );
-    assert_eq!(
-        hedged_2.as_str(),
-        v2.uri_and_blob_locator.canonical_space_uri
-    );
+    // Spaces alpha form: strict parsing rejects it, lenient (record value) parsing normalizes it.
+    assert!(SpaceUri::parse(&v2.uri_and_blob_locator.hedged_at_space).is_err());
+    let legacy = SpaceUri::parse_lenient(&v2.uri_and_blob_locator.hedged_at_space).unwrap();
+    assert_eq!(legacy, canonical);
+    // `at://space/...` was never a valid spelling.
+    assert!(SpaceUri::parse(&v2.uri_and_blob_locator.hedged_at_slash_space).is_err());
+    assert!(SpaceUri::parse_lenient(&v2.uri_and_blob_locator.hedged_at_slash_space).is_err());
 
     let loc_canon =
         SpaceBlobLocator::parse(&v2.uri_and_blob_locator.canonical_blob_locator).unwrap();

@@ -207,7 +207,7 @@ where
         limit: Option<u32>,
         now_sec: u64,
     ) -> Result<(Vec<WriterUpdateEntry>, Option<String>)> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         let canonical_space = space.as_str();
         let authority_doc = self
             .did_resolver
@@ -303,7 +303,7 @@ where
         limit: u32,
         now_sec: u64,
     ) -> Result<Vec<VerifiedSpaceRecord>> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         let canonical_space = space.as_str();
         let writer_doc = self.did_resolver.resolve_did(writer_did, false).await?;
         let pds_endpoint = writer_doc.pds_endpoint()?.to_string();
@@ -453,7 +453,7 @@ where
         state: &mut WriterSyncState,
         now_sec: u64,
     ) -> Result<SyncOutcome> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         let canonical_space = space.as_str();
         let writer_doc = self.did_resolver.resolve_did(writer_did, false).await?;
         let pds_endpoint = writer_doc.pds_endpoint()?.to_string();
@@ -624,7 +624,7 @@ where
         state: &mut WriterSyncState,
         now_sec: u64,
     ) -> Result<SyncOutcome> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         let canonical_space = space.as_str();
         let writer_doc = self.did_resolver.resolve_did(writer_did, false).await?;
         let pds_endpoint = writer_doc.pds_endpoint()?.to_string();

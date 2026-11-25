@@ -97,7 +97,7 @@ fn structured_commit_and_record_macs_verify_canonicalize_and_reject_tampering() 
     let secret = [0x42u8; 32];
     let eph = P256SecretKey::random(&mut rand::rngs::OsRng);
     let key_share = encode_p256_did_key(&eph.public_key());
-    let space = "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11";
+    let space = "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11";
     let repo = "did:plc:alice00000000000000000000";
     let rev = "3l2xyz0000001";
     let data = [0xabu8; 32];
@@ -193,44 +193,128 @@ fn structured_commit_and_record_macs_verify_canonicalize_and_reject_tampering() 
 }
 
 #[test]
-fn hedged_space_uris_and_space_blob_locators_roundtrip_and_reject_malformed_inputs() {
+fn space_uris_parse_strictly_normalize_legacy_leniently_and_space_blob_locators_roundtrip() {
     let canonical =
+        "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2";
+    let legacy_alpha =
         "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11-2";
+    assert_eq!(atproto_spaces::SPACE_URI_PREFIX, "at:space/");
+
+    // New form parses (strict and lenient) and prints unchanged.
+    let parsed = SpaceUri::parse(canonical).expect("new form parses");
+    assert_eq!(parsed.as_str(), canonical);
+    assert_eq!(parsed.authority, "did:web:mls.catbird.blue");
+    assert_eq!(parsed.space_type, "blue.catbird.labyrinth.conversation");
+    assert_eq!(parsed.rkey, "01980a11-2");
+    assert_eq!(parsed.to_hedged_uri(), canonical);
+    assert_eq!(parsed.to_string(), canonical);
+    assert_eq!(SpaceUri::parse_lenient(canonical).unwrap(), parsed);
+    assert_eq!(SpaceUri::parse_hedged(canonical).unwrap(), parsed);
+    assert_eq!(canonical.parse::<SpaceUri>().unwrap(), parsed);
+    assert_eq!(
+        serde_json::from_str::<SpaceUri>(&format!("\"{canonical}\"")).unwrap(),
+        parsed
+    );
+    assert_eq!(
+        parsed.to_legacy_space_record_uri(),
+        "at://did:web:mls.catbird.blue/com.atproto.space.space/blue.catbird.labyrinth.conversation:01980a11-2"
+    );
+
+    // Old (spaces alpha) form and earlier hedged spellings are rejected strictly.
     for input in [
-        canonical,
-        "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2",
+        legacy_alpha,
         "at://space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2",
         "at://did:web:mls.catbird.blue/com.atproto.space.space/blue.catbird.labyrinth.conversation:01980a11-2",
-        "at://did:web:mls.catbird.blue/com.atproto.space.space/blue.catbird.labyrinth.conversation/01980a11-2",
+        "at://did:web:mls.catbird.blue/com.atproto.space.space/01980a11-2",
+        "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2/",
+        "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2?x=1",
+        "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation",
+        "at:space//blue.catbird.labyrinth.conversation/01980a11-2",
     ] {
-        let parsed = SpaceUri::parse_hedged(input).expect("parse_hedged");
-        assert_eq!(parsed.as_str(), canonical);
-        assert_eq!(
-            parsed.to_hedged_uri(),
-            "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2"
+        assert!(SpaceUri::parse(input).is_err(), "strict must reject {input}");
+        assert!(
+            SpaceUri::parse_hedged(input).is_err(),
+            "parse_hedged is strict and must reject {input}"
         );
-        assert_eq!(
-            parsed.to_legacy_space_record_uri(),
-            "at://did:web:mls.catbird.blue/com.atproto.space.space/blue.catbird.labyrinth.conversation:01980a11-2"
+        assert!(
+            serde_json::from_str::<SpaceUri>(&format!("\"{input}\"")).is_err(),
+            "deserialize is strict and must reject {input}"
         );
     }
 
-    let bare_record =
-        SpaceUri::parse_hedged("at://did:web:mls.catbird.blue/com.atproto.space.space/01980a11-2")
-            .expect("bare com.atproto.space.space rkey");
+    // The old form is normalized leniently (record values only).
     assert_eq!(
-        bare_record.as_str(),
-        "at://did:web:mls.catbird.blue/space/com.atproto.space.space/01980a11-2"
+        atproto_spaces::from_legacy_space_uri(legacy_alpha).as_deref(),
+        Some(canonical)
+    );
+    assert_eq!(atproto_spaces::from_legacy_space_uri(canonical), None);
+    assert_eq!(
+        atproto_spaces::from_legacy_space_uri(
+            "at://space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2"
+        ),
+        None
+    );
+    assert_eq!(SpaceUri::parse_lenient(legacy_alpha).unwrap(), parsed);
+    assert!(SpaceUri::parse_lenient(
+        "at://space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2"
+    )
+    .is_err());
+
+    // Handle authorities are rejected, strictly and leniently.
+    for input in [
+        "at:space/alice.example.com/blue.catbird.labyrinth.conversation/01980a11-2",
+        "at://alice.example.com/space/blue.catbird.labyrinth.conversation/01980a11-2",
+    ] {
+        assert!(SpaceUri::parse(input).is_err(), "handle authority: {input}");
+        assert!(
+            SpaceUri::parse_lenient(input).is_err(),
+            "handle authority: {input}"
+        );
+    }
+    assert!(SpaceUri::new(
+        "alice.example.com",
+        "blue.catbird.labyrinth.conversation",
+        "x"
+    )
+    .is_err());
+
+    // Record URIs round-trip: built in the new form, the alpha spelling normalizes onto it,
+    // and the Space prefix parses back to the same Space. A record URI is not a space ref.
+    let author = "did:plc:ewvi7nxzyoun6zhxrhs64oiz";
+    let record_uri = parsed
+        .record_uri(author, "blue.catbird.labyrinth.message", "3l2aaaaaaaaac")
+        .unwrap();
+    assert_eq!(
+        record_uri,
+        format!("{canonical}/{author}/blue.catbird.labyrinth.message/3l2aaaaaaaaac")
     );
     assert_eq!(
-        bare_record.to_legacy_space_record_uri(),
-        "at://did:web:mls.catbird.blue/com.atproto.space.space/01980a11-2"
+        atproto_spaces::from_legacy_space_uri(&format!(
+            "{legacy_alpha}/{author}/blue.catbird.labyrinth.message/3l2aaaaaaaaac"
+        ))
+        .as_deref(),
+        Some(record_uri.as_str())
     );
+    let space_prefix = record_uri
+        .strip_suffix(&format!(
+            "/{author}/blue.catbird.labyrinth.message/3l2aaaaaaaaac"
+        ))
+        .unwrap();
+    assert_eq!(SpaceUri::parse(space_prefix).unwrap(), parsed);
+    assert!(SpaceUri::parse(&record_uri).is_err());
+    assert!(parsed
+        .record_uri(
+            "alice.example.com",
+            "blue.catbird.labyrinth.message",
+            "3l2aaaaaaaaac"
+        )
+        .is_err());
+
     assert_eq!(
         SpaceUri::mailbox("did:plc:ewvi7nxzyoun6zhxrhs64oiz")
             .unwrap()
             .as_str(),
-        "at://did:plc:ewvi7nxzyoun6zhxrhs64oiz/space/blue.catbird.labyrinth.mailbox/self"
+        "at:space/did:plc:ewvi7nxzyoun6zhxrhs64oiz/blue.catbird.labyrinth.mailbox/self"
     );
     assert_eq!(
         SpaceUri::conversation("did:web:mls.catbird.blue", "01980a11-2")
@@ -249,6 +333,16 @@ fn hedged_space_uris_and_space_blob_locators_roundtrip_and_reject_malformed_inpu
 
     let legacy = format!("{canonical}/{repo}#{cid}");
     assert_eq!(SpaceBlobLocator::parse(&legacy).unwrap(), locator);
+
+    // Locators live in record values, so a Space URI in the alpha form is read leniently
+    // and re-encoded in the current form.
+    let alpha_locator = SpaceBlobLocator::parse(&format!("{legacy_alpha}|{repo}|{cid}")).unwrap();
+    assert_eq!(alpha_locator, locator);
+    assert_eq!(alpha_locator.encoded(), encoded);
+    assert_eq!(
+        SpaceBlobLocator::parse(&format!("{legacy_alpha}/{repo}#{cid}")).unwrap(),
+        locator
+    );
 
     // Mixed | and # or non-ATProto DID must fail closed
     assert!(SpaceBlobLocator::parse(&format!("{canonical}|{repo}#{cid}")).is_err());
@@ -459,7 +553,7 @@ fn verify_space_token_retries_once_on_rotated_did_web_key() {
         let now_sec = 1_762_000_000u64;
         let claims = SpaceTokenClaims {
             iss: "did:web:mls.catbird.blue".to_string(),
-            sub: "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11"
+            sub: "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11"
                 .to_string(),
             aud: None,
             iat: now_sec,
@@ -500,7 +594,7 @@ fn verify_space_token_retries_once_on_rotated_did_web_key() {
 
 #[test]
 fn star_v02_roundtrips_canonical_sorted_records_and_rejects_violations() {
-    let space = "at://did:plc:alice00000000000000000000/space/blue.catbird.labyrinth.mailbox/self";
+    let space = "at:space/did:plc:alice00000000000000000000/blue.catbird.labyrinth.mailbox/self";
     let repo = "did:plc:alice00000000000000000000";
     let rev = "3l2xyz0000009";
 
@@ -553,7 +647,7 @@ fn star_v02_roundtrips_canonical_sorted_records_and_rejects_violations() {
     assert_eq!(parsed.records[1].cid, cid_2);
 
     // Mismatched expected space or repo must fail
-    assert!(read_star_repo(&star_bytes, "at://did:plc:other/space/x.y.z/1", repo).is_err());
+    assert!(read_star_repo(&star_bytes, "at:space/did:plc:other/x.y.z/1", repo).is_err());
     assert!(read_star_repo(&star_bytes, space, "did:plc:other").is_err());
 
     // Wrong LtHash commitment in metadata must fail closed inside read_star_repo!

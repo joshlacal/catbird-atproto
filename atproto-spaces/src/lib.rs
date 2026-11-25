@@ -127,7 +127,33 @@ impl SpacesError {
 
 pub type Result<T> = std::result::Result<T, SpacesError>;
 
-/// Parsed canonical `at://{authority}/space/{space_type}/{rkey}` Space URI.
+/// Prefix of every Space URI (`at:space/{spaceDid}/{spaceType}/{skey}`), as in the
+/// reference `@atproto/syntax` `SPACE_URI_PREFIX`.
+pub const SPACE_URI_PREFIX: &str = "at:space/";
+
+/// Rewrites a Space URI in its spaces alpha form, `at://{spaceDid}/space/{rest}`, as
+/// `at:space/{spaceDid}/{rest}`. Returns `None` for any other input (including a URI
+/// already in the current form). Purely textual, mirroring the reference
+/// `fromLegacySpaceUri()`; the result still has to be validated.
+///
+/// Only for lenient validation of record VALUES written during the alpha (their CIDs
+/// cover the old bytes). Request params, credential `sub`s and MAC headers stay strict.
+///
+/// TODO: remove before beta, along with support for the old form.
+pub fn from_legacy_space_uri(input: &str) -> Option<String> {
+    let rest = input.strip_prefix("at://")?;
+    let (authority, tail) = rest.split_once("/space/")?;
+    if authority.is_empty()
+        || authority
+            .bytes()
+            .any(|b| matches!(b, b'/' | b'?' | b'#') || b.is_ascii_whitespace())
+    {
+        return None;
+    }
+    Some(format!("{SPACE_URI_PREFIX}{authority}/{tail}"))
+}
+
+/// Parsed canonical `at:space/{authority}/{space_type}/{skey}` Space URI (space ref).
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SpaceUri {
     pub raw: String,
@@ -143,19 +169,24 @@ impl SpaceUri {
     pub const LEGACY_SPACE_COLLECTION: &'static str = "com.atproto.space.space";
 
     pub fn new(authority: &str, space_type: &str, skey: &str) -> Result<Self> {
-        Self::parse(&format!("at://{authority}/space/{space_type}/{skey}"))
+        Self::parse(&format!(
+            "{SPACE_URI_PREFIX}{authority}/{space_type}/{skey}"
+        ))
     }
 
-    /// Canonical personal mailbox Space (`at://{did}/space/blue.catbird.labyrinth.mailbox/self`).
+    /// Canonical personal mailbox Space (`at:space/{did}/blue.catbird.labyrinth.mailbox/self`).
     pub fn mailbox(did: &str) -> Result<Self> {
         Self::new(did, Self::MAILBOX_SPACE_TYPE, Self::MAILBOX_SKEY)
     }
 
-    /// Canonical conversation Space (`at://{authority_did}/space/blue.catbird.labyrinth.conversation/{skey}`).
+    /// Canonical conversation Space (`at:space/{authority_did}/blue.catbird.labyrinth.conversation/{skey}`).
     pub fn conversation(authority_did: &str, skey: &str) -> Result<Self> {
         Self::new(authority_did, Self::CONVERSATION_SPACE_TYPE, skey)
     }
 
+    /// Strictly parse a space ref, `at:space/{did}/{type}/{skey}`. The spaces alpha form
+    /// (`at://{did}/space/...`), handle authorities, record URIs, queries and fragments
+    /// are rejected.
     pub fn parse(raw: &str) -> Result<Self> {
         if raw.is_empty()
             || raw.len() > 8192
@@ -165,23 +196,19 @@ impl SpaceUri {
         {
             return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
         }
-        let Some(rest) = raw.strip_prefix("at://") else {
+        let Some(rest) = raw.strip_prefix(SPACE_URI_PREFIX) else {
             return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
         };
         let parts: Vec<&str> = rest.split('/').collect();
-        if parts.len() != 4 || parts[1] != "space" || parts.iter().any(|p| p.is_empty()) {
+        if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
             return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
         }
         let authority = parts[0];
-        let space_type = parts[2];
-        let rkey = parts[3];
+        let space_type = parts[1];
+        let rkey = parts[2];
         if !is_valid_did(authority) || !is_valid_nsid(space_type) || !is_valid_rkey(rkey) {
             return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
         }
-        jacquard_common::types::aturi::AtSpaceUri::new(
-            jacquard_common::deps::smol_str::SmolStr::from(raw),
-        )
-        .map_err(|_| SpacesError::InvalidSpaceUri(raw.to_string()))?;
         Ok(Self {
             raw: raw.to_string(),
             authority: authority.to_string(),
@@ -190,55 +217,35 @@ impl SpaceUri {
         })
     }
 
-    /// Parse a canonical `at://{did}/space/{type}/{skey}` Space URI or normalize hedged
-    /// `at:space/{did}/{type}/{skey}`, `at://space/{did}/{type}/{skey}`, and legacy
-    /// `at://{did}/com.atproto.space.space/{rkey}` forms onto canonical form.
+    /// Strict: identical to [`SpaceUri::parse`]. Kept so existing callers compile; the
+    /// hedged `at://space/...`, `at://{did}/com.atproto.space.space/...` and spaces alpha
+    /// `at://{did}/space/...` spellings it used to normalize are no longer accepted.
+    /// Use [`SpaceUri::parse_lenient`] only where a record VALUE is validated.
     pub fn parse_hedged(raw: &str) -> Result<Self> {
-        if let Some(rest) = raw
-            .strip_prefix("at:space/")
-            .or_else(|| raw.strip_prefix("at://space/"))
-        {
-            let parts: Vec<&str> = rest.split('/').collect();
-            if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
-                return Err(SpacesError::InvalidSpaceUri(raw.to_string()));
-            }
-            return Self::new(parts[0], parts[1], parts[2]);
-        }
-
-        if let Some(rest) = raw.strip_prefix("at://") {
-            let parts: Vec<&str> = rest.split('/').collect();
-            if parts.len() == 4
-                && parts[1] == Self::LEGACY_SPACE_COLLECTION
-                && !parts.iter().any(|p| p.is_empty())
-            {
-                return Self::new(parts[0], parts[2], parts[3]);
-            }
-            if parts.len() == 3
-                && parts[1] == Self::LEGACY_SPACE_COLLECTION
-                && !parts.iter().any(|p| p.is_empty())
-            {
-                let authority = parts[0];
-                let raw_rkey = parts[2];
-                if let Some((st, sk)) = raw_rkey.split_once(':') {
-                    if is_valid_nsid(st) && is_valid_rkey(sk) {
-                        return Self::new(authority, st, sk);
-                    }
-                }
-                return Self::new(authority, Self::LEGACY_SPACE_COLLECTION, raw_rkey);
-            }
-        }
-
         Self::parse(raw)
+    }
+
+    /// Lenient: accept the current form, or the spaces alpha form `at://{did}/space/...`
+    /// normalized to `at:space/{did}/...` via [`from_legacy_space_uri`]. Only for
+    /// validating record values read back from storage or the network.
+    ///
+    /// TODO: remove before beta, along with support for the old form.
+    pub fn parse_lenient(raw: &str) -> Result<Self> {
+        match from_legacy_space_uri(raw) {
+            Some(current) => Self::parse(&current),
+            None => Self::parse(raw),
+        }
     }
 
     pub fn as_str(&self) -> &str {
         &self.raw
     }
 
-    /// Emit the hedged `at:space/{authority}/{space_type}/{rkey}` spelling.
+    /// Emit `at:space/{authority}/{space_type}/{rkey}` (now the canonical form; same as
+    /// [`SpaceUri::as_str`]).
     pub fn to_hedged_uri(&self) -> String {
         format!(
-            "at:space/{}/{}/{}",
+            "{SPACE_URI_PREFIX}{}/{}/{}",
             self.authority, self.space_type, self.rkey
         )
     }
@@ -263,7 +270,7 @@ impl SpaceUri {
         }
     }
 
-    /// Canonical `SpaceRecordURI` (`at://{authority}/space/{space_type}/{skey}/{author_did}/{collection}/{rkey}`).
+    /// Canonical `SpaceRecordURI` (`at:space/{authority}/{space_type}/{skey}/{author_did}/{collection}/{rkey}`).
     pub fn record_uri(&self, author_did: &str, collection: &str, rkey: &str) -> Result<String> {
         if !is_valid_did(author_did) || !is_valid_nsid(collection) || !is_valid_rkey(rkey) {
             return Err(SpacesError::InvalidSpaceUri(format!(
@@ -298,14 +305,16 @@ impl Serialize for SpaceUri {
 impl<'de> Deserialize<'de> for SpaceUri {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
         let s = String::deserialize(deserializer)?;
-        Self::parse_hedged(&s).map_err(serde::de::Error::custom)
+        Self::parse(&s).map_err(serde::de::Error::custom)
     }
 }
 
 /// Application-local locator for fetching an encrypted Space blob via `com.atproto.space.getBlob`.
 ///
-/// Canonical encoding uses pipe delimiters (`{spaceURI}|{repoDID}|{cid}`). Parsing also accepts
-/// the transitional `{spaceURI}/{repoDID}#{cid}` encoding and hedged `at:space/...` Space URIs.
+/// Canonical encoding uses pipe delimiters (`{spaceURI}|{repoDID}|{cid}`). Locators are stored in
+/// record values, so parsing is lenient: it also accepts the transitional `{spaceURI}/{repoDID}#{cid}`
+/// encoding and a Space URI in the spaces alpha form (`at://{did}/space/...`, normalized to
+/// `at:space/...`; TODO: remove before beta). Encoding always emits the current form.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SpaceBlobLocator {
     pub space: SpaceUri,
@@ -333,7 +342,7 @@ impl SpaceBlobLocator {
             if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
                 return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
             }
-            let space = SpaceUri::parse_hedged(parts[0])
+            let space = SpaceUri::parse_lenient(parts[0])
                 .map_err(|_| SpacesError::InvalidBlobLocator(raw.to_string()))?;
             let repo = parts[1];
             let cid = parse_canonical_cid(parts[2])
@@ -353,7 +362,7 @@ impl SpaceBlobLocator {
         if raw_space.is_empty() || repo.is_empty() {
             return Err(SpacesError::InvalidBlobLocator(raw.to_string()));
         }
-        let space = SpaceUri::parse_hedged(raw_space)
+        let space = SpaceUri::parse_lenient(raw_space)
             .map_err(|_| SpacesError::InvalidBlobLocator(raw.to_string()))?;
         let cid = parse_canonical_cid(raw_cid)
             .ok_or_else(|| SpacesError::InvalidBlobLocator(raw.to_string()))?;

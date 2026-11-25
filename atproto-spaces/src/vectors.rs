@@ -194,8 +194,12 @@ pub struct StarCidLinkVector {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UriAndBlobLocatorVector {
+    /// Current form, `at:space/{did}/{type}/{skey}`.
     pub canonical_space_uri: String,
+    /// Spaces alpha form, `at://{did}/space/{type}/{skey}`: rejected by `SpaceUri::parse`,
+    /// normalized to `canonical_space_uri` by `SpaceUri::parse_lenient` (TODO: remove before beta).
     pub hedged_at_space: String,
+    /// `at://space/{did}/{type}/{skey}`: rejected by both strict and lenient parsing.
     pub hedged_at_slash_space: String,
     pub repo: String,
     pub cid: String,
@@ -206,7 +210,7 @@ pub struct UriAndBlobLocatorVector {
 /// Generate the canonical deterministic `atproto_spaces_v1` vector suite (November 12 wire format,
 /// byte-identical to `Petrel/Tests/PetrelTests/Vectors/atproto_spaces_v1.json`).
 pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
-    let space_str = "at://did:web:ds.catbird.blue/space/blue.catbird.mlsChat/3l2aaaaaaaaaa";
+    let space_str = "at:space/did:web:ds.catbird.blue/blue.catbird.mlsChat/3l2aaaaaaaaaa";
     let space = SpaceUri::parse(space_str)?;
     let alice_did = "did:plc:ewvi7nxzyoun6zhxrhs64oiz";
     let pds_did = "did:plc:z72i7hdynmk6r22z27h6tvur";
@@ -473,7 +477,7 @@ pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
     };
 
     // 7. STAR v0.2 repo vectors (empty Swan fixture + populated 2-record fixture)
-    let empty_swan_space = "at://did:plc:alice/space/app.bsky.bookmarks/self";
+    let empty_swan_space = "at:space/did:plc:alice/app.bsky.bookmarks/self";
     let empty_swan_repo = "did:plc:alice";
     let empty_swan_rev = "2222222222222";
     let empty_archive = write_star_repo(
@@ -528,7 +532,8 @@ pub fn generate_v1_vectors() -> Result<AtprotoSpacesVectorsV1> {
 }
 
 /// Generate the extended `atproto_spaces_v2` vector suite (adds RFC 9180 HPKE export-only P-256 vector,
-/// independent Python cbor2/BLAKE3 STAR v0.2 CID-link vector, and hedged `SpaceUri` + `SpaceBlobLocator` vectors).
+/// independent Python cbor2/BLAKE3 STAR v0.2 CID-link vector, and `SpaceUri` (current, alpha and invalid
+/// spellings) + `SpaceBlobLocator` vectors).
 pub fn generate_v2_vectors() -> Result<AtprotoSpacesVectorsV2> {
     let v1 = generate_v1_vectors()?;
 
@@ -549,18 +554,20 @@ pub fn generate_v2_vectors() -> Result<AtprotoSpacesVectorsV2> {
     };
 
     let star_v02_cid_link = StarCidLinkVector {
-        space: "at://did:example:space/space/app.bsky.group/test".to_string(),
+        space: "at:space/did:example:space/app.bsky.group/test".to_string(),
         repo: "did:example:alice".to_string(),
         rev: "3kbcq3p7ad422".to_string(),
-        archive_base64: "KmwBAKcBpmNyZXZtM2tiY3EzcDdhZDQyMmN2ZXIBZGRhdGFYIAPti/dnzI3Ij07mC2HCTa1QGHC6pGj8nXzGZVYsfhnaZHJlcG9xZGlkOmV4YW1wbGU6YWxpY2VlJHR5cGVyYXRwcm90by1zcGFjZS1yZXBvZXNwYWNleDBhdDovL2RpZDpleGFtcGxlOnNwYWNlL3NwYWNlL2FwcC5ic2t5Lmdyb3VwL3Rlc3QBF2FwcC5ic2t5LmZlZWQucG9zdC9zZWxmQKNjcmVm2CpYJQABcRIgZCjwIwS424yxB8iTNkgfD+rXKL83TKgBaNLHGTjO+udkdGV4dGVoZWxsb2Vjb3VudAEA".to_string(),
+        archive_base64: "KmwBAKUBpmNyZXZtM2tiY3EzcDdhZDQyMmN2ZXIBZGRhdGFYIAPti/dnzI3Ij07mC2HCTa1QGHC6pGj8nXzGZVYsfhnaZHJlcG9xZGlkOmV4YW1wbGU6YWxpY2VlJHR5cGVyYXRwcm90by1zcGFjZS1yZXBvZXNwYWNleC5hdDpzcGFjZS9kaWQ6ZXhhbXBsZTpzcGFjZS9hcHAuYnNreS5ncm91cC90ZXN0ARdhcHAuYnNreS5mZWVkLnBvc3Qvc2VsZkCjY3JlZtgqWCUAAXESIGQo8CMEuNuMsQfIkzZIHw/q1yi/N0yoAWjSxxk4zvrnZHRleHRlaGVsbG9lY291bnQBAA==".to_string(),
         expected_path: "app.bsky.feed.post/self".to_string(),
         expected_cid: "bafyreidpnhlqcmg7f3bbn6zd7kr2p3x3ciaqgpy7333hlp3gc4vluyuzvm".to_string(),
     };
 
     let canonical_space_uri =
-        "at://did:web:ds.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11-gen1";
-    let hedged_at_space =
         "at:space/did:web:ds.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-gen1";
+    // Spaces alpha form: accepted only by the lenient record-value path (`parse_lenient`).
+    let hedged_at_space =
+        "at://did:web:ds.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11-gen1";
+    // Never a valid spelling: rejected strictly and leniently.
     let hedged_at_slash_space =
         "at://space/did:web:ds.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-gen1";
     let locator_space = SpaceUri::parse(canonical_space_uri)?;

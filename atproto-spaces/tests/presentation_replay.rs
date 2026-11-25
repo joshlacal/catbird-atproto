@@ -18,7 +18,7 @@ const NOW: u64 = 1_800_000_000;
 const AUTHORITY: &str = "did:web:mls.catbird.blue";
 const ALICE: &str = "did:plc:alice00000000000000000000";
 const SPACE: &str =
-    "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/replay01";
+    "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/replay01";
 
 struct Fixture {
     host: SpaceHost<InMemorySpaceHostBackend, Rc<StaticDidResolver>>,
