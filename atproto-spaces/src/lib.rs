@@ -217,12 +217,17 @@ impl SpaceUri {
         })
     }
 
-    /// Strict: identical to [`SpaceUri::parse`]. Kept so existing callers compile; the
-    /// hedged `at://space/...`, `at://{did}/com.atproto.space.space/...` and spaces alpha
-    /// `at://{did}/space/...` spellings it used to normalize are no longer accepted.
-    /// Use [`SpaceUri::parse_lenient`] only where a record VALUE is validated.
+    /// Lenient: identical to [`SpaceUri::parse_lenient`]. Kept under this name because
+    /// labyrinth, catbird-mls, catbird-mls-web, nest and mls-ds call it for stored values
+    /// and record contents. It accepts the current form and the spaces alpha form
+    /// `at://{did}/space/...` (normalized to `at:space/...`); the older hedged
+    /// `at://space/...` and `.../com.atproto.space.space/...` spellings are no longer
+    /// accepted. Request params, credential `sub`s and MAC headers use
+    /// [`SpaceUri::parse`].
+    ///
+    /// TODO: remove before beta, along with support for the old form.
     pub fn parse_hedged(raw: &str) -> Result<Self> {
-        Self::parse(raw)
+        Self::parse_lenient(raw)
     }
 
     /// Lenient: accept the current form, or the spaces alpha form `at://{did}/space/...`

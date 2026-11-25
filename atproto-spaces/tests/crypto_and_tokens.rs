@@ -232,10 +232,12 @@ fn space_uris_parse_strictly_normalize_legacy_leniently_and_space_blob_locators_
         "at:space//blue.catbird.labyrinth.conversation/01980a11-2",
     ] {
         assert!(SpaceUri::parse(input).is_err(), "strict must reject {input}");
-        assert!(
-            SpaceUri::parse_hedged(input).is_err(),
-            "parse_hedged is strict and must reject {input}"
-        );
+        if input != legacy_alpha {
+            assert!(
+                SpaceUri::parse_hedged(input).is_err(),
+                "parse_hedged must reject {input}"
+            );
+        }
         assert!(
             serde_json::from_str::<SpaceUri>(&format!("\"{input}\"")).is_err(),
             "deserialize is strict and must reject {input}"
@@ -248,6 +250,7 @@ fn space_uris_parse_strictly_normalize_legacy_leniently_and_space_blob_locators_
         Some(canonical)
     );
     assert_eq!(atproto_spaces::from_legacy_space_uri(canonical), None);
+    assert_eq!(SpaceUri::parse_hedged(legacy_alpha).unwrap(), parsed);
     assert_eq!(
         atproto_spaces::from_legacy_space_uri(
             "at://space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11-2"
