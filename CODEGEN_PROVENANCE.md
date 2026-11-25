@@ -30,6 +30,28 @@ cargo clippy --locked --all-targets --all-features
 
 `Scripts/regenerate.py` runs the generator into temporary staging. It then gates the `com.atproto.space`, `com.atproto.memberspace`, `com.atproto.managedspace` and `com.atproto.personalspace` modules in `com_atproto.rs` behind the `namespace-atproto-space` feature. That gate is the only post-generation step, because `mls-codegen` has no option to put a module behind a Cargo feature. Next it formats every file with `rustfmt --edition 2021`. `generate` then replaces `src/generated` and keeps the previous tree in the temporary directory. `check` compares every generated file, including unexpected stale files, with the committed tree and changes nothing.
 
+## Pending regeneration (at:space/ description, not yet reproduced)
+
+The Space URI move to `at:space/{spaceDid}/{type}/{skey}` changes one overlay
+description: `space` in `blue.catbird.chat.relaySpaceCredential.json`, in
+PetrelCatbird `355acc7b42f10cd60b7781ac2a35b43de72a1306` (SHA-256
+`86dc3708ec4a56a72329b1c64f5a190e444ac6bb671cd2afbc4ba9cecbd0d3cb`). Petrel
+`generator/lexicons` is unchanged. The canonical generation has **not** been
+run for this change: `gen-lexicons` could not be built because the pinned
+Jacquard git dependency on tangled.org was unreachable. The doc comment and
+embedded description in `blue_catbird/chat/relay_space_credential.rs` were set
+by hand to the overlay's exact text, which is what the generator copies there;
+no generated declaration changed. No binary or output hash is recorded for
+this state, and the table below still describes the last real generation.
+
+The overlay has also moved since that generation: PetrelCatbird
+`108250d58c2b7dd7009793ef51e1dd3e8013cc61` (`AccountTakedown`, PR #13) changes
+`blue.catbird.chat.getConversationState.json` to SHA-256
+`4add774a0390b28e02c51da4f24c67d1b9fc253bf723067371ce250527aa8db0`, which is
+not yet in `src/generated`. Run `Scripts/regenerate.py generate` and `check`
+against the PetrelCatbird branch head, then replace this section with the
+generation's receipts.
+
 ## Current generation for deletion evidence and pagination
 
 Petrel `278bd47fa47a676ce6cc30fd0fc083294fc29e1f` and PetrelCatbird

@@ -419,8 +419,11 @@ pub fn is_atproto_did(did: &str) -> bool {
     is_valid_did(did) && (did.starts_with("did:plc:") || did.starts_with("did:web:"))
 }
 
+/// AT Protocol DID syntax: `did:` + a lowercase ASCII method + `:` + a method-specific
+/// identifier of ASCII `[A-Za-z0-9._:%-]` that does not end in `:` or `%`, at most
+/// 2048 characters in all. Method-specific rules (did:plc, did:web) are not checked here.
 pub fn is_valid_did(did: &str) -> bool {
-    if did.len() < 8 || did.len() > 2048 || did.bytes().any(|b| b <= 0x20 || b == 0x7f) {
+    if did.len() < 8 || did.len() > 2048 || !did.is_ascii() {
         return false;
     }
     let Some(rest) = did.strip_prefix("did:") else {
@@ -429,34 +432,48 @@ pub fn is_valid_did(did: &str) -> bool {
     let Some((method, specific)) = rest.split_once(':') else {
         return false;
     };
-    if method.is_empty()
-        || !method.bytes().all(|b| b.is_ascii_lowercase())
-        || specific.is_empty()
-        || specific.ends_with(':')
-        || specific.contains('#')
-        || specific.contains('?')
-        || specific.contains('/')
-    {
-        return false;
-    }
-    true
+    !method.is_empty()
+        && method.bytes().all(|b| b.is_ascii_lowercase())
+        && !specific.is_empty()
+        && !specific.ends_with(':')
+        && !specific.ends_with('%')
+        && specific
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'_' | b':' | b'%' | b'-'))
 }
 
+/// AT Protocol NSID syntax: ASCII, at most 317 characters, at least three
+/// `.`-separated segments. The domain authority (every segment but the last) is at
+/// most 253 characters; each of its segments is 1-63 characters of `[A-Za-z0-9-]`,
+/// neither starting nor ending with `-`, and the first one must not start with a digit.
+/// The name (last segment) is 1-63 ASCII letters and digits starting with a letter.
 pub fn is_valid_nsid(nsid: &str) -> bool {
-    if nsid.is_empty() || nsid.len() > 317 {
+    if nsid.is_empty() || nsid.len() > 317 || !nsid.is_ascii() {
         return false;
     }
-    let segments: Vec<&str> = nsid.split('.').collect();
-    if segments.len() < 3 {
+    let Some((authority, name)) = nsid.rsplit_once('.') else {
+        return false;
+    };
+    if authority.len() > 253 {
         return false;
     }
-    segments.iter().all(|seg| {
+    let segments: Vec<&str> = authority.split('.').collect();
+    if segments.len() < 2 {
+        return false;
+    }
+    let authority_ok = segments.iter().enumerate().all(|(index, seg)| {
         !seg.is_empty()
             && seg.len() <= 63
             && !seg.starts_with('-')
             && !seg.ends_with('-')
+            && !(index == 0 && seg.as_bytes()[0].is_ascii_digit())
             && seg.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-')
-    })
+    });
+    authority_ok
+        && !name.is_empty()
+        && name.len() <= 63
+        && name.as_bytes()[0].is_ascii_alphabetic()
+        && name.bytes().all(|b| b.is_ascii_alphanumeric())
 }
 
 pub fn is_valid_rkey(rkey: &str) -> bool {

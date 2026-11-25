@@ -18,7 +18,7 @@ use atproto_spaces::tokens::{
     mint_space_token, verify_space_token, SpaceKeyResolver, SpaceSigningKey, SpaceTokenClaims,
     SpaceTokenKind, SpaceVerifyingKey,
 };
-use atproto_spaces::{SpaceBlobLocator, SpaceUri};
+use atproto_spaces::{is_valid_did, is_valid_nsid, SpaceBlobLocator, SpaceUri};
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine as _};
 use http::{HeaderMap, HeaderValue};
 use p256::elliptic_curve::ops::Reduce;
@@ -350,6 +350,115 @@ fn space_uris_parse_strictly_normalize_legacy_leniently_and_space_blob_locators_
     // Mixed | and # or non-ATProto DID must fail closed
     assert!(SpaceBlobLocator::parse(&format!("{canonical}|{repo}#{cid}")).is_err());
     assert!(SpaceBlobLocator::parse(&format!("{canonical}|did:key:zDnae123|{cid}")).is_err());
+}
+
+#[test]
+fn space_uri_authority_and_type_follow_atproto_did_and_nsid_syntax() {
+    // The URI contract tests in tests/blue_catbird_circle_surface.rs reject both of these;
+    // SpaceUri must too, strictly and leniently (including from the alpha form).
+    for uri in [
+        "at:space/did:plc:owner/1com.example.group/default",
+        "at:space/did:plc:ünicode/com.example.group/default",
+    ] {
+        assert!(SpaceUri::parse(uri).is_err(), "{uri}");
+        assert!(SpaceUri::parse_lenient(uri).is_err(), "{uri}");
+    }
+    assert!(
+        SpaceUri::parse_lenient("at://did:plc:owner/space/1com.example.group/default").is_err()
+    );
+    assert!(
+        SpaceUri::parse_lenient("at://did:plc:ünicode/space/com.example.group/default").is_err()
+    );
+
+    for uri in [
+        "at:space/did:plc:owner/com.example.group/default",
+        "at:space/did:plc:owner/com.example1.group2/3abc",
+        "at:space/did:web:example.com%3A8080/blue.catbird.circle/self",
+        "at:space/did:plc:owner/a-b.c-d.groupName/default",
+        "at:space/did:web:localhost:user:alice/com.example.group/default",
+    ] {
+        assert!(SpaceUri::parse(uri).is_ok(), "{uri}");
+    }
+
+    for did in [
+        "did:plc:asdf123",
+        "did:web:example.com",
+        "did:web:example.com%3A8080",
+        "did:web:localhost:user:alice",
+        "did:example:A.b_c-d:e%20f",
+    ] {
+        assert!(is_valid_did(did), "{did}");
+    }
+    let did_2048 = format!("did:plc:{}", "a".repeat(2048 - "did:plc:".len()));
+    assert!(is_valid_did(&did_2048));
+    let did_2049 = format!("did:plc:{}", "a".repeat(2049 - "did:plc:".len()));
+    for did in [
+        "did:plc:ünicode",
+        "did:plc:has space",
+        "did:plc:has@at",
+        "did:plc:has+plus",
+        "did:plc:has/slash",
+        "did:plc:has#frag",
+        "did:plc:has?query",
+        "did:plc:ends:",
+        "did:plc:ends%",
+        "did:PLC:upper",
+        "did:pl1:digit",
+        "did::empty",
+        "did:plc:",
+        "DID:plc:upper",
+        "user.bsky.social",
+        did_2049.as_str(),
+    ] {
+        assert!(!is_valid_did(did), "{did}");
+    }
+
+    for nsid in [
+        "com.example.group",
+        "com.example.fooBar",
+        "com.example.group2",
+        "app.bsky.feed.post",
+        "a-b.c-d.e",
+        "com.1example.group",
+        "blue.catbird.labyrinth.mailbox",
+    ] {
+        assert!(is_valid_nsid(nsid), "{nsid}");
+    }
+    let label_63 = "a".repeat(63);
+    let nsid_max = format!(
+        "{label_63}.{label_63}.{label_63}.{}.{label_63}",
+        "a".repeat(61)
+    );
+    assert_eq!(nsid_max.len(), 317);
+    assert!(is_valid_nsid(&nsid_max));
+    let nsid_318 = format!(
+        "{label_63}.{label_63}.{label_63}.{}.{label_63}",
+        "a".repeat(62)
+    );
+    let label_64 = "a".repeat(64);
+    for nsid in [
+        "1com.example.group",
+        "com.example.1group",
+        "com.example.gro-up",
+        "com.example.gro_up",
+        "com.example.-group",
+        "com.-example.group",
+        "com.example-.group",
+        "-com.example.group",
+        "com.example..group",
+        "com.example.group.",
+        ".com.example.group",
+        "com.example",
+        "short",
+        "com.exämple.group",
+        "com.example.gröup",
+        "com.example.group*",
+        nsid_318.as_str(),
+        &format!("com.{label_64}.group"),
+        &format!("com.example.{label_64}"),
+    ] {
+        assert!(!is_valid_nsid(nsid), "{nsid}");
+    }
 }
 
 #[test]
