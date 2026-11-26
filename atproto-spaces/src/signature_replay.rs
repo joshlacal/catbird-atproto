@@ -335,7 +335,7 @@ mod tests {
     fn credential(exp: u64) -> SpaceTokenClaims {
         SpaceTokenClaims {
             iss: "i".into(),
-            sub: "at://did:web:i/space/x/y".into(),
+            sub: "at:space/did:web:i/x/y".into(),
             aud: None,
             iat: 0,
             exp,

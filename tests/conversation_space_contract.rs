@@ -9,7 +9,7 @@ use catbird_atproto::blue_catbird::labyrinth::{
 };
 
 const GENERATION: &str = "a4c334f4-1581-4f8c-9767-e6e7e23e70e2";
-const SPACE: &str = "at://did:plc:authority/space/blue.catbird.labyrinth.thread/conversation";
+const SPACE: &str = "at:space/did:plc:authority/blue.catbird.labyrinth.thread/conversation";
 
 fn decode<T: serde::de::DeserializeOwned>(value: &serde_json::Value) -> serde_json::Result<T> {
     serde_json::from_str(&value.to_string())

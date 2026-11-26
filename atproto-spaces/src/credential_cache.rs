@@ -130,7 +130,7 @@ where
     }
 
     async fn get_or_mint(&self, space_uri: &str, now_sec: u64) -> Result<CachedCredential> {
-        let space = SpaceUri::parse_hedged(space_uri)?;
+        let space = SpaceUri::parse(space_uri)?;
         let canonical_space = space.as_str();
         {
             let guard = self.entries.read().unwrap_or_else(|e| e.into_inner());

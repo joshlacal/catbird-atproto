@@ -4,7 +4,7 @@ Agent instructions for this repository (`CLAUDE.md` imports this file).
 
 ## Overview
 
-`catbird-atproto` is the **shared AT Protocol type surface for every Rust crate** in the workspace. It is a standalone Rust library crate (`catbird-atproto`, edition 2021) whose entire public API is **generated from Lexicon schemas** by [Jacquard](https://tangled.org/nonbinary.computer/jacquard) (`jacquard-lexicon` / `jacquard-common` / `jacquard-derive`, pinned to git rev `3287244a99262a361bd32873a871982da0a76c40`, version 0.13.0).
+`catbird-atproto` is the **shared AT Protocol type surface for every Rust crate** in the workspace. It is a standalone Rust library crate (`catbird-atproto`, edition 2021) whose entire public API is **generated from Lexicon schemas** by [Jacquard](https://tangled.org/nonbinary.computer/jacquard) (`jacquard-lexicon` / `jacquard-common` / `jacquard-derive`, version 0.13.0), pinned to rev `7a695dd560c0da2df578f6088e3db1e6026e3825` of the fork [joshlacal/jacquard](https://github.com/joshlacal/jacquard) (upstream 3287244a plus `at:space/` URI support).
 
 - Path dependency only — never published. Consumers pull it in via `path = "..."` (see [Consumers](#consumers)).
 - The crate is buildable in isolation and does **not** depend on `audiopus_sys`, so it compiles in ~2s with no CMake workaround needed.

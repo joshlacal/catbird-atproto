@@ -27,7 +27,7 @@ pub struct RelaySpaceCredential<S: jacquard_common::BosStr = jacquard_common::De
     pub notify: core::option::Option<
         crate::generated::blue_catbird::chat::relay_space_credential::NotifyTarget<S>,
     >,
-    /// Exactly at://{authorityDid}/space/{spaceType}/{skey}. Other schemes, including at-space://, and Space record URIs are rejected. The returned credential's sub equals this string.
+    /// Exactly at:space/{authorityDid}/{spaceType}/{skey}. Other schemes, including at-space:// and the alpha form at://{authorityDid}/space/..., and Space record URIs are rejected. The returned credential's sub equals this string.
     pub space: jacquard_common::types::aturi::AtSpaceUri<S>,
     /// Optional known Space revision forwarded to com.atproto.space.authorizeSpaceSync.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -980,7 +980,7 @@ fn lexicon_doc_blue_catbird_chat_relaySpaceCredential(
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
-                                                    "Exactly at://{authorityDid}/space/{spaceType}/{skey}. Other schemes, including at-space://, and Space record URIs are rejected. The returned credential's sub equals this string.",
+                                                    "Exactly at:space/{authorityDid}/{spaceType}/{skey}. Other schemes, including at-space:// and the alpha form at://{authorityDid}/space/..., and Space record URIs are rejected. The returned credential's sub equals this string.",
                                                 ),
                                             ),
                                             format: Some(

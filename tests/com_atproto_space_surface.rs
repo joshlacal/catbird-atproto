@@ -34,7 +34,7 @@ fn space_namespace_is_publicly_reachable() {
 const UPSTREAM_V1_JSON: &str = r#"{
     "ver": 1,
     "repo": "did:plc:writer",
-    "space": "at://did:plc:space/space/app.bsky.group/demo",
+    "space": "at:space/did:plc:space/app.bsky.group/demo",
     "rev": "3jzfcijpj2m2a",
     "data": {"$bytes": "QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI="}
 }"#;
@@ -117,7 +117,7 @@ fn decode<T: serde::de::DeserializeOwned>(value: &serde_json::Value) -> serde_js
     serde_json::from_str(&value.to_string())
 }
 
-const SPACE_URI: &str = "at://did:plc:space/space/app.bsky.group/demo";
+const SPACE_URI: &str = "at:space/did:plc:space/app.bsky.group/demo";
 const DATA_B64: &str = "QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI=";
 
 #[test]

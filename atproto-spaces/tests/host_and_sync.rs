@@ -472,7 +472,7 @@ fn delegation_replay_and_confirm_registration_enforced_in_authorize_space_sync()
         let authority_did = "did:web:mls.catbird.blue";
         let alice_did = "did:plc:alice00000000000000000000";
         let space_uri =
-            "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11";
+            "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11";
 
         let confirm_req = SpaceHost::<InMemorySpaceHostBackend>::build_confirm_registration(
             space_uri,
@@ -578,7 +578,7 @@ fn nov12_cold_open_incremental_sync_notify_fanout_writer_removal_and_star_recove
         let alice_did = "did:plc:alice00000000000000000000";
         let bob_did = "did:plc:bob0000000000000000000000";
         let space_uri =
-            "at://did:web:mls.catbird.blue/space/blue.catbird.labyrinth.conversation/01980a11";
+            "at:space/did:web:mls.catbird.blue/blue.catbird.labyrinth.conversation/01980a11";
 
         let authority_sk = SpaceSigningKey::random_p256();
         let alice_sk = SpaceSigningKey::random_p256();
