@@ -20,31 +20,31 @@ use crate::tokens::{
     DELEGATION_MAX_LIFETIME_SECS, EXPIRY_CLOCK_SKEW_SECS,
 };
 use crate::{Result, SpaceUri, SpacesError};
-use catbird_atproto::com_atproto::space::authorize_space_sync::{
-    AuthorizeSpaceSync, AuthorizeSpaceSyncOutput,
-};
-use catbird_atproto::com_atproto::space::confirm_registration::{
-    ConfirmRegistration, ConfirmRegistrationOutput,
-};
-use catbird_atproto::com_atproto::space::get_space::{
-    GetSpace, GetSpaceOutput, GetSpaceOutputPolicy,
-};
-use catbird_atproto::com_atproto::space::list_writers::{
-    ListWriters, ListWritersOutput, ListWritersOutputReposItem,
-};
-use catbird_atproto::com_atproto::space::notify_credentials_revoked::NotifyCredentialsRevoked;
-use catbird_atproto::com_atproto::space::notify_repo_update::NotifyRepoUpdate;
-use catbird_atproto::com_atproto::space::notify_space_update::{
-    NotifySpaceUpdate, NotifySpaceUpdateUpdate, RegistrationExpired, SpaceDeleted,
-};
-use catbird_atproto::com_atproto::space::remove_writer::RemoveWriter;
-use catbird_atproto::com_atproto::space::{RepoRemoved, RepoWrite};
 use http::HeaderMap;
-use jacquard_common::deps::bytes::Bytes;
-use jacquard_common::deps::smol_str::SmolStr;
-use jacquard_common::types::aturi::AtSpaceUri;
-use jacquard_common::types::string::{Did, Tid};
-use jacquard_common::types::value::Data;
+use petrel_api::generated::com::atproto::space::authorize_space_sync::{
+    Input as AuthorizeSpaceSync, Output as AuthorizeSpaceSyncOutput,
+};
+use petrel_api::generated::com::atproto::space::confirm_registration::{
+    Input as ConfirmRegistration, Output as ConfirmRegistrationOutput,
+};
+use petrel_api::generated::com::atproto::space::defs::{RepoRemoved, RepoWrite};
+use petrel_api::generated::com::atproto::space::get_space::{
+    Output as GetSpaceOutput, OutputPolicy as GetSpaceOutputPolicy, Parameters as GetSpace,
+};
+use petrel_api::generated::com::atproto::space::list_writers::{
+    Output as ListWritersOutput, OutputRepos as ListWritersOutputReposItem,
+    Parameters as ListWriters,
+};
+use petrel_api::generated::com::atproto::space::notify_credentials_revoked::Input as NotifyCredentialsRevoked;
+use petrel_api::generated::com::atproto::space::notify_repo_update::Input as NotifyRepoUpdate;
+use petrel_api::generated::com::atproto::space::notify_space_update::{
+    Input as NotifySpaceUpdate, InputUpdate as NotifySpaceUpdateUpdate, RegistrationExpired,
+    SpaceDeleted,
+};
+use petrel_api::generated::com::atproto::space::remove_writer::Input as RemoveWriter;
+use petrel_core::Bytes;
+use petrel_core::SpaceRef;
+use petrel_core::{Did, Tid};
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
@@ -553,11 +553,10 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
     ) -> Result<ConfirmRegistration> {
         let space = SpaceUri::parse(space_uri)?;
         Ok(ConfirmRegistration {
-            space: AtSpaceUri::new(SmolStr::from(space.as_str()))
+            space: SpaceRef::parse(space.as_str())
                 .map_err(|_| SpacesError::InvalidSpaceUri(space_uri.to_string()))?,
             token: token.into(),
             challenge: challenge.into(),
-            extra_data: None,
         })
     }
 
@@ -566,7 +565,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         expected_challenge: &str,
         resp: &ConfirmRegistrationOutput,
     ) -> Result<()> {
-        let actual = resp.challenge.as_str().as_bytes();
+        let actual = resp.challenge.as_bytes();
         let expected = expected_challenge.as_bytes();
         if actual.len() == expected.len() && bool::from(actual.ct_eq(expected)) {
             Ok(())
@@ -679,7 +678,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                     "notify.endpoint must use https://".into(),
                 ));
             }
-            if notify.token.as_str().is_empty() {
+            if notify.token.is_empty() {
                 return Err(SpacesError::RegistrationNotConfirmed(
                     "notify.token must be non-empty".into(),
                 ));
@@ -701,13 +700,12 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         let space_rev = self
             .backend
             .current_space_rev(space_str)?
-            .map(|s| Tid::new(&s).map_err(|_| SpacesError::FutureRev(s)))
+            .map(|s| Tid::parse(&s).map_err(|_| SpacesError::FutureRev(s)))
             .transpose()?;
 
         Ok(AuthorizeSpaceSyncOutput {
-            credential: jwt.into(),
+            credential: jwt,
             space_rev,
-            extra_data: None,
         })
     }
 
@@ -806,11 +804,11 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             }
         }
 
-        let limit = req.limit.unwrap_or(100).clamp(1, 1000) as usize;
-        let writers =
-            self.backend
-                .list_writers(space_str, req.cursor.as_ref().map(|c| c.as_str()), limit)?;
-        let cursor = writers.last().map(|w| SmolStr::from(w.space_rev()));
+        let limit = req.limit.clamp(1, 1000) as usize;
+        let writers = self
+            .backend
+            .list_writers(space_str, req.cursor.as_deref(), limit)?;
+        let cursor = writers.last().map(|w| String::from(w.space_rev()));
         let repos = writers
             .into_iter()
             .map(|event| -> Result<ListWritersOutputReposItem> {
@@ -818,14 +816,14 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                     SpaceWriterEvent::Write(w) => {
                         let did_str = w.did.clone();
                         Ok(ListWritersOutputReposItem::RepoWrite(Box::new(RepoWrite {
-                            repo: Did::new(SmolStr::from(w.did))
+                            repo: Did::parse(w.did)
                                 .map_err(|_| SpacesError::InvalidDid(did_str))?,
-                            repo_rev: Tid::new(&w.repo_rev)
+                            repo_rev: Tid::parse(&w.repo_rev)
                                 .map_err(|_| SpacesError::FutureRev(w.repo_rev.clone()))?,
-                            space_rev: Tid::new(&w.space_rev)
+                            space_rev: Tid::parse(&w.space_rev)
                                 .map_err(|_| SpacesError::FutureRev(w.space_rev.clone()))?,
                             prev_space_rev: None,
-                            data: Bytes::copy_from_slice(&w.data),
+                            data: Bytes(w.data.to_vec()),
                             extra_data: None,
                         })))
                     }
@@ -833,9 +831,9 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                         let did_str = did.clone();
                         Ok(ListWritersOutputReposItem::RepoRemoved(Box::new(
                             RepoRemoved {
-                                repo: Did::new(SmolStr::from(did))
+                                repo: Did::parse(did)
                                     .map_err(|_| SpacesError::InvalidDid(did_str))?,
-                                space_rev: Tid::new(&space_rev)
+                                space_rev: Tid::parse(&space_rev)
                                     .map_err(|_| SpacesError::FutureRev(space_rev.clone()))?,
                                 prev_space_rev: None,
                                 extra_data: None,
@@ -846,11 +844,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             })
             .collect::<Result<Vec<_>>>()?;
 
-        Ok(ListWritersOutput {
-            cursor,
-            repos,
-            extra_data: None,
-        })
+        Ok(ListWritersOutput { cursor, repos })
     }
 
     /// `com.atproto.space.notifyRepoUpdate`: validates caller == `req.repo`, checks TID skew + monotonicity,
@@ -873,7 +867,8 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         }
         let data: [u8; 32] = req
             .data
-            .as_ref()
+            .0
+            .as_slice()
             .try_into()
             .map_err(|_| SpacesError::Sync("notifyRepoUpdate data must be 32 bytes".into()))?;
 
@@ -896,13 +891,13 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             data,
             now_sec,
         )?;
-        let new_tid =
-            Tid::new(&new_space_rev).map_err(|_| SpacesError::FutureRev(new_space_rev.clone()))?;
+        let new_tid = Tid::parse(&new_space_rev)
+            .map_err(|_| SpacesError::FutureRev(new_space_rev.clone()))?;
         let prev_tid = prev_space_rev
             .as_deref()
-            .map(|s| Tid::new(s).map_err(|_| SpacesError::FutureRev(s.to_string())))
+            .map(|s| Tid::parse(s).map_err(|_| SpacesError::FutureRev(s.to_string())))
             .transpose()?;
-        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+        let canonical_at_space = SpaceRef::parse(space_str)
             .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
 
         let (active_subs, expired_subs) = self
@@ -915,7 +910,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             repo_rev: req.repo_rev,
             space_rev: new_tid.clone(),
             prev_space_rev: prev_tid,
-            data: Bytes::copy_from_slice(&data),
+            data: Bytes(data.to_vec()),
             extra_data: None,
         }));
         for (endpoint, token) in active_subs {
@@ -923,9 +918,8 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: write_update.clone(),
-                    extra_data: None,
                 },
             ));
         }
@@ -939,9 +933,8 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: expired_update.clone(),
-                    extra_data: None,
                 },
             ));
         }
@@ -965,13 +958,13 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         let (prev_space_rev, new_space_rev) =
             self.backend
                 .remove_writer(space_str, req.repo.as_str(), now_sec)?;
-        let new_tid =
-            Tid::new(&new_space_rev).map_err(|_| SpacesError::FutureRev(new_space_rev.clone()))?;
+        let new_tid = Tid::parse(&new_space_rev)
+            .map_err(|_| SpacesError::FutureRev(new_space_rev.clone()))?;
         let prev_tid = prev_space_rev
             .as_deref()
-            .map(|s| Tid::new(s).map_err(|_| SpacesError::FutureRev(s.to_string())))
+            .map(|s| Tid::parse(s).map_err(|_| SpacesError::FutureRev(s.to_string())))
             .transpose()?;
-        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+        let canonical_at_space = SpaceRef::parse(space_str)
             .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
 
         let (active_subs, expired_subs) = self
@@ -990,9 +983,8 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: removed_update.clone(),
-                    extra_data: None,
                 },
             ));
         }
@@ -1006,9 +998,8 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: expired_update.clone(),
-                    extra_data: None,
                 },
             ));
         }
@@ -1030,13 +1021,11 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         let policy_json = self.backend.get_space_policy_json(space_str)?;
         let policy: GetSpaceOutputPolicy = serde_json::from_value(policy_json)
             .map_err(|e| SpacesError::Sync(format!("decode space policy union: {e}")))?;
-        let _ = Data::<jacquard_common::DefaultStr>::Null;
-        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+        let canonical_at_space = SpaceRef::parse(space_str)
             .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
         Ok(GetSpaceOutput {
             space: canonical_at_space,
             policy,
-            extra_data: None,
         })
     }
 
@@ -1075,10 +1064,9 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         }
 
         let notice = NotifyCredentialsRevoked {
-            space: AtSpaceUri::new(SmolStr::from(space_str))
+            space: SpaceRef::parse(space_str)
                 .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?,
-            credentials: revoked_jtis.into_iter().map(SmolStr::from).collect(),
-            extra_data: None,
+            credentials: revoked_jtis.into_iter().collect(),
         };
         Ok((notice, writer_targets))
     }
@@ -1090,7 +1078,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         let space_str = space.as_str();
         let writers = self.backend.all_writer_dids(space_str)?;
         let subscribers = self.backend.list_all_subscribers(space_str)?;
-        let canonical_at_space = AtSpaceUri::new(SmolStr::from(space_str))
+        let canonical_at_space = SpaceRef::parse(space_str)
             .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?;
         let deleted_update =
             NotifySpaceUpdateUpdate::SpaceDeleted(Box::new(SpaceDeleted { extra_data: None }));
@@ -1101,9 +1089,8 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                     endpoint,
                     NotifySpaceUpdate {
                         space: canonical_at_space.clone(),
-                        token: token.into(),
+                        token,
                         update: deleted_update.clone(),
-                        extra_data: None,
                     },
                 )
             })

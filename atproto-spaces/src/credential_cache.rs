@@ -12,12 +12,12 @@ use crate::kem::{encode_p256_did_key, P256SecretKey};
 use crate::sync_engine::SpaceTransport;
 use crate::tokens::{verify_space_token, SpaceTokenKind};
 use crate::{Result, SpaceUri, SpacesError};
-use catbird_atproto::com_atproto::space::authorize_space_sync::{
-    AuthorizeSpaceSync, AuthorizeSpaceSyncOutput, Notify,
-};
 use http::{HeaderMap, HeaderValue, Method};
-use jacquard_common::types::aturi::AtSpaceUri;
-use jacquard_common::types::string::UriValue;
+use petrel_api::generated::com::atproto::space::authorize_space_sync::{
+    Input as AuthorizeSpaceSync, Notify, Output as AuthorizeSpaceSyncOutput,
+};
+use petrel_core::SpaceRef;
+use petrel_core::Uri;
 use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
@@ -157,7 +157,7 @@ where
 
         let notify = match &self.notify {
             Some(reg) => Some(Notify {
-                endpoint: UriValue::new_owned(reg.endpoint.as_str()).map_err(|_| {
+                endpoint: Uri::parse(reg.endpoint.as_str()).map_err(|_| {
                     SpacesError::InvalidSpaceCredential(format!(
                         "invalid notify endpoint URI: {}",
                         reg.endpoint
@@ -170,15 +170,12 @@ where
         };
 
         let req_body = AuthorizeSpaceSync {
-            space: AtSpaceUri::new(jacquard_common::deps::smol_str::SmolStr::from(
-                canonical_space,
-            ))
-            .map_err(|_| SpacesError::InvalidSpaceUri(canonical_space.to_string()))?,
+            space: SpaceRef::parse(canonical_space)
+                .map_err(|_| SpacesError::InvalidSpaceUri(canonical_space.to_string()))?,
             credential_key: cnf_did_key.as_str().into(),
             delegation_token: Some(delegation_jwt.as_str().into()),
             client_attestation: self.client_attestation.as_deref().map(Into::into),
             notify,
-            extra_data: None,
         };
         let payload = serde_json::to_vec(&req_body).map_err(|e| {
             SpacesError::InvalidSpaceCredential(format!("encode authorizeSpaceSync: {e}"))

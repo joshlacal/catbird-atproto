@@ -60,7 +60,6 @@ dependencies = [
  "base64 0.22.1",
  "blake3",
  "bytes",
- "catbird-atproto",
  "ciborium",
  "cid",
  "getrandom 0.2.17",
@@ -68,11 +67,12 @@ dependencies = [
  "hmac",
  "http",
  "ipld-core",
- "jacquard-common",
  "k256",
  "multibase",
  "multihash",
  "p256",
+ "petrel-api",
+ "petrel-core",
  "rand 0.8.8",
  "serde",
  "serde_bytes",
@@ -1626,6 +1626,27 @@ name = "percent-encoding"
 version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
+
+[[package]]
+name = "petrel-api"
+version = "0.0.0"
+dependencies = [
+ "petrel-core",
+ "serde",
+]
+
+[[package]]
+name = "petrel-core"
+version = "0.0.0"
+dependencies = [
+ "base64 0.22.1",
+ "getrandom 0.2.17",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "thiserror 2.0.18",
+ "web-time",
+]
 
 [[package]]
 name = "phf"

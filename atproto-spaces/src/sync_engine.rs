@@ -22,14 +22,14 @@ use crate::mac::{
 };
 use crate::star::{read_star_repo_authenticated, validate_canonical_dagcbor_record};
 use crate::{Result, SpaceUri, SpacesError};
-use catbird_atproto::com_atproto::space::get_record::GetRecordOutput;
-use catbird_atproto::com_atproto::space::list_records::ListRecordsOutput;
-use catbird_atproto::com_atproto::space::list_repo_ops::ListRepoOpsOutput;
-use catbird_atproto::com_atproto::space::list_writers::{
-    ListWritersOutput, ListWritersOutputReposItem,
-};
 use cid::Cid;
 use http::{HeaderMap, HeaderName, HeaderValue, Method};
+use petrel_api::generated::com::atproto::space::get_record::Output as GetRecordOutput;
+use petrel_api::generated::com::atproto::space::list_records::Output as ListRecordsOutput;
+use petrel_api::generated::com::atproto::space::list_repo_ops::Output as ListRepoOpsOutput;
+use petrel_api::generated::com::atproto::space::list_writers::{
+    Output as ListWritersOutput, OutputRepos as ListWritersOutputReposItem,
+};
 use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -246,7 +246,7 @@ where
         for item in out.repos {
             match item {
                 ListWritersOutputReposItem::RepoWrite(w) => {
-                    let data: [u8; 32] = w.data.as_ref().try_into().map_err(|_| {
+                    let data: [u8; 32] = w.data.0.as_slice().try_into().map_err(|_| {
                         SpacesError::Sync("listWriters repoWrite data must be 32 bytes".into())
                     })?;
                     entries.push(WriterUpdateEntry::Write(RepoCursorEntry {
@@ -339,7 +339,7 @@ where
 
         let mut verified_records = Vec::with_capacity(listed.records.len());
         for stub in listed.records {
-            let rkey = stub.rkey.as_ref().to_string();
+            let rkey = stub.rkey.as_str().to_string();
             let encap = encapsulate_p256(&kem_did_key)?;
             let accept_sig = format_accept_signature(MacProfile::Record, &encap.key_share_did_key)?;
 
@@ -396,7 +396,7 @@ where
 
             let full: GetRecordOutput = serde_json::from_slice(&resp.body)
                 .map_err(|e| SpacesError::Sync(format!("decode getRecord value: {e}")))?;
-            let dagcbor = serde_ipld_dagcbor::to_vec(&full.value)
+            let dagcbor = petrel_core::to_dag_cbor(&full.value)
                 .map_err(|e| SpacesError::Sync(format!("encode record DAG-CBOR: {e}")))?;
             validate_canonical_dagcbor_record(&dagcbor)?;
             let computed_cid = compute_dagcbor_cid(&dagcbor);
@@ -516,7 +516,8 @@ where
             };
             let data: [u8; 32] = commit
                 .data
-                .as_ref()
+                .0
+                .as_slice()
                 .try_into()
                 .map_err(|_| SpacesError::MacMismatch("commit.data must be 32 bytes".into()))?;
             if commit.space != canonical_space || commit.repo != writer_did || commit.ver != 1 {
@@ -536,12 +537,11 @@ where
             )?;
             let verified_head_commit = (commit.rev.clone(), data);
 
-            let out: ListRepoOpsOutput = serde_json::from_slice(&resp.body)
-                .map_err(|e| SpacesError::Sync(format!("decode listRepoOps body: {e}")))?;
+            let out = decode_ops_page(&resp.body)?;
 
             for op in out.ops {
                 let collection = op.collection.as_str().to_string();
-                let rkey = op.rkey.as_ref().to_string();
+                let rkey = op.rkey.as_str().to_string();
                 let path = format!("{collection}/{rkey}");
 
                 if let Some(prev_cid_str) = &op.prev {
@@ -557,7 +557,7 @@ where
                         SpacesError::SetHashMismatch(format!("invalid op.cid CID: {e}"))
                     })?;
                     if let Some(val) = &op.value {
-                        let dagcbor = serde_ipld_dagcbor::to_vec(val).map_err(|e| {
+                        let dagcbor = petrel_core::to_dag_cbor(val).map_err(|e| {
                             SpacesError::Sync(format!("encode op.value DAG-CBOR: {e}"))
                         })?;
                         validate_canonical_dagcbor_record(&dagcbor)?;
@@ -758,6 +758,27 @@ struct MinimalRecordEnvelope {
     cid: String,
 }
 
+// Pre-migration hosts omitted a null prev on creates and a null cid on deletes.
+// Normalize those two fields only at this read boundary. The caller verifies
+// the commit MAC first and still checks every resulting CID and the final set hash.
+fn decode_ops_page(body: &[u8]) -> Result<ListRepoOpsOutput> {
+    use petrel_core::{FromValue, Value};
+    let decode_error = |e| SpacesError::Sync(format!("decode listRepoOps body: {e}"));
+    let mut page: Value = petrel_core::from_json(body).map_err(decode_error)?;
+    if let Value::Object(fields) = &mut page {
+        if let Some(Value::Array(ops)) = fields.get_mut("ops") {
+            for op in ops {
+                if let Value::Object(fields) = op {
+                    for key in ["cid", "prev"] {
+                        fields.entry(key.to_owned()).or_insert(Value::Null);
+                    }
+                }
+            }
+        }
+    }
+    ListRepoOpsOutput::from_value(page).map_err(decode_error)
+}
+
 #[derive(serde::Deserialize)]
 struct MinimalOpsPage {
     commit: Option<MinimalCommit>,
@@ -769,6 +790,5 @@ struct MinimalCommit {
     repo: String,
     space: String,
     rev: String,
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    data: jacquard_common::deps::bytes::Bytes,
+    data: petrel_core::Bytes,
 }

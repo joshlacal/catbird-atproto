@@ -8,9 +8,8 @@ use atproto_spaces::kem::{encode_p256_did_key, P256SecretKey};
 use atproto_spaces::signature_replay::{InMemorySignatureReplayCache, SignatureReplayStore};
 use atproto_spaces::tokens::{mint_space_token, SpaceSigningKey, SpaceTokenClaims, SpaceTokenKind};
 use atproto_spaces::SpacesError;
-use catbird_atproto::com_atproto::space::authorize_space_sync::AuthorizeSpaceSync;
-use jacquard_common::deps::smol_str::SmolStr;
-use jacquard_common::types::aturi::AtSpaceUri;
+use petrel_api::generated::com::atproto::space::authorize_space_sync::Input as AuthorizeSpaceSync;
+use petrel_core::SpaceRef;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -95,12 +94,11 @@ async fn mint_credential(
     let out = host
         .handle_authorize_space_sync(
             AuthorizeSpaceSync {
-                space: AtSpaceUri::new(SmolStr::from(SPACE)).unwrap(),
-                credential_key: encode_p256_did_key(&ephemeral.public_key()).into(),
+                space: SpaceRef::parse(SPACE).unwrap(),
+                credential_key: encode_p256_did_key(&ephemeral.public_key()),
                 delegation_token: Some(delegation.as_str().into()),
                 client_attestation: None,
                 notify: None,
-                extra_data: None,
             },
             NOW,
         )
