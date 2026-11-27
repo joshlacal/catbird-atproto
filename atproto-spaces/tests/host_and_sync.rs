@@ -12,17 +12,18 @@ use atproto_spaces::sync_engine::{
 };
 use atproto_spaces::tokens::{mint_space_token, SpaceSigningKey, SpaceTokenClaims, SpaceTokenKind};
 use atproto_spaces::SpacesError;
-use catbird_atproto::com_atproto::space::authorize_space_sync::{AuthorizeSpaceSync, Notify};
-use catbird_atproto::com_atproto::space::confirm_registration::ConfirmRegistrationOutput;
-use catbird_atproto::com_atproto::space::list_writers::ListWriters;
-use catbird_atproto::com_atproto::space::notify_repo_update::NotifyRepoUpdate;
-use catbird_atproto::com_atproto::space::notify_space_update::NotifySpaceUpdateUpdate;
-use catbird_atproto::com_atproto::space::remove_writer::RemoveWriter;
 use http::{HeaderMap, HeaderValue, Method};
-use jacquard_common::deps::bytes::Bytes;
-use jacquard_common::deps::smol_str::SmolStr;
-use jacquard_common::types::aturi::AtSpaceUri;
-use jacquard_common::types::string::{Did, Tid, UriValue};
+use petrel_api::generated::com::atproto::space::authorize_space_sync::{
+    Input as AuthorizeSpaceSync, Notify,
+};
+use petrel_api::generated::com::atproto::space::confirm_registration::Output as ConfirmRegistrationOutput;
+use petrel_api::generated::com::atproto::space::list_writers::Parameters as ListWriters;
+use petrel_api::generated::com::atproto::space::notify_repo_update::Input as NotifyRepoUpdate;
+use petrel_api::generated::com::atproto::space::notify_space_update::InputUpdate as NotifySpaceUpdateUpdate;
+use petrel_api::generated::com::atproto::space::remove_writer::Input as RemoveWriter;
+use petrel_core::Bytes;
+use petrel_core::SpaceRef;
+use petrel_core::{Did, Tid, Uri};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::rc::Rc;
@@ -188,10 +189,12 @@ impl SpaceTransport for MockNetwork {
             }
             (Method::GET, "/xrpc/com.atproto.space.listWriters") => {
                 let req = ListWriters {
-                    space: AtSpaceUri::new(SmolStr::from(query.get("space").unwrap().as_str()))
-                        .unwrap(),
+                    space: SpaceRef::parse(query.get("space").unwrap().as_str()).unwrap(),
                     cursor: query.get("cursor").map(|s| s.as_str().into()),
-                    limit: query.get("limit").and_then(|s| s.parse().ok()),
+                    limit: query
+                        .get("limit")
+                        .and_then(|s| s.parse().ok())
+                        .unwrap_or(100),
                 };
                 match self
                     .space_host
@@ -484,7 +487,6 @@ fn delegation_replay_and_confirm_registration_enforced_in_authorize_space_sync()
             "challenge-xyz",
             &ConfirmRegistrationOutput {
                 challenge: confirm_req.challenge,
-                extra_data: None,
             },
         )
         .expect("matching challenge verifies");
@@ -493,7 +495,6 @@ fn delegation_replay_and_confirm_registration_enforced_in_authorize_space_sync()
                 "challenge-xyz",
                 &ConfirmRegistrationOutput {
                     challenge: "wrong".into(),
-                    extra_data: None,
                 },
             ),
             Err(SpacesError::RegistrationNotConfirmed(_))
@@ -543,16 +544,15 @@ fn delegation_replay_and_confirm_registration_enforced_in_authorize_space_sync()
             .unwrap();
         let eph = P256SecretKey::random(&mut rand::rngs::OsRng);
         let req = AuthorizeSpaceSync {
-            space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
+            space: SpaceRef::parse(space_uri).unwrap(),
             credential_key: encode_p256_did_key(&eph.public_key()).into(),
             delegation_token: Some(delegation_jwt.as_str().into()),
             client_attestation: None,
             notify: Some(Notify {
-                endpoint: UriValue::new_owned("https://syncer.catbird.blue").unwrap(),
+                endpoint: Uri::parse("https://syncer.catbird.blue").unwrap(),
                 token: "syncer-token-01".into(),
                 extra_data: None,
             }),
-            extra_data: None,
         };
 
         let minted = space_host
@@ -674,11 +674,10 @@ fn nov12_cold_open_incremental_sync_notify_fanout_writer_removal_and_star_recove
             .handle_notify_repo_update(
                 alice_did,
                 NotifyRepoUpdate {
-                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
-                    repo: Did::new(SmolStr::from(alice_did)).unwrap(),
-                    repo_rev: Tid::new("3l2aaaaaaaaab").unwrap(),
-                    data: Bytes::copy_from_slice(&commit_1),
-                    extra_data: None,
+                    space: SpaceRef::parse(space_uri).unwrap(),
+                    repo: Did::parse(String::from(alice_did)).unwrap(),
+                    repo_rev: Tid::parse("3l2aaaaaaaaab").unwrap(),
+                    data: Bytes(commit_1.to_vec()),
                 },
                 now_sec,
             )
@@ -696,11 +695,10 @@ fn nov12_cold_open_incremental_sync_notify_fanout_writer_removal_and_star_recove
             .handle_notify_repo_update(
                 bob_did,
                 NotifyRepoUpdate {
-                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
-                    repo: Did::new(SmolStr::from(bob_did)).unwrap(),
-                    repo_rev: Tid::new("3l2aaaaaaaaac").unwrap(),
-                    data: Bytes::copy_from_slice(&bob_commit_1),
-                    extra_data: None,
+                    space: SpaceRef::parse(space_uri).unwrap(),
+                    repo: Did::parse(String::from(bob_did)).unwrap(),
+                    repo_rev: Tid::parse("3l2aaaaaaaaac").unwrap(),
+                    data: Bytes(bob_commit_1.to_vec()),
                 },
                 now_sec,
             )
@@ -823,9 +821,8 @@ fn nov12_cold_open_incremental_sync_notify_fanout_writer_removal_and_star_recove
             .handle_remove_writer(
                 authority_did,
                 RemoveWriter {
-                    space: AtSpaceUri::new(SmolStr::from(space_uri)).unwrap(),
-                    repo: Did::new(SmolStr::from(bob_did)).unwrap(),
-                    extra_data: None,
+                    space: SpaceRef::parse(space_uri).unwrap(),
+                    repo: Did::parse(String::from(bob_did)).unwrap(),
                 },
                 now_sec,
             )

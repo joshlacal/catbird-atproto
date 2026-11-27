@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'src/**'
+      - 'atproto-spaces/**'
       - 'tests/**'
       - 'Cargo.*'
       - '.github/workflows/mls-contracts.yml'
@@ -32,6 +33,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: catbird-atproto
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          repository: joshlacal/Petrel
+          ref: cd6dda0d25c1d2ab2365eb8f6ba2f4568960dd07
+          path: Petrel
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: joshlacal/catbird-mls
@@ -64,6 +71,14 @@ jobs:
       - name: Verify chat recovery and existing Space contracts
         working-directory: catbird-atproto
         run: cargo test --locked --features streaming,namespace-atproto-space --test blue_catbird_chat_surface --test com_atproto_space_surface
+      - name: Verify the Petrel-backed Spaces compatibility library
+        working-directory: catbird-atproto
+        run: |
+          cargo test --locked -p atproto-spaces
+          if cargo tree --locked -p atproto-spaces -e normal,build | grep -E 'jacquard[- ]|catbird-atproto v'; then
+            exit 1
+          fi
       - name: Compile released native consumer against this SDK
         working-directory: catbird-mls
-        run: cargo check --locked --lib
+        # The released lock predates the Petrel backend of this path dependency.
+        run: cargo check --lib
