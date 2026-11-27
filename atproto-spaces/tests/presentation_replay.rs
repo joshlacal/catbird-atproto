@@ -95,7 +95,7 @@ async fn mint_credential(
         .handle_authorize_space_sync(
             AuthorizeSpaceSync {
                 space: SpaceRef::parse(SPACE).unwrap(),
-                credential_key: encode_p256_did_key(&ephemeral.public_key()).into(),
+                credential_key: encode_p256_did_key(&ephemeral.public_key()),
                 delegation_token: Some(delegation.as_str().into()),
                 client_attestation: None,
                 notify: None,

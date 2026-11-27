@@ -565,7 +565,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         expected_challenge: &str,
         resp: &ConfirmRegistrationOutput,
     ) -> Result<()> {
-        let actual = resp.challenge.as_str().as_bytes();
+        let actual = resp.challenge.as_bytes();
         let expected = expected_challenge.as_bytes();
         if actual.len() == expected.len() && bool::from(actual.ct_eq(expected)) {
             Ok(())
@@ -678,7 +678,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                     "notify.endpoint must use https://".into(),
                 ));
             }
-            if notify.token.as_str().is_empty() {
+            if notify.token.is_empty() {
                 return Err(SpacesError::RegistrationNotConfirmed(
                     "notify.token must be non-empty".into(),
                 ));
@@ -704,7 +704,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
             .transpose()?;
 
         Ok(AuthorizeSpaceSyncOutput {
-            credential: jwt.into(),
+            credential: jwt,
             space_rev,
         })
     }
@@ -805,9 +805,9 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         }
 
         let limit = req.limit.clamp(1, 1000) as usize;
-        let writers =
-            self.backend
-                .list_writers(space_str, req.cursor.as_ref().map(|c| c.as_str()), limit)?;
+        let writers = self
+            .backend
+            .list_writers(space_str, req.cursor.as_deref(), limit)?;
         let cursor = writers.last().map(|w| String::from(w.space_rev()));
         let repos = writers
             .into_iter()
@@ -816,7 +816,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                     SpaceWriterEvent::Write(w) => {
                         let did_str = w.did.clone();
                         Ok(ListWritersOutputReposItem::RepoWrite(Box::new(RepoWrite {
-                            repo: Did::parse(String::from(w.did))
+                            repo: Did::parse(w.did)
                                 .map_err(|_| SpacesError::InvalidDid(did_str))?,
                             repo_rev: Tid::parse(&w.repo_rev)
                                 .map_err(|_| SpacesError::FutureRev(w.repo_rev.clone()))?,
@@ -831,7 +831,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                         let did_str = did.clone();
                         Ok(ListWritersOutputReposItem::RepoRemoved(Box::new(
                             RepoRemoved {
-                                repo: Did::parse(String::from(did))
+                                repo: Did::parse(did)
                                     .map_err(|_| SpacesError::InvalidDid(did_str))?,
                                 space_rev: Tid::parse(&space_rev)
                                     .map_err(|_| SpacesError::FutureRev(space_rev.clone()))?,
@@ -918,7 +918,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: write_update.clone(),
                 },
             ));
@@ -933,7 +933,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: expired_update.clone(),
                 },
             ));
@@ -983,7 +983,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: removed_update.clone(),
                 },
             ));
@@ -998,7 +998,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                 endpoint,
                 NotifySpaceUpdate {
                     space: canonical_at_space.clone(),
-                    token: token.into(),
+                    token,
                     update: expired_update.clone(),
                 },
             ));
@@ -1066,7 +1066,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
         let notice = NotifyCredentialsRevoked {
             space: SpaceRef::parse(space_str)
                 .map_err(|_| SpacesError::InvalidSpaceUri(space_str.to_string()))?,
-            credentials: revoked_jtis.into_iter().map(String::from).collect(),
+            credentials: revoked_jtis.into_iter().collect(),
         };
         Ok((notice, writer_targets))
     }
@@ -1089,7 +1089,7 @@ impl<B: SpaceHostBackend, K: SpaceKeyResolver> SpaceHost<B, K> {
                     endpoint,
                     NotifySpaceUpdate {
                         space: canonical_at_space.clone(),
-                        token: token.into(),
+                        token,
                         update: deleted_update.clone(),
                     },
                 )

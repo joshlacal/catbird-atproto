@@ -545,7 +545,7 @@ fn delegation_replay_and_confirm_registration_enforced_in_authorize_space_sync()
         let eph = P256SecretKey::random(&mut rand::rngs::OsRng);
         let req = AuthorizeSpaceSync {
             space: SpaceRef::parse(space_uri).unwrap(),
-            credential_key: encode_p256_did_key(&eph.public_key()).into(),
+            credential_key: encode_p256_did_key(&eph.public_key()),
             delegation_token: Some(delegation_jwt.as_str().into()),
             client_attestation: None,
             notify: Some(Notify {
@@ -559,7 +559,7 @@ fn delegation_replay_and_confirm_registration_enforced_in_authorize_space_sync()
             .handle_authorize_space_sync(req.clone(), now_sec)
             .await
             .expect("first delegation exchange must succeed");
-        assert!(!minted.credential.as_str().is_empty());
+        assert!(!minted.credential.is_empty());
         assert!(minted.space_rev.is_none());
 
         let replay_err = space_host

@@ -75,7 +75,8 @@ jobs:
         working-directory: catbird-atproto
         run: |
           cargo test --locked -p atproto-spaces
-          if cargo tree --locked -p atproto-spaces -e normal,build | grep -E 'jacquard[- ]|catbird-atproto v'; then
+          tree=$(cargo tree --locked -p atproto-spaces -e normal,build)
+          if grep -E 'jacquard[- ]|catbird-atproto v' <<< "$tree"; then
             exit 1
           fi
       - name: Compile released native consumer against this SDK
